@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.367 2024/10/05 18:05:23 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.368 2024/10/20 13:29:37 moko Exp $";
 
 // class
 
@@ -1019,7 +1019,7 @@ static void _cells(Request& r, MethodParams& params) {
 		int limit=params.as_int(params.count()-1, "offset must be expression", r);
 		if(limit<0)
 			limit=0;
-		if(limit<row_size)
+		if((size_t)limit<row_size)
 			row_size=limit;
 	}
 
@@ -1550,7 +1550,7 @@ static void _rename(Request& r, MethodParams& params) {
 	Table& table=GET_SELF(r, VTable).table();
 	if(Table::columns_type columns=table.columns()) {
 		if(names){
-			for(int i=0; i<columns->count(); i++) {
+			for(size_t i=0; i<columns->count(); i++) {
 				const String *column = columns->get(i);
 				if(Value* vto=names->get(*column)){
 					if(const String *sto=vto->get_string())
@@ -1560,7 +1560,7 @@ static void _rename(Request& r, MethodParams& params) {
 				}
 			}
 		} else if(name_from){
-			for(int i=0; i<columns->count(); i++) {
+			for(size_t i=0; i<columns->count(); i++) {
 				const String *column = columns->get(i);
 				if(*column == *name_from)
 					columns->put(i, name_to);

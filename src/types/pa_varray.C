@@ -9,13 +9,13 @@
 #include "pa_vfile.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.4 2024/10/08 00:02:42 moko Exp $" IDENT_PA_VARRAY_H;
+volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.5 2024/10/20 13:29:37 moko Exp $" IDENT_PA_VARRAY_H;
 
 // Explicit instantiation for Visual Studio
 template class SparseArray<Value*>;
 
 template<typename T> void SparseArray<T>::fit(size_t index){
-	if(index > pa_array_limit)
+	if(index > (size_t)pa_array_limit)
 		throw Exception(PARSER_RUNTIME, 0, "array index %d exceeds the $MAIN:LIMITS.max_array_size (%d)", index, pa_array_limit);
 	Array<T>::fit(index);
 }
