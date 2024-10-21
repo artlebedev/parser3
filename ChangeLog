@@ -1,3 +1,48 @@
+2024-10-20  moko
+
+	* src/classes/string.C: warnings war
+
+	* src/: main/pa_string.C, classes/array.C: warnings war
+
+	* src/classes/json.C: warnings war
+
+	* src/classes/image.C: warnings war
+
+	* src/: classes/table.C, types/pa_varray.C: warnings war
+
+	* src/classes/array.C: warning war
+
+	* src/: classes/classes.vcproj, types/types.vcproj: vcproj: +=array
+
+	* src/main/main.vcproj: warnings war
+
+2024-10-19  moko
+
+	* tests/427.html: test updated after constructors renamed
+
+2024-10-18  moko
+
+	* tests/: 421.html, 430.html, 431.html, 432.html, 433.html,
+	  results/421.processed, results/430.processed,
+	  results/431.processed: test updated after constructors renamed
+
+	* src/classes/array.C: create -> copy, new -> create according to
+	  https://www.parser.ru/forum/?id=86603 discussion (related to
+	  feature #930)
+
+2024-10-16  moko
+
+	* src/classes/json.C: $json:array[array or hash] added to provide
+	  more backward compatibility (implements feature #1251)
+
+2024-10-15  moko
+
+	* tests/: 421.html, results/421.processed: test results updated
+	  after missing constuctor error check added and array is_index
+	  check added
+
+	* src/main/execute.C: absent constructor message fixed
+
 2024-10-13  moko
 
 	* src/types/pa_varray.h: ^array.$i[arg] is rare, thus checking i
