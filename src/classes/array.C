@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.20 2024/10/20 14:35:05 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.21 2024/10/22 21:56:17 moko Exp $";
 
 // class
 
@@ -904,35 +904,35 @@ static void _at(Request& r, MethodParams& params) {
 	}
 
 	if(count && pos >= 0 && (size_t)pos < count){
-		switch(result_type) {
-			case AtResultTypeKey:
-				{
-					for(ArrayValue::Iterator i(array); i; i.next() ){
-						if(i.value() && !(pos--)){
+		if(count == array.count()){
+			switch(result_type) {
+				case AtResultTypeKey:
+					r.write(*new VString(*new String(pa_uitoa(pos), String::L_TAINTED)));
+					break;
+				case AtResultTypeValue:
+					r.write(*array[pos]);
+					break;
+				case AtResultTypeHash:
+					r.write(SingleElementHash(pa_uitoa(pos), array[pos]));
+					break;
+			}
+		} else {
+			for(ArrayValue::Iterator i(array); i; i.next() ){
+				if(i.value() && !(pos--)){
+					switch(result_type) {
+						case AtResultTypeKey:
 							r.write(*new VString(*new String(i.key(), String::L_TAINTED)));
 							break;
-						}
+						case AtResultTypeValue:
+							r.write(*i.value());
+							break;
+						case AtResultTypeHash:
+							r.write(SingleElementHash(i.key(), i.value()));
+							break;
 					}
 					break;
 				}
-			case AtResultTypeValue:
-				{
-					for(ArrayValue::Iterator i(array); i; i.next() )
-						if(i.value() &&!(pos--)){
-							r.write(*i.value());
-							break;
-						}
-					break;
-				}
-			case AtResultTypeHash:
-				{
-					for(ArrayValue::Iterator i(array); i; i.next() )
-						if(i.value() &&!(pos--)){
-							r.write(SingleElementHash(i.key(), i.value()));
-							break;
-						}
-					break;
-				}
+			}
 		}
 	}
 }
