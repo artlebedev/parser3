@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 887
+Content-Length: 1101
 
  
 	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
@@ -37,4 +37,9 @@ Source: exec,
 Comment: stdin parameter must be string or file
 5. Exception type: parser.runtime,
 Source: exec,
-Comment: param must be string or table
+Comment: param must be string or table or array of strings
+6. "args" "arg 2" "" "arg 4" "arg 5" "arg 6" 
+7. "args" "arg 2" "" "arg4" "5" "arg6" 
+7. Exception type: parser.runtime,
+Source: exec,
+Comment: array element is 'hash', it does not string value

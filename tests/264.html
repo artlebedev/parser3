@@ -20,3 +20,12 @@ code coverage tests:
 3. ^try-catch{ ^file::exec[text] }
 4. ^try-catch{ ^file::exec[cat^os[-windows].sh; $.stdin[ $.hash[] ] ] }
 5. ^try-catch{ ^file::exec[cat^os[-windows].sh; ;arg1;^table::create[nameless]{arg2}; $.arg_hash[] ] }
+
+6. $f[^file::exec[cat^os[-windows].sh; ;args;^table::create[nameless]{arg 2};;^table::create[nameless]{arg 4^#0Aarg 5};arg 6]]
+   $f.text
+
+7. $f[^file::exec[cat^os[-windows].sh; ;^array::create[args;arg 2;;arg4]](5)[arg6]]
+   $f.text
+
+8. ^try-catch{ $f[^file::exec[cat^os[-windows].sh; ;^array::create[args; $.bug[yes] ]]] }
+

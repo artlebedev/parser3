@@ -11,6 +11,14 @@ then
 	exit 0
 fi
 
+if [ $1 = "args" ]
+then
+	for arg in "$@"; do
+		echo -n "\"$arg\" "
+	done
+	exit 0
+fi
+
 if [ $1 = "cgi" ]
 then
 	echo "content-type: $2
