@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.283 2024/10/22 02:44:40 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.284 2024/10/22 10:34:00 moko Exp $";
 
 // defines
 
@@ -555,7 +555,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 					if(i.value()){
 						const String *string=i.value()->get_string();
 						if(!string)
-							i.value()->bark("array element is '%s', it does not string value");
+							i.value()->bark("array element is '%s', it does not have string value");
 						append_to_argv(r, argv, string);
 					}
 				}
