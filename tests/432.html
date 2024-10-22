@@ -32,7 +32,6 @@ $a.5[e]
 $a.3[cc]
 ^first_and_last[One element was added at the middle (^$a.3[cc]);$a]
 
-<h3>_at on hash with 5 elements (^$a[ ^$.1[a] ^$.2[b] ^$.3[c] ^$.4[d] ^$.5[e] ])</h3>
 $a[^array::copy[
 	$.1[a]
 	$.2[b]
@@ -40,6 +39,12 @@ $a[^array::copy[
 	$.4[d]
 	$.5[e]
 ]]
+^test_at[]
+$a[a;b;c;d;e]
+^test_at[]
+
+@test_at[]
+<h3>_at on array with ^a.count[] elements (^$a[ ^a.foreach[k;v]{^$.${k}[$v]}[ ] ])</h3>
 ^at(0)
 ^at(1)
 ^at(2)
@@ -73,6 +78,9 @@ $a[^array::copy[
 ^at(2)[hash]
 ^at(3)[hash]
 ^at(4)[hash]
+
+^^a._at[first;hash]=^print[^a._at[first;hash]]<br />
+^^a._at[last;hash]=^print[^a._at[last;hash]]<br />
 
 <br />
 # check if values preserve tainting. keys are always lost tainting
