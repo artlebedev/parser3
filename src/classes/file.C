@@ -19,6 +19,7 @@
 #include "pa_vdate.h"
 #include "pa_dir.h"
 #include "pa_vtable.h"
+#include "pa_varray.h"
 #include "pa_charset.h"
 #include "pa_charsets.h"
 #include "pa_sql_connection.h"
@@ -26,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.282 2024/10/02 22:54:02 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.283 2024/10/22 02:44:40 moko Exp $";
 
 // defines
 
@@ -465,8 +466,7 @@ static void pass_cgi_header_attribute(
 }
 
 static void append_to_argv(Request& r, ArrayString& argv, const String* str){
-	if(!str->is_empty())
-		argv+=new String(str->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets), String::L_AS_IS);
+	argv+=new String(str->cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets), String::L_AS_IS);
 }
 
 /// @todo fix `` in perl - they produced flipping consoles and no output to perl
@@ -545,18 +545,22 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 
 		for(size_t i=param_index; i<params.count(); i++) {
 			Value& param=params.as_no_junction(i, PARAM_MUST_NOT_BE_CODE);
-			if(param.is_defined()){
-				if(param.is_string()){
-					append_to_argv(r, argv, param.get_string());
-				} else {
-					Table* table=param.get_table();
-					if(table){
-						for(size_t j=0; j<table->count(); j++)
-							append_to_argv(r, argv, table->get(j)->get(0));
-					} else {
-						throw Exception(PARSER_RUNTIME, 0, "param must be string or table");
+			if(const String *string=param.get_string()){
+				append_to_argv(r, argv, string);
+			} else if(Table* table=param.get_table()){
+				for(size_t j=0; j<table->count(); j++)
+					append_to_argv(r, argv, table->get(j)->get(0));
+			} else if(VArray* array=dynamic_cast<VArray*>(&param)){
+				for(ArrayValue::Iterator i(array->array()); i; i.next()){
+					if(i.value()){
+						const String *string=i.value()->get_string();
+						if(!string)
+							i.value()->bark("array element is '%s', it does not string value");
+						append_to_argv(r, argv, string);
 					}
 				}
+			} else {
+				throw Exception(PARSER_RUNTIME, 0, "param must be string or table or array of strings");
 			}
 		}
 	}
