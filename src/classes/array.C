@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.21 2024/10/22 21:56:17 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.22 2024/10/23 16:41:11 moko Exp $";
 
 // class
 
@@ -1034,6 +1034,10 @@ static void _reverse(Request& r, MethodParams&) {
 	r.write(result);
 }
 
+static void _compact(Request& r, MethodParams&) {
+	GET_SELF(r, VArray).array().compact();
+}
+
 
 // constructor
 
@@ -1092,6 +1096,9 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 
 	// ^array.reverse[]
 	add_native_method("reverse", Method::CT_DYNAMIC, _reverse, 0, 0);
+
+	// ^array.compact[]
+	add_native_method("compact", Method::CT_DYNAMIC, _compact, 0, 0);
 
 	// ^array._at[first|last[;'key'|'value'|'hash']]
 	// ^array._at([-+]offset)[['key'|'value'|'hash']]
