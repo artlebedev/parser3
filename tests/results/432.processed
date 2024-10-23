@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4463
+Content-Length: 4445
 
 <h3>Empty hash ($a[^hash::create[]])</h3>
 first:last='':''<br />
@@ -105,19 +105,19 @@ first_key:last_key='2':'5'<br />
 ^a._at(3)[value]=d<br />
 ^a._at(4)[value]=e<br />
 <br />
-^a._at(0)[hash]='100':'a'<br />
-^a._at(1)[hash]='101':'b'<br />
-^a._at(2)[hash]='102':'c'<br />
-^a._at(3)[hash]='103':'d'<br />
-^a._at(4)[hash]='104':'e'<br />
-^a._at[first;hash]='100':'a'<br />
-^a._at[last;hash]='104':'e'<br />
+^a._at(0)[hash]='0':'a'<br />
+^a._at(1)[hash]='1':'b'<br />
+^a._at(2)[hash]='2':'c'<br />
+^a._at(3)[hash]='3':'d'<br />
+^a._at(4)[hash]='4':'e'<br />
+^a._at[first;hash]='0':'a'<br />
+^a._at[last;hash]='4':'e'<br />
 <br />
 <h3>The first element was replaced ($a.1[b&b])</h3>
-^a._at[first;hash]='100':'a'<br />
+^a._at[first;hash]='0':'a'<br />
 ^a._at(0)[key]=0<br />
 ^a._at(0)[value]=a<br />
-^a._at(0)[hash]='100':'a'<br />
+^a._at(0)[hash]='0':'a'<br />
 <h3>One element was added at the end ($a.100[^taint[d&d]])</h3>
 ^a._at(5)[key]=100<br />
 ^a._at(5)[value]=d&amp;d<br />
