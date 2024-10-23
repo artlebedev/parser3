@@ -27,6 +27,7 @@ $b[^array::copy[$a]]
 key
 
 3.1 $a[^array::copy[ $.5[v5] $.7[v7] $.10[v10]  $.12[v12] ]]
+    $b[^array::copy[$a]]
 
 3.2 ^json:string[^a.keys[]]
 
@@ -43,6 +44,8 @@ key
 3.8 ^a.sort[;v]{$v} ^json:string[$a; $.array[object] ]
 
 3.9 $a.6[v6] ^json:string[^a.reverse[]; $.array[object] ]
+
+3.10 ^b.compact[] ^b.count[] ^json:string[$b; $.array[object] ]
 
 @test-join[options]
 $b[0;1]

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1240
+Content-Length: 1292
 
 0.1 Exception type: number.format,
 Source: copy,
@@ -124,4 +124,10 @@ key
 "4":"v5",
 "5":"v12",
 "6":"v10"
+}
+3.10 4 {
+"0":"v5",
+"1":"v7",
+"2":"v10",
+"3":"v12"
 }
