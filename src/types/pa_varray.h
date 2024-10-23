@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.13 2024/10/23 16:41:11 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.14 2024/10/23 23:53:06 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -87,8 +87,9 @@ public:
 	inline void clear(size_t index) {
 		if(index < this->count()){
 			this->felements[index]=NULL;
-			if(index+1 == this->count())
+			if(index+1 == this->fsize){
 				this->fsize--;
+			}
 		}
 	}
 
@@ -179,7 +180,7 @@ public: // value
 	/// VArray: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue) {
 		farray.put(index(aname), avalue);
-		invalidate();
+		farray.invalidate();
 		return 0;
 	}
 
@@ -192,9 +193,8 @@ public: // VHashBase
 
 public: // usage
 
-	VArray(size_t initial=0): farray(initial), fhash(0) {}
-	VArray(size_t size, Value** elements): farray(size, elements), fhash(0) {}
-	~VArray() { invalidate(); }
+	VArray(size_t initial=0): farray(initial) {}
+	VArray(size_t size, Value** elements): farray(size, elements) {}
 
 	ArrayValue &array() { return farray; }
 
@@ -219,19 +219,9 @@ public: // usage
 		return farray.get(index) != NULL;
 	}
 
-	void invalidate() {
-#ifdef USE_DESTRUCTORS
-		if(fhash)
-			delete(fhash);
-#endif
-		fhash=0;
-		farray.invalidate();
-	}
-
 private:
 
 	ArrayValue farray;
-	HashStringValue *fhash;
 
 };
 

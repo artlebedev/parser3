@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.22 2024/10/23 16:41:11 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.23 2024/10/23 23:53:06 moko Exp $";
 
 // class
 
@@ -63,7 +63,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 				self_array.put(VArray::index(i.key()), i.value());
 			}
 		}
-		self.invalidate();
+		self_array.invalidate();
 	}
 }
 
@@ -145,7 +145,7 @@ static void _join(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	self.invalidate();
+	self_array.invalidate();
 }
 
 #ifndef DOXYGEN
@@ -494,7 +494,9 @@ static void _sql(Request& r, MethodParams& params) {
 	VArray& self=GET_SELF(r, VArray);
 	ArrayValue& array=self.array();
 
-	array.clear(); self.invalidate(); // just in case if called as method
+	if(array.count()){
+		array.clear(); array.invalidate(); // just in case if called as method
+	}
 
 	if(sparse){
 		SparseArray_sql_event_handlers handlers(distinct, array, value_type);
@@ -607,20 +609,18 @@ static void _count(Request& r, MethodParams& params) {
 }
 
 static void _append(Request& r, MethodParams& params) {
-	VArray& self=GET_SELF(r, VArray);
-	ArrayValue& array=self.array();
+	ArrayValue& array=GET_SELF(r, VArray).array();
 
 	int count=params.count();
 
 	for(int i=0; i<count; i++){
 		array+=&r.process(params[i]);
 	}
-	self.invalidate();
+	array.invalidate();
 }
 
 static void _insert(Request& r, MethodParams& params) {
-	VArray& self=GET_SELF(r, VArray);
-	ArrayValue& array=self.array();
+	ArrayValue& array=GET_SELF(r, VArray).array();
 
 	int count=params.count();
 	size_t index=VArray::index(params.as_int(0, PARAM_INDEX, r));
@@ -628,22 +628,22 @@ static void _insert(Request& r, MethodParams& params) {
 	for(int i=1; i<count; i++){
 		array.insert(index++, &r.process(params[i]));
 	}
-	self.invalidate();
+	array.invalidate();
 }
 
 static void _delete(Request& r, MethodParams& params) {
-	VArray& self=GET_SELF(r, VArray);
+	ArrayValue& array=GET_SELF(r, VArray).array();
 	if(params.count()>0)
-		self.array().clear(VArray::index(params.as_int(0, PARAM_INDEX, r)));
+		array.clear(VArray::index(params.as_int(0, PARAM_INDEX, r)));
 	else
-		self.array().clear();
-	self.invalidate();
+		array.clear();
+	array.invalidate();
 }
 
 static void _remove(Request& r, MethodParams& params) {
-	VArray& self=GET_SELF(r, VArray);
-	self.array().remove(VArray::index(params.as_int(0, PARAM_INDEX, r)));
-	self.invalidate();
+	ArrayValue& array=GET_SELF(r, VArray).array();
+	array.remove(VArray::index(params.as_int(0, PARAM_INDEX, r)));
+	array.invalidate();
 }
 
 static void _contains(Request& r, MethodParams& params) {
@@ -856,7 +856,7 @@ static void _sort(Request& r, MethodParams& params){
 		for(pos=0; pos<count; pos++)
 			array+=seq[pos].array_data;
 
-	self.invalidate();
+	array.invalidate();
 	delete[] seq;
 }
 
