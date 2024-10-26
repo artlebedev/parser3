@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.25 2024/10/26 15:46:52 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.26 2024/10/26 18:53:36 moko Exp $";
 
 // class
 
@@ -613,10 +613,15 @@ static void _create_or_append(Request& r, MethodParams& params) {
 
 	int count=params.count();
 
-	for(int i=0; i<count; i++){
-		array+=&r.process(params[i]);
+	if(array.count()){
+		for(int i=0; i<count; i++)
+			array+=&r.process(params[i]);
+		array.invalidate();
+	} else {
+		for(int i=0; i<count; i++)
+			array+=&r.process(params[i]);
+		array.confirm_all_used();
 	}
-	array.invalidate();
 }
 
 static void _insert(Request& r, MethodParams& params) {
@@ -856,7 +861,7 @@ static void _sort(Request& r, MethodParams& params){
 		for(pos=0; pos<count; pos++)
 			array+=seq[pos].array_data;
 
-	array.invalidate();
+	array.confirm_all_used();
 	delete[] seq;
 }
 
@@ -873,8 +878,7 @@ static Value& SingleElementHash(String::Body akey, Value* avalue) {
 }
 
 static void _at(Request& r, MethodParams& params) {
-	VArray& self=GET_SELF(r, VArray);
-	ArrayValue& array=self.array();
+	ArrayValue& array=GET_SELF(r, VArray).array();
 	size_t count=array.used(); // not array.count()
 
 	int pos=0;
@@ -1044,7 +1048,9 @@ static void _compact(Request& r, MethodParams& params) {
 			compact_undef=true;
 		}
 	}
-	GET_SELF(r, VArray).array().compact(compact_undef);
+	ArrayValue& array=GET_SELF(r, VArray).array();
+	array.compact(compact_undef);
+	array.confirm_all_used();
 }
 
 

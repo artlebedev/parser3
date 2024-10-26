@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.16 2024/10/26 15:46:52 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.17 2024/10/26 18:53:37 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -38,11 +38,14 @@ public:
 		this->fsize=size;
 	}
 
+	// note: 'append' and 'operator+=' are used directly from Array.
+
+	// not virtual, thus Array::append does not use it, but that's OK.
+	void fit(size_t index);
+
 	inline T get(size_t index) const {
 		return index < this->count() ? this->felements[index] : NULL;
 	}
-
-	void fit(size_t index);
 
 	inline void put(size_t index, T element){
 		this->fit(index);
@@ -132,7 +135,6 @@ public:
 		}
 
 		this->fsize=dst-this->felements;
-		this->fused=this->fsize;
 	}
 
 };

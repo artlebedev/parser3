@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.98 2024/10/26 15:46:52 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.99 2024/10/26 18:53:37 moko Exp $"
 
 // includes
 
@@ -218,7 +218,7 @@ protected:
 
 	inline void fit(size_t index){
 		if(index >= fallocated)
-			resize(max(this->fallocated + this->fallocated/4, index+1));
+			resize(max(fallocated+fallocated/4, index+1));
 	}
 
 	void resize(size_t asize) {
