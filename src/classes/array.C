@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.24 2024/10/26 00:21:02 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.25 2024/10/26 15:46:52 moko Exp $";
 
 // class
 
@@ -38,7 +38,7 @@ const char* const PARAM_INDEX = "index must be integer";
 
 // methods
 
-static void _create_or_add(Request& r, MethodParams& params) {
+static void _copy_or_add(Request& r, MethodParams& params) {
 	if(params.count()) {
 		Value& vsrc=params.as_no_junction(0, PARAM_ARRAY_OR_HASH);
 		VArray& self=GET_SELF(r, VArray);
@@ -608,7 +608,7 @@ static void _count(Request& r, MethodParams& params) {
 	r.write(*new VInt(array.used()));
 }
 
-static void _append(Request& r, MethodParams& params) {
+static void _create_or_append(Request& r, MethodParams& params) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
 
 	int count=params.count();
@@ -910,10 +910,10 @@ static void _at(Request& r, MethodParams& params) {
 					r.write(*new VString(*new String(pa_uitoa(pos), String::L_TAINTED)));
 					break;
 				case AtResultTypeValue:
-					r.write(*array[pos]);
+					r.write(*array.get(pos));
 					break;
 				case AtResultTypeHash:
-					r.write(SingleElementHash(pa_uitoa(pos), array[pos]));
+					r.write(SingleElementHash(pa_uitoa(pos), array.get(pos)));
 					break;
 			}
 		} else {
@@ -1053,16 +1053,16 @@ static void _compact(Request& r, MethodParams& params) {
 MArray::MArray(): Methoded(VARRAY_TYPE) {
 
 	// ^array::copy[[copy_from]]
-	add_native_method("copy", Method::CT_DYNAMIC, _create_or_add, 0, 1);
+	add_native_method("copy", Method::CT_DYNAMIC, _copy_or_add, 0, 1);
 	// ^array.add[add_from]
-	add_native_method("add", Method::CT_DYNAMIC, _create_or_add, 1, 1);
+	add_native_method("add", Method::CT_DYNAMIC, _copy_or_add, 1, 1);
 	// ^array.join[join_from[;options]]
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
 
 	// ^array::create[value;value]
-	add_native_method("create", Method::CT_DYNAMIC, _append, 0, 10000);
+	add_native_method("create", Method::CT_DYNAMIC, _create_or_append, 0, 10000);
 	// ^array.append[value;value]
-	add_native_method("append", Method::CT_DYNAMIC, _append, 1, 10000);
+	add_native_method("append", Method::CT_DYNAMIC, _create_or_append, 1, 10000);
 	// ^array.insert[index;value...]
 	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
 

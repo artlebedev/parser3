@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.97 2024/10/07 23:46:24 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.98 2024/10/26 15:46:52 moko Exp $"
 
 // includes
 
@@ -108,14 +108,11 @@ public:
 	}
 
 	/// append other Array portion to this one. starting from offset
-	Array& append(const Array& src, 
-		size_t offset=0, 
-		size_t limit=ARRAY_OPTION_LIMIT_ALL) { //< zero limit means 'nothing'
-
+	void append(const Array& src, size_t offset=0, size_t limit=ARRAY_OPTION_LIMIT_ALL) { //< zero limit means 'nothing'
 		size_t src_count=src.count();
 		// skip tivials
 		if(!src_count || !limit || offset>=src_count)
-			return *this;
+			return;
 		// max(limit)
 		size_t m=src_count-offset;
 		// fix limit
@@ -123,13 +120,8 @@ public:
 			limit=m;
 
 		fit(fsize-1+limit);
-
-		T* from=&src.felements[offset];
-		T* to=&felements[fsize];
-		for(T* from_end=from+limit; from<from_end;)
-			*to++=*from++;
+		memcpy(felements+fsize, src.felements+offset, limit * sizeof(T));
 		fsize+=limit;
-		return *this;
 	}
 
 	/// get index-element

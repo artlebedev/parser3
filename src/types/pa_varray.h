@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.15 2024/10/26 01:55:46 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.16 2024/10/26 15:46:52 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -34,9 +34,7 @@ public:
 	inline SparseArray(size_t initial=0) : Array<T>(initial), fused(0) {}
 
 	inline SparseArray(size_t size, T* elements) : Array<T>(size), fused(size) {
-		T* elements_end=elements + size;
-		for(T* dst=this->felements; elements < elements_end;)
-			*dst++=*elements++;
+		memcpy(this->felements, elements, size * sizeof(T));
 		this->fsize=size;
 	}
 
