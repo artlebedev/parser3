@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.14 2024/10/23 23:53:06 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.15 2024/10/26 01:55:46 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -21,6 +21,7 @@
 // defines
 
 #define VARRAY_TYPE "array"
+//#define DEBUG_ARRAY_USED
 
 extern Methoded* array_class;
 
@@ -75,11 +76,20 @@ public:
 	}
 
 	size_t used() const{
-		if(!fused){
+#ifndef DEBUG_ARRAY_USED
+		if(!fused)
+#endif
+		{
+			size_t used=0;
 			for(Array_iterator<T> i(*this); i;) {
 				if(i.next())
-					fused++;
+					used++;
 			}
+#ifdef DEBUG_ARRAY_USED
+			if(fused && fused!=used)
+				throw Exception(PARSER_RUNTIME, 0, "cached elements count %d differs from actual %d", fused, used);
+#endif
+			fused=used;
 		}
 		return fused;
 	}
@@ -109,14 +119,21 @@ public:
 		fused=this->count();
 	}
 
-	void compact(){
+	void compact(bool compact_undef){
 		T* dst=this->felements;
 		T* elements_end=dst + this->fsize;
 
-		for(T* src=this->felements; src < elements_end; src++)
-			if(*src)
-				*dst++=*src;
- 		this->fsize=dst-this->felements;
+		if(compact_undef){
+			for(T* src=this->felements; src < elements_end; src++)
+				if(*src && (*src)->is_defined())
+					*dst++=*src;
+		} else {
+			for(T* src=this->felements; src < elements_end; src++)
+				if(*src)
+					*dst++=*src;
+		}
+
+		this->fsize=dst-this->felements;
 		this->fused=this->fsize;
 	}
 
