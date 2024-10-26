@@ -45,7 +45,11 @@ key
 
 3.9 $a.6[v6] ^json:string[^a.reverse[]; $.array[object] ]
 
-3.10 ^b.compact[] ^b.count[] ^json:string[$b; $.array[object] ]
+3.10 $b.10[] $b.15(false) $b.20[^hash::create[]] $b.25[last]
+     $c[^array::copy[$b]]
+     ^b.compact[] ^b.count[] ^json:string[$b; $.array[object] ]
+     ^c.compact[undef] ^c.count[] ^json:string[$c; $.array[object] ]
+     ^try-catch{ ^b.compact[bug] }
 
 @test-join[options]
 $b[0;1]

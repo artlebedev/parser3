@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1292
+Content-Length: 1465
 
 0.1 Exception type: number.format,
 Source: copy,
@@ -125,9 +125,22 @@ key
 "5":"v12",
 "6":"v10"
 }
-3.10 4 {
+3.10 7 {
 "0":"v5",
 "1":"v7",
-"2":"v10",
-"3":"v12"
+"2":"",
+"3":"v12",
+"4":false,
+"5":{},
+"6":"last"
 }
+5 {
+"0":"v5",
+"1":"v7",
+"2":"v12",
+"3":false,
+"4":"last"
+}
+Exception type: parser.runtime,
+Source: bug,
+Comment: param must be empty or 'undef'
