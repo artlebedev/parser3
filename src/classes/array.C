@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.23 2024/10/23 23:53:06 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.24 2024/10/26 00:21:02 moko Exp $";
 
 // class
 
@@ -1034,8 +1034,17 @@ static void _reverse(Request& r, MethodParams&) {
 	r.write(result);
 }
 
-static void _compact(Request& r, MethodParams&) {
-	GET_SELF(r, VArray).array().compact();
+static void _compact(Request& r, MethodParams& params) {
+	bool compact_undef=false;
+	if(params.count()>0){
+		const String& what=params.as_string(0, PARAMETER_MUST_BE_STRING);
+		if(!what.is_empty()){
+			if(what != "undef")
+				throw Exception(PARSER_RUNTIME, &what, "param must be empty or 'undef'");
+			compact_undef=true;
+		}
+	}
+	GET_SELF(r, VArray).array().compact(compact_undef);
 }
 
 
@@ -1097,8 +1106,8 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.reverse[]
 	add_native_method("reverse", Method::CT_DYNAMIC, _reverse, 0, 0);
 
-	// ^array.compact[]
-	add_native_method("compact", Method::CT_DYNAMIC, _compact, 0, 0);
+	// ^array.compact[[undef]]
+	add_native_method("compact", Method::CT_DYNAMIC, _compact, 0, 1);
 
 	// ^array._at[first|last[;'key'|'value'|'hash']]
 	// ^array._at([-+]offset)[['key'|'value'|'hash']]
