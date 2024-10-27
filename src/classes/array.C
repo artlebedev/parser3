@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.27 2024/10/27 12:24:49 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.28 2024/10/27 13:22:13 moko Exp $";
 
 // class
 
@@ -614,9 +614,10 @@ static void _create_or_append_or_push(Request& r, MethodParams& params) {
 	int count=params.count();
 
 	if(array.count()){
-		for(int i=0; i<count; i++)
+		for(int i=0; i<count; i++){
 			array+=&r.process(params[i]);
-		array.invalidate();
+			array.change_used(+1); // after each element, since an exception can occur
+		}
 	} else {
 		for(int i=0; i<count; i++)
 			array+=&r.process(params[i]);
@@ -632,8 +633,8 @@ static void _insert(Request& r, MethodParams& params) {
 
 	for(int i=1; i<count; i++){
 		array.insert(index++, &r.process(params[i]));
+		array.change_used(+1); // after each element, since an exception can occur
 	}
-	array.invalidate();
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -656,10 +657,10 @@ static void _pop(Request& r, MethodParams& params) {
 	Value *result=array.pop();
 	if(result){
 		r.write(*result);
+		array.change_used(-1);
 	} else {
 		r.write(*VVoid::get());
 	}
-	array.invalidate();
 }
 
 static void _contains(Request& r, MethodParams& params) {

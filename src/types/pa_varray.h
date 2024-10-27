@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.18 2024/10/27 12:24:49 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.19 2024/10/27 13:22:13 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -89,6 +89,7 @@ public:
 #ifdef DEBUG_ARRAY_USED
 			if(fused && fused!=used)
 				throw Exception(PARSER_RUNTIME, 0, "cached elements count %d differs from actual %d", fused, used);
+			printf(fused ? "cached used %d\n":"counted used %d\n", used);
 #endif
 			fused=used;
 		}
@@ -135,6 +136,12 @@ public:
 
 	inline void confirm_all_used(){
 		fused=this->fsize;
+	}
+
+	inline void change_used(int delta){
+		if(fused){
+			fused+=delta;
+		}
 	}
 
 	void compact(bool compact_undef){
