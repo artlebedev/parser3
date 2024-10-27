@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 5547
+Content-Length: 5550
 
 0. init
 0.1 {
@@ -162,7 +162,7 @@ Source: copy,
 Comment: param must be array or hash (parameter #1)
 3.3 Exception type: number.format,
 Source: insert,
-Comment: index out of range (negative)
+Comment: index is out of range (negative)
 3.4 Exception type: parser.runtime,
 Source: insert,
 Comment: index must be integer (parameter #1)

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1363
+Content-Length: 1366
 
 code coverage:
 1 : a4
@@ -90,4 +90,4 @@ Comment: parameter must be 'columns', 'cells' and 'rows' only
 offset: 3
 Exception type: parser.runtime,
 Source: error,
-Comment: is invalid whence, valid are 'cur' or 'set'
+Comment: is an invalid whence, valid are 'cur' or 'set'

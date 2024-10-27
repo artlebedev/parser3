@@ -1,6 +1,6 @@
 Content-Type: text/html
-Content-Length: 103
+Content-Length: 106
 
 testClass class is defined
 testClass2 class is not defined
-Exception: is invalid type, must be 'class'
+Exception: is an invalid type, must be 'class'

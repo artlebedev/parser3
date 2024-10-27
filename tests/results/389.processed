@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3657
+Content-Length: 3660
 
 code coverage tests:
 1. int
@@ -103,7 +103,7 @@ Source: unescape,
 Comment: called with invalid option
 6.13 Exception type: parser.runtime,
 Source: no-such-mode,
-Comment: is invalid mode, must be either 'js' or 'uri'
+Comment: is an invalid mode, must be either 'js' or 'uri'
 6.14 any thing 6.15 Exception type: parser.runtime,
 Source: no-such-mode,
 Comment: unknown mode, must be 'append'

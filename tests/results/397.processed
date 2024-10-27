@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1746
+Content-Length: 1761
 
 1 1.1 {
 "class":"file"
@@ -30,16 +30,16 @@ Source: convert,
 Comment: alphabet 'from' must contain at least 2 characters
 8.1 Exception type: number.format,
 Source: convert,
-Comment: '3' is invalid digit
+Comment: '3' is an invalid digit
 8.2 Exception type: number.format,
 Source: convert,
-Comment: '1' is invalid digit
+Comment: '1' is an invalid digit
 8.3 Exception type: number.format,
 Source: convert,
-Comment: '-' is invalid number
+Comment: '-' is an invalid number
 8.4 Exception type: number.format,
 Source: convert,
-Comment: '+' is invalid number
+Comment: '+' is an invalid number
 8.5 bc
 9 Exception type: parser.runtime,
 Source: convert,
@@ -58,7 +58,7 @@ Source: convert,
 Comment: base 'to' must be an integer from 2 to 16 or 256
 9.5 Exception type: number.format,
 Source: convert,
-Comment: '3' is invalid digit
+Comment: '3' is an invalid digit
 10 b000bb
 10.1 bbba
 10.1 bbba
