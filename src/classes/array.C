@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.26 2024/10/26 18:53:36 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.27 2024/10/27 12:24:49 moko Exp $";
 
 // class
 
@@ -608,7 +608,7 @@ static void _count(Request& r, MethodParams& params) {
 	r.write(*new VInt(array.used()));
 }
 
-static void _create_or_append(Request& r, MethodParams& params) {
+static void _create_or_append_or_push(Request& r, MethodParams& params) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
 
 	int count=params.count();
@@ -648,6 +648,17 @@ static void _delete(Request& r, MethodParams& params) {
 static void _remove(Request& r, MethodParams& params) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
 	array.remove(VArray::index(params.as_int(0, PARAM_INDEX, r)));
+	array.invalidate();
+}
+
+static void _pop(Request& r, MethodParams& params) {
+	ArrayValue& array=GET_SELF(r, VArray).array();
+	Value *result=array.pop();
+	if(result){
+		r.write(*result);
+	} else {
+		r.write(*VVoid::get());
+	}
 	array.invalidate();
 }
 
@@ -1065,11 +1076,13 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.join[join_from[;options]]
 	add_native_method("join", Method::CT_DYNAMIC, _join, 1, 2);
 
-	// ^array::create[value;value]
-	add_native_method("create", Method::CT_DYNAMIC, _create_or_append, 0, 10000);
-	// ^array.append[value;value]
-	add_native_method("append", Method::CT_DYNAMIC, _create_or_append, 1, 10000);
-	// ^array.insert[index;value...]
+	// ^array::create[value[;value...]]
+	add_native_method("create", Method::CT_DYNAMIC, _create_or_append_or_push, 0, 10000);
+	// ^array.append[value[;value...]]
+	add_native_method("append", Method::CT_DYNAMIC, _create_or_append_or_push, 1, 10000);
+	// ^array.push[value[;value...]]
+	add_native_method("push", Method::CT_DYNAMIC, _create_or_append_or_push, 1, 10000);
+	// ^array.insert[index;value[;value...]]
 	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
 
 	// ^array.left(n)
@@ -1084,6 +1097,8 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
 	// ^array.remove[index]
 	add_native_method("remove", Method::CT_DYNAMIC, _remove, 1, 1);
+	// ^array.pop[]
+	add_native_method("pop", Method::CT_DYNAMIC, _pop, 0, 0);
 
 	// ^array.contains[index]
 	add_native_method("contains", Method::CT_DYNAMIC, _contains, 1, 1);

@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.17 2024/10/26 18:53:37 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.18 2024/10/27 12:24:49 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -44,7 +44,7 @@ public:
 	void fit(size_t index);
 
 	inline T get(size_t index) const {
-		return index < this->count() ? this->felements[index] : NULL;
+		return index < this->fsize ? this->felements[index] : NULL;
 	}
 
 	inline void put(size_t index, T element){
@@ -96,10 +96,11 @@ public:
 	}
 
 	inline void clear(size_t index) {
-		if(index < this->count()){
+		if(index < this->fsize){
 			this->felements[index]=NULL;
-			if(index+1 == this->fsize){
+			if(index == this->fsize-1){
 				this->fsize--;
+				locate_last_used();
 			}
 		}
 	}
@@ -107,17 +108,33 @@ public:
 	inline void clear() { Array<T>::clear(); }
 
 	inline void remove(size_t index) {
-		if(index < this->count()){
+		if(index < this->fsize){
 			Array<T>::remove(index);
+			if(index==this->fsize)
+				locate_last_used();
 		}
+	}
+
+	inline T pop() {
+		if(this->fsize){
+			T result=this->felements[this->fsize-1];
+			this->fsize--;
+			locate_last_used();
+			return result;
+		}
+		return NULL;
 	}
 
 	inline void invalidate(){
 		fused=0;
 	}
 
+	inline void locate_last_used(){
+		for(;this->fsize>0 && !this->felements[this->fsize-1];this->fsize--);
+	}
+
 	inline void confirm_all_used(){
-		fused=this->count();
+		fused=this->fsize;
 	}
 
 	void compact(bool compact_undef){
