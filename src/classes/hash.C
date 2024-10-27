@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.165 2024/10/02 17:58:15 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.166 2024/10/27 17:50:59 moko Exp $";
 
 // class
 
@@ -572,8 +572,6 @@ static void _at(Request& r, MethodParams& params) {
 	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
 	size_t count=hash.count();
 
-	int pos=0;
-
 	// misha@
 	// I do not like that type is checked before whence.
 	// But I do not like the idea to move it after whence (where process can be called) even more.
@@ -588,20 +586,7 @@ static void _at(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, &stype, "type must be 'key', 'value' or 'hash'");
 	}
 
-	Value& vwhence=params[0];
-	if(vwhence.is_string()) {
-		const String& swhence=*vwhence.get_string();
-		if(swhence == "last")
-			pos=count-1;
-		else if(swhence != "first")
-			throw Exception(PARSER_RUNTIME,
-				&swhence,
-				"whence must be 'first', 'last' or expression");
-	} else {
-		pos=r.process(vwhence).as_int();
-		if(pos < 0)
-			pos+=count;
-	}
+	int pos=params.as_index(0, count, r);
 
 	if(count && pos >= 0 && (size_t)pos < count){
 		switch(result_type) {

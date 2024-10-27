@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.368 2024/10/20 13:29:37 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.369 2024/10/27 17:50:59 moko Exp $";
 
 // class
 
@@ -751,7 +751,7 @@ static void _offset(Request& r, MethodParams& params) {
 		    else if(whence=="set")
 				absolute=true;
 		    else
-				throw Exception(PARSER_RUNTIME, &whence, "is invalid whence, valid are 'cur' or 'set'");
+				throw Exception(PARSER_RUNTIME, &whence, "is an invalid whence, valid are 'cur' or 'set'");
 		}
 		
 		int offset=params.as_int(params.count()-1, "offset must be expression", r);

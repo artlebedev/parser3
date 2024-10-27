@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.29 2024/10/27 13:53:08 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.30 2024/10/27 17:50:59 moko Exp $";
 
 // class
 
@@ -897,8 +897,6 @@ static void _at(Request& r, MethodParams& params) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
 	size_t count=array.used(); // not array.count()
 
-	int pos=0;
-
 	AtResultType result_type=AtResultTypeValue;
 	if(params.count() > 1) {
 		const String& stype=params.as_string(1, "type must be string");
@@ -910,18 +908,7 @@ static void _at(Request& r, MethodParams& params) {
 			throw Exception(PARSER_RUNTIME, &stype, "type must be 'key', 'value' or 'hash'");
 	}
 
-	Value& vwhence=params[0];
-	if(vwhence.is_string()) {
-		const String& swhence=*vwhence.get_string();
-		if(swhence == "last")
-			pos=count-1;
-		else if(swhence != "first")
-			throw Exception(PARSER_RUNTIME, &swhence, "whence must be 'first', 'last' or expression");
-	} else {
-		pos=r.process(vwhence).as_int();
-		if(pos < 0)
-			pos+=count;
-	}
+	int pos=params.as_index(0, count, r);
 
 	if(count && pos >= 0 && (size_t)pos < count){
 		if(count == array.count()){

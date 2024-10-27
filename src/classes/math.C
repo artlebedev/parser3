@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.106 2024/09/28 14:37:53 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.107 2024/10/27 17:50:59 moko Exp $";
 
 // defines
 
@@ -647,7 +647,7 @@ static void _convert(Request& r, MethodParams& params) {
 		for(c=src;c<src_end;c++) {
 			unsigned char digit=lookup[*c];
 			if(!digit && *c != abc_from[0])
-				throw Exception("number.format", 0, "'%c' is invalid digit", *c);
+				throw Exception("number.format", 0, "'%c' is an invalid digit", *c);
 			*c=digit;
 		}
 
@@ -661,11 +661,11 @@ static void _convert(Request& r, MethodParams& params) {
 			negative=true;
 			src++;
 			if(!*src || isspace(*src))
-				throw Exception("number.format", 0,  "'-' is invalid number");
+				throw Exception("number.format", 0,  "'-' is an invalid number");
 		} else if(src[0]=='+') {
 			src++;
 			if(!*src || isspace(*src))
-				throw Exception("number.format", 0,  "'+' is invalid number");
+				throw Exception("number.format", 0,  "'+' is an invalid number");
 		}
 
 		for(c=src;c<src_end;c++) {
@@ -673,7 +673,7 @@ static void _convert(Request& r, MethodParams& params) {
 			if(!digit && *c != abc_from[0] || digit>=base_from) {
 				for(unsigned char *s=c;s<src_end;s++)
 					if(!isspace(*s))
-						throw Exception("number.format", 0, "'%c' is invalid digit", *s);
+						throw Exception("number.format", 0, "'%c' is an invalid digit", *s);
 				src_end=c;
 				break;
 			}

@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.275 2024/10/20 14:33:16 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.276 2024/10/27 17:50:59 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -116,11 +116,11 @@ int pa_atoi(const char* str, int base, const String* problem_source) {
 		negative=true;
 		str++;
 		if(!*str || isspace(*str))
-			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is invalid number (int)", str_copy);
+			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is an invalid number (int)", str_copy);
 	} else if(str[0]=='+') {
 		str++;
 		if(!*str || isspace(*str))
-			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is invalid number (int)", str_copy);
+			throw Exception("number.format", problem_source, problem_source ? "invalid number (int)" : "'%s' is an invalid number (int)", str_copy);
 	}
 
 	unsigned int result=pa_atoui(str, base, problem_source);

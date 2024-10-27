@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.131 2024/10/02 22:54:03 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.132 2024/10/27 17:50:59 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -93,6 +93,23 @@ public:
 		if(value.is_evaluated_expr())
 			return value.as_int();
 		return get_processed(value, msg, index, r).as_int();
+	}
+
+	/// handy param auto-processing to index
+	int as_index(int index, size_t count, Request& r) {
+		if(get(index).is_string()) {
+			const String& svalue=*get(index).get_string();
+			if(svalue == "last")
+				return count-1;
+			else if(svalue != "first")
+				throw Exception(PARSER_RUNTIME, &svalue, "index must be 'first', 'last' or expression");
+			return 0;
+		} else {
+			int result=as_int(index, "index must be 'first', 'last' or expression", r);
+			if(result < 0)
+				result+=count;
+			return result;
+		}
 	}
 
 	/// handy expression auto-processing to bool

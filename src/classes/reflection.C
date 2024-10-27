@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.92 2024/10/02 22:54:02 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.93 2024/10/27 17:50:59 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -197,7 +197,7 @@ static void _def(Request& r, MethodParams& params) {
 		// can't use get_class because it will call @autouse[] if the class wasn't loaded
 		r.write(VBool::get(r.classes().get(name)!=0));
 	} else {
-		throw Exception(PARSER_RUNTIME, &type, "is invalid type, must be '%s'", def_class.cstr());
+		throw Exception(PARSER_RUNTIME, &type, "is an invalid type, must be '%s'", def_class.cstr());
 	}
 }
 

@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.20 2024/10/27 13:53:08 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.21 2024/10/27 17:50:59 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -237,7 +237,7 @@ public: // usage
 
 	static size_t index(int aindex){
 		if(aindex<0)
-			throw Exception("number.format", 0, "index out of range (negative)");
+			throw Exception("number.format", 0, "index is out of range (negative)");
 		return aindex;
 	}
 

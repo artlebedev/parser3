@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.258 2024/10/20 14:38:46 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.259 2024/10/27 17:50:59 moko Exp $";
 
 // class
 
@@ -814,7 +814,7 @@ static void _unescape(Request& r, MethodParams& params){
 	} else if(mode==UNESCAPE_MODE_URI){
 		mode_js=false;
 	} else {
-		throw Exception(PARSER_RUNTIME, &mode, "is invalid mode, must be either '" UNESCAPE_MODE_JS "' or '" UNESCAPE_MODE_URI "'");
+		throw Exception(PARSER_RUNTIME, &mode, "is an invalid mode, must be either '" UNESCAPE_MODE_JS "' or '" UNESCAPE_MODE_URI "'");
 	}
 
 	const char* unescaped=unescape_chars(src.cstr(), src.length(), from_charset, mode_js);

@@ -14,7 +14,7 @@
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.81 2023/09/26 20:49:12 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.82 2024/10/27 17:50:59 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -187,7 +187,7 @@ bool VFile::is_text_mode(const String& mode) {
 		return true;
 	if(mode==mode_value_binary)
 		return false;
-	throw Exception(PARSER_RUNTIME, &mode, "is invalid mode, must be either '" MODE_VALUE_TEXT "' or '" MODE_VALUE_BINARY "'");
+	throw Exception(PARSER_RUNTIME, &mode, "is an invalid mode, must be either '" MODE_VALUE_TEXT "' or '" MODE_VALUE_BINARY "'");
 }
 
 bool VFile::is_valid_mode(const String& mode) {
