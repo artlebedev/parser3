@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.28 2024/10/27 13:22:13 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.29 2024/10/27 13:53:08 moko Exp $";
 
 // class
 
@@ -639,9 +639,13 @@ static void _insert(Request& r, MethodParams& params) {
 
 static void _delete(Request& r, MethodParams& params) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
-	if(params.count()>0)
-		array.clear(VArray::index(params.as_int(0, PARAM_INDEX, r)));
-	else
+	if(params.count()>0) {
+		if(params[0].is_string()) {
+			array.clear(VArray::index(*params[0].get_string()));
+		} else {
+			array.clear(VArray::index(params.as_int(0, PARAM_INDEX, r)));
+		}
+	} else
 		array.clear();
 	array.invalidate();
 }
@@ -1094,9 +1098,9 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.mid(p;n)
 	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
 
-	// ^array.delete[index]
+	// ^array.delete(index) or ^array.delete[index]
 	add_native_method("delete", Method::CT_DYNAMIC, _delete, 0, 1);
-	// ^array.remove[index]
+	// ^array.remove(index)
 	add_native_method("remove", Method::CT_DYNAMIC, _remove, 1, 1);
 	// ^array.pop[]
 	add_native_method("pop", Method::CT_DYNAMIC, _pop, 0, 0);

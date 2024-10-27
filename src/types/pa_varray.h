@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.19 2024/10/27 13:22:13 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.20 2024/10/27 13:53:08 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -187,19 +187,15 @@ public: // value
 
 	/// VArray: (key)=value
 	override Value* get_element(const String& aname) {
-		// $element first
-		if(Value* result=farray.get(index(aname)))
-			return result;
-
-		// $fields -- pseudo field to make 'hash' and 'array' more like 'table'
-		if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
-			return this;
-
 #if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
 		// $method, CLASS, CLASS_NAME
 		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 #endif
+		// $element, here as index() allows only numbers
+		if(Value* result=farray.get(index(aname)))
+			return result;
+
 		return NULL;
 	}
 
@@ -249,7 +245,7 @@ public: // usage
 	static size_t index(const String& aindex){ return pa_atoui(aindex.cstr(), 10, &aindex); }
 
 	static bool is_index(const String& aindex){
-		for(const char *pos=aindex.cstr();*pos;pos++){
+		for(const char *pos=aindex.cstr(); *pos ;pos++){
 			if ((*pos < '0') || (*pos > '9'))
 				return false;
 		}
