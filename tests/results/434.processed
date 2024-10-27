@@ -1,0 +1,35 @@
+Content-Type: text/html
+Content-Length: 385
+
+1. 4
+12 vs 7, pop 'last'
+11 vs 6, pop 'v7'
+9 vs 5, pop 'v6'
+4 vs 4, pop 'v5'
+3 vs 3, pop ''
+2 vs 2, pop 'v2'
+1 vs 1, pop 'v1'
+2. Exception type: parser.runtime,
+Source: bug,
+Comment: undefined method
+4
+{
+"0":"v1",
+"1":"v2",
+"2":"v3",
+"3":4
+}
+Exception type: parser.runtime,
+Source: bug,
+Comment: undefined method
+5
+{
+"0":"v1",
+"1":2,
+"2":"v2",
+"3":"v3",
+"4":4
+}
+3. 2
+4
+2 // counted, OK

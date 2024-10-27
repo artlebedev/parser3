@@ -18,11 +18,14 @@ $h[ $.k[data] $.k1[data1] $.k2[data2] $.k3[data3] $.k4[data4] $.k5[$void] ]
 delete / remove
 
 $b[^array::copy[$a]]
+$c[^array::copy[$a]]
 2.1 ^a.delete(2) ^json:string[$a; $.array[object] ]
 2.2 ^b.remove(2) ^json:string[$b; $.array[object] ]
 2.3 ^if(^a.contains(2)){2 yes}{2 no}
 2.4 ^if(^a.contains(5)){5 yes}{5 no}
 2.5 ^a.count[] ^a.delete[] ^a.count[]
+2.6 $c.10[value] ^c.delete(10) ^json:string[$c; $.array[array] ] ^c.count[all]
+2.7 $c.10[value] $c.6[data6] ^c.remove(10) ^json:string[$c; $.array[array] ] ^c.count[all]
 
 key
 
