@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.32 2024/10/28 00:33:41 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.33 2024/10/28 13:23:53 moko Exp $";
 
 // class
 
@@ -53,7 +53,7 @@ static void _copy_or_add(Request& r, MethodParams& params) {
 						self_array.put(i.index(), i.value());
 				}
 			} else {
-				self_array.append(src->array());
+				self_array.copy(src->array());
 			}
 		} else {
 			HashStringValue* src_hash=vsrc.as_hash("param must be array or");

@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.22 2024/10/28 13:05:14 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.23 2024/10/28 13:23:53 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -38,9 +38,18 @@ public:
 		this->fsize=size;
 	}
 
-	// note: 'append' and 'operator+=' are used directly from Array.
+	void copy(SparseArray<T> &src) {
+		size_t size=src.fsize;
+		if(size){
+			fit(size-1);
+			memcpy(this->felements, src.felements, size * sizeof(T));
+			this->fsize=size;
+			fused=src.fused;
+		}
+	}
 
-	// not virtual, thus Array::append does not use it, but that's OK.
+	// note: 'operator+=' is used directly from Array
+
 	void fit(size_t index);
 
 	inline T get(size_t index) const {
