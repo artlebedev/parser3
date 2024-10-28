@@ -1,3 +1,97 @@
+2024-10-28  moko
+
+	* tests/: 435.html, results/435.processed: tests for
+	  ^hash.set[first|last;value], ^hash.set([-+]index)[value] and same
+	  for array added (related to feature #1253)
+
+	* src/classes/array.C: typo fixed
+
+	* src/classes/: array.C, hash.C: ^hash.set[first|last;value] +
+	  ^hash.set([-+]index)[value], and same for array added (implements
+	  feature #1253)
+
+	* tests/results/: 246.processed, 298.processed, 342.processed,
+	  389.processed, 397.processed, 430.processed, 432.processed: tests
+	  results update after minor exceptions texts fixes
+
+2024-10-27  moko
+
+	* src/: classes/array.C, classes/hash.C, classes/math.C,
+	  classes/reflection.C, classes/string.C, classes/table.C,
+	  main/pa_string.C, types/pa_varray.h, types/pa_vfile.C,
+	  types/pa_vmethod_frame.h: handy as_index() added, several
+	  exceptions texts fixed (related to feature #930)
+
+	* src/: classes/array.C, types/pa_varray.h: non-working
+	  $array.fields removed, ^array.delete[index] supported (related to
+	  feature #930)
+
+	* tests/: 431.html, results/431.processed: tests updated after
+	  ^a.delete[3] supported
+
+	* tests/: 431.html, 434.html, results/434.processed: tests for last
+	  element used, push/pop, exceptions during arguments processing
+	  and used caching (related to feature #930)
+
+	* src/: classes/array.C, types/pa_varray.h: change_used added for
+	  better used caching and now no issues if exception occures during
+	  append arguments processing (related to feature #930)
+
+	* src/: classes/array.C, types/pa_varray.h: ^array.push[] /
+	  ^array.pop[] added, last element is allways used (related to
+	  feature #930)
+
+2024-10-26  moko
+
+	* src/: classes/array.C, include/pa_array.h, types/pa_varray.C,
+	  types/pa_varray.h: confirm_all_used added where possible (related
+	  to feature #930)
+
+	* src/: classes/array.C, include/pa_array.h, types/pa_varray.h:
+	  small array optimizations (related to feature #930)
+
+	* src/types/pa_varray.h: DEBUG_ARRAY_USED added to simplify testing
+
+	* tests/: 431.html, results/431.processed: test for
+	  ^array.compact[undef] added
+
+	* src/classes/array.C: ^array.compact[] now have optional 'undef'
+	  argument to also compact undefined elements (related to feature
+	  #930)
+
+2024-10-24  moko
+
+	* src/: classes/array.C, types/pa_varray.C, types/pa_varray.h:
+	  VArray::hash is used rarery, no longer caching the result
+
+	* tests/results/432.processed: testing removed from tests
+
+2024-10-23  moko
+
+	* tests/: 431.html, results/431.processed: ^array.compact[] test
+	  added
+
+	* src/: classes/array.C, types/pa_varray.h: ^array.compact[] added
+
+	* tests/: 432.html, results/432.processed: testing ^array.at[] for
+	  both "solid" and "sparse" arrays
+
+	* src/classes/array.C: ^array.at[] speedup for "solid" arrays
+
+2024-10-22  moko
+
+	* tests/results/264.processed: spelling
+
+	* src/classes/file.C: spelling
+
+	* tests/: 264.html, cat-windows.sh, cat.sh, results/264.processed:
+	  tests updated after ^file::exec[cmd;;$array] implemented and
+	  empty arguments not skipped (related to feature #1252)
+
+	* src/classes/file.C: ^file::exec[cmd;;$array] supported
+	  (implements feature #1252) bugfix: empty arguments no longer
+	  skipped
+
 2024-10-20  moko
 
 	* src/classes/string.C: warnings war
