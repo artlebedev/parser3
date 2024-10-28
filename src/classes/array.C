@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.31 2024/10/28 00:18:25 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.32 2024/10/28 00:33:41 moko Exp $";
 
 // class
 
@@ -964,7 +964,7 @@ static void _set(Request& r, MethodParams& params) {
 		} else {
 			for(ArrayValue::Iterator i(array); i; i.next() ){
 				if(i.value() && !(pos--)){
-					array.put(pos, &r.process(params[1]));
+					array.put(i.index(), &r.process(params[1]));
 					return;
 				}
 			}
