@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.21 2024/10/27 17:50:59 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.22 2024/10/28 13:05:14 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -89,7 +89,7 @@ public:
 #ifdef DEBUG_ARRAY_USED
 			if(fused && fused!=used)
 				throw Exception(PARSER_RUNTIME, 0, "cached elements count %d differs from actual %d", fused, used);
-			printf(fused ? "cached used %d\n":"counted used %d\n", used);
+			printf(fused ? "cached used %d\n" : "counted used %d\n", used);
 #endif
 			fused=used;
 		}
@@ -173,8 +173,8 @@ public: // value
 	/// VArray: used elements count
 	override int as_int() const { return farray.used(); }
 	override double as_double() const { return farray.used(); }
-	override bool is_defined() const { return farray.used()!=0; }
-	override bool as_bool() const { return farray.used()!=0; }
+	override bool is_defined() const { return farray.count()!=0; }
+	override bool as_bool() const { return farray.count()!=0; }
 	override Value& as_expr_result() { return *new VInt(farray.used()); }
 
 	/// VArray: virtual hash
