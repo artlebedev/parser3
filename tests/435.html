@@ -1,0 +1,36 @@
+@main[]
+
+1.  $a[v1;v2;$void;v5]
+    $a.8[v6] $a.10[v7]
+
+    $h[^hash::create[$a]]
+
+2.  ^test[$a]
+3.  ^test[$h]
+
+4.  $a[^array::create[]]
+    ^try-catch{ ^a.set(0)[bug] }
+
+5.  $h[^hash::create[]]
+    ^try-catch{ ^h.set(0)[bug] }
+
+@test[a]
+a.  $a.CLASS_NAME
+    ^a.set[first;first]
+    ^a.set[last;last]
+    ^a.set(3)[set3]
+    ^a.set(-2)[set-2]
+    ^show[$a]
+
+    ^try-catch{ ^a.set(-20)[bug] }
+    ^try-catch{ ^a.set(20)[bug] }
+
+b.  ^a.delete(0)
+    ^a.set[first;new first]
+    ^show[$a]
+
+c.  ^try-catch{ ^a.at[ $.1[1] ;bug] }
+d.  ^try-catch{ ^a.set[ $.1[1] ;bug] }
+
+@show[v]
+^json:string[$v; $.array[object] ]

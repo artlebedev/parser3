@@ -1,0 +1,65 @@
+Content-Type: text/html
+Content-Length: 1281
+
+1. 2. a. array
+{
+"0":"first",
+"1":"v2",
+"2":null,
+"3":"set3",
+"8":"set-2",
+"10":"last"
+}
+Exception type: parser.runtime,
+Source: set,
+Comment: index '-14' is out of range 0..5
+Exception type: parser.runtime,
+Source: set,
+Comment: index '20' is out of range 0..5
+b. {
+"1":"new first",
+"2":null,
+"3":"set3",
+"8":"set-2",
+"10":"last"
+}
+c. Exception type: parser.runtime,
+Source: bug,
+Comment: type must be 'key', 'value' or 'hash'
+d. Exception type: parser.runtime,
+Source: set,
+Comment: index must be 'first', 'last' or expression (parameter #1)
+3. a. hash
+{
+"0":"first",
+"1":"v2",
+"2":null,
+"3":"set3",
+"8":"set-2",
+"10":"last"
+}
+Exception type: parser.runtime,
+Source: set,
+Comment: index '-14' is out of range 0..5
+Exception type: parser.runtime,
+Source: set,
+Comment: index '20' is out of range 0..5
+b. {
+"1":"new first",
+"2":null,
+"3":"set3",
+"8":"set-2",
+"10":"last"
+}
+c. Exception type: parser.runtime,
+Source: bug,
+Comment: type must be 'key', 'value' or 'hash'
+d. Exception type: parser.runtime,
+Source: set,
+Comment: index must be 'first', 'last' or expression (parameter #1)
+4. Exception type: parser.runtime,
+Source: set,
+Comment: index '0' is out of range: array is empty
+5. Exception type: parser.runtime,
+Source: set,
+Comment: index '0' is out of range: hash is empty
