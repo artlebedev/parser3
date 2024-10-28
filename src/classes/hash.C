@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.166 2024/10/27 17:50:59 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.167 2024/10/28 00:18:25 moko Exp $";
 
 // class
 
@@ -648,6 +648,33 @@ static void _at(Request& r, MethodParams& params) {
 	}
 }
 
+static void _set(Request& r, MethodParams& params) {
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
+	size_t count=hash.count();
+
+	int pos=params.as_index(0, count, r);
+
+	if(count && pos >= 0 && (size_t)pos < count){
+#ifdef HASH_ORDER
+		if((size_t)pos == count-1) {
+			hash.last_pair()->value=&r.process(params[1]);
+			return;
+		} else
+#endif
+		{
+			for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
+				if(!pos){
+					i.pair()->value=&r.process(params[1]);
+					return;
+				}
+		}
+	}
+
+	if(count)
+		throw Exception(PARSER_RUNTIME, 0, "index '%d' is out of range 0..%d", pos, count-1);
+	throw Exception(PARSER_RUNTIME, 0, "index '%d' is out of range: hash is empty", pos);
+}
+
 extern String table_reverse_name;
 
 static void _select(Request& r, MethodParams& params) {
@@ -826,8 +853,12 @@ MHash::MHash(): Methoded("hash")
 	add_native_method("reverse", Method::CT_DYNAMIC, _reverse, 0, 0);
 
 	// ^hash._at[first|last[;'key'|'value'|'hash']]
-	// ^hash._at([-+]offset)[['key'|'value'|'hash']]
+	// ^hash._at([-+]index)[['key'|'value'|'hash']]
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
+
+	// ^hash.set[first|last;value]
+	// ^hash.set([-+]index)[value]
+	add_native_method("set", Method::CT_DYNAMIC, _set, 2, 2);
 
 	// ^hash.rename[from;to]
 	// ^hash.rename[ $.from[to] ... ]

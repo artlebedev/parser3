@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.30 2024/10/27 17:50:59 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.31 2024/10/28 00:18:25 moko Exp $";
 
 // class
 
@@ -669,7 +669,8 @@ static void _pop(Request& r, MethodParams& params) {
 
 static void _contains(Request& r, MethodParams& params) {
 	VArray& self=GET_SELF(r, VArray);
-	bool result=self.contains(VArray::index(params.as_int(0, PARAM_INDEX, r)));
+
+	bool result=self.contains(params[0].is_string() ? VArray::index(*params[0].get_string()) : VArray::index(params.as_int(0, PARAM_INDEX, r)));
 	r.write(VBool::get(result));
 }
 
@@ -912,7 +913,7 @@ static void _at(Request& r, MethodParams& params) {
 
 	if(count && pos >= 0 && (size_t)pos < count){
 		if(count == array.count()){
-			switch(result_type) {
+l1:			switch(result_type) {
 				case AtResultTypeKey:
 					r.write(*new VString(*new String(pa_uitoa(pos), String::L_TAINTED)));
 					break;
@@ -923,6 +924,9 @@ static void _at(Request& r, MethodParams& params) {
 					r.write(SingleElementHash(pa_uitoa(pos), array.get(pos)));
 					break;
 			}
+		} else if((size_t)pos == count-1){
+			pos=array.count()-1;
+			goto l1;
 		} else {
 			for(ArrayValue::Iterator i(array); i; i.next() ){
 				if(i.value() && !(pos--)){
@@ -944,6 +948,33 @@ static void _at(Request& r, MethodParams& params) {
 	}
 }
 
+static void _set(Request& r, MethodParams& params) {
+	ArrayValue& array=GET_SELF(r, VArray).array();
+	size_t count=array.used(); // not array.count()
+
+	int pos=params.as_index(0, count, r);
+
+	if(count && pos >= 0 && (size_t)pos < count){
+		if(count == array.count()){
+			array.put(pos, &r.process(params[1]));
+			return;
+		} else if((size_t)pos == count-1){
+			array.put(array.count()-1, &r.process(params[1]));
+			return;
+		} else {
+			for(ArrayValue::Iterator i(array); i; i.next() ){
+				if(i.value() && !(pos--)){
+					array.put(pos, &r.process(params[1]));
+					return;
+				}
+			}
+		}
+	}
+
+	if(count)
+		throw Exception(PARSER_RUNTIME, 0, "index '%d' is out of range 0..%d", pos, count-1);
+	throw Exception(PARSER_RUNTIME, 0, "index '%d' is out of range: array is empty", pos);
+}
 
 extern String table_reverse_name;
 
@@ -1074,7 +1105,7 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	add_native_method("append", Method::CT_DYNAMIC, _create_or_append_or_push, 1, 10000);
 	// ^array.push[value[;value...]]
 	add_native_method("push", Method::CT_DYNAMIC, _create_or_append_or_push, 1, 10000);
-	// ^array.insert[index;value[;value...]]
+	// ^array.insert(index)[value[;value...]]
 	add_native_method("insert", Method::CT_DYNAMIC, _insert, 2, 10000);
 
 	// ^array.left(n)
@@ -1092,7 +1123,7 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	// ^array.pop[]
 	add_native_method("pop", Method::CT_DYNAMIC, _pop, 0, 0);
 
-	// ^array.contains[index]
+	// ^array.contains(index) ^array.contains[index]
 	add_native_method("contains", Method::CT_DYNAMIC, _contains, 1, 1);
 
 	// ^array::sql[query][options array]
@@ -1123,8 +1154,12 @@ MArray::MArray(): Methoded(VARRAY_TYPE) {
 	add_native_method("compact", Method::CT_DYNAMIC, _compact, 0, 1);
 
 	// ^array._at[first|last[;'key'|'value'|'hash']]
-	// ^array._at([-+]offset)[['key'|'value'|'hash']]
+	// ^array._at([-+]index)[['key'|'value'|'hash']]
 	add_native_method("_at", Method::CT_DYNAMIC, _at, 1, 2);
+
+	// ^array.set[first|last;value]
+	// ^array.set([-+]index)[value]
+	add_native_method("set", Method::CT_DYNAMIC, _set, 2, 2);
 
 #ifdef FEATURE_GET_ELEMENT4CALL
 	// aliases without "_"
