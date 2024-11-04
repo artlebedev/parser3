@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.356 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.357 2024/11/04 22:58:37 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -45,6 +45,9 @@ extern "C" int GC_pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(
 #define REDIRECT_PREFIX "REDIRECT_"
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
+
+SAPI_Info_CGI cgi_is_default;
+SAPI_Info *sapiInfo=&cgi_is_default;
 
 static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
@@ -626,7 +629,8 @@ int main(int argc, char *argv[]) {
 
 	// were we started as CGI?
 	bool cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
-	sapiInfo = cgi ? new SAPI_Info_CGI() : new SAPI_Info();
+	if(!cgi)
+		sapiInfo = new SAPI_Info();
 
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIGPIPE_handler);

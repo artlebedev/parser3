@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.18 2024/09/11 21:07:36 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.19 2024/11/04 22:58:37 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -55,7 +55,7 @@ public:
 		return stdout_write(buf, size);
 	}
 
-} *sapiInfo = NULL;
+};
 
 class SAPI_Info_CGI : public SAPI_Info {
 public:
