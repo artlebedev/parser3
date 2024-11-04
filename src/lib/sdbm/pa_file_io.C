@@ -9,7 +9,7 @@
 #include "pa_memory.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.8 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_PA_FILE_IO_C="$Id: pa_file_io.C,v 1.9 2024/11/04 17:09:28 moko Exp $";
 
 struct pa_file_t {
     int handle;
@@ -77,7 +77,7 @@ pa_status_t pa_file_close(pa_file_t *file)
 pa_status_t pa_file_lock(pa_file_t *file, int type)
 {
 	if(type & PA_FLOCK_NONBLOCK)
-		pa_lock_exclusive_blocking(file->handle);
+		return pa_lock_exclusive_nonblocking(file->handle);
 
 	if ((type & PA_FLOCK_TYPEMASK) == PA_FLOCK_SHARED)
 		return pa_lock_shared_blocking(file->handle);

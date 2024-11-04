@@ -28,7 +28,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.334 2024/11/04 03:53:25 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.335 2024/11/04 17:09:28 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -237,12 +237,10 @@ void check_safe_mode(struct stat, const String&, const char*) {
 #endif
 
 
+bool file_read_action_under_lock(const String& file_spec, const char* action_name, File_read_action action, void *context,
+				bool as_text, bool fail_on_read_problem) {
 
-bool file_read_action_under_lock(const String& file_spec, 
-				const char* action_name, File_read_action action, void *context, 
-				bool as_text, 
-				bool fail_on_read_problem) {
-	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC);
 	int f;
 
 	// first open, next stat:
@@ -254,10 +252,11 @@ bool file_read_action_under_lock(const String& file_spec,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
 	// later: it seems, even this does not help sometimes
-	if((f=pa_open(fname, O_RDONLY|(as_text?_O_TEXT:_O_BINARY)))>=0) {
+	if((f=pa_open(fname, O_RDONLY | (as_text ? _O_TEXT : _O_BINARY) ))>=0) {
 		try {
-			if(pa_lock_shared_blocking(f)!=0)
-				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
+			int pa_errno=pa_lock_shared_blocking(f);
+			if(pa_errno!=0)
+				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(pa_errno), pa_errno, fname);
 
 			struct stat finfo;
 			if(pa_fstat(f, &finfo)!=0)
@@ -295,27 +294,19 @@ void create_dir_for_file(const String& file_spec) {
 	}
 }
 
-bool file_write_action_under_lock(
-				const String& file_spec, 
-				const char* action_name,
-				File_write_action action,
-				void *context, 
-				bool as_text, 
-				bool do_append, 
-				bool do_block, 
-				bool fail_on_lock_problem) {
+bool file_write_action_under_lock(const String& file_spec, const char* action_name, File_write_action action, void *context,
+				bool as_text, bool do_append, bool do_block, bool fail_on_lock_problem) {
+
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
 	int f;
 	if(access(fname, W_OK)!=0) // no
 		create_dir_for_file(file_spec); 
 
-	if((f=pa_open(fname, 
-		O_CREAT|O_RDWR
-		|(as_text?_O_TEXT:_O_BINARY)
-		|(do_append?O_APPEND:PA_O_TRUNC), 0664))>=0) {
-		if((do_block?pa_lock_exclusive_blocking(f):pa_lock_exclusive_nonblocking(f))!=0) {
-			Exception e("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
-			close(f); 
+	if((f=pa_open(fname, O_CREAT | O_RDWR | (as_text ? _O_TEXT : _O_BINARY) | (do_append ? O_APPEND : PA_O_TRUNC), 0664))>=0) {
+		int pa_errno=do_block ? pa_lock_exclusive_blocking(f) : pa_lock_exclusive_nonblocking(f);
+		if(pa_errno!=0) {
+			Exception e("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(pa_errno), pa_errno, fname);
+			close(f);
 			if(fail_on_lock_problem)
 				throw e;
 			return false;
