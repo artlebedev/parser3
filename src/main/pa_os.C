@@ -8,13 +8,37 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.21 2024/11/04 03:53:25 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.22 2024/11/04 15:42:31 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
 #ifdef _MSC_VER
 #include <windows.h>
-#endif
+
+#define PA_SH_LOCK 2
+#define PA_EX_LOCK 1
+#define PA_ULOCK 0
+#define FLOCK(operation) int status=pa_flock(fd, operation);
+
+int pa_flock(int fd, int operation) {
+    HANDLE hFile = (HANDLE)_get_osfhandle(fd);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return -1;
+    }
+
+    OVERLAPPED overlapped = {0};
+
+    if (operation == PA_ULOCK) {
+        return UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &overlapped) ? 0 : -1;
+    } else {
+        DWORD flags = LOCKFILE_FAIL_IMMEDIATELY;
+        if (operation == PA_EX_LOCK) {
+            flags |= LOCKFILE_EXCLUSIVE_LOCK;
+        }
+        return LockFileEx(hFile, flags, 0, MAXDWORD, MAXDWORD, &overlapped) ? 0 : -1;
+    }
+}
+#else
 
 #ifdef HAVE_FLOCK
 
@@ -22,14 +46,6 @@ unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 #define PA_EX_LOCK LOCK_EX|LOCK_NB
 #define PA_ULOCK LOCK_UN
 #define FLOCK(operation) int status=flock(fd, operation);
-
-#else
-#ifdef HAVE__LOCKING
-
-#define PA_SH_LOCK _LK_NBLCK
-#define PA_EX_LOCK _LK_NBLCK
-#define PA_ULOCK _LK_UNLCK
-#define FLOCK(operation) lseek(fd, 0, SEEK_SET); int status=_locking(fd, operation, 1);
 
 #else
 #ifdef HAVE_FCNTL
@@ -54,6 +70,7 @@ unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 #endif
 #endif
 #endif
+
 #endif
 
 int pa_lock(int fd, int attempts, int operation){
