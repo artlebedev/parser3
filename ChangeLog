@@ -1,5 +1,13 @@
 2024-10-28  moko
 
+	* src/classes/array.C: avoid invalidate()
+
+	* src/: classes/array.C, types/pa_varray.h: minor optimization for
+	  fused to survive in ^array::copy[$a] (related to feature #930)
+
+	* src/types/pa_varray.h: minor optimization as last element is
+	  allways defined if present
+
 	* tests/: 435.html, results/435.processed: tests for
 	  ^hash.set[first|last;value], ^hash.set([-+]index)[value] and same
 	  for array added (related to feature #1253)
