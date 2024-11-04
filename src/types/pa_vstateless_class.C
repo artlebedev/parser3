@@ -1,7 +1,7 @@
 /**	@file
 	Parser: stateless class.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>\
 */
 
@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.68 2024/09/28 14:37:54 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.69 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 bool VStateless_class::gall_vars_local=false;
 

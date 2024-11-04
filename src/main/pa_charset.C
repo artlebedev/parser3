@@ -1,7 +1,7 @@
 /** @file
 	Parser: Charset connection implementation.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.113 2024/09/28 14:37:53 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.114 2024/11/04 03:53:25 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/encoding.h"

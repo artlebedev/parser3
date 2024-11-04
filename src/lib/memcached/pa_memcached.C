@@ -1,13 +1,13 @@
 /** @file
 	Parser: memcached support impl.
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 #include "pa_config_includes.h"
 #include "pa_memcached.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.13 2024/09/28 14:37:53 moko Exp $";
+volatile const char * IDENT_PA_MEMCACHED_C="$Id: pa_memcached.C,v 1.14 2024/11/04 03:53:25 moko Exp $";
 
 t_memcached f_memcached=0;
 t_memcached_create f_memcached_create;

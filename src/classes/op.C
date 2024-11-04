@@ -1,7 +1,7 @@
 /** @file
 	Parser: parser @b operators.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.264 2024/10/02 22:54:02 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.265 2024/11/04 03:53:25 moko Exp $";
 
 // defines
 

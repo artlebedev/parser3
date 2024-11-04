@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b array parser class.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.34 2024/10/28 13:28:26 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.35 2024/11/04 03:53:25 moko Exp $";
 
 // class
 

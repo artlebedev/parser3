@@ -1,14 +1,14 @@
 /** @file
 	Parser: Stylesheet connection decl.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_STYLESHEET_CONNECTION_H
 #define PA_STYLESHEET_CONNECTION_H
 
-#define IDENT_PA_STYLESHEET_CONNECTION_H "$Id: pa_stylesheet_connection.h,v 1.49 2023/09/26 20:49:07 moko Exp $"
+#define IDENT_PA_STYLESHEET_CONNECTION_H "$Id: pa_stylesheet_connection.h,v 1.50 2024/11/04 03:53:25 moko Exp $"
 
 #include "libxslt/xslt.h"
 #include "libxslt/xsltInternals.h"

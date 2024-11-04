@@ -1,7 +1,7 @@
 /** @file
 	Parser: uuencoding impl.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
 	@todo setrlimit
@@ -12,7 +12,7 @@
 #include "pa_uue.h"
 #include "pa_memory.h"
 
-volatile const char * IDENT_PA_UUE_C="$Id: pa_uue.C,v 1.20 2023/09/26 20:49:10 moko Exp $" IDENT_PA_UUE_H;
+volatile const char * IDENT_PA_UUE_C="$Id: pa_uue.C,v 1.21 2024/11/04 03:53:25 moko Exp $" IDENT_PA_UUE_H;
 
 static unsigned char uue_table[64] = {
   '`', '!', '"', '#', '$', '%', '&', '\'',

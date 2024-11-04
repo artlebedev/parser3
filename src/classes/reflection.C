@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b reflection parser class.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -10,7 +10,7 @@
 #include "pa_vbool.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.93 2024/10/27 17:50:59 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.94 2024/11/04 03:53:25 moko Exp $";
 
 static const String class_type_methoded("methoded");
 

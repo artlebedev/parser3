@@ -1,14 +1,14 @@
 /** @file
 	Parser: Value, Method, Junction .
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.175 2024/10/02 21:24:41 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.176 2024/11/04 03:53:25 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"

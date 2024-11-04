@@ -1,7 +1,7 @@
 /** @file
 	Parser: sql driver manager implementation.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 #include "pa_config_includes.h"
@@ -15,7 +15,7 @@
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.36 2024/09/07 16:30:27 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
+volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.37 2024/11/04 03:53:25 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
 
 // globals
 

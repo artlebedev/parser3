@@ -1,7 +1,7 @@
 /** @file
 	Parser: includes all Configure-d headers
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
 	when used Configure [HAVE_CONFIG_H] it uses defines from Configure,

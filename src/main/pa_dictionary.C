@@ -1,14 +1,14 @@
 /**	@file
 	Parser: dictionary class  impl.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "pa_dictionary.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_DICTIONARY_C="$Id: pa_dictionary.C,v 1.31 2024/09/07 16:30:26 moko Exp $" IDENT_PA_DICTIONARY_H;
+volatile const char * IDENT_PA_DICTIONARY_C="$Id: pa_dictionary.C,v 1.32 2024/11/04 03:53:25 moko Exp $" IDENT_PA_DICTIONARY_H;
 
 Dictionary::Dictionary(Table& atable): substs(atable.count()) {
 	// clear starting_lines

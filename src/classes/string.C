@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b string parser class.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.259 2024/10/27 17:50:59 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.260 2024/11/04 03:53:25 moko Exp $";
 
 // class
 

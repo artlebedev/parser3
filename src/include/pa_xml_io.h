@@ -1,7 +1,7 @@
 /** @file
 	Parser: plugins to xml library, controlling i/o.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -11,7 +11,7 @@
 #ifndef PA_XML_IO_H
 #define PA_XML_IO_H
 
-#define IDENT_PA_XML_IO_H "$Id: pa_xml_io.h,v 1.11 2023/09/26 20:49:08 moko Exp $"
+#define IDENT_PA_XML_IO_H "$Id: pa_xml_io.h,v 1.12 2024/11/04 03:53:25 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"

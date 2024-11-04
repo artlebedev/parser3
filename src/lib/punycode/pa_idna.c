@@ -1,6 +1,6 @@
 /** @file
    Parser: IDNA support, modified Libidn Version 1.28.
-   Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+   Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 */
 
 /* idna.c --- Prototypes for Internationalized Domain Name library.
@@ -35,7 +35,7 @@
 #include "pa_punycode.h"
 #include "pa_idna.h"
 
-volatile const char * IDENT_PA_IDNA_C="$Id: pa_idna.c,v 1.8 2023/09/26 20:49:09 moko Exp $";
+volatile const char * IDENT_PA_IDNA_C="$Id: pa_idna.c,v 1.9 2024/11/04 03:53:25 moko Exp $";
 
 #define DOTP(c) ((c) == 0x002E || (c) == 0x3002 || (c) == 0xFF0E || (c) == 0xFF61)
 

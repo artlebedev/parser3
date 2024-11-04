@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b inet parser class.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.18 2023/09/26 20:49:06 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.19 2024/11/04 03:53:25 moko Exp $";
 
 class MInet: public Methoded {
 public:

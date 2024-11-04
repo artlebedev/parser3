@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations impl1.
 
-	Copyright (c) 2001-2023 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 	based on: gd
 
@@ -17,7 +17,7 @@
 #include "gif.h"
 #include "mtables.h"
 
-volatile const char * IDENT_GIF_C="$Id: gif.C,v 1.12 2023/09/26 20:49:08 moko Exp $" IDENT_GIF_H;
+volatile const char * IDENT_GIF_C="$Id: gif.C,v 1.13 2024/11/04 03:53:25 moko Exp $" IDENT_GIF_H;
 
 //static void BrushApply(int x, int y);
 //static void TileApply(int x, int y);
