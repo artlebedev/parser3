@@ -298,9 +298,6 @@
 /* This value is set to 1 to indicate that the system argz facility works */
 #undef HAVE_WORKING_ARGZ
 
-/* Define to 1 if you have the `_locking' function. */
-#undef HAVE__LOCKING
-
 /* Define if the OS needs help to load dependent libraries for dlopen(). */
 #undef LTDL_DLOPEN_DEPLIBS
 

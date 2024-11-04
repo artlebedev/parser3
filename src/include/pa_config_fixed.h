@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.93 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.94 2024/11/04 18:18:05 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -34,7 +34,6 @@
 #define HAVE_FCNTL_H
 #define HAVE_IO_H
 #define HAVE_SYS_LOCKING_H
-#define HAVE__LOCKING
 
 #define HAVE_WINSOCK_H
 #define HAVE_TLS 1
