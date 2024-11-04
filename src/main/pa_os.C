@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.22 2024/11/04 15:42:31 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.23 2024/11/04 16:38:47 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -19,6 +19,7 @@ unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 #define PA_EX_LOCK 1
 #define PA_ULOCK 0
 #define FLOCK(operation) int status=pa_flock(fd, operation);
+#define ERRNO pa_errno()
 
 int pa_flock(int fd, int operation) {
     HANDLE hFile = (HANDLE)_get_osfhandle(fd);
@@ -38,7 +39,26 @@ int pa_flock(int fd, int operation) {
         return LockFileEx(hFile, flags, 0, MAXDWORD, MAXDWORD, &overlapped) ? 0 : -1;
     }
 }
+
+int pa_errno() {
+    switch(GetLastError()) {
+        case ERROR_LOCK_VIOLATION:
+        case ERROR_SHARING_VIOLATION:
+        case ERROR_ACCESS_DENIED:
+            return EACCES;
+        case ERROR_IO_PENDING:
+            return EAGAIN;
+        case ERROR_INVALID_HANDLE:
+            return EBADF;
+        case ERROR_NOT_LOCKED:
+            return EPERM;
+    }
+    return EIO;
+}
+
 #else
+
+#define ERRNO errno
 
 #ifdef HAVE_FLOCK
 
@@ -79,7 +99,7 @@ int pa_lock(int fd, int attempts, int operation){
 		if(status==0)
 			return 0;
 		if(--attempts<=0)
-			return errno;
+			return ERRNO;
 		pa_sleep(PA_LOCK_WAIT_TIMEOUT_SECS, PA_LOCK_WAIT_TIMEOUT_USECS);
 	}
 };
