@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.23 2024/11/04 16:38:47 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.24 2024/11/04 17:36:49 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -44,16 +44,15 @@ int pa_errno() {
     switch(GetLastError()) {
         case ERROR_LOCK_VIOLATION:
         case ERROR_SHARING_VIOLATION:
-        case ERROR_ACCESS_DENIED:
-            return EACCES;
+            return EBUSY;
         case ERROR_IO_PENDING:
             return EAGAIN;
         case ERROR_INVALID_HANDLE:
             return EBADF;
         case ERROR_NOT_LOCKED:
-            return EPERM;
+            return ENOLCK;
     }
-    return EIO;
+    return EACCES;
 }
 
 #else
