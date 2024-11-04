@@ -1,6 +1,6 @@
-$Id: INSTALL,v 1.57 2012/07/23 04:07:02 moko Exp $
+$Id: INSTALL,v 1.58 2024/11/04 04:37:43 moko Exp $
 
-1.What is the process to compile Parser3?
+1. What is the process to compile Parser3?
 
   Just start ./buildall script and you would get $HOME/parser3install/bin/parser3 binary.
 
@@ -8,7 +8,7 @@ $Id: INSTALL,v 1.57 2012/07/23 04:07:02 moko Exp $
   In case you do not need XML support, use ./buildall --without-xml
 
   NOTE:
-  If case you need apache parser module (DSO), use ./buildall --with-apache
+  In case you need apache parser module (DSO), use ./buildall --with-apache
 
   NOTE:
   If you have gc, prce, libxml and libxslt installed, you can use ./configure --with-xml
@@ -21,11 +21,11 @@ $Id: INSTALL,v 1.57 2012/07/23 04:07:02 moko Exp $
   NOTE:
   On some systems there are no "make" and you should run 'gmake', change buildall script accordingly then.
 
-2.What is the process to install Parser3?
+2. What is the process to install Parser3?
 
   Copy files from $HOME/parser3install directory into your cgi-bin directory.
 
-  Then install Parser3 to handle documents, step-by-step instrunctions:
+  Then install Parser3 to handle documents, step-by-step instructions:
     http://www.parser.ru/en/docs/lang/install4apachecgi.htm" in English
     http://www.parser.ru/docs/lang/install4apachecgi.htm" in Russian
 
@@ -41,23 +41,23 @@ $Id: INSTALL,v 1.57 2012/07/23 04:07:02 moko Exp $
           windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
           ...
 
-3.I have heard about $mail:receive experimental support, how do I use it?
+3. I have heard about $mail:receive experimental support, how do I use it?
 
   Just start ./buildall --with-mailreceive.
   If you have glib and gmime installed, you can run ./configure --with-mailreceive.
 
-4.Security issues
+4. Safety features
   You can disable any exec operations by setting --disable-execs option.
   file::exec, file::cgi and mail:send (unix version) methods would be disabled.
 
   You can enable reading and executing files, not belonging to group+user 
-  other then effective by setting --disable-safe-mode option.
+  other than effective by setting --disable-safe-mode option.
 
   You can disable user-configured sendmail commands by forcing it, setting
   "--with=sendmail=COMMAND" option.
 
-5.Since Parser 3.4.0 the several optimisations were implemented.
-  If you experience problems you can try to disable them by commenting corresponding 
+5. Since Parser 3.4.0 several optimizations were implemented.
+  If you experience problems you can try to disable them by commenting corresponding
   defines and recompiling parser3.
 
   src/include/pa_opcode.h
@@ -71,6 +71,9 @@ $Id: INSTALL,v 1.57 2012/07/23 04:07:02 moko Exp $
                                                          $self.a(expr), $self.a[value]
     #define OPTIMIZE_BYTECODE_CUT_REM_OPERATOR        -- cut rem operator with any number of params during compilation
     #define OPTIMIZE_BYTECODE_STRING_POOL             -- simplifying string's bytecode into expression
+    #define OPTIMIZE_BYTECODE_GET_SELF_ELEMENT        -- bytecode for $self.a ^self.a
+    #define OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL    -- bytecode for .CLASS, .CLASS_NAME
+    #define FEATURE_GET_ELEMENT4CALL                  -- ^o.m[] calls get_element4call("m"), not get_element("m")
 
   src/include/pa_string.h
     #define HASH_CODE_CACHING  -- calculated hash codes are cached and used for sequential hash lookups
