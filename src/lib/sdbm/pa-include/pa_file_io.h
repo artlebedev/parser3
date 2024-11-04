@@ -135,8 +135,7 @@ typedef struct pa_file_t         pa_file_t;
                                            a "write lock". */
 
 #define PA_FLOCK_TYPEMASK      0x000F  /**< mask to extract lock type */
-#define PA_FLOCK_NONBLOCK      0x0010  /**< do not block while acquiring the
-                                           file lock */
+
 /** @} */
 
 /**
