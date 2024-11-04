@@ -445,7 +445,7 @@ AC_CHECK_LIB(crypt, crypt)
 
 
 dnl Checks for functions
-AC_CHECK_FUNCS(flock _locking fcntl lockf ftruncate fchmod)
+AC_CHECK_FUNCS(flock fcntl lockf ftruncate fchmod)
 AC_CHECK_FUNCS(getrusage gettimeofday crypt sigsetjmp siglongjmp unsetenv)
 
 
