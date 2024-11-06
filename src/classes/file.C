@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.285 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.286 2024/11/06 21:56:23 moko Exp $";
 
 // defines
 
@@ -561,6 +561,15 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 				}
 			} else {
 				throw Exception(PARSER_RUNTIME, 0, "param must be string or table or array of strings");
+			}
+		}
+
+		// remove trailing empty arguments for backward compatibility
+		for(ArrayString::ReverseIterator i(argv); i;){
+			if(i.prev()->is_empty()){ // here for correct i.index()
+				argv.remove(i.index());
+			} else {
+				break;
 			}
 		}
 	}
