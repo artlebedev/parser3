@@ -27,5 +27,10 @@ code coverage tests:
 7. $f[^file::exec[cat^os[-windows].sh; ;^array::create[args;arg 2;;arg4]](5)[arg6]]
    $f.text
 
-8. ^try-catch{ $f[^file::exec[cat^os[-windows].sh; ;^array::create[args; $.bug[yes] ]]] }
+8. $f[^file::exec[cat^os[-windows].sh; ;args;]]
+   $f.text
 
+9. $f[^file::exec[cat^os[-windows].sh; ;args;arg 2;;]]
+   $f.text
+
+10. ^try-catch{ $f[^file::exec[cat^os[-windows].sh; ;^array::create[args; $.bug[yes] ]]] }
