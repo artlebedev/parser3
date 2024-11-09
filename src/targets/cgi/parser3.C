@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.358 2024/11/09 15:38:21 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.359 2024/11/09 17:02:27 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -730,7 +730,8 @@ int main(int argc, char *argv[]) {
 
 		REAL_PARSER_HANDLER(cgi);
 	} catch(const Exception& e) { // exception in unhandled exception
-		SAPI::die("%s", e.comment());
+		SAPI::log(*sapi_info, "%s", e.comment());
+		SAPI::send_error(*sapi_info, e.comment(), strcmp(e.type(), "file.missing") ? "500" : "404");
 	}
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
