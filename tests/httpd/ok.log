@@ -92,7 +92,7 @@ Server: Parser3
 Connection: close
 Accept-Ranges: bytes
 Content-Length: 15
-Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
 
 test?test.test!
 =============
@@ -127,16 +127,12 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 5-9/15
 Content-Length: 5
-Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
 
 test.
 =============
 running test 016.txt
 HTTP/1.0 400 Bad Request
-Content-Type: text/plain
-Server: Parser3
-Connection: close
-Accept-Ranges: bytes
 Content-Type: text/plain
 
 Invalid range
@@ -149,7 +145,7 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 5-14/15
 Content-Length: 10
-Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
 
 test.test!
 =============
@@ -161,16 +157,12 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 10-14/15
 Content-Length: 5
-Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
 
 test!
 =============
 running test 019.txt
 HTTP/1.0 416 Range Not Satisfiable
-Content-Type: text/plain
-Server: Parser3
-Connection: close
-Accept-Ranges: bytes
 Content-Type: text/plain
 
 
@@ -183,16 +175,12 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 10-14/15
 Content-Length: 5
-Last-Modified: Tue, 08 Dec 2020 22:46:59 GMT
+Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
 
 test!
 =============
 running test 021.txt
 HTTP/1.0 501 Not Implemented
-Content-Type: text/plain
-Server: Parser3
-Connection: close
-Accept-Ranges: bytes
 Content-Type: text/plain
 
 Multiple ranges are not supported
