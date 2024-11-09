@@ -294,6 +294,12 @@ Content-Length: 207
 "a":"b"
 }
 =============
+running test 029.txt
+HTTP/1.0 404 Not Found
+Content-Type: text/plain
+
+getting file size failed: No such file or directory (2), real filename '/tmp/bug.html'
+=============
 running test 030.txt
 HTTP/1.0 408 Request Timeout
 Content-Type: text/plain
