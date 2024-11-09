@@ -9,7 +9,7 @@
 #include "pa_common.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.21 2024/11/09 17:26:39 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.22 2024/11/09 17:28:22 moko Exp $" IDENT_PA_MEMORY_H;
 
 void *pa_fail_alloc(const char* what, size_t size) {
 #ifdef PA_DEBUG_DISABLE_GC
@@ -23,8 +23,9 @@ void *pa_fail_alloc(const char* what, size_t size) {
 }
 
 #ifdef _MSC_VER
-// pa_fail_alloc referenced in function GC_default_on_abort in gc.lib(misc.c)
-// extern "C" void *pa_fail_alloc(const char* what);
+// pa_fail_alloc referenced in function GC_default_on_abort in gc.lib(misc.c) and thus should be extern "C"
+extern "C" void *pa_fail_alloc(const char* what);
+
 void *pa_fail_alloc(const char* what) {
 	SAPI::die("fatal memory error: %s. heap_used=%u, heap_free=%u, bytes_since_gc=%u, total_bytes=%u",
 		what, GC_get_heap_size(), GC_get_free_bytes(), GC_get_bytes_since_gc(), GC_get_total_bytes());
