@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.357 2024/11/04 22:58:37 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.358 2024/11/09 15:38:21 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -46,8 +46,11 @@ extern "C" int GC_pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(
 #define PARSER_CONFIG_ENV_NAME "CGI_PARSER_CONFIG"
 #define PARSER_LOG_ENV_NAME "CGI_PARSER_LOG"
 
-SAPI_Info_CGI cgi_is_default;
-SAPI_Info *sapiInfo=&cgi_is_default;
+SAPI_Info sapi_console;
+SAPI_Info_CGI sapi_cgi;
+
+static SAPI_Info *sapi_info = &sapi_cgi;
+static THREAD_LOCAL SAPI_Info *sapi_info_4log = NULL; // global for correct send error in die()
 
 static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
@@ -160,9 +163,13 @@ void SAPI::die(const char* fmt, ...) {
 	char message[MAX_STRING];
 	vsnprintf(message, MAX_STRING, fmt, args);
 
-	SAPI::send_error(*sapiInfo, message);
+	SAPI::send_error(sapi_info_4log ? *sapi_info_4log : *sapi_info, message);
 	exit(1);
 //	va_end(args);
+}
+
+void SAPI::send_error(SAPI_Info& info, const char *exception_cstr, const char *status){
+	info.send_error(exception_cstr, status);
 }
 
 char* SAPI::Env::get(SAPI_Info& info, const char* name) {
@@ -182,11 +189,11 @@ size_t SAPI::read_post(SAPI_Info& info, char* buf, size_t max_bytes) {
 }
 
 void SAPI::add_header_attribute(SAPI_Info& info, const char* dont_store_key, const char* dont_store_value) {
-	info.add_header_attribute(dont_store_key, dont_store_value);
+	info.add_header(dont_store_key, dont_store_value);
 }
 
 void SAPI::send_header(SAPI_Info& info) {
-	info.send_header();
+	info.send_headers();
 }
 
 size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
@@ -212,7 +219,7 @@ static const char* full_disk_path(const char* file_name = "") {
 }
 
 static void log_signal(const char* signal_name) {
-	SAPI::log(*sapiInfo, "%s received %s processing request", signal_name, request ? "while" : "before or after");
+	pa_log("%s received %s processing request", signal_name, request ? "while" : "before or after");
 }
 
 #ifdef SIGPIPE
@@ -324,11 +331,13 @@ public:
 
 class RequestInfoController {
 public:
-	RequestInfoController(Request_info* rinfo){
+	RequestInfoController(Request_info* rinfo, SAPI_Info* sinfo){
 		request_info_4log=rinfo;
+		sapi_info_4log=sinfo;
 	}
 	~RequestInfoController(){
 		request_info_4log=0;
+		sapi_info_4log=0;
 	}
 };
 
@@ -337,7 +346,7 @@ static const String httpd_class_name("httpd");
 
 static void config_handler(SAPI_Info &info) {
 	Request_info request_info;
-	RequestInfoController ric(&request_info);
+	RequestInfoController ric(&request_info, &info);
 
 	request_info.document_root = full_disk_path();
 	request_info.uri = "";
@@ -353,7 +362,7 @@ static void config_handler(SAPI_Info &info) {
 
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection) {
 	Request_info request_info;
-	RequestInfoController ric(&request_info);
+	RequestInfoController ric(&request_info, &info);
 
 	try {
 		if(!connection.read_header())
@@ -378,10 +387,8 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 	} catch(const Exception& e) { // exception in connection handling or unhandled exception
 		SAPI::log(info, "%s", e.comment());
 		const char* status = info.exception_http_status(e.type());
-		if(*status){
-			info.clear_response_headers();
+		if(*status)
 			SAPI::send_error(info, e.comment(), status);
-		}
 	}
 }
 
@@ -396,7 +403,7 @@ static void *connection_thread(void *arg){
 	try {
 		connection_handler(info, connection);
 	} catch(const Exception& e) { // exception in send_error
-		SAPI::log(*sapiInfo, "%s", e.comment());
+		pa_log("%s", e.comment());
 	}
 
 	delete(&connection);
@@ -404,7 +411,7 @@ static void *connection_thread(void *arg){
 }
 
 static void httpd_mode() {
-	config_handler(*sapiInfo);
+	config_handler(*sapi_info);
 
 	SOCKET sock = HTTPD_Server::bind(httpd_host_port);
 
@@ -456,7 +463,7 @@ static void httpd_mode() {
 			}
 			// closing connection socket in HTTPD_Connection destructor
 		} catch(const Exception& e) { // exception in accept or send_error
-			SAPI::log(*sapiInfo, "%s", e.comment());
+			pa_log("%s", e.comment());
 		}
 
 #ifndef _MSC_VER
@@ -483,7 +490,7 @@ static void real_parser_handler(bool cgi) {
 	
 	// global request info
 	Request_info request_info;
-	RequestInfoController ric(&request_info);
+	RequestInfoController ric(&request_info, sapi_info);
 
 	request_info.path_translated = filespec_to_process;
 	request_info.method = request_method ? request_method : "GET";
@@ -550,7 +557,7 @@ static void real_parser_handler(bool cgi) {
 #endif
 
 	// prepare to process request
-	Request r(*sapiInfo, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
+	Request r(*sapi_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 	{
 		// initing ::request ptr for signal handlers
 		RequestController rc(&r);
@@ -630,7 +637,7 @@ int main(int argc, char *argv[]) {
 	// were we started as CGI?
 	bool cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
 	if(!cgi)
-		sapiInfo = new SAPI_Info();
+		sapi_info = &sapi_console;
 
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIGPIPE_handler);
@@ -729,5 +736,5 @@ int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	log("main: successful return");
 #endif
-	return sapiInfo->http_response_code < 100 ? sapiInfo->http_response_code : 0;
+	return sapi_info->http_response_code < 100 ? sapi_info->http_response_code : 0;
 }

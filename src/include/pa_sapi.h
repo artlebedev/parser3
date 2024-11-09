@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.39 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.40 2024/11/09 15:38:21 moko Exp $"
 
 // includes
 
@@ -33,14 +33,8 @@ struct SAPI {
 	static void send_header(SAPI_Info& info);
 	/// output body bytes
 	static size_t send_body(SAPI_Info& info, const void *buf, size_t size);
-
-	static void send_error(SAPI_Info& info, const char *exception_cstr, const char *status = "500"){
-		// capitalized headers passed for preventing malloc during capitalization
-		add_header_attribute(info, HTTP_STATUS_CAPITALIZED, status);
-		add_header_attribute(info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-		send_header(info);
-		send_body(info, exception_cstr, strlen(exception_cstr));
-	}
+	// send error to client
+	static void send_error(SAPI_Info& info, const char *exception_cstr, const char *status = "500");
 
 	class Env {
 	public:

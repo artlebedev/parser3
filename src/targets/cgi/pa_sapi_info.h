@@ -1,13 +1,14 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.19 2024/11/04 22:58:37 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.20 2024/11/09 15:38:21 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
 
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
+const int HEADERS_SENT = 999; // can't send error message after headers have been sent
 
 // for signal handlers and cgi console detection
 static Request *request=0;
@@ -16,6 +17,7 @@ static Request *request=0;
 class SAPI_Info : public PA_Allocated {
 public:
 	int http_response_code;
+	String::Body headers;
 
 	SAPI_Info() : http_response_code(200) {}
 
@@ -44,17 +46,23 @@ public:
 		return 0;
 	}
 
-	virtual void add_header_attribute(const char* dont_store_key, const char* dont_store_value) {
+	virtual void add_header(const char* dont_store_key, const char* dont_store_value) {
+		if(strcasecmp(dont_store_key, "location")==0)
+			http_response_code=302;
 		if(strcasecmp(dont_store_key, HTTP_STATUS)==0)
 			http_response_code=atoi(dont_store_value);
 	}
 
-	virtual void send_header() {}
+	virtual void send_headers() {}
 
 	virtual size_t send_body(const void *buf, size_t size) {
 		return stdout_write(buf, size);
 	}
 
+	virtual void send_error(const char *exception_cstr, const char *status){
+		http_response_code=atoi(status);
+		send_body(exception_cstr, strlen(exception_cstr));
+	}
 };
 
 class SAPI_Info_CGI : public SAPI_Info {
@@ -71,20 +79,32 @@ public:
 		return read_size;
 	}
 
-	virtual void add_header_attribute(const char* dont_store_key, const char* dont_store_value) {
-		SAPI_Info::add_header_attribute(dont_store_key, dont_store_value);
-		if(!request || !request->console.was_used())
-			printf("%s: %s\n", capitalize(dont_store_key), dont_store_value);
+	virtual void add_header(const char* dont_store_key, const char* dont_store_value) {
+		headers << capitalize(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
 	}
 
-	virtual void send_header() {
-		puts("");
+	virtual void send_headers() {
+		if(!request || !request->console.was_used()){
+			headers << "\r\n";
+			send_body(headers.cstr(), headers.length());
+			http_response_code=HEADERS_SENT;
+		}
 	}
 
+	virtual void send_error(const char *exception_cstr, const char *status){
+		if (http_response_code==HEADERS_SENT)
+			return;
+		// memory allocation is not allowed
+		char buf[MAX_STRING];
+		snprintf(buf, MAX_STRING, HTTP_STATUS_CAPITALIZED ": %s\r\n"
+				HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n\r\n", status);
+		send_body(buf, strlen(buf));
+		send_body(exception_cstr, strlen(exception_cstr));
+	}
 
 };
 
-char* replace_char(char* str, char from, char to){
+static char* replace_char(char* str, char from, char to){
     for(char *pos = strchr(str,from); pos; pos=strchr(pos,from)) {
         *pos = to;
     }
@@ -95,7 +115,6 @@ class SAPI_Info_HTTPD : public SAPI_Info {
 public:
 
 	HTTPD_Connection &connection;
-	String::Body output;
 	HashStringString env;
 
 	SAPI_Info_HTTPD(HTTPD_Connection &aconnection) : connection(aconnection) {}
@@ -157,20 +176,6 @@ public:
 		return connection.read_post(buf, max_bytes);
 	}
 
-	virtual void add_header_attribute(const char* dont_store_key, const char* dont_store_value) {
-		if(strcasecmp(dont_store_key, "location")==0)
-			http_response_code=302;
-		if(strcasecmp(dont_store_key, HTTP_STATUS)==0)
-			http_response_code=atoi(dont_store_value);
-		else
-			output << capitalize(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
-	}
-
-	void clear_response_headers() {
-		http_response_code=200;
-		output.clear();
-	}
-
 	static const char *exception_http_status(const char *type) {
 		struct Lookup {
 			const char *code;
@@ -222,14 +227,35 @@ public:
 		return cur->message;
 	}
 
-	virtual void send_header() {
+	virtual void add_header(const char* dont_store_key, const char* dont_store_value) {
+		if(strcasecmp(dont_store_key, "location")==0)
+			http_response_code=302;
+		if(strcasecmp(dont_store_key, HTTP_STATUS)==0)
+			http_response_code=atoi(dont_store_value);
+		else
+			headers << capitalize(dont_store_key) << ": " << pa_strdup(dont_store_value) << "\r\n";
+	}
+
+	virtual void send_headers() {
 		String result("HTTP/1.0 ");
-		result << pa_uitoa(http_response_code) << " " << status_message(http_response_code) << "\r\n" << output << "\r\n";
+		result << pa_uitoa(http_response_code) << " " << status_message(http_response_code) << "\r\n" << headers << "\r\n";
 		send_body(result.cstr(), result.length());
+		http_response_code=HEADERS_SENT;
 	}
 
 	virtual size_t send_body(const void *buf, size_t size) {
 		return connection.send_body(buf, size);
+	}
+
+	virtual void send_error(const char *exception_cstr, const char *status){
+		if (http_response_code==HEADERS_SENT)
+			return;
+		// memory allocation is not allowed
+		char buf[MAX_STRING];
+		snprintf(buf, MAX_STRING, "HTTP/1.0 %s %s\r\n"
+				HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n\r\n", status, status_message(atoi(status)));
+		send_body(buf, strlen(buf));
+		send_body(exception_cstr, strlen(exception_cstr));
 	}
 
 };

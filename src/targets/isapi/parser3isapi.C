@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.129 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.130 2024/11/09 15:38:21 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -97,6 +97,14 @@ void SAPI::die(const char* fmt, ...) {
 	// abnormal exit
 	abort();
 //	va_end(args);
+}
+
+void SAPI::send_error(SAPI_Info& info, const char *exception_cstr, const char *status){
+	// capitalized headers passed for preventing malloc during capitalization
+	add_header_attribute(info, HTTP_STATUS_CAPITALIZED, status);
+	add_header_attribute(info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
+	send_header(info);
+	send_body(info, exception_cstr, strlen(exception_cstr));
 }
 
 char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
