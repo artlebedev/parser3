@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.17 2024/11/04 03:53:26 moko Exp $"
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.18 2024/11/09 17:14:40 moko Exp $"
 
 // include
 
@@ -37,11 +37,11 @@ public: // Value
 	override const char* type() const { return VREGEX_TYPE; }
 	override VStateless_class *get_class() { return regex_class; }
 
-	/// VRegex: count
+	/// VRegex: PCRE_INFO_SIZE
 	override int as_int() { return (int)get_info_size(); }
 
-	/// VRegex: count
-	override double as_double() { return get_info_size(); }
+	/// VRegex: PCRE_INFO_SIZE
+	override double as_double() { return (double)get_info_size(); }
 
 	/// VRegex: scalar
 	override Value& as_expr_result();

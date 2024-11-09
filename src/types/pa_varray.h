@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.24 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.25 2024/11/09 17:14:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -181,7 +181,7 @@ public: // value
 
 	/// VArray: used elements count
 	override int as_int() const { return farray.used(); }
-	override double as_double() const { return farray.used(); }
+	override double as_double() const { return (double)farray.used(); }
 	override bool is_defined() const { return farray.count()!=0; }
 	override bool as_bool() const { return farray.count()!=0; }
 	override Value& as_expr_result() { return *new VInt(farray.used()); }
