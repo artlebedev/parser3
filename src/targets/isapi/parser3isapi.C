@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.131 2024/11/10 00:28:42 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.132 2024/11/10 12:57:17 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -407,19 +407,19 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 #endif
 			SAPI_info, header_only);
 		// successful finish
-	} catch(const Exception& e) { // exception in unhandled exception
+	} catch(const Exception& e) { // just in case
 		// log it
 		SAPI::log(SAPI_info, "%s", e.comment());
 
 		HSE_SEND_HEADER_EX_INFO header_info;
-		header_info.pszStatus="200 OK";
+		header_info.pszStatus="500 Internal Server Error";
 		header_info.cchStatus=strlen(header_info.pszStatus);
 		header_info.pszHeader=HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n\r\n";
 		header_info.cchHeader=strlen(header_info.pszHeader);
 		header_info.fKeepConn=true;
 		
 		// send header
-		lpECB->dwHttpStatusCode=200;
+		lpECB->dwHttpStatusCode=500;
 		lpECB->ServerSupportFunction(lpECB->ConnID, HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 
 		// send body

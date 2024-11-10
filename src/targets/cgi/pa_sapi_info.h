@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.20 2024/11/09 15:38:21 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.21 2024/11/10 12:57:17 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -54,6 +54,11 @@ public:
 	}
 
 	virtual void send_headers() {}
+
+	void clear_headers() {
+		http_response_code=200;
+		headers.clear();
+	}
 
 	virtual size_t send_body(const void *buf, size_t size) {
 		return stdout_write(buf, size);

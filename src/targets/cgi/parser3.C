@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.360 2024/11/10 00:28:42 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.361 2024/11/10 12:57:17 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -197,7 +197,7 @@ void SAPI::send_headers(SAPI_Info& info) {
 }
 
 void SAPI::clear_headers(SAPI_Info& info) {
-	info.headers.clear();
+	info.clear_headers();
 }
 
 size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
@@ -388,7 +388,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 		// process the request
 		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, main_method_name, &httpd_class_name);
-	} catch(const Exception& e) { // exception in connection handling or unhandled exception
+	} catch(const Exception& e) { // exception in connection handling
 		SAPI::log(info, "%s", e.comment());
 		const char* status = info.exception_http_status(e.type());
 		if(*status)
@@ -733,7 +733,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		REAL_PARSER_HANDLER(cgi);
-	} catch(const Exception& e) { // exception in unhandled exception
+	} catch(const Exception& e) { // exception in config_handler
 		SAPI::log(*sapi_info, "%s", e.comment());
 		SAPI::send_error(*sapi_info, e.comment(), strcmp(e.type(), "file.missing") ? "500" : "404");
 	}

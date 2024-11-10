@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.430 2024/11/10 00:28:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.431 2024/11/10 12:57:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -528,21 +528,21 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 		// can throw exceptions while handling $response:download[]
 		output_result(body_value->as_vfile(flang, &charsets), header_only, as_attachment);
 	} catch(const Exception& e) { // request handling problem
+
+		// we're returning not result, but error explanation
+		Request::Exception_details details=get_details(e);
+		const char* exception_cstr=get_exception_cstr(e, details);
+
+		// reset language to default
+		flang=fdefault_lang;
+		// reset response
+		response.fields().clear();
+		SAPI::clear_headers(sapi_info);
+
+		// this is what we'd return in $response:body
+		const String* body_string=0;
+
 		try {
-			// we're returning not result, but error explanation
-
-			Request::Exception_details details=get_details(e);
-			const char* exception_cstr=get_exception_cstr(e, details);
-
-			// reset language to default
-			flang=fdefault_lang;
-			// reset response
-			response.fields().clear();
-			SAPI::clear_headers(sapi_info);
-
-			// this is what we'd return in $response:body
-			const String* body_string=0;
-
 			// maybe we'd be lucky enough as to report an error in a gracefull way...
 			if(const Method *method=main_class.get_method(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
 				// preparing parameters to @unhandled_exception[exception;stack]
@@ -563,22 +563,23 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			if(!vhandled || !vhandled->as_bool()) {
 				SAPI::log(sapi_info, "%s", exception_cstr);
 			}
-
-			if(body_string) {  // could report an error beautifully?
-				VString body_vstring(*body_string);
-				output_result(body_vstring.as_vfile(flang, &charsets), header_only, false);
-			} else {
-				// doing that ugly
-				SAPI::send_error(sapi_info, exception_cstr, strcmp(e.type(), "file.missing") ? "500" : "404");
-			}
-
-		} catch(const Exception& e) { // exception in unhandled exception
+		} catch(const Exception& e) { // exception in @unhandled_exception
 			Request::Exception_details details=get_details(e);
-			// unconditionally log the beast in exception handler
-			throw Exception(0, 0, "Unhandled exception in %s", get_exception_cstr(e, details));
+			// logging both initial and new exceptions
+			SAPI::log(sapi_info, "%s", exception_cstr);
+			SAPI::log(sapi_info, "Exception in @unhandled_exception at %s", get_exception_cstr(e, details));
+			SAPI::send_error(sapi_info, "Exception in @unhandled_exception, details are available in Parser error log.");
+			return;
+		}
+
+		if(body_string) {  // could report an error beautifully?
+			VString body_vstring(*body_string);
+			output_result(body_vstring.as_vfile(flang, &charsets), header_only, false);
+		} else {
+			// doing that ugly
+			SAPI::send_error(sapi_info, exception_cstr, strcmp(e.type(), "file.missing") ? "500" : "404");
 		}
 	}
-
 }
 
 uint Request::register_file(String::Body file_spec) {
