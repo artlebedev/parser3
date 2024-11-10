@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.14 2024/11/04 04:06:05 moko Exp $
+#$Id: auto.p.in,v 1.15 2024/11/10 00:24:07 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -168,7 +168,7 @@ $result(def $env:REMOTE_ADDR && ^env:REMOTE_ADDR.match[^^127\.0\.0\.1^$])
 }{
 	^if($exception.type eq "file.missing"){
 #		$response:location[/404/]
-		$response:status(404)
+		^httpd:404[]
 	}{
 		^unhandled_exception_release[$exception;$stack]
 	}
