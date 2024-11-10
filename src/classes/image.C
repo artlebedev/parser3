@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.190 2024/11/10 20:28:15 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.191 2024/11/10 20:33:21 moko Exp $";
 
 // defines
 
@@ -192,7 +192,7 @@ public:
 
 	static EXIF_tag_value2name &instance(){
 		static EXIF_tag_value2name *singleton=NULL;
-		if(singleton=NULL)
+		if(singleton==NULL)
 			singleton=new EXIF_tag_value2name;
 		return *singleton;
 	}
@@ -236,7 +236,7 @@ public:
 
 	static EXIF_gps_tag_value2name &instance(){
 		static EXIF_gps_tag_value2name *singleton=NULL;
-		if(singleton=NULL)
+		if(singleton==NULL)
 			singleton=new EXIF_gps_tag_value2name;
 		return *singleton;
 	}

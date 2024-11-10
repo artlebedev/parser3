@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.266 2024/11/10 20:28:15 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.267 2024/11/10 20:33:21 moko Exp $";
 
 // defines
 
@@ -79,7 +79,7 @@ public:
 
 	static Untaint_lang_name2enum &instance(){
 		static Untaint_lang_name2enum *singleton=NULL;
-		if(singleton=NULL)
+		if(singleton==NULL)
 			singleton=new Untaint_lang_name2enum;
 		return *singleton;
 	}

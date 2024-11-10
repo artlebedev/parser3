@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.287 2024/11/10 20:28:15 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.288 2024/11/10 20:33:21 moko Exp $";
 
 // defines
 
@@ -59,7 +59,7 @@ public:
 
 static Table &file_list_table_template(){
 	static Table *singleton=NULL;
-	if(singleton=NULL)
+	if(singleton==NULL)
 		singleton=new Table(new File_list_table_template_columns);
 	return *singleton;
 }

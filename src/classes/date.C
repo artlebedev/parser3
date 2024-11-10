@@ -14,7 +14,7 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.118 2024/11/10 20:28:15 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.119 2024/11/10 20:33:21 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -45,7 +45,7 @@ public:
 
 static Table &date_calendar_table_template(){
 	static Table *singleton=NULL;
-	if(singleton=NULL)
+	if(singleton==NULL)
 		singleton=new Table(new Date_calendar_table_template_columns);
 	return *singleton;
 }

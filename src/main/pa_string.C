@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.278 2024/11/10 20:28:15 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.279 2024/11/10 20:33:21 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -240,7 +240,7 @@ public:
 
 static Table &string_match_table_template(){
 	static Table *singleton=NULL;
-	if(singleton=NULL)
+	if(singleton==NULL)
 		singleton=new Table(new String_match_table_template_columns);
 	return *singleton;
 }
