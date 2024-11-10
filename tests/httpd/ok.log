@@ -296,9 +296,11 @@ Content-Length: 207
 =============
 running test 029.txt
 HTTP/1.0 404 Not Found
-Content-Type: text/plain
+Content-Type: text/html
+Content-Length: 48
 
-getting file size failed: No such file or directory (2), real filename '/tmp/bug.html'
+The requested URL was not found on this server.
+
 =============
 running test 030.txt
 HTTP/1.0 408 Request Timeout

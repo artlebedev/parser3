@@ -1,0 +1,19 @@
+@main[]
+$response:status[500]
+^method[]
+
+@method[]
+^deeper[]
+
+@deeper[]
+^bug[]
+
+@unhandled_exception[exception;stack]
+
+$exception.file[-cleared-]
+$exception.handled(1)
+^stack.menu{ $stack.file[-cleared-] }
+
+Everything is fine! details:
+^json:string[$exception]
+^json:string[$stack]

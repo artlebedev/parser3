@@ -1,0 +1,17 @@
+Content-Type: text/html
+Content-Length: 287
+
+Everything is fine! details:
+{
+"type":"parser.runtime",
+"source":"bug",
+"file":"-cleared-",
+"lineno":9,
+"colno":2,
+"comment":"undefined method",
+"handled":1
+}
+[
+{"name":"deeper","file":"-cleared-","lineno":"6","colno":"2"},
+{"name":"method","file":"-cleared-","lineno":"3","colno":"2"}
+]

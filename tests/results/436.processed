@@ -1,4 +1,4 @@
 Status: 404
 Content-Type: text/plain
 
-getting file size failed: No such file or directory (2), real filename '/tmp/bug.html'
+/tests/436.html: '/tmp/bug.html' getting file size failed: No such file or directory (2), real filename '/tmp/bug.html' [file.missing]
