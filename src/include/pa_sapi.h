@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.40 2024/11/09 15:38:21 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.41 2024/11/10 00:28:42 moko Exp $"
 
 // includes
 
@@ -30,7 +30,9 @@ struct SAPI {
 	/// add response header attribute [but do not send it to client]
 	static void add_header_attribute(SAPI_Info& info, const char* dont_store_key, const char* dont_store_value);
 	/// send collected header attributes to client
-	static void send_header(SAPI_Info& info);
+	static void send_headers(SAPI_Info& info);
+	/// clear collected header attributes
+	static void clear_headers(SAPI_Info& info);
 	/// output body bytes
 	static size_t send_body(SAPI_Info& info, const void *buf, size_t size);
 	// send error to client

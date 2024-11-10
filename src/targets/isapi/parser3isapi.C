@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.130 2024/11/09 15:38:21 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.131 2024/11/10 00:28:42 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -103,7 +103,7 @@ void SAPI::send_error(SAPI_Info& info, const char *exception_cstr, const char *s
 	// capitalized headers passed for preventing malloc during capitalization
 	add_header_attribute(info, HTTP_STATUS_CAPITALIZED, status);
 	add_header_attribute(info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-	send_header(info);
+	send_headers(info);
 	send_body(info, exception_cstr, strlen(exception_cstr));
 }
 
@@ -214,7 +214,7 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info, const char* dont_store_key
 }
 
 /// @todo intelligent cache-control
-void SAPI::send_header(SAPI_Info& SAPI_info) {
+void SAPI::send_headers(SAPI_Info& SAPI_info) {
 	HSE_SEND_HEADER_EX_INFO header_info;
 
 	char status_buf[MAX_STATUS_LENGTH];
@@ -244,6 +244,10 @@ void SAPI::send_header(SAPI_Info& SAPI_info) {
 
 	SAPI_info.lpECB->ServerSupportFunction(SAPI_info.lpECB->ConnID, 
 		HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
+}
+
+void SAPI::clear_headers(SAPI_Info& info) {
+	SAPI_info.header.clear();
 }
 
 size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {

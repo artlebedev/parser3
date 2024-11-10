@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.359 2024/11/09 17:02:27 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.360 2024/11/10 00:28:42 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -192,8 +192,12 @@ void SAPI::add_header_attribute(SAPI_Info& info, const char* dont_store_key, con
 	info.add_header(dont_store_key, dont_store_value);
 }
 
-void SAPI::send_header(SAPI_Info& info) {
+void SAPI::send_headers(SAPI_Info& info) {
 	info.send_headers();
+}
+
+void SAPI::clear_headers(SAPI_Info& info) {
+	info.headers.clear();
 }
 
 size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {

@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.38 2024/11/09 15:38:21 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.39 2024/11/10 00:28:42 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -82,7 +82,7 @@ void SAPI::send_error(SAPI_Info& info, const char *exception_cstr, const char *s
 	// capitalized headers passed for preventing malloc during capitalization
 	add_header_attribute(info, HTTP_STATUS_CAPITALIZED, status);
 	add_header_attribute(info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-	send_header(info);
+	send_headers(info);
 	send_body(info, exception_cstr, strlen(exception_cstr));
 }
 
@@ -161,10 +161,13 @@ void SAPI::add_header_attribute(SAPI_Info& SAPI_info, const char* dont_store_key
 		pa_ap_pstrdup(SAPI_info.r->pool, dont_store_value));
 }
 
-void SAPI::send_header(SAPI_Info& SAPI_info) {
+void SAPI::send_headers(SAPI_Info& SAPI_info) {
 	pa_ap_hard_timeout("Send header", SAPI_info.r);
 	pa_ap_send_http_header(SAPI_info.r);
 	pa_ap_kill_timeout(SAPI_info.r);
+}
+
+void SAPI::clear_headers(SAPI_Info& info) {
 }
 
 size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {

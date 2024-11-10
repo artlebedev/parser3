@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.429 2024/11/04 03:53:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.430 2024/11/10 00:28:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -484,9 +484,6 @@ void Request::configure() {
 
 */
 void Request::core(const char* config_filespec, bool header_only, const String &amain_method_name, const String* amain_class_name) {
-	VFile* body_file=NULL;
-	bool as_attachment=false;
-
 	try {
 		// loading config
 		if(config_filespec)
@@ -513,7 +510,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 
 		// extract response body
 		Value* body_value=response.fields().get(download_name_upper); // $response:download?
-		as_attachment=body_value!=0;
+		bool as_attachment=body_value!=0;
 		if(!body_value)
 			body_value=response.fields().get(body_name_upper); // $response:body
 		if(!body_value)
@@ -528,8 +525,8 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			});
 		}
 
-		body_file=body_value->as_vfile(flang, &charsets);
-
+		// can throw exceptions while handling $response:download[]
+		output_result(body_value->as_vfile(flang, &charsets), header_only, as_attachment);
 	} catch(const Exception& e) { // request handling problem
 		try {
 			// we're returning not result, but error explanation
@@ -541,6 +538,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			flang=fdefault_lang;
 			// reset response
 			response.fields().clear();
+			SAPI::clear_headers(sapi_info);
 
 			// this is what we'd return in $response:body
 			const String* body_string=0;
@@ -568,13 +566,10 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 
 			if(body_string) {  // could report an error beautifully?
 				VString body_vstring(*body_string);
-
-				body_file=body_vstring.as_vfile(flang, &charsets);
-				as_attachment=false;
+				output_result(body_vstring.as_vfile(flang, &charsets), header_only, false);
 			} else {
 				// doing that ugly
-				SAPI::send_error(sapi_info, exception_cstr, !strcmp(e.type(), "file.missing") ? "404" : "500");
-				return;
+				SAPI::send_error(sapi_info, exception_cstr, strcmp(e.type(), "file.missing") ? "500" : "404");
 			}
 
 		} catch(const Exception& e) { // exception in unhandled exception
@@ -584,8 +579,6 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 		}
 	}
 
-	// write out the result outside of try as network exceptions should not be handled by parser code.
-	output_result(body_file, header_only, as_attachment);
 }
 
 uint Request::register_file(String::Body file_spec) {
@@ -782,7 +775,7 @@ static void output_sole_piece(Request& r, bool header_only, VFile& body_file, Va
 	SAPI::add_header_attribute(r.sapi_info, HTTP_CONTENT_LENGTH, pa_uitoa(output.length));
 
 	// send header
-	SAPI::send_header(r.sapi_info);
+	SAPI::send_headers(r.sapi_info);
 	
 	// send body
 	if(!header_only)
@@ -846,7 +839,7 @@ struct Send_range_action_info {
 static void send_range(struct stat& /*finfo*/, int f, const String& /*file_spec*/, void *context){
 	Send_range_action_info &info = *(Send_range_action_info*)context;
 
-	SAPI::send_header(info.r->sapi_info);
+	SAPI::send_headers(info.r->sapi_info);
 	pa_lseek(f, info.offset, SEEK_SET);
 
 	const size_t BUFSIZE = 128*0x400;
@@ -917,7 +910,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 		SAPI::add_header_attribute(r.sapi_info, "last-modified", attributed_meaning_to_string(date, String::L_AS_IS, true).cstr());
 
 	if(header_only){
-		SAPI::send_header(r.sapi_info);
+		SAPI::send_headers(r.sapi_info);
 	} else {
 		Send_range_action_info info = { &r, offset, part_length};
 		file_read_action_under_lock(r.full_disk_path(filename), "send", send_range, &info);
