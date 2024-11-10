@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.265 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.266 2024/11/10 20:28:15 moko Exp $";
 
 // defines
 
@@ -76,7 +76,15 @@ public:
 		ULN("json", JSON);
 		#undef ULN
 	}
-} untaint_lang_name2enum;
+
+	static Untaint_lang_name2enum &instance(){
+		static Untaint_lang_name2enum *singleton=NULL;
+		if(singleton=NULL)
+			singleton=new Untaint_lang_name2enum;
+		return *singleton;
+	}
+
+};
 
 // methods
 
@@ -97,7 +105,7 @@ static void _if(Request& r, MethodParams& params) {
 }
 
 String::Language get_untaint_lang(const String& lang_name){
-	String::Language lang=untaint_lang_name2enum.get(lang_name);
+	String::Language lang=Untaint_lang_name2enum::instance().get(lang_name);
 	if(!lang)
 		throw Exception(PARSER_RUNTIME,	&lang_name, "invalid taint language");
 	return lang;

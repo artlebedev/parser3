@@ -7,7 +7,7 @@
 
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.27 2024/11/04 03:53:25 moko Exp $" IDENT_PA_CHARSETS_H;
+volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.28 2024/11/10 20:28:15 moko Exp $" IDENT_PA_CHARSETS_H;
 
 // defines for globals
 
@@ -15,7 +15,8 @@ volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.27 2024/11/04 
 
 // globals
 
-Charset pa_UTF8_charset(0, *new String(CHARSET_UTF8_NAME), 0/*no file=system*/);
+static String charset_utf8_name(CHARSET_UTF8_NAME);
+Charset pa_UTF8_charset(0, charset_utf8_name, 0/*no file=system*/);
 
 Charsets pa_charsets;
 

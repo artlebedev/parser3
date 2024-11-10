@@ -14,7 +14,7 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.117 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.118 2024/11/10 20:28:15 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -43,8 +43,12 @@ public:
 	}
 };
 
-
-Table date_calendar_table_template(new Date_calendar_table_template_columns);
+static Table &date_calendar_table_template(){
+	static Table *singleton=NULL;
+	if(singleton=NULL)
+		singleton=new Table(new Date_calendar_table_template_columns);
+	return *singleton;
+}
 
 // methods
 
@@ -394,7 +398,7 @@ static void _roll(Request& r, MethodParams& params) {
 
 static Table& fill_month_days(Request& r, MethodParams& params, bool rus){
 	Table::Action_options table_options;
-	Table& result=*new Table(date_calendar_table_template, table_options);
+	Table& result=*new Table(date_calendar_table_template(), table_options);
 	
 	tm tmIn;
 	memset(&tmIn, 0, sizeof(tmIn));

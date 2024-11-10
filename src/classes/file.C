@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.286 2024/11/06 21:56:23 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.287 2024/11/10 20:28:15 moko Exp $";
 
 // defines
 
@@ -57,7 +57,12 @@ public:
 	}
 };
 
-Table file_list_table_template(new File_list_table_template_columns);
+static Table &file_list_table_template(){
+	static Table *singleton=NULL;
+	if(singleton=NULL)
+		singleton=new Table(new File_list_table_template_columns);
+	return *singleton;
+}
 
 // class
 
@@ -737,7 +742,7 @@ static void _list(Request& r, MethodParams& params) {
 	const char* absolute_path_cstr=r.full_disk_path(relative_path.as_string()).taint_cstr(String::L_FILE_SPEC);
 
 	Table::Action_options table_options;
-	Table& table=*new Table(file_list_table_template, table_options);
+	Table& table=*new Table(file_list_table_template(), table_options);
 
 	const int ovector_size=(1/*match*/)*3;
 	int ovector[ovector_size];

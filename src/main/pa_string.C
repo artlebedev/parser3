@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.277 2024/11/04 03:53:25 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.278 2024/11/10 20:28:15 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -238,7 +238,12 @@ public:
 	}
 };
 
-Table string_match_table_template(new String_match_table_template_columns);
+static Table &string_match_table_template(){
+	static Table *singleton=NULL;
+	if(singleton=NULL)
+		singleton=new Table(new String_match_table_template_columns);
+	return *singleton;
+}
 
 // String::Body methods
 
@@ -660,7 +665,7 @@ Table* String::match(VRegex* vregex, Row_action row_action, void *info, int& mat
 	int ovector[ovector_size];
 
 	Table::Action_options table_options;
-	Table& table=*new Table(string_match_table_template, table_options);
+	Table& table=*new Table(string_match_table_template(), table_options);
 
 	int prestart=0;
 	int poststart=0;

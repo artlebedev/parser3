@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.189 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.190 2024/11/10 20:28:15 moko Exp $";
 
 // defines
 
@@ -189,7 +189,14 @@ public:
 		EXIF_TAG(0xa434,	LensModel);
 		EXIF_TAG(0xa435,	LensSerialNumber);
 	}
-} exif_tag_value2name;
+
+	static EXIF_tag_value2name &instance(){
+		static EXIF_tag_value2name *singleton=NULL;
+		if(singleton=NULL)
+			singleton=new EXIF_tag_value2name;
+		return *singleton;
+	}
+};
 
 class EXIF_gps_tag_value2name: public Hash<int, const char*> {
 public:
@@ -226,7 +233,15 @@ public:
 		EXIF_TAG(0x1D,	GPSDateStamp);
 		EXIF_TAG(0x1E,	GPSDifferential);
 	}
-} exif_gps_tag_value2name;
+
+	static EXIF_gps_tag_value2name &instance(){
+		static EXIF_gps_tag_value2name *singleton=NULL;
+		if(singleton=NULL)
+			singleton=new EXIF_gps_tag_value2name;
+		return *singleton;
+	}
+
+};
 
 
 ///*********************************************** support functions
@@ -512,7 +527,7 @@ static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& 
 	}
 
 	if(Value* value=parse_IFD_entry_value(is_big, reader, tiff_base, entry)) {
-		if(const char* name=(gps)?exif_gps_tag_value2name.get(tag):exif_tag_value2name.get(tag))
+		if(const char* name=(gps ? EXIF_gps_tag_value2name::instance().get(tag) : EXIF_tag_value2name::instance().get(tag)))
 			hash.put(name, value);
 		else
 			hash.put(pa_uitoa((int)tag), value);
