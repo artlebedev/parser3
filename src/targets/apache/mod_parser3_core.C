@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.40 2024/11/10 12:57:17 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.41 2024/11/10 13:31:28 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -78,12 +78,12 @@ void SAPI::die(const char* fmt, ...) {
 //	va_end(args);
 }
 
-void SAPI::send_error(SAPI_Info& info, const char *exception_cstr, const char *status){
+void SAPI::send_error(SAPI_Info& SAPI_info, const char *exception_cstr, const char *status){
 	// capitalized headers passed for preventing malloc during capitalization
-	add_header_attribute(info, HTTP_STATUS_CAPITALIZED, status);
-	add_header_attribute(info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
-	send_headers(info);
-	send_body(info, exception_cstr, strlen(exception_cstr));
+	add_header_attribute(SAPI_info, HTTP_STATUS_CAPITALIZED, status);
+	add_header_attribute(SAPI_info, HTTP_CONTENT_TYPE_CAPITALIZED, "text/plain");
+	send_headers(SAPI_info);
+	send_body(SAPI_info, exception_cstr, strlen(exception_cstr));
 }
 
 char* SAPI::Env::get(SAPI_Info& SAPI_info, const char* name) {
@@ -167,7 +167,7 @@ void SAPI::send_headers(SAPI_Info& SAPI_info) {
 	pa_ap_kill_timeout(SAPI_info.r);
 }
 
-void SAPI::clear_headers(SAPI_Info& info) {
+void SAPI::clear_headers(SAPI_Info&) {
 }
 
 size_t SAPI::send_body(SAPI_Info& SAPI_info, const void *buf, size_t size) {
