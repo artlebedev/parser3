@@ -8,7 +8,7 @@
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.34 2024/11/11 05:28:00 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.35 2024/11/11 05:50:09 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 
@@ -59,8 +59,10 @@ Methoded_array::Methoded_array() {
 	ADD_CLASS_VAR(string)
 	ADD_CLASS_VAR(table)
 	ADD_CLASS_VAR(void)
+#ifdef XML
 	ADD_CLASS_VAR(xnode) // should be before xdoc
 	ADD_CLASS_VAR(xdoc)
+#endif
 }
 
 static void configure_admin_one(Methoded_array::element_type methoded, Request *r) {

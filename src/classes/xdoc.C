@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.204 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.205 2024/11/11 05:50:09 moko Exp $";
 
 // defines
 
@@ -725,14 +725,5 @@ MXdoc::MXdoc(): MXnode(XDOC_CLASS_NAME) {
 	add_native_method("transform", Method::CT_DYNAMIC, _transform, 1, 2);
 
 }
-
-# else
-
-#include "classes.h"
-
-// global variable
-
-DECLARE_CLASS_VAR(xnode, 0); // fictive
-DECLARE_CLASS_VAR(xdoc, 0); // fictive
 
 #endif
