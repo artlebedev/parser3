@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-#define IDENT_CLASSES_H "$Id: classes.h,v 1.45 2024/11/10 21:00:00 moko Exp $"
+#define IDENT_CLASSES_H "$Id: classes.h,v 1.46 2024/11/11 05:28:00 moko Exp $"
 
 // include
 
@@ -69,7 +69,11 @@ Methoded_array& methoded_array();
 // defines
 
 #define DECLARE_CLASS_VAR(name, self) \
-	Methoded* name##_class=self;  \
-	Methoded* name##_init(){ if(!name##_class){ name##_class=self; } return name##_class; }
+	Methoded* name##_class=NULL;  \
+	Methoded* name##_instance(){ if(!name##_class){ name##_class=self; } return name##_class; }
+
+#define ADD_CLASS_VAR(name) \
+	Methoded* name##_instance();  \
+	*this+=name##_instance();
 
 #endif

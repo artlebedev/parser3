@@ -8,7 +8,7 @@
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.33 2024/11/04 03:53:25 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.34 2024/11/11 05:28:00 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 
@@ -36,7 +36,31 @@ Methoded_array& methoded_array() {
 // methods
 
 Methoded_array::Methoded_array() {
-#	include "classes.inc"
+	ADD_CLASS_VAR(array)
+	ADD_CLASS_VAR(bool)
+	ADD_CLASS_VAR(curl)
+	ADD_CLASS_VAR(date)
+	ADD_CLASS_VAR(double)
+	ADD_CLASS_VAR(file)
+	ADD_CLASS_VAR(form)
+	ADD_CLASS_VAR(hash)
+	ADD_CLASS_VAR(hashfile)
+	ADD_CLASS_VAR(image)
+	ADD_CLASS_VAR(inet)
+	ADD_CLASS_VAR(int)
+	ADD_CLASS_VAR(json)
+	ADD_CLASS_VAR(mail)
+	ADD_CLASS_VAR(math)
+	ADD_CLASS_VAR(memcached)
+	ADD_CLASS_VAR(memory)
+	ADD_CLASS_VAR(reflection)
+	ADD_CLASS_VAR(regex)
+	ADD_CLASS_VAR(response)
+	ADD_CLASS_VAR(string)
+	ADD_CLASS_VAR(table)
+	ADD_CLASS_VAR(void)
+	ADD_CLASS_VAR(xnode) // should be before xdoc
+	ADD_CLASS_VAR(xdoc)
 }
 
 static void configure_admin_one(Methoded_array::element_type methoded, Request *r) {

@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.215 2024/11/04 03:53:25 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.216 2024/11/11 05:28:00 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -302,6 +302,9 @@ void pa_globals_init() {
 
 	pa_xml_io_init();
 #endif
+
+	// init *_class variables
+	methoded_array();
 }
 
 static bool is_dlinited=false;
