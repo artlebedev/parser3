@@ -1,3 +1,189 @@
+2024-11-11  moko
+
+	* src/classes/classes.h: temp fix
+
+2024-11-10  moko
+
+	* src/: classes/date.C, classes/file.C, classes/image.C,
+	  classes/op.C, main/pa_string.C: minor optimization
+
+	* src/: classes/date.C, classes/file.C, classes/image.C,
+	  classes/op.C, main/pa_string.C: typo fixed
+
+	* src/: classes/classes.awk, classes/classes.h, classes/date.C,
+	  classes/file.C, classes/image.C, classes/op.C,
+	  main/pa_charsets.C, main/pa_string.C: singletones used to reduce
+	  memory allocation befor main(). Only 3 allocations in chatsets
+	  left (implements feature #1257)
+
+	* src/targets/: apache/mod_parser3_core.C, isapi/parser3isapi.C:
+	  minor naming convention fix
+
+	* tests/: 437.html, 438.html, httpd/ok.log, httpd/site/029.html,
+	  results/436.processed, results/437.processed,
+	  results/438.processed: tests for @unhandled_exception processing
+	  (related to feature #1256)
+
+	* src/: main/pa_request.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: Exceptions in @unhandled_exception
+	  are now processed in request::core for correct logging and
+	  reporting (feature #1256)
+
+	* src/: include/pa_sapi.h, main/pa_request.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: unhandled exception now called if
+	  exception occures during $response:download processing (related
+	  to bug #1255)
+
+	* etc/auto.p.in: better 404 error reporting
+
+2024-11-09  moko
+
+	* src/main/pa_memory.C: more detailed usage comment
+
+	* src/main/pa_memory.C: usage commented
+
+	* src/main/pa_memory.C: minor cleanup
+
+	* src/types/: pa_varray.h, pa_vregex.h: warnings war
+
+	* tests/: 436.html, httpd/029.txt, httpd/ok.log,
+	  httpd/site/029.html, results/436.processed: test for exception in
+	  $response:download[] added
+
+	* src/targets/cgi/parser3.C: sync CGI mode behavior with httpd mode
+	  and avoid exit status 1 on die
+
+	* tests/results/: 007.processed, 019.processed, 098.processed,
+	  103.processed, 233.processed: windows headers matter for binary
+	  files
+
+	* tests/httpd/ok.log: tests results updated as extra headers now
+	  cleared on error (related to bug #1255)
+
+	* src/: include/pa_sapi.h, targets/apache/mod_parser3_core.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: headers buffering to avoid extra
+	  headers in errors, custom send_error in cgi/httpd mode to avoid
+	  memory allocations (fixes bug #1255)
+
+2024-11-07  moko
+
+	* tests/: 264.html, results/264.processed: tests updated to test
+	  removal of only trailing empty arguments for backward
+	  compatibility (related to feature #1252)
+
+	* src/classes/file.C: remove trailing empty arguments for backward
+	  compatibility (related to feature #1252)
+
+2024-11-05  moko
+
+	* src/targets/cgi/: pa_sapi_info.h, parser3.C: avoid GPF in very
+	  low memory case, when static initialization failed even before
+	  main() start
+
+2024-11-04  moko
+
+	* configure, src/include/pa_config_auto.h.in,
+	  src/include/pa_config_fixed.h: _locking no longer used
+
+	* configure.ac: _locking no longer used (related to bug #1231)
+
+	* src/main/pa_os.C: lock error fine-tuning (related to bug #1231)
+
+	* src/main/pa_os.C: lock errors tuning (related to bug #1231)
+
+	* src/lib/sdbm/: pa_file_io.C, pa-include/pa_file_io.h: remove
+	  unused
+
+	* src/: lib/sdbm/pa_file_io.C, main/pa_common.C: errno should not
+	  be used on locking errors (related to bug #1231)
+
+	* src/main/pa_os.C: GetLastError used as errno is not set (related
+	  to bug #1231)
+
+	* src/main/pa_os.C: under windows _locking replaced with LockFileEx
+	  allowing shared lock to work (fixes bug #1231)
+
+	* INSTALL: actualized, minor fixes
+
+	* etc/auto.p.in: default LIMITS added
+
+	* AUTHORS: links actualized
+
+	* src/: classes/array.C, classes/bool.C, classes/classes.C,
+	  classes/classes.awk, classes/classes.h, classes/curl.C,
+	  classes/date.C, classes/double.C, classes/file.C, classes/form.C,
+	  classes/hash.C, classes/hashfile.C, classes/image.C,
+	  classes/inet.C, classes/int.C, classes/json.C, classes/mail.C,
+	  classes/math.C, classes/memcached.C, classes/memory.C,
+	  classes/op.C, classes/reflection.C, classes/regex.C,
+	  classes/response.C, classes/string.C, classes/table.C,
+	  classes/void.C, classes/xdoc.C, classes/xnode.C, classes/xnode.h,
+	  include/pa_array.h, include/pa_base64.h,
+	  include/pa_cache_managers.h, include/pa_charset.h,
+	  include/pa_charsets.h, include/pa_common.h,
+	  include/pa_config_fixed.h, include/pa_config_includes.h,
+	  include/pa_dictionary.h, include/pa_dir.h,
+	  include/pa_exception.h, include/pa_exec.h, include/pa_globals.h,
+	  include/pa_hash.h, include/pa_http.h, include/pa_memory.h,
+	  include/pa_opcode.h, include/pa_operation.h, include/pa_os.h,
+	  include/pa_pool.h, include/pa_random.h, include/pa_request.h,
+	  include/pa_request_charsets.h, include/pa_request_info.h,
+	  include/pa_sapi.h, include/pa_socks.h,
+	  include/pa_sql_connection.h, include/pa_sql_driver_manager.h,
+	  include/pa_stack.h, include/pa_string.h,
+	  include/pa_stylesheet_connection.h,
+	  include/pa_stylesheet_manager.h, include/pa_symbols.h,
+	  include/pa_table.h, include/pa_threads.h, include/pa_types.h,
+	  include/pa_uue.h, include/pa_xml_exception.h,
+	  include/pa_xml_io.h, lib/gd/gif.C, lib/gd/gif.h, lib/gd/gifio.C,
+	  lib/md5/pa_md5.h, lib/md5/pa_md5c.c,
+	  lib/memcached/pa_memcached.C, lib/memcached/pa_memcached.h,
+	  lib/punycode/pa_idna.c, lib/punycode/pa_idna.h,
+	  lib/sdbm/pa_file_io.C, lib/sdbm/pa_strings.C, lib/smtp/comms.C,
+	  lib/smtp/smtp.C, lib/smtp/smtp.h, main/compile.C,
+	  main/compile.tab.C, main/compile.y, main/compile_tools.C,
+	  main/compile_tools.h, main/execute.C, main/pa_base64.C,
+	  main/pa_cache_managers.C, main/pa_charset.C, main/pa_charsets.C,
+	  main/pa_common.C, main/pa_dictionary.C, main/pa_dir.C,
+	  main/pa_exception.C, main/pa_exec.C, main/pa_globals.C,
+	  main/pa_http.C, main/pa_memory.C, main/pa_os.C, main/pa_pool.C,
+	  main/pa_random.C, main/pa_request.C, main/pa_socks.C,
+	  main/pa_sql_driver_manager.C, main/pa_string.C,
+	  main/pa_stylesheet_connection.C, main/pa_stylesheet_manager.C,
+	  main/pa_symbols.C, main/pa_table.C, main/pa_threads.C,
+	  main/pa_uue.C, main/pa_xml_exception.C, main/pa_xml_io.C,
+	  main/untaint.C, sql/pa_sql_driver.h,
+	  targets/apache/mod_parser3.c, targets/apache/mod_parser3_core.C,
+	  targets/apache/pa_httpd.h, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_junction.h,
+	  types/pa_method.h, types/pa_property.h, types/pa_value.C,
+	  types/pa_value.h, types/pa_varray.C, types/pa_varray.h,
+	  types/pa_vbool.h, types/pa_vcaller_wrapper.h, types/pa_vclass.C,
+	  types/pa_vclass.h, types/pa_vcode_frame.h, types/pa_vconsole.h,
+	  types/pa_vcookie.C, types/pa_vcookie.h, types/pa_vdate.C,
+	  types/pa_vdate.h, types/pa_vdouble.h, types/pa_venv.C,
+	  types/pa_venv.h, types/pa_vfile.C, types/pa_vfile.h,
+	  types/pa_vform.C, types/pa_vform.h, types/pa_vhash.C,
+	  types/pa_vhash.h, types/pa_vhashfile.C, types/pa_vhashfile.h,
+	  types/pa_vimage.C, types/pa_vimage.h, types/pa_vint.h,
+	  types/pa_vjunction.C, types/pa_vjunction.h, types/pa_vmail.C,
+	  types/pa_vmail.h, types/pa_vmath.C, types/pa_vmath.h,
+	  types/pa_vmemcached.C, types/pa_vmemcached.h, types/pa_vmemory.h,
+	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h,
+	  types/pa_vobject.C, types/pa_vobject.h, types/pa_vregex.C,
+	  types/pa_vregex.h, types/pa_vrequest.C, types/pa_vrequest.h,
+	  types/pa_vresponse.C, types/pa_vresponse.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vstateless_object.h, types/pa_vstatus.C,
+	  types/pa_vstatus.h, types/pa_vstring.C, types/pa_vstring.h,
+	  types/pa_vtable.C, types/pa_vtable.h, types/pa_vvoid.C,
+	  types/pa_vvoid.h, types/pa_vxdoc.C, types/pa_vxdoc.h,
+	  types/pa_vxnode.C, types/pa_vxnode.h, types/pa_wcontext.C,
+	  types/pa_wcontext.h, types/pa_wwrapper.h: Copyright year updated
+
 2024-10-28  moko
 
 	* src/classes/array.C: avoid invalidate()
@@ -99,6 +285,15 @@
 	* src/classes/file.C: ^file::exec[cmd;;$array] supported
 	  (implements feature #1252) bugfix: empty arguments no longer
 	  skipped
+
+2024-10-21  moko
+
+	* tests/httpd/: 001.txt, 002.txt, 003.txt, 004.txt, 005.txt,
+	  007.txt, 008.txt, 009.txt, 010.txt, 011.txt, 012.txt, 013.txt,
+	  014.txt, 015.txt, 016.txt, 017.txt, 018.txt, 019.txt, 020.txt,
+	  021.txt, 022.txt, 023.txt, 024.txt, 025.txt, 026.txt, 027.txt,
+	  028.txt, 030.txt, ok.log, run_tests.sh, site/httpd.p,
+	  site/index.html, site/test.txt: httpd tests added
 
 2024-10-20  moko
 
