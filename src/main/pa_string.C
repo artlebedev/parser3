@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.280 2024/11/10 20:46:08 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.281 2024/11/13 00:09:52 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -266,7 +266,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 	size_t start=0;
 	size_t end=our_length;
 	if(!chars)
-		chars=" \t\n"; // white space
+		chars=" \t\r\n"; // white space
 
 	if(fast){
 		// from left...
@@ -278,7 +278,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 					if(++start==our_length)
 						return 0; // all chars are empty, just return empty string
 				} else
-					break;			
+					break;
 
 				CORD_next(pos);
 			}
@@ -293,7 +293,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 					if(--end==0) // optimization: NO need to check for 'end>=start', that's(<) impossible
 						return 0; // all chars are empty, just return empty string
 				} else
-					break;			
+					break;
 
 				CORD_prev(pos);
 			}
