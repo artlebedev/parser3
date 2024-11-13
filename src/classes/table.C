@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.370 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.371 2024/11/13 17:37:41 moko Exp $";
 
 // class
 
@@ -1030,6 +1030,8 @@ static void _cells(Request& r, MethodParams& params) {
 		const String* column_item=self_table.item(index);
 		result_array+=column_item ? new VString(*column_item) : VString::empty();
 	}
+
+	result_array.confirm_all_used();
 	r.write(result);
 }
 
