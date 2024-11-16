@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.371 2024/11/13 17:37:41 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.372 2024/11/16 02:57:05 moko Exp $";
 
 // class
 
@@ -768,7 +768,7 @@ static void _menu(Request& r, MethodParams& params) {
 	Value* delim_maybe_code=params.count()>1?&params[1]:0;
 
 	Table& table=GET_SELF(r, VTable).table();
-	size_t saved_current=table.current();
+	Temp_current tc(table);
 
 	if(delim_maybe_code) { // delimiter set
 		bool need_delim=false;
@@ -801,7 +801,6 @@ static void _menu(Request& r, MethodParams& params) {
 				break;
 		}
 	}
-	table.set_current(saved_current);
 }
 
 #ifndef DOXYGEN
@@ -1002,9 +1001,7 @@ static void _hash(Request& r, MethodParams& params) {
 	};
 	info.key_field=(info.key_code ? -1 : self_table.column_name2index(key_param->as_string(), true));
 
-	int saved_current=self_table.current();
 	self_table.for_each(table_row_to_hash, &info);
-	self_table.set_current(saved_current);
 
 	result.extract_default();
 
@@ -1173,7 +1170,7 @@ static void _foreach(Request& r, MethodParams& params) {
 	Value* delim_maybe_code=params.count()>3?&params[3]:0;
 
 	Table& table=GET_SELF(r, VTable).table();
-	size_t saved_current=table.current();
+	Temp_current tc(table);
 
 	rownum_var_name=rownum_var_name->is_empty()? 0 : rownum_var_name;
 	value_var_name=value_var_name->is_empty()? 0 : value_var_name;
@@ -1221,7 +1218,6 @@ static void _foreach(Request& r, MethodParams& params) {
 				break;
 		}
 	}
-	table.set_current(saved_current);
 }
 
 static void update_cell(HashStringValue::key_type aname, HashStringValue::value_type avalue, VTable *dest) {
@@ -1247,11 +1243,10 @@ static void _append(Request& r, MethodParams& params) {
 
 	HashStringValue* hash=params[0].get_hash();
 	if(hash){
+		Temp_current tc(table);
 		table+=new ArrayString();
-		size_t saved_current=table.current();
 		table.set_current(table.count()-1);
 		hash->for_each<VTable*>(update_cell, &vtable);
-		table.set_current(saved_current);
 	} else {
 		table+=row_from_string(r, params[0]);
 	}
@@ -1502,7 +1497,7 @@ static void _select(Request& r, MethodParams& params) {
 	if(offset<0)
 		offset+=size;
 	if(size && limit>0 && offset>=0 && (size_t)offset<size){
-		size_t saved_current=source_table.current();
+		Temp_current tcurrent(source_table);
 		size_t appended=0;
 
 		if(reverse){
@@ -1531,7 +1526,6 @@ static void _select(Request& r, MethodParams& params) {
 					result_table+=source_table[row];
 			}
 		}
-		source_table.set_current(saved_current);
 	}
 
 	r.write(*new VTable(&result_table));

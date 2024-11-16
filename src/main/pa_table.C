@@ -7,7 +7,7 @@
 
 #include "pa_table.h"
 
-volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.77 2024/11/04 03:53:25 moko Exp $" IDENT_PA_TABLE_H;
+volatile const char * IDENT_PA_TABLE_C="$Id: pa_table.C,v 1.78 2024/11/16 02:57:05 moko Exp $" IDENT_PA_TABLE_H;
 
 #include "pa_exception.h"
 
@@ -88,7 +88,7 @@ void Table::remove_current(){
 		throw Exception(PARSER_RUNTIME, 0, "invalid current row");
 	}
 	remove(fcurrent);
-	if(fcurrent==count() && count()>0){
+	if(fcurrent>=count() && count()>0){
 	    fcurrent--;
 	}
 }

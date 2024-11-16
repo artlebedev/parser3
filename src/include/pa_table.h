@@ -8,11 +8,13 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.74 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.75 2024/11/16 02:57:05 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
 #include "pa_string.h"
+
+class Temp_current;
 
 /** 
 	VTable backend.
@@ -38,12 +40,11 @@ public:
 	/// gets column names
 	columns_type columns() { return fcolumns; }
 
-	/// moves @a current pointer
+	/// moves @a current pointer, can be out of range when restoring current in modified table
 	void set_current(size_t acurrent) {
-		assert(acurrent==0 || acurrent<count());
-
-		fcurrent=acurrent;
+		fcurrent=acurrent<count() ? acurrent : count()>0 ? count()-1 : 0;
 	}
+
 	/// @return current pointer
 	size_t current() const { return fcurrent; }
 	void offset(bool absolute, int offset);
@@ -81,7 +82,7 @@ public:
 		if(!o.adjust(count()))
 			return;
 
-		size_t saved_current=current();
+		Temp_current tc(*this);
 		size_t row=o.offset;
 		if(o.reverse) { // reverse
 			for(size_t i=0; i<o.limit; i++) {
@@ -94,7 +95,6 @@ public:
 				func(*this, info);
 			}
 		}
-		set_current(saved_current);
 	}
 
 	template<typename I>
@@ -102,7 +102,7 @@ public:
 		if(!o.adjust(count()))
 			return false;
 
-		size_t saved_current=current();
+		Temp_current tc(*this);
 		size_t row=o.offset;
 		if(o.reverse) { // reverse
 			for(size_t i=0; i<o.limit; i++) {
@@ -119,7 +119,6 @@ public:
 					return true;
 			}
 		}
-		set_current(saved_current);
 
 		return false;
 	}
@@ -142,6 +141,17 @@ private:
 	/// is that @c index falid?
 	bool valid(size_t index) const { return index<count(); }
 
+};
+
+/// Auto-object that temporarily saves and restores current
+class Temp_current {
+	Table& ftable;
+	size_t fcurrent;
+public:
+	Temp_current(Table& atable) : ftable(atable), fcurrent(atable.current()){}
+	~Temp_current(){
+		ftable.set_current(fcurrent);
+	}
 };
 
 #endif
