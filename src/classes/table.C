@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.372 2024/11/16 02:57:05 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.373 2024/11/16 23:13:22 moko Exp $";
 
 // class
 
@@ -1008,6 +1008,60 @@ static void _hash(Request& r, MethodParams& params) {
 	r.write(result);
 }
 
+static void _array(Request& r, MethodParams& params) {
+	Table& table=GET_SELF(r, VTable).table();
+	VArray& result=*new VArray;
+	ArrayValue& array=result.array();
+
+	Table2hash_value_type value_type=C_HASH;
+	Array<int> value_fields;
+	Value* value_code=0;
+
+	if(params.count()>0) {
+		if(params[0].get_junction()){
+			value_type=C_CODE;
+			value_code=&params[0];
+		} else if(params[0].is_string()) {
+			const String &field_name=*params[0].get_string();
+			if(!field_name.is_empty()){
+				value_type=C_STRING;
+				value_fields+=table.column_name2index(field_name, true);
+			}
+		} else {
+			throw Exception(PARSER_RUNTIME, 0, "value field must be string or code or empty");
+		}
+	}
+
+	for(Table::Iterator i(table); i; i.next()) {
+		switch(value_type) {
+			case C_STRING: {
+				size_t index=value_fields.get(0);
+				Table::element_type row=i.value();
+				array+=(index < row->count() ? new VString(*row->get(index)) : VString::empty());
+				break;
+			}
+			case C_HASH: {
+				VHash* vhash=new VHash;
+				HashStringValue& hash=vhash->hash();
+				Table::element_type row=i.value();
+				Table::columns_type columns=table.columns();
+				for(size_t index=0; index<row->count(); index++) {
+					hash.put(columns && index < columns->count() ? *columns->get(index) : String(pa_uitoa(index)), new VString(*row->get(index)));
+				}
+				array+=vhash;
+				break;
+			}
+			case C_CODE: {
+				table.set_current(i.index());
+				array+=&r.process(*value_code);
+				break;
+			}
+		}
+	}
+
+	r.write(result);
+}
+
 static void _cells(Request& r, MethodParams& params) {
 	Table& self_table=GET_SELF(r, VTable).table();
 	size_t row_size=self_table[self_table.current()]->count(); // number of columns in current row
@@ -1613,6 +1667,11 @@ MTable::MTable(): Methoded("table") {
 	// ^table.hash[key field name]
 	// ^table.hash[key field name][value field name(s) string/table]
 	add_native_method("hash", Method::CT_DYNAMIC, _hash, 1, 3);
+
+	// ^table.array[]
+	// ^table.array[string]
+	// ^table.array{code}
+	add_native_method("array", Method::CT_DYNAMIC, _array, 0, 1);
 
 	// ^table.cells[]
 	// ^table.cells(limit)
