@@ -1,0 +1,76 @@
+@main[]
+
+$h[ ^for[i](0;9){ $.$i[v$i]} ]
+$a[^array::copy[$h]]
+
+1. ^json:string[$h]
+
+--------------- select robust tests
+
+$o[$h]
+2. ^json:string[^o.select[k;v](^select_hash[$k;$v])[ $.reverse(true) ]]
+
+$o[^array::copy[$a]]
+3. ^json:string[^o.select[k;v](^select_array_remove[$k;$v]); $.array[object] ]
+
+$o[^array::copy[$a]]
+4. ^json:string[^o.select[k;v](^select_array_remove[$k;$v])[ $.reverse(true) ]; $.array[object] ]
+
+$o[^array::copy[$a]]
+5. ^json:string[^o.select[k;v](^select_array_insert[$k;$v]); $.array[object] ]
+
+$o[^array::copy[$a]]
+6. ^json:string[^o.select[k;v](^select_array_insert[$k;$v])[ $.reverse(true) ]; $.array[object] ]
+
+---------------- foreach robust tests
+
+$o[$h]
+7. ^o.foreach[k;v]{ ${k}:$v
+    ^if($k eq '1'){
+	^o.delete[1]
+    }($k eq '3'){
+	^o.delete[4]
+    }($k eq '8'){
+	^o.delete[9]
+    }
+}
+
+8. ^json:string[$o]
+
+$o[$a]
+9. ^o.foreach[k;v]{ ${k}:$v
+    ^if($k eq '1'){
+	^o.remove(1)
+    }($k eq '3'){
+	^o.remove(4)
+    }($k eq '6'){
+	^o.insert(6)[i1;i2;i3;i4;i5;i6;i7;i8;i9;i10]
+    }($k eq '8'){
+	^o.remove(9)
+    }
+}
+
+10. ^json:string[$o; $.array[object] ]
+
+@select_hash[k;v]
+    $result(1)
+    ^if($k eq '1'){
+	^o.delete[0]
+    }($k eq '3'){
+	^o.delete[2]
+    }($k eq '8'){
+	^o.delete[7]
+    }
+
+@select_array_remove[k;v]
+    $result(1)
+    ^if($k eq '5'){
+	^for[i](0;9){ ^o.remove(0) }
+    }
+
+@select_array_insert[k;v]
+    $result(1)
+    ^if($k eq '5'){
+	^o.insert(0)[i1;i2;i3;i4;i5;i6;i7;i8;i9;i10]
+    }
+}
