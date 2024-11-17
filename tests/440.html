@@ -1,0 +1,94 @@
+@main[]
+
+$t[^table::create{value1	value2
+v11	v12
+v21	v22	v23
+v31	v32
+v41	v42
+}]
+
+----------------------- table array tests
+
+^json:string[^t.array[]]
+^json:string[^t.array[value2]]
+^json:string[^t.array{ $h[ $.v[$t.value1]] $h }]
+^json:string[^t.array{$t.value1 - $t.value2}]
+
+----------------------- table offset tests
+
+^t.offset(1)
+1. before: ^t.offset[]
+^try{
+	^t.menu{
+		^if($t.value1 eq 'v21'){
+			^throw[;exception]
+		}
+	}
+}{
+	$exception.handled(1)
+}
+1. after: ^t.offset[]
+
+^t.offset(2)
+2. before: ^t.offset[]
+
+^t.menu{
+	^t.delete[]
+	^t.delete[]
+	^break[]
+}
+
+2. after offset: ^t.offset[]
+2. after count: ^t.count[]
+
+----------------------- table select robust tests
+$t[^table::create{value
+^for[i](0;9){v$i
+}}]
+
+3. ^json:string[$t; $.table[compact] ]
+
+4. ^json:string[^t.select(^test_insert[$t]); $.table[compact] ]
+
+5. ^json:string[$t; $.table[compact] ]
+
+6. ^json:string[^t.select(^test_delete[$t]); $.table[compact] ]
+
+7. ^json:string[$t; $.table[compact] ]
+
+----------------------- table hash robust tests
+
+8. ^json:string[^t.hash{^hash_insert[$t]}]
+
+9. ^json:string[$t; $.table[compact] ]
+
+10. ^json:string[^t.hash{^hash_delete[$t]}]
+
+11. ^json:string[$t; $.table[compact] ]
+
+12. after offset: ^t.offset[]
+
+
+@test_insert[t]
+$result(1)
+^if($t.value eq 'v5'){
+	^for[i](0;9){^t.insert[n^eval(9-$i)]}
+}
+
+@test_delete[t]
+$result(1)
+^if($t.value eq 'n0'){
+	^for[i](0;9){^t.delete[]}
+}
+
+@hash_insert[t]
+$result[$t.value - ^t.offset[]]
+^if(^t.offset[] eq '5'){
+	^for[i](0;9){^t.insert[n^eval(9-$i)]}
+}
+
+@hash_delete[t]
+$result[$t.value]
+^if($t.value eq 'n0'){
+	^for[i](0;9){^t.delete[]}
+}
