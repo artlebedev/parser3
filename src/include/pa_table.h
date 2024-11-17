@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.75 2024/11/16 02:57:05 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.76 2024/11/17 14:04:28 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -102,7 +102,7 @@ public:
 		if(!o.adjust(count()))
 			return false;
 
-		Temp_current tc(*this);
+		size_t saved_current=current();
 		size_t row=o.offset;
 		if(o.reverse) { // reverse
 			for(size_t i=0; i<o.limit; i++) {
@@ -120,6 +120,7 @@ public:
 			}
 		}
 
+		set_current(saved_current);
 		return false;
 	}
 

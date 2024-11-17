@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.100 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.101 2024/11/17 14:04:28 moko Exp $"
 
 // includes
 
@@ -19,6 +19,7 @@
 // forwards
 
 template<typename T> class Array_iterator;
+template<typename T> class Array_robust_iterator;
 template<typename T> class Array_reverse_iterator;
 
 // defines
@@ -29,6 +30,7 @@ template<typename T> class Array_reverse_iterator;
 template<typename T> class Array: public PA_Object {
 
 	friend class Array_iterator<T>;
+	friend class Array_robust_iterator<T>;
 	friend class Array_reverse_iterator<T>;
 
 protected:
@@ -44,6 +46,7 @@ protected:
 
 public:
 	typedef Array_iterator<T> Iterator;
+	typedef Array_robust_iterator<T> RobustIterator;
 	typedef Array_reverse_iterator<T> ReverseIterator;
 
 	struct Action_options {
@@ -291,7 +294,6 @@ template<typename T> class Array_iterator {
 	T *flast;
 
 public:
-
 	Array_iterator(const Array<T>& aarray): farray(aarray) {
 		fcurrent=farray.felements;
 		flast=farray.felements + farray.fsize;
@@ -317,41 +319,65 @@ public:
 		return fcurrent - farray.felements;
 	}
 
-	inline char *key(){
+	// returns the current index string value of the iterator
+	inline char *key() {
 		return pa_uitoa(index());
 	}
-
 };
 
+// Slower array iterator for arrays that can be modified during iteration
+template<typename T> class Array_robust_iterator {
+
+	const Array<T>& farray;
+	size_t findex;
+
+public:
+	Array_robust_iterator(const Array<T>& aarray) : farray(aarray), findex(0) {}
+
+	inline operator bool() {
+		return findex < farray.fsize;
+	}
+
+	inline void next() {
+		findex++;
+	}
+
+	inline T value() {
+		return farray.felements[findex];
+	}
+
+	inline size_t index() {
+		return findex;
+	}
+
+	inline char* key() {
+		return pa_uitoa(findex);
+	}
+};
+
+// Robust as used for arrays that can be modified during iteration
 template<typename T> class Array_reverse_iterator {
 
 	const Array<T>& farray;
-	T *fcurrent;
+	size_t findex;
 
 public:
+	Array_reverse_iterator(const Array<T>& aarray): farray(aarray), findex(aarray.fsize) {}
 
-	Array_reverse_iterator(const Array<T>& aarray): farray(aarray) {
-		fcurrent=farray.felements + farray.fsize;
-	}
-
-	/// there are still elements
 	inline operator bool () {
-		return fcurrent > farray.felements;
+		return (findex > 0) && (findex <= farray.fsize);
 	}
 
-	/// returns the current element and advances the iterator
 	inline T prev() {
-		return *(--fcurrent);
+		return farray.felements[--findex];
 	}
 
-	// returns the current index of the iterator
 	inline size_t index() {
-		return fcurrent - farray.felements;
+		return findex;
 	}
 
-	inline char *key(){
+	inline char *key() {
 		return pa_uitoa(index());
 	}
-
 };
 #endif

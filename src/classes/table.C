@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.373 2024/11/16 23:13:22 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.374 2024/11/17 14:04:28 moko Exp $";
 
 // class
 
@@ -1001,7 +1001,10 @@ static void _hash(Request& r, MethodParams& params) {
 	};
 	info.key_field=(info.key_code ? -1 : self_table.column_name2index(key_param->as_string(), true));
 
-	self_table.for_each(table_row_to_hash, &info);
+	Temp_current tc(self_table);
+	for(Table::RobustIterator i(self_table); i; i.next()) {
+		table_row_to_hash(i.value(), &info);
+	}
 
 	result.extract_default();
 
@@ -1032,7 +1035,8 @@ static void _array(Request& r, MethodParams& params) {
 		}
 	}
 
-	for(Table::Iterator i(table); i; i.next()) {
+	Temp_current tc(table);
+	for(Table::RobustIterator i(table); i; i.next()) {
 		switch(value_type) {
 			case C_STRING: {
 				size_t index=value_fields.get(0);

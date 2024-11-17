@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.35 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.36 2024/11/17 14:04:28 moko Exp $";
 
 // class
 
@@ -691,7 +691,7 @@ static void _for(Request& r, MethodParams& params) {
 
 	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;
-		for(ArrayValue::Iterator i(array); i; i.next()){
+		for(ArrayValue::RobustIterator i(array); i; i.next()){
 			if(key_var_name){
 				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
 				r.put_element(caller, *key_var_name, vkey);
@@ -717,7 +717,7 @@ static void _for(Request& r, MethodParams& params) {
 				break;
 		}
 	} else {
-		for(ArrayValue::Iterator i(array); i; i.next()){
+		for(ArrayValue::RobustIterator i(array); i; i.next()){
 			if(key_var_name){
 				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
 				r.put_element(caller, *key_var_name, vkey);
@@ -750,7 +750,7 @@ static void _foreach(Request& r, MethodParams& params) {
 
 	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;
-		for(ArrayValue::Iterator i(array); i; i.next()){
+		for(ArrayValue::RobustIterator i(array); i; i.next()){
 			if(i.value()){
 				if(key_var_name){
 					VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
@@ -778,7 +778,7 @@ static void _foreach(Request& r, MethodParams& params) {
 			}
 		}
 	} else {
-		for(ArrayValue::Iterator i(array); i; i.next()){
+		for(ArrayValue::RobustIterator i(array); i; i.next()){
 			if(i.value()){
 				if(key_var_name){
 					VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
@@ -842,7 +842,7 @@ static void _sort(Request& r, MethodParams& params){
 	int pos=0;
 	bool key_values_are_strings=true;
 
-	for(ArrayValue::Iterator i(array); i; i.next() ){
+	for(ArrayValue::RobustIterator i(array); i; i.next() ){
 		if(i.value()){
 			if(key_var)
 				r.put_element(*context, *key_var, new VString(*new String(i.key(), String::L_TAINTED)));
@@ -1034,7 +1034,7 @@ static void _select(Request& r, MethodParams& params) {
 				}
 			}
 		} else {
-			for(ArrayValue::Iterator i(source_array); i; i.next() ){
+			for(ArrayValue::RobustIterator i(source_array); i; i.next() ){
 				if(Value *value=i.value()){
 					if(key_var_name)
 						r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
