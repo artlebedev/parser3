@@ -1,4 +1,47 @@
+2024-11-17  moko
+
+	* tests/: 440.html, results/440.processed: tests for
+	  ^table.array[], offset restoration, iterators robust tests
+	  (related to bug #1258, features #1259 and #1260)
+
+	* tests/: 439.html, results/439.processed: array and hash iterators
+	  robust tests (related to feature #1260)
+
+	* src/: classes/array.C, classes/table.C, include/pa_array.h,
+	  include/pa_table.h: Array_robust_iterator added and used in cases
+	  where array can be modified during iteration (implements feature
+	  #1260)
+
+	* src/classes/table.C: ^table.array[], ^table.array[column name],
+	  ^table.array{code} added (implements feature #1259)
+
+2024-11-16  moko
+
+	* src/: classes/table.C, include/pa_table.h, main/pa_table.C: fixed
+	  table current row restoration after exception and table changes
+	  (fixes bug #1258)
+
+2024-11-13  moko
+
+	* src/classes/table.C: minor optimization
+
+	* src/main/pa_string.C: \r added to default ^string.trim chars list
+	  (https://www.parser.ru/forum/?id=86648)
+
 2024-11-11  moko
+
+	* src/classes/classes.C: set_base commented
+
+	* src/classes/: classes.C, xdoc.C: cleanup after classes.awk
+	  deleted
+
+	* src/classes/classes.vcproj: no more classes.awk and classes.inc
+
+	* src/classes/: Makefile.am, classes.awk: no more classes.awk and
+	  classes.inc
+
+	* src/: classes/classes.C, classes/classes.awk, classes/classes.h,
+	  main/pa_globals.C: classes.awk is useless, preparing to delete it
 
 	* src/classes/classes.h: temp fix
 
