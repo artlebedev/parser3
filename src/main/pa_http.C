@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.129 2024/11/04 03:53:25 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.130 2024/11/23 00:36:40 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -41,6 +41,32 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.129 2024/11/04 03:53:2
 #define CRLF "\r\n"
 
 // helpers
+
+#ifdef HTTPD_DEBUG
+void pa_log(const char* fmt, ...);
+#define LOG(action) action
+#else
+#define LOG(action)
+#endif
+
+ssize_t pa_send(int sock, const char *buffer, size_t len){
+	size_t total_sent = 0;
+	while (total_sent < len) {
+		ssize_t bytes_sent=send(sock, buffer + total_sent, len - total_sent, 0);
+		if (bytes_sent < 0) {
+			return bytes_sent;
+		} else if (bytes_sent == 0) {
+			// Connection closed by the remote peer?
+			break;
+		}
+		LOG(
+			if(bytes_sent != len - total_sent)
+				pa_log("httpd [%d] partial send %d of (%d)", sock, bytes_sent, len - total_sent)
+		);
+		total_sent += bytes_sent;
+	}
+	return total_sent;
+}
 
 bool HTTP_Headers::add_header(const char *line){
 	const char *value=strchr(line, ':');
@@ -314,7 +340,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 				throw Exception("http.connect", 0, "cannot connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no);
 			}
 
-			if(send(sock, request, request_size, 0)!=(ssize_t)request_size) {
+			if(pa_send(sock, request, request_size) < 0) {
 				int no=pa_socks_errno();
 				throw Exception("http.timeout", 0, "error sending request: %s (%d)", pa_socks_strerr(no), no);
 			}
@@ -910,13 +936,6 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 /* ********************** httpd *************************** */
 
-#ifdef HTTPD_DEBUG
-void pa_log(const char* fmt, ...);
-#define LOG(action) action
-#else
-#define LOG(action)
-#endif
-
 enum EscapeState {
         Initial,
         Default,
@@ -1170,7 +1189,7 @@ size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
 size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
 	LOG(pa_log("httpd [%d] response %d bytes", sock, size));
 	LOG(pa_log("httpd [%d] %s", sock, buf));
-	if(send(sock, (const char*)buf, size, 0) != (ssize_t)size) {
+	if((size=pa_send(sock, (const char*)buf, size)) < 0) {
 		int no=pa_socks_errno();
 		throw Exception("httpd.write", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
 	}
