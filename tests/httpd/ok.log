@@ -303,6 +303,137 @@ The requested URL was not found on this server.
 
 =============
 running test 030.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 269
+
+fields: {
+"name":"v1",
+"a":"b",
+"nameless":"one"
+}
+tables: {
+"name":[
+{"field":"v1"},
+{"field":"v2"}
+],
+"a":[
+{"field":"b"},
+{"field":"c"}
+],
+"nameless":[
+{"field":"one"}
+]
+}
+files: {}
+elements: {
+"name":[
+"v1",
+"v2"
+],
+"a":[
+"b",
+"c"
+],
+"nameless":[
+"one"
+]
+}
+name: v1
+=============
+running test 031.curl
+fields: {
+"file":{
+"class":"file",
+"name":"test.txt",
+"size":15,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+},
+"another-file":{
+"class":"file",
+"name":"test.txt",
+"size":15,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+},
+"name":"value"
+}
+tables: {
+"file":[
+{"field":"just text"}
+],
+"name":[
+{"field":"value"},
+{"field":"value2"},
+{"field":"value3"}
+]
+}
+files: {
+"file":{
+"0":{
+"class":"file",
+"name":"test.txt",
+"size":15,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+},
+"1":{
+"class":"file",
+"name":"index.html",
+"size":71,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+}
+},
+"another-file":{
+"0":{
+"class":"file",
+"name":"test.txt",
+"size":15,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+}
+}
+}
+elements: {
+"file":[
+{
+"class":"file",
+"name":"test.txt",
+"size":15,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+},
+"just text",
+{
+"class":"file",
+"name":"index.html",
+"size":71,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+}
+],
+"another-file":[
+{
+"class":"file",
+"name":"test.txt",
+"size":15,
+"mode":"binary",
+"content-type":"application\/octet-stream"
+}
+],
+"name":[
+"value",
+"value2",
+"value3"
+]
+}
+name: value
+=============
+running test 040.txt
 HTTP/1.0 408 Request Timeout
 Content-Type: text/plain
 

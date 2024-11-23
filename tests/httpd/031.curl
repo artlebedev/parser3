@@ -1,0 +1,8 @@
+request="POST"
+form="file=@site/test.txt"
+form="file=just text"
+form="file=@site/index.html"
+form="another-file=@site/test.txt"
+form="name=value"
+form="name=value2"
+form="name=value3"
