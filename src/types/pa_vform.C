@@ -13,11 +13,12 @@
 #include "pa_globals.h"
 #include "pa_request.h"
 #include "pa_vfile.h"
+#include "pa_varray.h"
 #include "pa_common.h"
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.125 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.126 2024/11/23 15:34:56 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -71,9 +72,9 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	charset_detected(false),
 	post_content_type(UNKNOWN),
 
-	filled_source(0),
-	filled_client(0),
-	fpost_charset(0)
+	fields(vfields.hash()), tables(vtables.hash()), files(vfiles.hash()), imap(vimap.hash()), elements(velements.hash()),
+
+	filled_source(0), filled_client(0), fpost_charset(0)
 {
 	if(can_have_body && arequest_info.content_type) {
 		if(pa_strncasecmp(arequest_info.content_type, HTTP_CONTENT_TYPE_FORM_URLENCODED)==0) {
@@ -192,9 +193,7 @@ void VForm::ParseMimeInput(
 /* Scan for mime-presented pairs, storing them as they are found. */
 	const char* boundary=pa_tolower(getAttributeValue(content_type, "boundary=", strlen(content_type)));
 	if(!boundary)
-		throw Exception(0, 
-			0, 
-			"VForm::ParseMimeInput no boundary attribute of Content-Type");
+		throw Exception(0, 0, "VForm::ParseMimeInput no boundary attribute of Content-Type");
 
 	const char* lastData=&data[length];
 
@@ -249,32 +248,38 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 	fields.put_dont_replace(sname, vfile);
 
 	// files
-	Value* vhash=files.get(sname);
-	if(!vhash){
-		// first appearence
-		vhash=new VHash;
-		files.put(sname, vhash);
+	{
+		Value* vhash=files.get(sname);
+		if(!vhash)
+			files.put(sname, vhash=new VHash);
+		HashStringValue& hash=*vhash->get_hash();
+		hash.put(pa_uitoa(hash.count()), vfile);
 	}
-	HashStringValue& hash=*vhash->get_hash();
 
-	hash.put(pa_uitoa(hash.count()), vfile);
+	// elements
+	{
+		Value* varray=elements.get(sname);
+		if(!varray)
+			elements.put(sname, varray=new VArray);
+		if(VArray* array=dynamic_cast<VArray*>(varray))
+			array->array()+=vfile;
+	}
 }
 
 void VForm::AppendFormEntry(const char* cname_cstr, const char* raw_cvalue_ptr, const size_t raw_cvalue_size, Charset* client_charset) {
 	const String& sname=*new String(transcode(cname_cstr, strlen(cname_cstr), client_charset));
 
 	const char* premature_zero_pos=(const char* )memchr(raw_cvalue_ptr, 0, raw_cvalue_size);
-	size_t cvalue_size=premature_zero_pos?premature_zero_pos-(const char* )raw_cvalue_ptr
-		:raw_cvalue_size;
-	char *cvalue_ptr=pa_strdup(raw_cvalue_ptr, cvalue_size); 
+	size_t cvalue_size=premature_zero_pos ? premature_zero_pos - (const char* )raw_cvalue_ptr : raw_cvalue_size;
+	char *cvalue_ptr=pa_strdup(raw_cvalue_ptr, cvalue_size);
 	fix_line_breaks(cvalue_ptr, cvalue_size);
 	String& string=*new String(transcode(cvalue_ptr, cvalue_size, client_charset), String::L_TAINTED);
+	Value *value=new VString(string);
 
 	// tables
 	{
 		Value* vtable=tables.get(sname);
 		if(!vtable) {
-			// first appearence
 			Table::columns_type columns(new ArrayString(1));
 			*columns+=new String("field");
 
@@ -289,7 +294,16 @@ void VForm::AppendFormEntry(const char* cname_cstr, const char* raw_cvalue_ptr, 
 		table+=row;
 	}
 
-	fields.put_dont_replace(sname, new VString(string));
+	// elements
+	{
+		Value* varray=elements.get(sname);
+		if(!varray)
+			elements.put(sname, varray=new VArray);
+		if(VArray* array=dynamic_cast<VArray*>(varray))
+			array->array()+=value;
+	}
+
+	fields.put_dont_replace(sname, value);
 }
 
 
@@ -298,6 +312,7 @@ void VForm::refill_fields_tables_and_files() {
 	tables.clear();
 	files.clear();
 	imap.clear();
+	elements.clear();
 
 	//frequest_info.query_string="a=123";
 	// parsing QS [GET and ?name=value from uri rewrite)]
@@ -349,20 +364,24 @@ Value* VForm::get_element(const String& aname) {
 		refill_fields_tables_and_files();
 
 	// $fields
-	if(aname==FORM_FIELDS_ELEMENT_NAME)
-		return new VHash(fields);
+	if(SYMBOLS_EQ(aname, FIELDS_SYMBOL))
+		return &vfields;
 
 	// $tables
-	if(aname==FORM_TABLES_ELEMENT_NAME)
-		return new VHash(tables);
+	if(SYMBOLS_EQ(aname, TABLES_SYMBOL))
+		return &vtables;
 
 	// $files
-	if(aname==FORM_FILES_ELEMENT_NAME)
-		return new VHash(files);
+	if(SYMBOLS_EQ(aname, FILES_SYMBOL))
+		return &vfiles;
 
 	// $imap
-	if(aname==FORM_IMAP_ELEMENT_NAME)
-		return new VHash(imap);
+	if(SYMBOLS_EQ(aname, IMAP_SYMBOL))
+		return &vimap;
+
+	// $elements
+	if(SYMBOLS_EQ(aname, ELEMENTS_SYMBOL))
+		return &velements;
 
 	// methods (if any)
 	if(Value* result=VStateless_class::get_element(aname))

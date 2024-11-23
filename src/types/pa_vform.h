@@ -8,20 +8,14 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.69 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.70 2024/11/23 15:34:56 moko Exp $"
 
 // includes
 
 #include "classes.h"
 #include "pa_common.h"
 #include "pa_value.h"
-
-// defines
-
-#define FORM_FIELDS_ELEMENT_NAME "fields"
-#define FORM_TABLES_ELEMENT_NAME "tables"
-#define FORM_IMAP_ELEMENT_NAME "imap"
-#define FORM_FILES_ELEMENT_NAME "files"
+#include "pa_vhash.h"
 
 // forwards
 
@@ -97,10 +91,9 @@ private:
 	Charset* filled_source;
 	Charset* filled_client;
 	Charset* fpost_charset; // charset which was specified in content-type in incoming POST
-	HashStringValue fields;
-	HashStringValue tables;
-	HashStringValue files;
-	HashStringValue imap;
+
+	VHash vfields, vtables, vfiles, vimap, velements;
+	HashStringValue &fields, &tables, &files, &imap, &elements;
 
 private:
 

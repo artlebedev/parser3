@@ -8,7 +8,7 @@
 #ifndef PA_SYMBOLS_H
 #define PA_SYMBOLS_H
 
-#define IDENT_PA_SYMBOLS_H "$Id: pa_symbols.h,v 1.11 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_SYMBOLS_H "$Id: pa_symbols.h,v 1.12 2024/11/23 15:34:56 moko Exp $"
 
 #include "pa_common.h"
 
@@ -44,6 +44,11 @@ static const String REM_SYMBOL;
 
 static const String FIELDS_SYMBOL;
 static const String _DEFAULT_SYMBOL;
+
+static const String TABLES_SYMBOL;
+static const String FILES_SYMBOL;
+static const String IMAP_SYMBOL;
+static const String ELEMENTS_SYMBOL;
 
 #ifdef SYMBOLS_CACHING
 void add(const String &astring);

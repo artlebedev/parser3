@@ -7,7 +7,7 @@
 #include "pa_symbols.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.12 2024/11/04 03:53:25 moko Exp $" IDENT_PA_SYMBOLS_H;
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.13 2024/11/23 15:34:56 moko Exp $" IDENT_PA_SYMBOLS_H;
 
 const String Symbols::SELF_SYMBOL("self");
 const String Symbols::CALLER_SYMBOL("caller");
@@ -29,6 +29,11 @@ const String Symbols::REM_SYMBOL("rem");
 
 const String Symbols::FIELDS_SYMBOL("fields");
 const String Symbols::_DEFAULT_SYMBOL("_default");
+
+const String Symbols::TABLES_SYMBOL("tables");
+const String Symbols::FILES_SYMBOL("files");
+const String Symbols::IMAP_SYMBOL("imap");
+const String Symbols::ELEMENTS_SYMBOL("elements");
 
 #ifdef SYMBOLS_CACHING
 
@@ -70,6 +75,11 @@ void Symbols::init(){
 
 	symbols->set(FIELDS_SYMBOL);
 	symbols->set(_DEFAULT_SYMBOL);
+
+	symbols->set(TABLES_SYMBOL);
+	symbols->set(FILES_SYMBOL);
+	symbols->set(IMAP_SYMBOL);
+	symbols->set(ELEMENTS_SYMBOL);
 }
 
 #endif // SYMBOLS_CACHING
