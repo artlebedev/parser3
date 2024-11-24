@@ -223,7 +223,7 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #  define PA_ATTR_UNUSED
 #endif
 
-#ifdef WIN32
+#ifdef _MSC_VER
 #define THREAD_LOCAL __declspec(thread)
 #else
 #ifdef HAVE_TLS
@@ -233,12 +233,20 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #endif
 #endif
 
+#ifdef __CYGWIN__
+#define LIBXML_STATIC
+#define LIBXSLT_STATIC
+#define LIBEXSLT_STATIC
+#endif
+
+
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wparentheses"         // if(a=b)
 #pragma clang diagnostic ignored "-Wpointer-sign"        // CORD (unsigned char *) to char * in libcord
 #pragma clang diagnostic ignored "-Winline-new-delete"   // test for regular new/delete usage in memory.h
 
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && (__GNUC__ >= 7)
+
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"  // case without break
 
 #endif
