@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.99 2024/11/24 15:37:10 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.100 2024/11/24 16:55:21 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -172,7 +172,7 @@ static const char* shell_quote(const char *arg) {
 
 	size_t extra_length = 2; // opening and closing quotes
 	for(const char *src = arg; *src; src++){
-		if (*src == '"' || *src == '\\' || *src == '%')
+		if (strchr("\"\\&|<>^()", *src))
 			extra_length++;
 	}
 
@@ -184,9 +184,9 @@ static const char* shell_quote(const char *arg) {
 	for(const char *src=arg; *src;){
 		char c = *src++;
 		if(c == '"' || c == '\\'){
-			*dest++ = '\\';
-		} else if (c == '%'){
-			*dest++ = '%'; // doubling '%'
+			*dest++ = '\\'; // required for any program
+		} else if (strchr("&|<>^()", c)){
+			*dest++ = '^'; // cmd.exe (.bat) specific
 		}
 		*dest++ = c;
 	}
