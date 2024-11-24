@@ -186,10 +186,10 @@ inline double sign(double param) { return param > 0 ? 1 : ( param < 0 ? -1 : 0 )
 #endif
 
 #if !defined(max)
-inline int max(int a, int b) { return a>b?a:b; }
-inline int min(int a, int b){ return a<b?a:b; }
-inline size_t max(size_t a, size_t b) { return a>b?a:b; }
-inline size_t min(size_t a, size_t b){ return a<b?a:b; }
+inline int max(int a, int b) { return a>b ? a : b; }
+inline int min(int a, int b){ return a<b ? a : b; }
+inline size_t max(size_t a, size_t b) { return a>b ? a : b; }
+inline size_t min(size_t a, size_t b){ return a<b ? a : b; }
 #endif
 
 #endif // __cplusplus
@@ -233,12 +233,11 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #endif
 #endif
 
-#ifdef __CYGWIN__
+#if defined(XML) && defined(__CYGWIN__)
+// otherwise functions in libxml2 will be declared as __declspec(dllimport)
 #define LIBXML_STATIC
-#define LIBXSLT_STATIC
-#define LIBEXSLT_STATIC
+// to compile static libxslt.a and and libexslt.a, define LIBXSLT_STATIC in xsltexports.h and LIBEXSLT_STATIC in exsltexports.h
 #endif
-
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wparentheses"         // if(a=b)
@@ -246,7 +245,6 @@ inline size_t min(size_t a, size_t b){ return a<b?a:b; }
 #pragma clang diagnostic ignored "-Winline-new-delete"   // test for regular new/delete usage in memory.h
 
 #elif defined(__GNUC__) && (__GNUC__ >= 7)
-
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"  // case without break
 
 #endif
