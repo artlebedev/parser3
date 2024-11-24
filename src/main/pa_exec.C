@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.98 2024/11/04 03:53:25 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.99 2024/11/24 15:37:10 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -165,6 +165,37 @@ static void read_pipe(File_read_result& result, HANDLE hOutRead){
 	}
 }
 
+static const char* shell_quote(const char *arg) {
+	size_t length = strlen(arg);
+	if (length >= 2 && arg[0] == '"' && arg[length - 1] == '"')
+		return arg; // allready qouted
+
+	size_t extra_length = 2; // opening and closing quotes
+	for(const char *src = arg; *src; src++){
+		if (*src == '"' || *src == '\\' || *src == '%')
+			extra_length++;
+	}
+
+	char *result = (char *)pa_malloc(length + extra_length + 1);
+	char *dest = result;
+
+	*dest++ = '"';
+
+	for(const char *src=arg; *src;){
+		char c = *src++;
+		if(c == '"' || c == '\\'){
+			*dest++ = '\\';
+		} else if (c == '%'){
+			*dest++ = '%'; // doubling '%'
+		}
+		*dest++ = c;
+	}
+
+	*dest++ = '"';
+	*dest = '\0';
+	return result;
+}
+
 static const char* buildCommand(const char* file_spec_cstr, const ArrayString& argv) {
 	const char* result=file_spec_cstr;
 	if(FILE *f=pa_fopen(file_spec_cstr, "r")) {
@@ -194,7 +225,7 @@ static const char* buildCommand(const char* file_spec_cstr, const ArrayString& a
 		String string(result);
 		for(size_t i=0; i<argv.count(); i++) {
 			string << " ";
-			string << *argv[i];
+			string << shell_quote(argv[i]->cstr());
 		}
 
 		result=string.cstr();
@@ -368,7 +399,6 @@ struct Append_env_pair_info {
 };
 #endif
 
-///@test maybe here and at argv construction --- untaint_cstr(String::L_AS_IS
 static void append_env_pair(HashStringString::key_type key, HashStringString::value_type value,
 		Append_env_pair_info *info) {
 #ifdef _MSC_VER
