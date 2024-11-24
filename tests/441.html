@@ -1,0 +1,17 @@
+@main[]
+
+$s[
+	^taint[html][ some <a href="/?a&b">html</a> code ]
+	^taint[file-spec][ * ? " | ]
+	^taint[ some  <?dirty?>  code ] trailing whitespace here ->   ]
+
+env and args tainting tests:
+
+1. $f[^file::exec[cat^os[-windows].sh; $.HTTP_OK[$s] $.REMOTE_ADDR[allowed];env;HTTP_OK]]
+   =$f.text=
+2. $f[^file::exec[cat^os[-windows].sh; ;args;$s]]
+   =$f.text=
+3. $f[^file::exec[cat^os[-windows].sh; ;args;"quo ted"]]
+   =$f.text=
+4. $f[^file::exec[cat^os[-windows].sh; ;args;un"quo ted";%PATH%;some\\ \r\n - enter?]]
+   =$f.text=

@@ -25,6 +25,11 @@ then
 "
 fi
 
+if [ $1 = "env" ]
+then
+	eval "echo -n \"\$$2\""
+fi
+
 if [ -n "$5" ]
 then
 	echo "$5"

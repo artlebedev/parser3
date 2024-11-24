@@ -1,0 +1,15 @@
+Content-Type: text/html
+Content-Length: 408
+
+env and args tainting tests:
+1. =
+	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+	 _2A _3F _22 _7C 
+	 some  <?dirty?>  code  trailing whitespace here ->   =
+2. ="args" "
+	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
+	 _2A _3F _22 _7C 
+	 some  <?dirty?>  code  trailing whitespace here ->   " =
+3. ="args" ""quo ted"" =
+4. ="args" "un"quo ted"" "%PATH%" "some\ 
+ - enter?" =
