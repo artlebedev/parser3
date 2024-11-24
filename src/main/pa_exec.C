@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.100 2024/11/24 16:55:21 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.101 2024/11/24 23:21:39 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -165,7 +165,35 @@ static void read_pipe(File_read_result& result, HANDLE hOutRead){
 	}
 }
 
-static const char* shell_quote(const char *arg) {
+static const char* exe_quote(const char *arg) {
+	size_t length = strlen(arg);
+	if (length >= 2 && arg[0] == '"' && arg[length - 1] == '"')
+		return arg; // allready qouted
+
+	size_t extra_length = 2; // opening and closing quotes
+	for(const char *src = arg; *src; src++){
+		if(*src == '"' || *src == '\\')
+			extra_length++;
+	}
+
+	char *result = (char *)pa_malloc(length + extra_length + 1);
+	char *dest = result;
+
+	*dest++ = '"';
+
+	for(const char *src=arg; *src;){
+		char c = *src++;
+		if(c == '"' || c == '\\')
+			*dest++ = '\\'; // required for any program
+		*dest++ = c;
+	}
+
+	*dest++ = '"';
+	*dest = '\0';
+	return result;
+}
+
+static const char* cmd_quote(const char *arg) {
 	size_t length = strlen(arg);
 	if (length >= 2 && arg[0] == '"' && arg[length - 1] == '"')
 		return arg; // allready qouted
@@ -221,13 +249,21 @@ static const char* buildCommand(const char* file_spec_cstr, const ArrayString& a
 		}
 		fclose(f);
 	}
+
+	bool is_cmd = false;
+	{
+		size_t len = strlen(file_spec_cstr);
+		if (len >= 4) {
+			is_cmd = !strncasecmp(file_spec_cstr + len - 4, ".bat", 4) || !strncasecmp(file_spec_cstr + len - 4, ".cmd", 4);
+		}
+        }
+
 	{ // appending argv
 		String string(result);
 		for(size_t i=0; i<argv.count(); i++) {
 			string << " ";
-			string << shell_quote(argv[i]->cstr());
+			string << ( is_cmd ? cmd_quote(argv[i]->cstr()) : exe_quote(argv[i]->cstr()) );
 		}
-
 		result=string.cstr();
 	}
 
