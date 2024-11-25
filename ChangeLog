@@ -1,3 +1,43 @@
+2024-11-25  moko
+
+	* src/main/pa_exec.C: separated cmd_quote and exe_quote (related to
+	  bug #1239)
+
+2024-11-24  moko
+
+	* src/main/pa_exec.C: added cmd.exe specific
+
+	* tests/: 441.html, cat-windows.sh, cat.sh, results/441.processed:
+	  tests for ^file::exec env and args tainting tests (related to bug
+	  #1239)
+
+	* src/main/pa_exec.C: shell_quote added (partial fix for bug #1239)
+
+	* src/include/pa_config_includes.h: added recommendations for
+	  libxslt.a and and libexslt.a compilation under cygwin
+
+	* tests/results/102.processed: $form:fields.value is now writable,
+	  as $form:value (related to feature #1254)
+
+	* src/include/pa_config_includes.h: cigwin compilation fixes
+
+2024-11-23  moko
+
+	* tests/httpd/site/run_server.sh: to simplify testing
+
+	* tests/httpd/: 030.txt, 031.curl, 040.txt, ok.log, run_tests.sh,
+	  site/form.html: $form:files and $form:elements tests added, tests
+	  with curl supported (related to feature #1254)
+
+	* src/: include/pa_symbols.h, main/pa_symbols.C, types/pa_vform.C,
+	  types/pa_vform.h: $form:elements implemented, VForm::get_element
+	  uses faster SYMBOLS_EQ, hashes no longer copied when using
+	  $form:fields/tables/files/imap and can be edited (implements
+	  feature #1254)
+
+	* src/main/pa_http.C: pa_send added to handle partial writes (fixes
+	  bug #1261)
+
 2024-11-17  moko
 
 	* tests/: 440.html, results/440.processed: tests for
