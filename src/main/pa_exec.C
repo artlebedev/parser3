@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.102 2024/11/25 23:40:40 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.103 2024/11/26 00:34:09 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -131,7 +131,7 @@ static int get_exit_status(HANDLE hProcess) {
 	return dwExitCode;
 }
 
-static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
+static void read_pipe(String& result, HANDLE hOutRead, String::Language lang) {
 	while(true) {
 		char *buf=new(PointerFreeGC) char[MAX_STRING+1];
 		DWORD size=0;
@@ -142,7 +142,7 @@ static void read_pipe(String& result, HANDLE hOutRead, String::Language lang){
 	}
 }
 
-static void read_pipe(File_read_result& result, HANDLE hOutRead){
+static void read_pipe(File_read_result& result, HANDLE hOutRead) {
 
 	char *buf=(char*)pa_malloc(MAX_STRING+1);
 	DWORD bufsize = MAX_STRING;
@@ -167,12 +167,14 @@ static void read_pipe(File_read_result& result, HANDLE hOutRead){
 
 static const char* arg_quote(const char *arg) {
 	size_t length = strlen(arg);
+	if (length >= 1 && arg[0] == '-')
+		return arg; // avoid options qouting
 	if (length >= 2 && arg[0] == '"' && arg[length - 1] == '"')
 		return arg; // allready qouted
 
 	size_t extra_length = 2; // opening and closing quotes
 	for(const char *src = arg; *src; src++){
-		if(*src == '"' || *src == '\\')
+		if(*src == '"')
 			extra_length++;
 	}
 
@@ -183,11 +185,8 @@ static const char* arg_quote(const char *arg) {
 
 	for(const char *src=arg; *src;){
 		char c = *src++;
-		if(c == '"'){
-			*dest++ = '"'; // required for .cmd, .exe also supports \"
-		} else if(c == '\\'){
-			*dest++ = '\\';
-		}
+		if(c == '"')
+			*dest++ = '"';
 		*dest++ = c;
 	}
 
