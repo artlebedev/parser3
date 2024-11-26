@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 408
+Content-Length: 512
 
 env and args tainting tests:
 1. =
@@ -10,6 +10,8 @@ env and args tainting tests:
 	 some &lt;a href=&quot;/?a&amp;b&quot;&gt;html&lt;/a&gt; code 
 	 _2A _3F _22 _7C 
 	 some  <?dirty?>  code  trailing whitespace here ->   " =
-3. ="args" ""quo ted"" =
-4. ="args" "un"quo ted"" "%PATH%" "some\ 
+3. ="args" ""quo ted"" "-opt ion" =
+4. ="args" "1^ 2& 3` 4< 5> 6% 7! 8" 9| 10( 11) 12; 13= 14* 15? 16\ 17! 18[ 19] 20'" =
+5. ="args" "un"quo ted"" =
+6. ="args" "strange: 
  - enter?" =
