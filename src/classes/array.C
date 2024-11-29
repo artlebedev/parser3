@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.36 2024/11/17 14:04:28 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.37 2024/11/29 16:09:53 moko Exp $";
 
 // class
 
@@ -657,7 +657,7 @@ static void _remove(Request& r, MethodParams& params) {
 	array.invalidate();
 }
 
-static void _pop(Request& r, MethodParams& params) {
+static void _pop(Request& r, MethodParams&) {
 	ArrayValue& array=GET_SELF(r, VArray).array();
 	Value *result=array.pop();
 	if(result){
