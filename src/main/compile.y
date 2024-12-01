@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.299 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.300 2024/12/01 15:19:59 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -1367,11 +1367,11 @@ default:
 				goto break2;
 			case '[':
 				// $name.<[>code]
-				if(pc.pos.col>1/*not first column*/ && (
+				if(
 					end[-1]=='$'/*was start of get*/ ||
 					end[-1]==':'/*was class name delim */ ||
 					end[-1]=='.'/*was name delim */
-					)) {
+					) {
 					push_LS(pc, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
 					RC;
@@ -1380,7 +1380,7 @@ default:
 				lexical_brackets_nestage=1;
 				RC;
 			case '{':
-				if(begin==end) { // ${name}, no need of EON, switching LS
+				if(end[-1]=='$') { // ${name}, no need of EON, switching LS, not begin==end as $[a]{$b} will fit
 					pc.ls=LS_VAR_NAME_CURLY; 
 				} else {
 					pc.ls=LS_VAR_CURLY;
