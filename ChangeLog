@@ -1,3 +1,27 @@
+2024-12-01  moko
+
+	* tests/: 010.html, results/010.processed: some tests related to
+	  bug #1149 added
+
+	* src/main/compile.y: the check pc.pos.col > 1 is not required
+	  because we can't be here without a '$' before. The begin == end
+	  check was incorrect since $[a]{b} fits this condition (fixes bug
+	  #1149)
+
+2024-11-29  moko
+
+	* src/classes/array.C: warning war
+
+2024-11-26  moko
+
+	* tests/: 441.html, results/441.processed: a bit more testing
+	  (related to bug #1238)
+
+	* src/main/pa_exec.C: only " now quoted (related to bug #1239)
+
+	* src/main/pa_exec.C: simplification arg_quote added (related to
+	  bug #1229)
+
 2024-11-25  moko
 
 	* src/main/pa_exec.C: separated cmd_quote and exe_quote (related to
