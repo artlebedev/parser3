@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.361 2024/11/10 12:57:17 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.362 2024/12/02 02:50:40 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -34,7 +34,7 @@ extern "C" int GC_pthread_create(pthread_t *, const pthread_attr_t *, void *(*)(
 // defines
 
 // comment remove me after debugging
-//#define PA_DEBUG_CGI_ENTRY_EXIT "parser3-debug.log"
+//#define PA_DEBUG_CGI_ENTRY_EXIT
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
 #	define PA_SUPPRESS_SYSTEM_EXCEPTION
@@ -55,6 +55,7 @@ static THREAD_LOCAL SAPI_Info *sapi_info_4log = NULL; // global for correct send
 static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
 static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
+static const char* log_filespec = 0; // -l option
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
 static const char* parser3_filespec = 0; // argv[0]
 static char** argv_extra = NULL;
@@ -75,22 +76,20 @@ template <typename T> static T *dir_pos(T *fname){
 // SAPI
 
 static void pa_log(const char* fmt, va_list args) {
-	bool opened=false;
 	FILE *f=0;
 
-	const char* log_by_env=getenv(PARSER_LOG_ENV_NAME);
-	if(!log_by_env)
-		log_by_env=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
-	if(log_by_env) {
-		f=fopen(log_by_env, "at");
-		opened=f!=0;
-	}
-#ifdef PA_DEBUG_CGI_ENTRY_EXIT
-	f=fopen(PA_DEBUG_CGI_ENTRY_EXIT, "at");
-	opened=f!=0;
-#endif
+	if(log_filespec)
+		f=fopen(log_filespec, "at");
 
-	if(!opened && filespec_4log) {
+	if(!f) {
+		const char* log_by_env=getenv(PARSER_LOG_ENV_NAME);
+		if(!log_by_env)
+			log_by_env=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
+		if(log_by_env)
+			f=fopen(log_by_env, "at");
+	}
+
+	if(!f && filespec_4log) {
 		char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
@@ -102,10 +101,9 @@ static void pa_log(const char* fmt, va_list args) {
 		}
 
 		f=fopen(log_spec, "at");
-		opened=f!=0;
 	}
 	// fallback to stderr
-	if(!opened)
+	if(!f)
 		f=stderr;
 
 	// use no memory [so that we could log out-of-memory error]
@@ -129,7 +127,7 @@ static void pa_log(const char* fmt, va_list args) {
 	} else
 		fputs(" [no request info]\n", f);
 
-	if(opened)
+	if(f!=stderr)
 		fclose(f);
 	else
 		fflush(f);
@@ -557,7 +555,7 @@ static void real_parser_handler(bool cgi) {
 	request_info.argv = argv_extra;
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
-	log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s", request_info.method, request_info.uri, request_info.query_string, request_info.document_root, request_info.path_translated);
+	pa_log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s", request_info.method, request_info.uri, request_info.query_string, request_info.document_root, request_info.path_translated);
 #endif
 
 	// prepare to process request
@@ -632,7 +630,7 @@ static void usage(const char* program) {
 
 int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
-	log("main: entry");
+	pa_log("main: entry");
 #endif
 
 	parser3_filespec = argc && argv[0] ? MAYBE_BACK_SLASHES_TO_SLASHES(argv[0]) : "parser3";
@@ -668,6 +666,12 @@ int main(int argc, char *argv[]) {
 						if(optind < argc - 1){
 							optind++;
 							config_filespec=argv[optind];
+						}
+						break;
+					case 'l':
+						if(optind < argc - 1){
+							optind++;
+							log_filespec=argv[optind];
 						}
 						break;
 					case 'p':
@@ -739,7 +743,7 @@ int main(int argc, char *argv[]) {
 	}
 
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
-	log("main: successful return");
+	pa_log("main: successful return");
 #endif
 	return sapi_info->http_response_code < 100 ? sapi_info->http_response_code : 0;
 }
