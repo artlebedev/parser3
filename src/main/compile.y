@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.300 2024/12/01 15:19:59 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.301 2024/12/03 04:07:02 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -653,6 +653,7 @@ name_expr_value:
 |	name_expr_subvar_value /* $subname_is_var_value */
 |	name_expr_with_subvar_value /* xxx$part_of_subname_is_var_value */
 |	name_square_code_value /* [codes] */
+|	name_round_expr_value /* (expr) */
 ;
 name_expr_subvar_value: '$' subvar_ref_name_rdive {
 	$$=$2;
@@ -682,6 +683,10 @@ name_square_code_value: '[' {
 		/* some code that writes to that context */
 		/* context=pop; stack: context.value() */
 	}
+};
+name_round_expr_value: '(' expr_value ')' {
+	$$ = N();
+	P(*$$, *$2);
 };
 subvar_ref_name_rdive: STRING {
 	$$=N(); 
@@ -1367,10 +1372,9 @@ default:
 				goto break2;
 			case '[':
 				// $name.<[>code]
-				if(
-					end[-1]=='$'/*was start of get*/ ||
-					end[-1]==':'/*was class name delim */ ||
-					end[-1]=='.'/*was name delim */
+				if(	end[-1]=='$' /* was start of get */ ||
+					end[-1]==':' /* was class name delim */ ||
+					end[-1]=='.' /* was name delim */
 					) {
 					push_LS(pc, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
@@ -1389,6 +1393,15 @@ default:
 
 				RC;
 			case '(':
+				// $name.<(>expr)
+				if(	// end[-1]=='$' /* $() excluded */ ||
+					end[-1]==':' /* was class name delim */ ||
+					end[-1]=='.' /* was name delim */
+					) {
+					push_LS(pc, LS_VAR_ROUND);
+					lexical_brackets_nestage=1;
+					RC;
+				}
 				pc.ls=LS_VAR_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
@@ -1410,6 +1423,11 @@ default:
 			case '[':
 				// ${name.<[>code]}
 				push_LS(pc, LS_NAME_SQUARE_PART);
+				lexical_brackets_nestage=1;
+				RC;
+			case '(':
+				// ${name.<(>expr)}
+				push_LS(pc, LS_VAR_ROUND);
 				lexical_brackets_nestage=1;
 				RC;
 			case '}': // ${name} finished, restoring LS
@@ -1468,12 +1486,11 @@ default:
 		case LS_METHOD_NAME:
 			switch(c) {
 			case '[':
-				// ^name.<[>code].xxx
-				if(pc.pos.col>1/*not first column*/ && (
-					end[-1]=='^'/*was start of call*/ || // never, ^[ is literal...
-					end[-1]==':'/*was class name delim */ ||
-					end[-1]=='.'/*was name delim */
-					)) {
+				// ^name.<[>code]
+				if(	// end[-1]=='^' /* never, ^[ is literal */ ||
+					end[-1]==':' /* was class name delim */ ||
+					end[-1]=='.' /* was name delim */
+					) {
 					push_LS(pc, LS_NAME_SQUARE_PART);
 					lexical_brackets_nestage=1;
 					RC;
@@ -1486,6 +1503,15 @@ default:
 				lexical_brackets_nestage=1;
 				RC;
 			case '(':
+				// ^name.<(>expr)
+				if(	// end[-1]=='^' /* never, ^( is literal */ ||
+					end[-1]==':' /* was class name delim */ ||
+					end[-1]=='.' /* was name delim */
+					) {
+					push_LS(pc, LS_VAR_ROUND);
+					lexical_brackets_nestage=1;
+					RC;
+				}
 				pc.ls=LS_METHOD_ROUND;
 				lexical_brackets_nestage=1;
 				RC;
