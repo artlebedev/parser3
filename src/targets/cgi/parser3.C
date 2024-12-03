@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.362 2024/12/02 02:50:40 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.363 2024/12/03 23:48:43 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -77,19 +77,16 @@ template <typename T> static T *dir_pos(T *fname){
 
 static void pa_log(const char* fmt, va_list args) {
 	FILE *f=0;
+	const char* slog=log_filespec;
 
-	if(log_filespec)
-		f=fopen(log_filespec, "at");
+	if(!slog)
+		slog=getenv(PARSER_LOG_ENV_NAME);
+	if(!slog)
+		slog=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
 
-	if(!f) {
-		const char* log_by_env=getenv(PARSER_LOG_ENV_NAME);
-		if(!log_by_env)
-			log_by_env=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
-		if(log_by_env)
-			f=fopen(log_by_env, "at");
-	}
-
-	if(!f && filespec_4log) {
+	if(slog) {
+		f=strcmp(slog,"-") ? fopen(slog, "at") : stderr;
+	} else 	if(filespec_4log) {
 		char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
@@ -99,9 +96,9 @@ static void pa_log(const char* fmt, va_list args) {
 			// no path, just filename
 			strcpy(log_spec, "./parser3.log");
 		}
-
 		f=fopen(log_spec, "at");
 	}
+
 	// fallback to stderr
 	if(!f)
 		f=stderr;
