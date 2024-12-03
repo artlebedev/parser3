@@ -1,26 +1,52 @@
+@main[]
+
 1. $x.$y
 
-$a[ $.b[value] ]
+2. $a[ $.b[value] ]
+   ${a.b}.something
+   ${a.b}[something]
 
-2. ${a.b}.something
-3. ${a.b}[something]
+3. $b[finally works]
+   $[a]{$b}
+   $a!
 
-$b[finally works]
-$[a]{$b}
-4. $a!
+4. $a[ $.b[c] ]
+   $v[^hash::create[]]
+   $v.[$a.b][ $.x[y] ]
+   $v.c.x
 
-$a[ $.b[c] ]
+5. $a[c]
+   $b[x]
+   $v.$a.$b
 
-$v[^hash::create[]]
-$v.[$a.b][ $.x[y] ]
+6. $b[a]
+   $v.[$$b].x
 
-5. $v.c.x
+7. ${v.[$$b].x}.extra
 
-$a[c]
-$b[x]
+8. $a[ $.b[m] ]
+   ^MAIN:[$a.b][arg]
 
-6. $v.$a.$b
+9. $b[2]
+   $h[ $.1[1] $.(5)[5] $.[1.b][1] ]
+   $h.[$b $b][$b $b]
+   $h.($b+$b)($b+$b)
+   ^json:string[$h]
 
-$b[a]
+10. ${h.($b+2)}.extra
 
-7. $v.[$$b].x
+11. ^MAIN:($b+$b)[arg]
+
+12. $h.( $h.[$h.(0+1)] + ${h.(1+0)} + ^MAIN:($b + $h.(0.5+0.5) + $h.[${h.(4/4)}.b] )(2) )
+
+13. $MAIN:(2+2)[4]
+    $MAIN:4
+
+14. ^(2+2)[1]
+
+
+@m[v]
+$v
+
+@4[v]
+$v

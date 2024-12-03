@@ -1,9 +1,23 @@
 Content-Type: text/html
-Content-Length: 74
+Content-Length: 189
 
 1. 2. value.something
-3. value[something]
-4. finally works!
+value[something]
+3. finally works!
+4. y
 5. y
 6. y
-7. y
+7. y.extra
+8. arg
+9. {
+"1":"1",
+"5":"5",
+"1.b":"1",
+"2 2":"2 2",
+"4":4
+}
+10. 4.extra
+11. arg
+12. 4
+13. 4
+14. (2+2)[1]
