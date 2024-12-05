@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.363 2024/12/03 23:48:43 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.364 2024/12/05 20:10:50 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -605,7 +605,11 @@ static void call_real_parser_handler__supress_system_exception(bool cgi) {
 #define REAL_PARSER_HANDLER real_parser_handler
 #endif
 
-static void usage(const char* program) {
+static void usage(const char* message=NULL) {
+	if(message){
+		fprintf(stderr, message, parser3_filespec);
+	}
+
 	printf(
 		"Parser/%s\n"
 		"Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)\n"
@@ -617,20 +621,29 @@ static void usage(const char* program) {
 		"    -m              Parse mail, put received letter to $mail:received\n"
 #endif
 		"    -f config_file  Use this config file (/path/to/auto.p)\n"
+		"    -l log_file     Use this log file (/path/to/parser3.log)\n"
 		"    -p [host:]port  Start web server on this port\n"
 		"    -h              Display usage information (this message)\n",
 		PARSER_VERSION,
-		program);
+		parser3_filespec ? parser3_filespec : "parser3" );
 	exit(EINVAL);
 }
 
+#define ARG_REQUIRED \
+	if(c[1] || !*(++carg)){ \
+		fprintf(stderr, "%s: option '%c' requires an argument\n", parser3_filespec, *c); \
+		usage(); \
+	}
 
 int main(int argc, char *argv[]) {
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	pa_log("main: entry");
 #endif
 
-	parser3_filespec = argc && argv[0] ? MAYBE_BACK_SLASHES_TO_SLASHES(argv[0]) : "parser3";
+	if(!argc || !argv[0])
+		usage();
+	parser3_filespec = MAYBE_BACK_SLASHES_TO_SLASHES(argv[0]);
+
 	umask(2);
 
 	// were we started as CGI?
@@ -641,41 +654,32 @@ int main(int argc, char *argv[]) {
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIGPIPE_handler);
 #endif
-
 	char* raw_filespec_to_process = NULL;
 	if(cgi) {
 		raw_filespec_to_process=getenv("PATH_TRANSLATED");
 		argv_extra=argv + 1;
 	} else {
-		int optind=1;
-		while(optind < argc){
-			char* carg = argv[optind];
-			if(carg[0] != '-')
+		char** carg = argv + 1;
+		for(;*carg; carg++){
+			if((*carg)[0] != '-')
 				break;
 
-			for(size_t k = 1; k < strlen(carg); k++){
-				char c = carg[k];
-				switch (c) {
+			for(char* c=(*carg)+1; *c; c++){
+				switch (*c) {
 					case 'h':
-						usage(parser3_filespec);
+						usage();
 						break;
 					case 'f':
-						if(optind < argc - 1){
-							optind++;
-							config_filespec=argv[optind];
-						}
+						ARG_REQUIRED;
+						config_filespec=*carg;
 						break;
 					case 'l':
-						if(optind < argc - 1){
-							optind++;
-							log_filespec=argv[optind];
-						}
+						ARG_REQUIRED;
+						log_filespec=*carg;
 						break;
 					case 'p':
-						if(optind < argc - 1){
-							optind++;
-							httpd_host_port=argv[optind];
-						}
+						ARG_REQUIRED;
+						httpd_host_port=*carg;
 						break;
 #ifdef WITH_MAILRECEIVE
 					case 'm':
@@ -683,29 +687,24 @@ int main(int argc, char *argv[]) {
 						break;
 #endif
 					default:
-						fprintf(stderr, "%s: invalid option '%c'\n", parser3_filespec, c);
-						usage(parser3_filespec);
+						fprintf(stderr, "%s: invalid option '%c'\n", parser3_filespec, *c);
+						usage();
 						break;
 				}
 			}
-			optind++;
 		}
 		
-		if (optind > argc - 1) {
-			if(!httpd_host_port) {
-				fprintf(stderr, "%s: file not specified\n", parser3_filespec);
-				usage(parser3_filespec);
-			}
+		if (*carg) {
+			raw_filespec_to_process=*carg;
 		} else {
-			raw_filespec_to_process=argv[optind];
+			if(!httpd_host_port)
+				usage("%s: file not specified\n");
 		}
 
-		if (httpd_host_port && mail_received) {
-				fprintf(stderr, "%s: -p and -m options should not be used together\n", parser3_filespec);
-				usage(parser3_filespec);
-		}
+		if (httpd_host_port && mail_received)
+			usage("%s: -p and -m options should not be used together\n");
 
-		argv_extra=argv + optind;
+		argv_extra=carg;
 	}
 
 #ifdef _MSC_VER
