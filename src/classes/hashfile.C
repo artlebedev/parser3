@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.66 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.67 2024/12/06 23:20:04 moko Exp $";
 
 // class
 
@@ -42,7 +42,7 @@ static void _open(Request& r, MethodParams& params) {
 		r.classes_conf.put(OPEN_DATA_NAME, file_list);
 	}
 
-	const String& file_spec=r.full_disk_path(params.as_string(0, FILE_NAME_MUST_BE_STRING));
+	const String& file_spec=r.full_disk_path(params.as_file_name(0));
 	if(file_list->get(file_spec))
 		throw Exception(PARSER_RUNTIME,
 			0,

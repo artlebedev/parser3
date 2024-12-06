@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.205 2024/11/11 05:50:09 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.206 2024/12/06 23:20:04 moko Exp $";
 
 // defines
 
@@ -523,7 +523,7 @@ static void _file(Request& r, MethodParams& params) {
 static void _save(Request& r, MethodParams& params) {
 	VXdoc& vdoc=GET_SELF(r, VXdoc);
 
-	const String& file_spec=r.full_disk_path(params.as_string(0, FILE_NAME_MUST_BE_STRING));
+	const String& file_spec=r.full_disk_path(params.as_file_name(0));
 	
 	XDocOutputOptions oo(vdoc.output_options);
 	oo.append(r, get_options(params, 1));

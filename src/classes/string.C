@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.260 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.261 2024/12/06 23:20:04 moko Exp $";
 
 // class
 
@@ -641,7 +641,7 @@ static void _save(Request& r, MethodParams& params) {
 		}
 	}
 
-	const String& file_name=params.as_string(file_name_index, FILE_NAME_MUST_BE_STRING);
+	const String& file_name=params.as_file_name(file_name_index);
 	const String& src=GET_SELF(r, VString).string();
 
 	String::Body sbody=src.cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets);

@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.290 2024/12/06 22:03:58 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.291 2024/12/06 23:20:04 moko Exp $";
 
 // defines
 
@@ -134,7 +134,7 @@ static const String::Body cdate_name("cdate");
 
 static void _save(Request& r, MethodParams& params) {
 	bool is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
-	const String& file_name=params.as_string(1, FILE_NAME_MUST_BE_STRING);
+	const String& file_name=params.as_file_name(1);
 
 	Charset* asked_charset=0;
 	if(params.count()>2)
@@ -153,7 +153,7 @@ static void _save(Request& r, MethodParams& params) {
 }
 
 static void _delete(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& file_name=params.as_file_name(0);
 	bool keep_empty_dirs=false;
 	bool fail_on_problem=true;
 
@@ -257,7 +257,7 @@ static void _load_pass_param(
 
 static void _load(Request& r, MethodParams& params) {
 	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
-	const String& lfile_name=r.full_disk_path(params.as_string(1, FILE_NAME_MUST_BE_STRING));
+	const String& lfile_name=r.full_disk_path(params.as_file_name(1));
 
 	size_t param_index=params.count()-1;
 	Value* param_value=param_index>1?&params.as_no_junction(param_index, "file name or options must not be code"):0;
@@ -390,7 +390,7 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 static void _stat(Request& r, MethodParams& params) {
-	const String& lfile_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& lfile_name=params.as_file_name(0);
 
 	uint64_t size;
 	time_t atime, mtime, ctime;
@@ -487,7 +487,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	if(param_index>=params.count())
 		throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 
-	const String& script_name=r.full_disk_path(params.as_string(param_index++, FILE_NAME_MUST_BE_STRING));
+	const String& script_name=r.full_disk_path(params.as_file_name(param_index++));
 
 	HashStringString env;
 	#define ECSTR(name, value_cstr) if(value_cstr) env.put(#name, value_cstr);
@@ -783,7 +783,7 @@ static void lock_execute_body(int , void *ainfo) {
 }
 
 static void _lock(Request& r, MethodParams& params) {
-	const String& file_spec=r.full_disk_path(params.as_string(0, FILE_NAME_MUST_BE_STRING));
+	const String& file_spec=r.full_disk_path(params.as_file_name(0));
 	Lock_execute_body_info info={
 		&r, 
 		&params.as_junction(1, "body must be code")
@@ -1137,7 +1137,7 @@ static void _base64(Request& r, MethodParams& params) {
 		if(params.count() > 2)
 			throw Exception(PARSER_RUNTIME, 0, "accepts maximum 2 parameter(s) (has %d parameters)", params.count());
 
-		const String& file_spec = params.as_string(0, FILE_NAME_MUST_BE_STRING);
+		const String& file_spec = params.as_file_name(0);
 		File_read_result data = file_read_binary(r.full_disk_path(file_spec), true /*fail on problem*/);
 
 		Base64Options options = base64_encode_options(r, params.count() > 1 ? params.as_hash(1) : NULL);
@@ -1151,7 +1151,7 @@ static void _crc32(Request& r, MethodParams& params) {
 	if(&r.get_self() == file_class) {
 		// ^file:crc32[file-name]
 		if(params.count()) {
-			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+			const String& file_spec=params.as_file_name(0);
 			crc32=pa_crc32(r.full_disk_path(file_spec));
 		} else {
 			throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
@@ -1207,7 +1207,7 @@ static void _md5(Request& r, MethodParams& params) {
 	if(&r.get_self() == file_class) {
 		// ^file:md5[file-name]
 		if(params.count()) {
-			const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+			const String& file_spec=params.as_file_name(0);
 			md5=pa_md5(r.full_disk_path(file_spec));
 		} else {
 			throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);

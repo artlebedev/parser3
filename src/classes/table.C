@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.375 2024/12/06 22:03:58 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.376 2024/12/06 23:20:04 moko Exp $";
 
 // class
 
@@ -404,7 +404,7 @@ static void skip_empty_lines( char** data_ref ) {
 typedef void (*Skip_lines_action)(char** data_ref);
 
 static void _load(Request& r, MethodParams& params) {
-	const String&  first_param=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String&  first_param=params.as_file_name(0);
 	int filename_param_index=0;
 	bool nameless=first_param=="nameless";
 	if(nameless)
@@ -417,7 +417,7 @@ static void _load(Request& r, MethodParams& params) {
 		control_chars.load(*options);
 
 	// loading text
-	char *data=file_load_text(r, r.full_disk_path(params.as_string(filename_param_index, FILE_NAME_MUST_BE_STRING)), true, options);
+	char *data=file_load_text(r, r.full_disk_path(params.as_file_name(filename_param_index)), true, options);
 
 	Skip_lines_action skip_lines_action = (control_chars.separator=='#' || control_chars.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
 
@@ -638,7 +638,7 @@ static void _save(Request& r, MethodParams& params) {
 	else
 		--param_index;
 
-	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_BE_STRING);
+	const String& file_name=params.as_file_name(param_index++);
 	String file_spec=r.full_disk_path(file_name);
 
 	if(do_append && file_exist(file_spec))
