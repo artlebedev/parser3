@@ -1,0 +1,32 @@
+1. ^try-catch{ ^use[$empty] }
+
+2. $f[^file::create[test]]
+   ^try-catch{ ^f.save[text;;] }
+
+3. ^try-catch{ ^file:delete[$empty] }
+
+4. ^try-catch{ ^file::load[text;;] }
+
+5. ^try-catch{ ^json:string[^file::stat[$empty]] }
+
+6. ^try-catch{ ^json:string[^file::exec[;]] }
+
+7. ^try-catch{ ^file:lock[]{code} }
+
+8. ^try-catch{ ^file:base64[;] }
+
+9. ^try-catch{ ^file:crc32[$empty] }
+
+10. ^try-catch{ ^file:md5[$empty] }
+
+11. ^try-catch{ $gm[^hashfile::open[$empty]] $gm.key[value] }
+
+12. ^try-catch{ $i[^image::load[$empty]] }
+
+13. ^try-catch{ $i[^image::font[abc;]] }
+
+14. ^try-catch{ $s[ ] ^s.save[$empty] }
+
+14. ^try-catch{ ^table::load[nameless;] }
+
+15. ^try-catch{ ^table::load[;] }
