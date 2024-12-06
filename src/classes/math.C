@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.108 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.109 2024/12/06 21:43:35 moko Exp $";
 
 // defines
 
@@ -356,13 +356,12 @@ void memxor(char *dest, const char *src, size_t n){
 #define IPAD 0x36
 #define OPAD 0x5c
 
-#define HMAC(key,init,update,final,blocklen,digestlen){				\
+#define HMAC(key,keylen,init,update,final,blocklen,digestlen){			\
 	unsigned char tempdigest[digestlen], keydigest[digestlen];		\
-	size_t keylen=strlen(key);						\
 	/* Reduce the key's size, so that it becomes <= blocklen bytes. */	\
 	if (keylen > blocklen){							\
 		init(&c);							\
-		update(&c,(const unsigned char*)hmac, keylen);			\
+		update(&c,(const unsigned char*)key, keylen);			\
 		final(keydigest, &c);						\
 		key = (char *)keydigest;					\
 		keylen = digestlen;						\
@@ -397,19 +396,28 @@ static void _digest(Request& r, MethodParams& params) {
 	else throw Exception(PARSER_RUNTIME, &smethod, "must be 'md5' or 'sha1' or 'sha256' or 'sha512'");
 
 	const char *hmac=0;
-	enum Format { F_HEX, F_BASE64 } format = F_HEX;
+	size_t hmac_len=0;
+
+	enum Format { F_HEX, F_BASE64, F_FILE } format = F_HEX;
 
 	if(params.count() == 3)
 		if(HashStringValue* options=params.as_hash(2)) {
 			int valid_options=0;
 			if(Value* value=options->get("hmac")) {
-				hmac=value->as_string().cstr();
+				if(VFile* vfile=dynamic_cast<VFile *>(value)){
+					hmac=(const char* )vfile->value_ptr();
+					hmac_len=vfile->value_size();
+				} else {
+					hmac=value->as_string().cstr();
+					hmac_len=strlen(hmac);
+				}
 				valid_options++;
 			}
 			if(Value* value=options->get("format")) {
 				const String& sformat=value->as_string();
 				if (sformat == "hex") format = F_HEX;
 				else if (sformat == "base64" ) format = F_BASE64;
+				else if (sformat == "file" ) format = F_FILE;
 				else throw Exception(PARSER_RUNTIME, &sformat, "must be 'hex' or 'base64'");
 				valid_options++;
 			}
@@ -422,7 +430,7 @@ static void _digest(Request& r, MethodParams& params) {
 	if(method == M_MD5){
 		PA_MD5_CTX c;
 		if(hmac){
-			HMAC(hmac, pa_MD5Init, pa_MD5Update, pa_MD5Final, 64, 16);
+			HMAC(hmac, hmac_len, pa_MD5Init, pa_MD5Update, pa_MD5Final, 64, 16);
 		} else {
 			pa_MD5Init(&c);
 			pa_MD5Update(&c, (const unsigned char*)data.str, data.length);
@@ -435,7 +443,7 @@ static void _digest(Request& r, MethodParams& params) {
 	if(method == M_SHA1){
 		SHA1Context c;
 		if(hmac){
-			HMAC(hmac, SHA1Reset, SHA1Input, SHA1ReadDigest, 64, 20);
+			HMAC(hmac, hmac_len, SHA1Reset, SHA1Input, SHA1ReadDigest, 64, 20);
 		} else {
 			SHA1Reset(&c);
 			SHA1Input(&c, (const unsigned char*)data.str, data.length);
@@ -448,7 +456,7 @@ static void _digest(Request& r, MethodParams& params) {
 	if(method == M_SHA256){
 		SHA256_CTX c;
 		if(hmac){
-			HMAC(hmac, pa_SHA256_Init, pa_SHA256_Update, pa_SHA256_Final, 64, SHA256_DIGEST_LENGTH);
+			HMAC(hmac, hmac_len, pa_SHA256_Init, pa_SHA256_Update, pa_SHA256_Final, 64, SHA256_DIGEST_LENGTH);
 		} else {
 			pa_SHA256_Init(&c);
 			pa_SHA256_Update(&c, (const unsigned char*)data.str, data.length);
@@ -461,7 +469,7 @@ static void _digest(Request& r, MethodParams& params) {
 	if(method == M_SHA512){
 		SHA512_CTX c;
 		if(hmac){
-			HMAC(hmac, pa_SHA512_Init, pa_SHA512_Update, pa_SHA512_Final, 128, SHA512_DIGEST_LENGTH);
+			HMAC(hmac, hmac_len, pa_SHA512_Init, pa_SHA512_Update, pa_SHA512_Final, 128, SHA512_DIGEST_LENGTH);
 		} else {
 			pa_SHA512_Init(&c);
 			pa_SHA512_Update(&c, (const unsigned char*)data.str, data.length);
@@ -476,6 +484,11 @@ static void _digest(Request& r, MethodParams& params) {
 	}
 	if(format == F_BASE64){
 		r.write(*new String(pa_base64_encode(digest.str, digest.length, Base64Options(false /*no wrap*/))));
+	}
+	if(format == F_FILE){
+		VFile& result=*new VFile;
+		result.set_binary(true, digest.str, digest.length);
+		r.write(result);
 	}
 }
 
