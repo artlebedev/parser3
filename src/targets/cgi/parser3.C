@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.364 2024/12/05 20:10:50 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.365 2024/12/06 00:40:12 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -52,6 +52,7 @@ SAPI_Info_CGI sapi_cgi;
 static SAPI_Info *sapi_info = &sapi_cgi;
 static THREAD_LOCAL SAPI_Info *sapi_info_4log = NULL; // global for correct send error in die()
 
+const char* parser3_mode = "cgi"; // $status:mode
 static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
 static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
@@ -648,8 +649,10 @@ int main(int argc, char *argv[]) {
 
 	// were we started as CGI?
 	bool cgi=(getenv("SERVER_SOFTWARE") || getenv("SERVER_NAME") || getenv("GATEWAY_INTERFACE") || getenv("REQUEST_METHOD")) && !getenv("PARSER_VERSION");
-	if(!cgi)
+	if(!cgi){
 		sapi_info = &sapi_console;
+		parser3_mode = "console";
+	}
 
 #ifdef SIGPIPE
 	signal(SIGPIPE, SIGPIPE_handler);
@@ -680,10 +683,12 @@ int main(int argc, char *argv[]) {
 					case 'p':
 						ARG_REQUIRED;
 						httpd_host_port=*carg;
+						parser3_mode="httpd";
 						break;
 #ifdef WITH_MAILRECEIVE
 					case 'm':
 						mail_received=true;
+						parser3_mode="mail";
 						break;
 #endif
 					default:

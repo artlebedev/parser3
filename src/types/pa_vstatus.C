@@ -11,9 +11,10 @@
 #include "pa_cache_managers.h"
 #include "pa_vhash.h"
 #include "pa_vdouble.h"
+#include "pa_vstring.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.43 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.44 2024/12/06 00:40:12 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -187,6 +188,8 @@ Value& memory_element() {
 }
 #endif
 
+extern const char* parser3_mode;
+
 Value* VStatus::get_element(const String& aname) {
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// CLASS, CLASS_NAME
@@ -205,6 +208,10 @@ Value* VStatus::get_element(const String& aname) {
 	// $tid
 	if(aname=="tid")
 		return new VInt(pa_get_thread_id());
+
+	// $mode
+	if(aname=="mode")
+		return new VString(*new String(parser3_mode));
 
 	// $rusage
 	if(aname=="rusage")
