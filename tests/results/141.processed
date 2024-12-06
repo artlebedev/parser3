@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1271
+Content-Length: 1591
 
 1 36<br />
 1.1 32<br />
@@ -28,3 +28,13 @@ Content-Length: 1271
 7.1 43b33c29d3ceca39d0a8b8e4d7762f929f76d65757af97eb040d15a88f0ede54<br />
 8 499ec46e98e0baab9d57205d022f058a = 499ec46e98e0baab9d57205d022f058a<br />
 8.1 6a3094c3c142129b10cbeabf1671b9dcfe81738f = 6a3094c3c142129b10cbeabf1671b9dcfe81738f<br />
+9 <br />
+{
+"class":"file",
+"name":"noname.dat",
+"size":64,
+"mode":"binary",
+"content-type":"application\/octet-stream",
+"base64":"RRJhFW+zh\/jVGJRHqv3y+wSGsjFr2N03jHTk21MMkUpNGZhDONHXrAF0O9zkRGBwXP4uv2HC0ECE\nVtlFMfluKw=="
+}
+RRJhFW+zh/jVGJRHqv3y+wSGsjFr2N03jHTk21MMkUpNGZhDONHXrAF0O9zkRGBwXP4uv2HC0ECEVtlFMfluKw==<br />

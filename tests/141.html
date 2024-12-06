@@ -40,3 +40,9 @@ $f[^file::create[$s]]
 
 8   ^math:md5[$s] = ^math:md5[$f.text]<br />
 8.1 ^math:digest[sha1;$s] = ^math:digest[sha1;$f.text]<br />
+
+$f[^file::create[test]]
+
+9 $r[^math:digest[sha512;123; $.hmac[$f] $.format[file] ]]<br />
+  ^json:string[$r; $.file[base64] ]
+  ^math:digest[sha512;123; $.hmac[$f.text] $.format[base64] ]<br />
