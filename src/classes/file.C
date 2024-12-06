@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.289 2024/11/10 20:46:08 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.290 2024/12/06 22:03:58 moko Exp $";
 
 // defines
 
@@ -134,7 +134,7 @@ static const String::Body cdate_name("cdate");
 
 static void _save(Request& r, MethodParams& params) {
 	bool is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
-	Value& vfile_name=params.as_no_junction(1, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& file_name=params.as_string(1, FILE_NAME_MUST_BE_STRING);
 
 	Charset* asked_charset=0;
 	if(params.count()>2)
@@ -149,11 +149,11 @@ static void _save(Request& r, MethodParams& params) {
 		}
 
 	// save
-	GET_SELF(r, VFile).save(r.charsets, r.full_disk_path(vfile_name.as_string()), is_text, asked_charset);
+	GET_SELF(r, VFile).save(r.charsets, r.full_disk_path(file_name), is_text, asked_charset);
 }
 
 static void _delete(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& file_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 	bool keep_empty_dirs=false;
 	bool fail_on_problem=true;
 
@@ -257,7 +257,7 @@ static void _load_pass_param(
 
 static void _load(Request& r, MethodParams& params) {
 	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
-	const String& lfile_name=r.full_disk_path(params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
+	const String& lfile_name=r.full_disk_path(params.as_string(1, FILE_NAME_MUST_BE_STRING));
 
 	size_t param_index=params.count()-1;
 	Value* param_value=param_index>1?&params.as_no_junction(param_index, "file name or options must not be code"):0;
@@ -318,7 +318,7 @@ static void _create(Request& r, MethodParams& params) {
 		// old format: ^file::create[text|binary;file-name;string-or-file-content[;options]] 
 		mode=&params.as_string(0, MODE_MUST_NOT_BE_CODE);
 		is_text=VFile::is_text_mode(*mode);
-		file_name=&params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE);
+		file_name=&params.as_string(1, FILE_NAME_MUST_BE_STRING);
 		content_index=2;
 		options_index=3;
 		extended_options=false;
@@ -390,7 +390,7 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 static void _stat(Request& r, MethodParams& params) {
-	const String& lfile_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& lfile_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 
 	uint64_t size;
 	time_t atime, mtime, ctime;
@@ -487,7 +487,7 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	if(param_index>=params.count())
 		throw Exception(PARSER_RUNTIME, 0, FILE_NAME_MUST_BE_SPECIFIED);
 
-	const String& script_name=r.full_disk_path(params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE));
+	const String& script_name=r.full_disk_path(params.as_string(param_index++, FILE_NAME_MUST_BE_STRING));
 
 	HashStringString env;
 	#define ECSTR(name, value_cstr) if(value_cstr) env.put(#name, value_cstr);
@@ -807,7 +807,7 @@ static size_t afterlastslash(const String& str, size_t right) {
 }
 
 static void _find(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& file_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 
 	Value* not_found_code=(params.count()==2)?&params.as_junction(1, "not-found param must be code"):0;
 

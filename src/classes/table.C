@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.374 2024/11/17 14:04:28 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.375 2024/12/06 22:03:58 moko Exp $";
 
 // class
 
@@ -638,7 +638,7 @@ static void _save(Request& r, MethodParams& params) {
 	else
 		--param_index;
 
-	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& file_name=params.as_string(param_index++, FILE_NAME_MUST_BE_STRING);
 	String file_spec=r.full_disk_path(file_name);
 
 	if(do_append && file_exist(file_spec))

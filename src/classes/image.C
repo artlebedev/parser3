@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.192 2024/11/10 20:46:08 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.193 2024/12/06 22:03:58 moko Exp $";
 
 // defines
 
@@ -1096,7 +1096,7 @@ static gdImage* load(Request& r, const String& file_name){
 
 
 static void _load(Request& r, MethodParams& params) {
-	const String& file_name=params.as_string(0, FILE_NAME_MUST_NOT_BE_CODE);
+	const String& file_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 
 	gdImage* image=load(r, file_name);
 	GET_SELF(r, VImage).set(&file_name, image->SX(), image->SY(), image);
@@ -1352,7 +1352,7 @@ static void _font(Request& r, MethodParams& params) {
 	if(!alphabet_length)
 		throw Exception(PARSER_RUNTIME, 0, "alphabet must not be empty");
 
-	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_NOT_BE_CODE));
+	gdImage* image=load(r, params.as_string(1, FILE_NAME_MUST_BE_STRING));
 
 	int spacebar_width=image->SX();
 	int monospace_width=0; // proportional
