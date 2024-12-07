@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.135 2024/12/07 02:15:51 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.136 2024/12/07 13:59:29 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -306,12 +306,13 @@ public: // usage
 		size_t i=0;
 
 		if(count>param_count){
-			if(method.extra_params){
-				for(; i<param_count; i++) {
-					const String& fname=*(*method.params_names)[i];
-					my.put(fname, params[i]);
-				}
 
+			for(; i<param_count; i++) {
+				const String& fname=*(*method.params_names)[i];
+				my.put(fname, params[i]);
+			}
+
+			if(method.extra_params){
 				VHash& vargs=*new VHash();
 				HashStringValue& args = vargs.hash();
 
@@ -320,23 +321,40 @@ public: // usage
 				}
 
 				my.put(*method.extra_params, &vargs);
-				return;
+			} else if(method.named_params){
+				if(count!=param_count+1)
+					throw Exception(PARSER_RUNTIME, method.name, "method of '%s' accepts maximum %d parameter(s) (%d present)", self().type(), param_count+1, count);
+
+				HashStringValue* named_args = params[i]->as_hash("named parameter");
+				size_t named_count=method.named_params->count();
+ 				for(i=0; i<named_count; i++) {
+					const String& fname=*(*method.named_params)[i];
+					Value *arg=named_args ? named_args->get(fname) : NULL;
+					my.put(fname, arg ? arg : VVoid::get());
+				}
 			} else
 				throw Exception(PARSER_RUNTIME, method.name, "method of '%s' accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
 		} else {
+
+			for(; i<count; i++) {
+				const String& fname=*(*method.params_names)[i];
+				my.put(fname, params[i]);
+			}
+
+			for(; i<param_count; i++) {
+				const String& fname=*(*method.params_names)[i];
+				my.put(fname, VVoid::get());
+			}
+
 			if(method.extra_params){
 				my.put(*method.extra_params, VVoid::get());
+			} else if(method.named_params){
+				size_t named_count=method.named_params->count();
+				for(i=0; i<named_count; i++) {
+					const String& fname=*(*method.named_params)[i];
+					my.put(fname, VVoid::get());
+				}
 			}
-		}
-
-		for(; i<count; i++) {
-			const String& fname=*(*method.params_names)[i];
-			my.put(fname, params[i]);
-		}
-
-		for(; i<param_count; i++) {
-			const String& fname=*(*method.params_names)[i];
-			my.put(fname, VVoid::get());
 		}
 	}
 

@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.34 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.35 2024/12/07 13:59:29 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -88,8 +88,9 @@ public:
 
 	mutable VJunction *junction_template;
 
-	const String *name; // method name, never null
-	const String *extra_params; // method has *name as an argument
+	const String* name; // method name, never null
+	const String* extra_params; // last argument uses the *name notation
+	ArrayString* named_params; // last arguments use the .name notation
 
 	Method(
 		Call_type acall_type,
@@ -125,9 +126,21 @@ public:
 					extra_params = new String(pa_strdup(last_param+1));
 					params_names->remove(--params_count);
 					return;
+				} else if (last_param[0] == '.' && last_param[1]){
+					named_params = new ArrayString(params_count);
+					do {
+						// reverse order, but local variables are not ordered anyway
+						*named_params += new String(pa_strdup(last_param+1));
+						params_names->remove(--params_count);
+						if (!params_count)
+							break;
+						last_param = params_names->get(params_count-1)->cstr();
+					} while (last_param[0] == '.' && last_param[1]);
+					return;
 				}
 			}
 			extra_params = NULL;
+			named_params = NULL;
 	}
 
 	/// call this before invoking to ensure proper actual numbered params count
