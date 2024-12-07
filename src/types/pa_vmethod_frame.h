@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.134 2024/12/06 23:20:04 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.135 2024/12/07 02:15:51 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -309,7 +309,7 @@ public: // usage
 			if(method.extra_params){
 				for(; i<param_count; i++) {
 					const String& fname=*(*method.params_names)[i];
-					set_my_variable(fname, *params[i]);
+					my.put(fname, params[i]);
 				}
 
 				VHash& vargs=*new VHash();
@@ -319,15 +319,19 @@ public: // usage
 					args.put(pa_uitoa(args.count()), params[i]);
 				}
 
-				set_my_variable(*method.extra_params, vargs);
+				my.put(*method.extra_params, &vargs);
 				return;
 			} else
 				throw Exception(PARSER_RUNTIME, method.name, "method of '%s' accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
+		} else {
+			if(method.extra_params){
+				my.put(*method.extra_params, VVoid::get());
+			}
 		}
 
 		for(; i<count; i++) {
 			const String& fname=*(*method.params_names)[i];
-			set_my_variable(fname, *params[i]);
+			my.put(fname, params[i]);
 		}
 
 		for(; i<param_count; i++) {
