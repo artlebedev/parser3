@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.35 2024/12/07 13:59:29 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.36 2024/12/07 15:14:56 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -129,8 +129,8 @@ public:
 				} else if (last_param[0] == '.' && last_param[1]){
 					named_params = new ArrayString(params_count);
 					do {
-						// reverse order, but local variables are not ordered anyway
-						*named_params += new String(pa_strdup(last_param+1));
+						// local variables are not ordered, but direct order for reflection
+						named_params->insert(0, new String(pa_strdup(last_param+1)));
 						params_names->remove(--params_count);
 						if (!params_count)
 							break;

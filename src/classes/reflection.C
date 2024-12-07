@@ -8,9 +8,10 @@
 #include "pa_vmethod_frame.h"
 #include "pa_request.h"
 #include "pa_vbool.h"
+#include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.94 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.95 2024/12/07 15:14:56 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -26,6 +27,7 @@ static const String method_overridden("overridden");
 static const String method_min_params("min_params");
 static const String method_max_params("max_params");
 static const String method_extra_param("extra_param");
+static const String method_named_params("named_params");
 
 static const String def_class("class");
 
@@ -361,7 +363,7 @@ static void _method_info(Request& r, MethodParams& params) {
 		if( filespec )
 			hash->put("file", new VString(*filespec));
 
-		hash->put(method_max_params, new VInt(method->params_names ? method->params_names->count() : 0));
+		hash->put(method_max_params, new VInt(method->params_count + (method->named_params ? 1 : 0)));
 
 		if(method->params_names)
 			for(size_t i=0; i<method->params_names->count(); i++)
@@ -369,6 +371,17 @@ static void _method_info(Request& r, MethodParams& params) {
 
 		if(method->extra_params)
 			hash->put(method_extra_param, new VString(*method->extra_params));
+		if(method->named_params){
+			size_t named_count=method->named_params->count();
+			VArray& named_params=*new VArray(named_count);
+			ArrayValue &array=named_params.array();
+
+			for(int i=0; i<named_count; i++) {
+				const String& fname=*(*method->named_params)[i];
+				array+=new VString(fname);
+			}
+			hash->put(method_named_params, &named_params);
+		}
 	}
 
 	r.write(result);
