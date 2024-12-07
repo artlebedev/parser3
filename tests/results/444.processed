@@ -1,0 +1,56 @@
+Content-Type: text/html
+Content-Length: 838
+
+1. v: value
+arg1:null
+arg2:null
+2. v: value
+arg1:null
+arg2:null
+3. Exception type: parser.runtime,
+Source: test,
+Comment: named parameter must have hash representation
+4. Exception type: parser.runtime,
+Source: test,
+Comment: method of 'MAIN' accepts maximum 2 parameter(s) (3 present)
+5. v: value
+arg1:"x"
+arg2:null
+6. v: value
+arg1:"x"
+arg2:"y"
+7. v: value
+arg1:"x"
+arg2:"y"
+8.1 arg1:null
+arg2:null 8.2 v: null 8.3 v: ""
+v1: null 9. Exception type: parser.runtime,
+Source: test2,
+Comment: method of 'MAIN' accepts maximum 1 parameter(s) (2 present)
+10. {
+"name":"test5",
+"class":"MAIN",
+"max_params":3,
+"0":"v1",
+"1":".v2",
+"2":"v3"
+}
+11. {
+"name":"test6",
+"class":"MAIN",
+"max_params":4,
+"0":"v1",
+"1":".v2",
+"2":"v3",
+"named_params":[
+"v4",
+"v5"
+]
+}
+12. {
+"name":"test7",
+"class":"MAIN",
+"max_params":1,
+"0":"v1",
+"extra_param":"v2"
+}

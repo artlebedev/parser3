@@ -1,8 +1,12 @@
 @main[]
 
 $args[main]
-^test[value]
+1. ^test[value]
+2. ^test2[]
 
 @test[v;*args]
 $v
+^json:string[$args]
+
+@test2[*args]
 ^json:string[$args]

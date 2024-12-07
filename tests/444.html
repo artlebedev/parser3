@@ -1,0 +1,49 @@
+@main[]
+
+$v[main]
+$v1[main]
+$arg1[main]
+$arg2[main]
+
+1. ^test[value]
+2. ^test[value;  ]
+3. ^try-catch{ ^test[value; not ok] }
+4. ^try-catch{ ^test[value;;extra arg] }
+5. ^test[value; $.arg1[x] ]
+6. ^test[value; $.arg2[y] $.arg1[x] ]
+7. ^test[value; $.extra[extra] $.arg2[y] $.arg1[x] ]
+
+8.1 ^try-catch{ ^test2[] }
+8.2 ^try-catch{ ^test3[] }
+8.3 ^try-catch{ ^test4[] }
+
+9. ^try-catch{ ^test2[;] }
+
+10. ^json:string[^reflection:method_info[$test5]]
+11. ^json:string[^reflection:method_info[$test6]]
+12. ^json:string[^reflection:method_info[$test7]]
+
+@test[v;.arg1;.arg2]
+v: $v
+arg1:^json:string[$arg1]
+arg2:^json:string[$arg2]
+
+@test2[.arg1;.arg2]
+arg1:^json:string[$arg1]
+arg2:^json:string[$arg2]
+
+@test3[*v]
+v: ^json:string[$v]
+
+@test4[v;v1]
+v: ^json:string[$v]
+v1: ^json:string[$v1]
+
+@test5[v1;.v2;v3]
+# no code to avoid file
+
+@test6[v1;.v2;v3;.v4;.v5]
+# no code to avoid file
+
+@test7[v1;*v2]
+# no code to avoid file
