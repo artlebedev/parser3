@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.76 2024/11/17 14:04:28 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.77 2024/12/08 01:16:42 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -78,24 +78,7 @@ public:
 	void save(bool nameless_save, const String& file_spec);
 
 	template<typename I>
-	void table_for_each(void (*func)(Table& self, I* info), I* info, Action_options& o) {
-		if(!o.adjust(count()))
-			return;
-
-		Temp_current tc(*this);
-		size_t row=o.offset;
-		if(o.reverse) { // reverse
-			for(size_t i=0; i<o.limit; i++) {
-				set_current(row-i);
-				func(*this, info);
-			}
-		} else { // forward
-			for(size_t to=row+o.limit; row<to; row++) {
-				set_current(row);
-				func(*this, info);
-			}
-		}
-	}
+	void table_for_each(void (*func)(Table& self, I* info), I* info, Action_options& o);
 
 	template<typename I>
 	bool table_first_that(bool (*func)(Table& self, I info), I info, Action_options& o) {
@@ -154,5 +137,24 @@ public:
 		ftable.set_current(fcurrent);
 	}
 };
+
+template<typename I> void Table::table_for_each(void (*func)(Table& self, I* info), I* info, Action_options& o) {
+	if(!o.adjust(count()))
+		return;
+
+	Temp_current tc(*this);
+	size_t row=o.offset;
+	if(o.reverse) { // reverse
+		for(size_t i=0; i<o.limit; i++) {
+			set_current(row-i);
+			func(*this, info);
+		}
+	} else { // forward
+		for(size_t to=row+o.limit; row<to; row++) {
+			set_current(row);
+			func(*this, info);
+		}
+	}
+}
 
 #endif
