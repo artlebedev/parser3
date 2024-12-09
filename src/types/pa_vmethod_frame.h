@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.138 2024/12/09 20:25:17 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.139 2024/12/09 22:04:57 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -230,14 +230,15 @@ public: // Value
 
 	/// VParserMethodFrame: $result | parent get_string(=accumulated fstring)
 	override const String* get_string() {
-		// check the $result value
-		Value* result=get_result_variable();
-		// if we have one, return it's string value, else return as usual: accumulated fstring or fvalue
-		return result ? result->get_string() : WContext::get_string();
+		// if we have $result, return it's string value, else return as usual: accumulated fstring or fvalue
+		return my_result ? my_result->get_string() : WContext::get_string();
 	}
 
 	/// VParserMethodFrame: my or self_transparent or $caller
 	override Value* get_element(const String& aname) {
+		if(SYMBOLS_EQ(aname,RESULT_SYMBOL))
+			return my_result ? my_result : VVoid::get();
+
 		if(SYMBOLS_EQ(aname,CALLER_SYMBOL))
 			return get_caller_wrapper();
 
@@ -255,6 +256,13 @@ public: // Value
 
 	/// VParserMethodFrame: my or self_transparent
 	override const VJunction* put_element(const String& aname, Value* avalue) {
+		if(SYMBOLS_EQ(aname,RESULT_SYMBOL)){
+			my_result=avalue;
+#ifdef OPTIMIZE_RESULT
+			((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
+#endif
+			return 0;
+		}
 		if(my.put_replaced(aname, avalue))
 			return 0;
 		return self().put_element(aname, avalue);
@@ -275,15 +283,9 @@ public: // WContext
 	}
 
 	override ValueRef result() {
-		// check the $result value
-		Value* result_value=get_result_variable();
-		// if we have one, return it, else return as usual: accumulated fstring or fvalue
-		if(result_value){
-#ifdef OPTIMIZE_RESULT
-			((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
-#endif
-			return result_value;
-		}
+		// if we have $result, return it, else return as usual: accumulated fstring or fvalue
+		if(my_result)
+			return my_result;
 #ifdef OPTIMIZE_RESULT
 		if(method.result_optimization==Method::RO_USE_RESULT)
 			return VVoid::get();
@@ -298,6 +300,7 @@ public: // WContext
 public: // usage
 
 	HashString<Value*> my; // public for ^stack[]
+	Value* my_result;
 
 	VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself);
 
@@ -380,11 +383,16 @@ public: // usage
 
 protected:
 
-	void set_my_variable(const String& fname, Value* value) {
-		my.put(fname, value); // remember param
+	inline void set_my_variable(const String& aname, Value* value) {
+		if(SYMBOLS_EQ(aname,RESULT_SYMBOL)){
+			my_result=value;
+#ifdef OPTIMIZE_RESULT
+			((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
+#endif
+			return;
+		}
+		my.put(aname, value); // remember param
 	}
-
-	Value* get_result_variable();
 
 	Value* get_caller_wrapper();
 

@@ -9,9 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.49 2024/12/09 20:25:17 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
-
-static VVoid void_result; // unique value to be sure the result is changed
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.50 2024/12/09 22:04:57 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 // MethodParams: methods
 
@@ -72,25 +70,14 @@ void VParserMethodFrame::call(Request &r){
 	r.check_skip_return();
 }
 
-VParserMethodFrame::VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself) {
+VParserMethodFrame::VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself) : VMethodFrame(amethod, acaller, aself), my_result(NULL) {
 	if(method.locals_names) { // are there any local var names?
-		// remember them
-		// those are flags that fname is local == to be looked up in 'my'
+		// remember them, those are flags that fname is local == to be looked up in 'my'
 		for(ArrayString::Iterator i(*method.locals_names); i; ) {
-			// speedup: not checking for clash with "result" fname
-			const String& fname=*i.next();
-			set_my_variable(fname, VString::empty());
+			// "result" excluded from local variables during compilation, no need to call set_my_variable
+			my.put(*i.next(), VString::empty());
 		}
 	}
-#ifdef OPTIMIZE_RESULT
-	if(method.result_optimization!=Method::RO_USE_WCONTEXT)
-#endif
-		set_my_variable(Symbols::RESULT_SYMBOL, &void_result);
-}
-
-Value* VParserMethodFrame::get_result_variable() {
-	Value* result=my.get(Symbols::RESULT_SYMBOL);
-	return result!=&void_result ? result : 0;
 }
 
 Value* VParserMethodFrame::get_caller_wrapper(){
