@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.38 2024/12/08 13:13:09 moko Exp $
+# $Id: buildall,v 1.39 2024/12/09 01:05:49 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -151,8 +151,8 @@ if test "$build_pcre2" = "yes"; then
 options="$options --with-pcre=$project_dir/pcre2"
 
 if test ! -f "$project_dir/pcre2/lib/libpcre2-8.a"; then
-    lib="pcre2-10.42"
-    prepare_gz $lib.tar.gz https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.42/
+    lib="pcre2-10.44"
+    prepare_gz $lib.tar.gz https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.44/
     echo "Configuring $lib..."
     ./configure --prefix="$project_dir/pcre2" \
 	--enable-jit \
