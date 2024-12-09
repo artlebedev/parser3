@@ -1,3 +1,101 @@
+2024-12-09  moko
+
+	* tests/results/119.processed: newline corrected for some OS
+
+	* tests/: 441.html, results/441.processed: Debian-specific test
+	  commented
+
+	* buildall: pcre2 10.42 -> 10.44
+
+2024-12-08  moko
+
+	* buildall: external links fixed
+
+	* src/include/pa_version.h: 3.4.7b -> 3.5.0rc
+
+	* src/include/pa_table.h: some clang versions compilation fix
+
+	* configure.ac: 3.4.7b -> 3.5.0rc
+
+2024-12-07  moko
+
+	* tests/: 443.html, 444.html, results/443.processed,
+	  results/444.processed: tests for named params (related to feature
+	  #1205)
+
+	* src/: classes/reflection.C, types/pa_method.h: named_params
+	  support in reflection (related to feature #1205)
+
+	* src/types/pa_vmethod_frame.h: extra_params and named params
+	  should be also inited in ^method[] call (related to feature
+	  #1205)
+
+	* src/types/: pa_method.h, pa_vmethod_frame.h: named arguments
+	  support using @method[arg;.named_arg;.named_arg2] syntax
+	  (implements feature #1205)
+
+	* tests/: 443.html, results/443.processed: test for *args inited
+	  added (related to bug #1264)
+
+	* src/types/pa_vmethod_frame.h: *args are now inited even if not
+	  specified (fixes bug #1264)
+
+	* tests/: 442.html, results/442.processed: tests for
+	  params.as_file_name(N) with empty file name added (related to
+	  feature #1121)
+
+	* src/: classes/file.C, classes/hashfile.C, classes/image.C,
+	  classes/op.C, classes/string.C, classes/table.C, classes/xdoc.C,
+	  include/pa_exception.h, types/pa_vmethod_frame.h:
+	  params.as_file_name(N) added and used instead of
+	  params.as_string(1, FILE_NAME_MUST_BE_STRING) where appropriate
+	  (implements feature #1121)
+
+	* src/: classes/file.C, classes/image.C, classes/op.C,
+	  classes/table.C, include/pa_exception.h: filename is everywhere
+	  params.as_string, unify exception and remove
+	  FILE_NAME_MUST_NOT_BE_CODE (related to feature #1121)
+
+	* tests/: 141.html, results/141.processed: test for
+	  ^math:digest[...; $.hmac[$file] $.format[file] ] added (related
+	  to feature #1263)
+
+	* src/classes/math.C: ^math:digest[...; $.hmac[$file]
+	  $.format[file] ] now supported (implements feature #1263)
+
+2024-12-06  moko
+
+	* src/: targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_vstatus.C: $status:mode
+	  (cgi/console/mail/httpd/apache/isapi) added (related to feature
+	  #1262)
+
+2024-12-05  moko
+
+	* src/targets/cgi/parser3.C: more correct arguments processing to
+	  block -fl config.file log.file logic (related to feature #1262)
+
+2024-12-04  moko
+
+	* src/targets/cgi/parser3.C: now only one log location is selected
+	  and tried. -l - supported for stderr specification (related to
+	  feature #1262)
+
+2024-12-03  moko
+
+	* tests/: 010.html, 415_dir/30.p, 415_dir/31.p,
+	  results/010.processed, results/415.processed: tests for
+	  $.(expression)[value], $a.(expression), ^v.(expression)[args]
+	  added (related to feature #1064)
+
+	* src/main/compile.y: $.(expression)[value], $a.(expression),
+	  ^v.(expression)[args] now supported (implements feature #1064)
+
+2024-12-02  moko
+
+	* src/targets/cgi/parser3.C: -l /path/to/log options added
+	  (implements feature #1262)
+
 2024-12-01  moko
 
 	* tests/: 010.html, results/010.processed: some tests related to
