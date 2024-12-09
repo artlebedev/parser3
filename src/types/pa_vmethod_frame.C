@@ -9,7 +9,7 @@
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.48 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.49 2024/12/09 20:25:17 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 static VVoid void_result; // unique value to be sure the result is changed
 
@@ -79,13 +79,13 @@ VParserMethodFrame::VParserMethodFrame(const Method& amethod, VMethodFrame *acal
 		for(ArrayString::Iterator i(*method.locals_names); i; ) {
 			// speedup: not checking for clash with "result" fname
 			const String& fname=*i.next();
-			set_my_variable(fname, *VString::empty());
+			set_my_variable(fname, VString::empty());
 		}
 	}
 #ifdef OPTIMIZE_RESULT
 	if(method.result_optimization!=Method::RO_USE_WCONTEXT)
 #endif
-		set_my_variable(Symbols::RESULT_SYMBOL, void_result);
+		set_my_variable(Symbols::RESULT_SYMBOL, &void_result);
 }
 
 Value* VParserMethodFrame::get_result_variable() {

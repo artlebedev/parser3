@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.137 2024/12/07 14:26:11 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.138 2024/12/09 20:25:17 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -309,7 +309,7 @@ public: // usage
 
 			for(; i<param_count; i++) {
 				const String& fname=*(*method.params_names)[i];
-				my.put(fname, params[i]);
+				set_my_variable(fname, params[i]);
 			}
 
 			if(method.extra_params){
@@ -320,7 +320,7 @@ public: // usage
 					args.put(pa_uitoa(args.count()), params[i]);
 				}
 
-				my.put(*method.extra_params, &vargs);
+				set_my_variable(*method.extra_params, &vargs);
 			} else if(method.named_params){
 				if(count!=param_count+1)
 					throw Exception(PARSER_RUNTIME, method.name, "method of '%s' accepts maximum %d parameter(s) (%d present)", self().type(), param_count+1, count);
@@ -330,7 +330,7 @@ public: // usage
  				for(i=0; i<named_count; i++) {
 					const String& fname=*(*method.named_params)[i];
 					Value *arg=named_args ? named_args->get(fname) : NULL;
-					my.put(fname, arg ? arg : VVoid::get());
+					set_my_variable(fname, arg ? arg : VVoid::get());
 				}
 			} else
 				throw Exception(PARSER_RUNTIME, method.name, "method of '%s' accepts maximum %d parameter(s) (%d present)", self().type(), param_count, count);
@@ -338,21 +338,21 @@ public: // usage
 
 			for(; i<count; i++) {
 				const String& fname=*(*method.params_names)[i];
-				my.put(fname, params[i]);
+				set_my_variable(fname, params[i]);
 			}
 
 			for(; i<param_count; i++) {
 				const String& fname=*(*method.params_names)[i];
-				my.put(fname, VVoid::get());
+				set_my_variable(fname, VVoid::get());
 			}
 
 			if(method.extra_params){
-				my.put(*method.extra_params, VVoid::get());
+				set_my_variable(*method.extra_params, VVoid::get());
 			} else if(method.named_params){
 				size_t named_count=method.named_params->count();
 				for(i=0; i<named_count; i++) {
 					const String& fname=*(*method.named_params)[i];
-					my.put(fname, VVoid::get());
+					set_my_variable(fname, VVoid::get());
 				}
 			}
 		}
@@ -361,17 +361,17 @@ public: // usage
 	void empty_params(){
 		size_t param_count=method.params_count;
 		if(param_count>0){
-			my.put(*(*method.params_names)[0], VString::empty());
+			set_my_variable(*(*method.params_names)[0], VString::empty());
 			for(size_t i=1; i<param_count; i++)
-				my.put(*(*method.params_names)[i], VVoid::get());
+				set_my_variable(*(*method.params_names)[i], VVoid::get());
 		}
 		if(method.extra_params){
-			my.put(*method.extra_params, VVoid::get());
+			set_my_variable(*method.extra_params, VVoid::get());
 		} else if(method.named_params){
 			size_t named_count=method.named_params->count();
 			for(int i=0; i<named_count; i++) {
 				const String& fname=*(*method.named_params)[i];
-				my.put(fname, VVoid::get());
+				set_my_variable(fname, VVoid::get());
 			}
 		}
 	}
@@ -380,8 +380,8 @@ public: // usage
 
 protected:
 
-	void set_my_variable(const String& fname, Value& value) {
-		my.put(fname, &value); // remember param
+	void set_my_variable(const String& fname, Value* value) {
+		my.put(fname, value); // remember param
 	}
 
 	Value* get_result_variable();
@@ -395,7 +395,7 @@ class VLocalParserMethodFrame: public VParserMethodFrame {
 public: // Value
 
 	override const VJunction* put_element(const String& aname, Value* avalue){
-		set_my_variable(aname, *avalue);
+		set_my_variable(aname, avalue);
 		return 0;
 	}
 
