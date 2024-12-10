@@ -8,7 +8,7 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.36 2024/12/07 15:14:56 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.37 2024/12/10 02:40:53 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
@@ -52,7 +52,7 @@ public:
 	};
 	
 	enum Result_optimization {
-		RO_UNKNOWN,
+		RO_UNKNOWN,    // during first parser method call, until $result detected on method ends.
 		RO_USE_RESULT, // write to $result detected, will not collect all writes to output scope.
 		RO_USE_WCONTEXT // native code or parser code without $result usage.
 	};

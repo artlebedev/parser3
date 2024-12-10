@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.139 2024/12/09 22:04:57 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.140 2024/12/10 02:40:53 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -259,7 +259,13 @@ public: // Value
 		if(SYMBOLS_EQ(aname,RESULT_SYMBOL)){
 			my_result=avalue;
 #ifdef OPTIMIZE_RESULT
-			((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
+			// This check is only for maintaining consistency. Even if we change the mode from RO_USE_WCONTEXT, it will not work because
+			// CO_WITHOUT_WCONTEXT is also active. In this mode writes go directly to the parent context and result() is never called.
+			// If we also change CO_WITHOUT_WCONTEXT, the current method call will still continue writing to the parent context and
+			// result() will not be called. Only subsequent method calls will use $result.
+			// The current behavior is more predictable: the first method call determines result_optimization, and subsequent calls never change it.
+			if(method.result_optimization==Method::RO_UNKNOWN)
+				((Method *)&method)->result_optimization=Method::RO_USE_RESULT;
 #endif
 			return 0;
 		}
@@ -289,6 +295,10 @@ public: // WContext
 #ifdef OPTIMIZE_RESULT
 		if(method.result_optimization==Method::RO_USE_RESULT)
 			return VVoid::get();
+
+		// Due to call optimization, the following code is called only once.
+		// CO_WITHOUT_WCONTEXT means subsequent writes will be to the parent context, and the result() won't be called.
+
 		((Method *)&method)->result_optimization=Method::RO_USE_WCONTEXT;
 #ifdef OPTIMIZE_CALL // nested as CO_WITHOUT_WCONTEXT assumes that $result not used
 		((Method *)&method)->call_optimization=Method::CO_WITHOUT_WCONTEXT;
