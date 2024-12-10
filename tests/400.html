@@ -17,6 +17,9 @@ Y: ^fail[Y] ^rem{will work without OPTIMIZE_CALL}
 
 Z: ^gpf345[]
 
+first call wcontext: ^json:string[^v1[]]  ^json:string[^v1[R]] ^json:string[^v1[]]  ^json:string[^v1[R]]
+first call result:   ^json:string[^v2[R]] ^json:string[^v2[]]  ^json:string[^v2[R]] ^json:string[^v2[]]
+
 @test[value]
 no result
 ^if($value eq 'X'){
@@ -46,3 +49,9 @@ $result[result]
 
 @gpf345[]
 ^return{code}
+
+@v1[r]
+w ^if($r eq 'R'){ $result[R] } W
+
+@v2[r]
+w ^if($r eq 'R'){ $result[R] } W

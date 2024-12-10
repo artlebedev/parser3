@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 119
+Content-Length: 209
 
 1: result
 2: result
@@ -12,3 +12,5 @@ X: 4: result
 X: no result
 Y: no result
 Z: code
+first call wcontext: "w  W" "w    W" "w  W" "w    W"
+first call result: "R" null "R" null
