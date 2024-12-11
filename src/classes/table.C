@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.377 2024/12/11 03:22:23 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.378 2024/12/11 15:46:38 moko Exp $";
 
 // class
 
@@ -1567,7 +1567,7 @@ static void _select(Request& r, MethodParams& params) {
 				if(r.check_skip_break())
 					break;
 
-				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
+				if(condition && ++appended > (size_t)offset && source_table.valid(row)) // ...condition is true, adding to the result
 					result_table+=source_table[row];
 				if(row==0) break;
 			}
@@ -1580,7 +1580,7 @@ static void _select(Request& r, MethodParams& params) {
 				if(r.check_skip_break())
 					break;
 
-				if(condition && ++appended > (size_t)offset) // ...condition is true, adding to the result
+				if(condition && ++appended > (size_t)offset && source_table.valid(row)) // ...condition is true, adding to the result
 					result_table+=source_table[row];
 			}
 		}

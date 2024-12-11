@@ -8,7 +8,7 @@
 #ifndef PA_TABLE_H
 #define PA_TABLE_H
 
-#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.77 2024/12/08 01:16:42 moko Exp $"
+#define IDENT_PA_TABLE_H "$Id: pa_table.h,v 1.78 2024/12/11 15:46:38 moko Exp $"
 
 #include "pa_types.h"
 #include "pa_hash.h"
@@ -40,14 +40,19 @@ public:
 	/// gets column names
 	columns_type columns() { return fcolumns; }
 
-	/// moves @a current pointer, can be out of range when restoring current in modified table
+	/// @return current pointer
+	size_t current() const { return fcurrent; }
+
+	/// sets @a current pointer, can be out of range when restoring current in modified table
 	void set_current(size_t acurrent) {
 		fcurrent=acurrent<count() ? acurrent : count()>0 ? count()-1 : 0;
 	}
 
-	/// @return current pointer
-	size_t current() const { return fcurrent; }
+	/// sets or offsets @a current pointer, wrapping within the table
 	void offset(bool absolute, int offset);
+
+	/// is that @c index falid?
+	bool valid(size_t index) const { return index<count(); }
 
 	/// @return checks all rows to find maximum cells number
 	size_t max_cells() const;
@@ -122,8 +127,6 @@ private:
 	typedef HashString<int> name2number_hash_class;
 	name2number_hash_class* name2number;
 
-	/// is that @c index falid?
-	bool valid(size_t index) const { return index<count(); }
 
 };
 
