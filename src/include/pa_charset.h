@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.59 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.60 2024/12/11 21:57:35 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -25,6 +25,7 @@
 #include "../lib/pcre/pa_pcre_internal.h"
 
 #ifdef XML
+#include "libxml/xmlstring.h"
 #include "libxml/encoding.h"
 #endif
 

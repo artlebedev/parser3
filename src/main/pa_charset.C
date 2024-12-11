@@ -11,9 +11,10 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.114 2024/11/04 03:53:25 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.115 2024/12/11 21:57:35 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
+#include "libxml/xmlmemory.h"
 #include "libxml/encoding.h"
 #endif
 
