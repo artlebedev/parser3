@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.194 2024/12/06 23:20:04 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.195 2024/12/11 03:22:23 moko Exp $";
 
 // defines
 
@@ -1347,7 +1347,7 @@ void Font::string_display(gdImage& image, int x, int y, const String& s){
 
 
 static void _font(Request& r, MethodParams& params) {
-	const String& alphabet=params.as_string(0, "alphabet must not be code");
+	const String& alphabet=params.as_string(0, "alphabet must be string");
 	size_t alphabet_length=alphabet.length(r.charsets.source());
 	if(!alphabet_length)
 		throw Exception(PARSER_RUNTIME, 0, "alphabet must not be empty");
@@ -1399,14 +1399,14 @@ static void _font(Request& r, MethodParams& params) {
 static void _text(Request& r, MethodParams& params) {
 	int x=params.as_int(0, "x must be int", r);
 	int y=params.as_int(1, "y must be int", r);
-	const String& s=params.as_string(2, "text must not be code");
+	const String& s=params.as_string(2, "text must be string");
 
 	VImage& vimage=GET_SELF(r, VImage);
 	vimage.font().string_display(vimage.image(), x, y, s);
 }
 
 static void _length(Request& r, MethodParams& params) {
-	const String& s=params.as_string(0, "text must not be code");
+	const String& s=params.as_string(0, "text must be string");
 
 	VImage& vimage=GET_SELF(r, VImage);
 	r.write(*new VInt(vimage.font().string_width(s)));

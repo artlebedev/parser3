@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.376 2024/12/06 23:20:04 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.377 2024/12/11 03:22:23 moko Exp $";
 
 // class
 
@@ -624,7 +624,7 @@ static void table_to_csv(String& result, Table& table, TableControlChars& contro
 
 
 static void _save(Request& r, MethodParams& params) {
-	const String& first_arg=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
+	const String& first_arg=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	size_t param_index=1;
 
 	bool do_append=false;
@@ -683,7 +683,7 @@ static void _csv_string(Request& r, MethodParams& params) {
 	bool output_column_names=true;
 	size_t param_index=0;
 	if(params.count()>0 && params[0].is_string()) {
-		if(params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE)=="nameless") {
+		if(params.as_string(0, PARAM_MUST_NOT_BE_CODE)=="nameless") {
 			output_column_names=false;
 			param_index++;
 		} else {

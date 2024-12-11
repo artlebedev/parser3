@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.293 2024/12/11 02:30:24 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.294 2024/12/11 03:22:23 moko Exp $";
 
 // defines
 
@@ -478,7 +478,7 @@ static void append_to_argv(Request& r, ArrayString& argv, const String* str){
 static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	bool is_text=true;
 	size_t param_index=0;
-	const String& mode=params.as_string(0, FIRST_ARG_MUST_NOT_BE_CODE);
+	const String& mode=params.as_string(0, "mode must be string");
 	if(VFile::is_valid_mode(mode)) {
 		is_text=VFile::is_text_mode(mode);
 		param_index++;
