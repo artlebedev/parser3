@@ -14,7 +14,7 @@
 #include "pa_vstring.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.44 2024/12/06 00:40:12 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.45 2024/12/11 18:35:31 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -189,6 +189,7 @@ Value& memory_element() {
 #endif
 
 extern const char* parser3_mode;
+const char *parser3_log_filespec();
 
 Value* VStatus::get_element(const String& aname) {
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
@@ -201,24 +202,22 @@ Value* VStatus::get_element(const String& aname) {
 	if(Cache_manager* manager=cache_managers->get(aname))
 		return manager->get_status();
 
-	// $pid
 	if(aname=="pid")
 		return new VInt(getpid());
 
-	// $tid
 	if(aname=="tid")
 		return new VInt(pa_get_thread_id());
 
-	// $mode
 	if(aname=="mode")
 		return new VString(*new String(parser3_mode));
 
-	// $rusage
+	if(aname=="log-filename")
+		return new VString(*new String(pa_strdup(parser3_log_filespec())));
+
 	if(aname=="rusage")
 		return &rusage_element();
 
 #ifndef PA_DEBUG_DISABLE_GC
-	// $memory
 	if(aname=="memory")
 		return &memory_element();
 #endif

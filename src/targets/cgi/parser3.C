@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.365 2024/12/06 00:40:12 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.366 2024/12/11 18:35:31 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -74,21 +74,15 @@ template <typename T> static T *dir_pos(T *fname){
 	return result;
 }
 
-// SAPI
-
-static void pa_log(const char* fmt, va_list args) {
-	FILE *f=0;
+const char *parser3_log_filespec() { // $status:log-filename
 	const char* slog=log_filespec;
 
 	if(!slog)
 		slog=getenv(PARSER_LOG_ENV_NAME);
 	if(!slog)
 		slog=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
-
-	if(slog) {
-		f=strcmp(slog,"-") ? fopen(slog, "at") : stderr;
-	} else 	if(filespec_4log) {
-		char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
+	if(!slog) {
+		static char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
 		if(char* log_dir_pos=dir_pos(log_spec)){
@@ -97,14 +91,22 @@ static void pa_log(const char* fmt, va_list args) {
 			// no path, just filename
 			strcpy(log_spec, "./parser3.log");
 		}
-		f=fopen(log_spec, "at");
+		slog=log_spec;
 	}
+	return slog;
+}
+
+// SAPI
+
+static void pa_log(const char* fmt, va_list args) {
+	// use no memory [so that we could log out-of-memory error]
+	const char* slog=parser3_log_filespec();
+	FILE *f=strcmp(slog,"-") ? fopen(slog, "at") : stderr;
 
 	// fallback to stderr
 	if(!f)
 		f=stderr;
 
-	// use no memory [so that we could log out-of-memory error]
 	setbuf(f, 0); // stderr stream is unbuffered by default, but still...
 
 	// prefix
@@ -113,8 +115,8 @@ static void pa_log(const char* fmt, va_list args) {
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
 			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp, (unsigned int)pa_get_thread_id() );
 	}
-	// message
 
+	// message
 	char buf[MAX_LOG_STRING];
 	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
 	size=remove_crlf(buf, buf+size);

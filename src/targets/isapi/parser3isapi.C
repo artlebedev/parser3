@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.134 2024/12/06 00:40:12 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.135 2024/12/11 18:35:31 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -57,6 +57,7 @@ const int IIS51var_count=sizeof(IIS51vars)/sizeof(*IIS51vars);
 
 char argv0[MAX_STRING]="";
 const char* parser3_mode="isapi"; // $status:mode
+const char *parser3_log_filespec(){ return ""; } // $status:log-filename
 
 // SAPI
 

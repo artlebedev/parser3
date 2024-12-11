@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.42 2024/12/06 00:40:12 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.43 2024/12/11 18:35:31 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -27,6 +27,7 @@ volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.42 2
 
 static bool globals_inited=false;
 const char* parser3_mode="apache"; // $status:mode
+const char *parser3_log_filespec(){ return ""; } // $status:log-filename
 
 void pa_setup_module_cells() {
 	if(globals_inited)
