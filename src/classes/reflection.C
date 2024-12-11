@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.95 2024/12/07 15:14:56 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.96 2024/12/11 02:52:50 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -258,7 +258,7 @@ static void _method(Request& r, MethodParams& params) {
 
 	if(Junction *j=source.get_junction()){
 		if(Method* method=const_cast<Method*>(j->method)){
-			Value& self=params.count()>1 ? params.as_no_junction(1, "self must be object, not junction") : r.get_method_frame()->caller()->self();
+			Value& self=params.count()>1 ? params.as_no_junction(1, "self must be object") : r.get_method_frame()->caller()->self();
 			r.write(method_junction(self, *method));
 			return;
 		}
@@ -272,7 +272,7 @@ static void _method(Request& r, MethodParams& params) {
 
 	if(VStateless_class* vclass=source.get_class()) {
 		if(Method* method=vclass->get_method(name)){
-			r.write( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object, not junction"), *method) : *method->get_vjunction(source) );
+			r.write( params.count()>2 ? method_junction(params.as_no_junction(2, "self must be object"), *method) : *method->get_vjunction(source) );
 			return;
 		}
 	}
@@ -280,7 +280,7 @@ static void _method(Request& r, MethodParams& params) {
 }
 
 static void _fields(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "param must be object or class, not junction");
+	Value& o=params.as_no_junction(0, "param must be object or class");
 
 	if(HashStringValue* fields=o.get_fields())
 		r.write(*new VHash(*fields));
@@ -289,7 +289,7 @@ static void _fields(Request& r, MethodParams& params) {
 }
 
 static void _fields_reference(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "param must be object or hash, not junction");
+	Value& o=params.as_no_junction(0, "param must be object or hash");
 
 	if(HashStringValue* fields=o.get_fields_reference())
 		r.write(*new VHashReference(*fields));
@@ -298,7 +298,7 @@ static void _fields_reference(Request& r, MethodParams& params) {
 }
 
 static void _field(Request& r, MethodParams& params) {
-	Value& o=params.as_no_junction(0, "first param must be object or class, not junction");
+	Value& o=params.as_no_junction(0, "first param must be object or class");
 	const String& name=params.as_string(1, "field name must be string");
 
 	if(HashStringValue* fields=o.get_fields())
@@ -451,7 +451,7 @@ static void _uid(Request& r, MethodParams& params) {
 }
 
 static void _delete(Request&, MethodParams& params) {
-	Value* v=&params.as_no_junction(0, "param must be object or class, not junction");
+	Value* v=&params.as_no_junction(0, "param must be object or class");
 	const String& key=params.as_string(1, "field name must be string");
 
 	if(VObject* o=dynamic_cast<VObject*>(v)){
