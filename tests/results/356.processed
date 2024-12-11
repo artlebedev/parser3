@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1133
+Content-Length: 1147
 
 1. Exception type: parser.runtime,
 Source: no-such-class,
@@ -12,7 +12,7 @@ Source: no-such-method,
 Comment: method not found in class 'string'
 4. Exception type: parser.runtime,
 Source: method_info,
-Comment: method name must be string (parameter #2)
+Comment: method name must be string (parameter #2 is 'junction')
 5. Exception type: parser.runtime,
 Source: method_info,
 Comment: param must be class name or method junction

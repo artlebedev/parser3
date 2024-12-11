@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2350
+Content-Length: 2364
 
 src=<br />
 dirname=.<br />
@@ -142,4 +142,4 @@ justext=ext
 /tests/name.ext
 Exception type: parser.runtime,
 Source: fullpath,
-Comment: file name must be string or file (parameter #1)
+Comment: file name must be string or file (parameter #1 is 'junction')

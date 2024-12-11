@@ -9,7 +9,7 @@ Source: method,
 Comment: method name must be specified
 3. Exception type: parser.runtime,
 Source: method,
-Comment: self must be object, not junction (parameter #2)
+Comment: self must be object (parameter #2 is 'junction')
 4. Exception type: parser.runtime,
 Source: method,
 Comment: self must be parser object or class
@@ -19,7 +19,7 @@ Comment: method must not be native
 6. void
 7. Exception type: parser.runtime,
 Source: method,
-Comment: self must be object, not junction (parameter #3)
+Comment: self must be object (parameter #3 is 'junction')
 8. Exception type: parser.runtime,
 Source: length,
 Comment: method must not be native

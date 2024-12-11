@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3660
+Content-Length: 3672
 
 code coverage tests:
 1. int
@@ -113,7 +113,7 @@ Source: base64,
 Comment: constructor cannot have less than 3 parameters (has 2 parameters)
 7.2 Exception type: parser.runtime,
 Source: base64,
-Comment: mode must not be code (parameter #1)
+Comment: mode must be string (parameter #1 is 'junction')
 7.3 Exception type: parser.runtime,
 Source: base64,
 Comment: called with invalid option

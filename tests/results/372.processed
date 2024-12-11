@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1700
+Content-Length: 1728
 
 1. {
 "v1":"",
@@ -38,7 +38,7 @@ Source: create,
 Comment: arguments should not be specified as hash and as create params
 12. Exception type: parser.runtime,
 Source: create,
-Comment: param must not be code (parameter #1)
+Comment: param must not be code (parameter #1 is 'junction')
 13. Exception type: parser.runtime,
 Source: create,
 Comment: constructor name must be specified
@@ -53,7 +53,7 @@ Source: create,
 Comment: constructor name must be specified
 17. Exception type: parser.runtime,
 Source: create,
-Comment: constructor name must be string (parameter #2)
+Comment: constructor name must be string (parameter #2 is 'junction')
 18. Exception type: parser.runtime,
 Source: A,
 Comment: class is undefined

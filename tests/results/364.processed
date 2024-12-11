@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 478
+Content-Length: 490
 
 object/string: expression: Exception type: parser.runtime,
 Source: caller,
@@ -7,7 +7,7 @@ Comment: is 'caller', cannot be used in expression
 hash: {}
 table: Exception type: parser.runtime,
 Source: create,
-Comment: body must be table or code (parameter #1)
+Comment: body must be table or code (parameter #1 is 'string')
 def: true
 bool: Exception type: parser.runtime,
 Source: caller,

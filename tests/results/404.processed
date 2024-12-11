@@ -1,7 +1,7 @@
 Content-Type: text/html
-Content-Length: 169
+Content-Length: 181
 
 1. whitespace string for table - OK 2. Exception type: parser.runtime,
 Source: join,
-Comment: source param must have table representation (parameter #1)
+Comment: source param must have table representation (parameter #1 is 'string')
 3. string string

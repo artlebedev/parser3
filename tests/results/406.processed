@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 581
+Content-Length: 607
 
 1. Exception type: parser.runtime,
 Source: b,
@@ -15,10 +15,10 @@ Source: a,
 Comment: column not found
 7. 8. Exception type: parser.runtime,
 Source: rename,
-Comment: options must have hash representation (parameter #1)
+Comment: options must have hash representation (parameter #1 is 'string')
 9. Exception type: parser.runtime,
 Source: rename,
-Comment: column name must be string (parameter #2)
+Comment: column name must be string (parameter #2 is 'junction')
 10. Exception type: parser.runtime,
 Source: rename,
 Comment: columns renaming is not supported for nameless tables

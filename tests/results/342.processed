@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1366
+Content-Length: 1406
 
 code coverage:
 1 : a4
@@ -32,13 +32,13 @@ offset: 2
 foreach exceptions test:
 Exception type: parser.runtime,
 Source: foreach,
-Comment: rownum-var name must be string (parameter #1)
+Comment: rownum-var name must be string (parameter #1 is 'junction')
 Exception type: parser.runtime,
 Source: foreach,
-Comment: value-var name must be string (parameter #2)
+Comment: value-var name must be string (parameter #2 is 'junction')
 Exception type: parser.runtime,
 Source: foreach,
-Comment: body must be code (parameter #3)
+Comment: body must be code (parameter #3 is 'string')
 0 : more
 1 : a4
 2 : ups

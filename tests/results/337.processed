@@ -3,7 +3,7 @@ Content-Length: 483
 
 Exception type: parser.runtime,
 Source: fields_reference,
-Comment: param must be object or hash, not junction (parameter #1)
+Comment: param must be object or hash (parameter #1 is 'junction')
 Exception type: parser.runtime,
 Source: fields_reference,
 Comment: param must be object or hash

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 348
+Content-Length: 376
 
 1. 00TT00
 2. --++--
@@ -8,10 +8,10 @@ Content-Length: 348
 5. --++--
 6. Exception type: parser.runtime,
 Source: tainting,
-Comment: language name must be string (parameter #1)
+Comment: language name must be string (parameter #1 is 'junction')
 7. Exception type: parser.runtime,
 Source: tainting,
-Comment: param must be string (parameter #2)
+Comment: param must be string (parameter #2 is 'junction')
 8. Exception type: parser.runtime,
 Source: no-such-lang,
 Comment: invalid taint language
