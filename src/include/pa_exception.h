@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.73 2024/12/11 00:37:04 moko Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.74 2024/12/11 02:30:24 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -28,7 +28,7 @@ const char* const FILE_NAME_MUST_BE_SPECIFIED = "file name must be specified";
 const char* const FIRST_ARG_MUST_NOT_BE_CODE = "first argument must not be code";
 const char* const PARAM_MUST_NOT_BE_CODE = "param must not be code";
 const char* const PARAM_MUST_BE_HASH = "param must be hash";
-const char* const MODE_MUST_NOT_BE_CODE = "mode must not be code";
+const char* const MODE_MUST_BE_STRING = "mode must be string";
 const char* const OPTIONS_MUST_NOT_BE_CODE = "options must not be code";
 
 const char* const CALLED_WITH_INVALID_OPTION = "called with invalid option";

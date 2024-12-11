@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.261 2024/12/06 23:20:04 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.262 2024/12/11 02:30:24 moko Exp $";
 
 // class
 
@@ -792,7 +792,7 @@ static void _js_unescape(Request& r, MethodParams& params){
 }
 
 static void _unescape(Request& r, MethodParams& params){
-	const String& mode=params.as_string(0, MODE_MUST_NOT_BE_CODE);
+	const String& mode=params.as_string(0, MODE_MUST_BE_STRING);
 	const String& src=params.as_string(1, PARAMETER_MUST_BE_STRING);
 
 	Charset* from_charset=&r.charsets.client();

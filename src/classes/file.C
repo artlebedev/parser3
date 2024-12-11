@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.292 2024/12/11 00:37:04 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.293 2024/12/11 02:30:24 moko Exp $";
 
 // defines
 
@@ -133,7 +133,7 @@ static const String::Body cdate_name("cdate");
 // methods
 
 static void _save(Request& r, MethodParams& params) {
-	bool is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
+	bool is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_BE_STRING));
 	const String& file_name=params.as_file_name(1);
 
 	Charset* asked_charset=0;
@@ -256,7 +256,7 @@ static void _load_pass_param(
 }
 
 static void _load(Request& r, MethodParams& params) {
-	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
+	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_BE_STRING));
 	const String& lfile_name=r.full_disk_path(params.as_file_name(1));
 
 	size_t param_index=params.count()-1;
@@ -316,7 +316,7 @@ static void _create(Request& r, MethodParams& params) {
 
 	if(params.count()>=3){
 		// old format: ^file::create[text|binary;file-name;string-or-file-content[;options]] 
-		mode=&params.as_string(0, MODE_MUST_NOT_BE_CODE);
+		mode=&params.as_string(0, MODE_MUST_BE_STRING);
 		is_text=VFile::is_text_mode(*mode);
 		file_name=&params.as_string(1, FILE_NAME_MUST_BE_STRING);
 		content_index=2;
@@ -1111,7 +1111,7 @@ static void _base64(Request& r, MethodParams& params) {
 				if(params.count() < 3)
 					throw Exception(PARSER_RUNTIME, 0, "constructor cannot have less than 3 parameters (has %d parameters)", params.count()); // actually it accepts 1 parameter (backward)
 
-				is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_NOT_BE_CODE));
+				is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_BE_STRING));
 				user_file_name=&params.as_string(1, FILE_NAME_MUST_BE_STRING);
 
 				if(params.count() == 4)
