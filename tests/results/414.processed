@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 862
+Content-Length: 858
 
 1. {
 "a":"1",
@@ -82,4 +82,4 @@ Source: rename,
 Comment: to key must be string (parameter #2)
 Exception type: parser.runtime,
 Source: rename,
-Comment: is 'hash', it has no string representation
+Comment: from key must be string (parameter #1)

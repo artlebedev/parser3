@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4443
+Content-Length: 4427
 
 <h3>Empty hash ($a[^hash::create[]])</h3>
 first:last='':''<br />
@@ -75,7 +75,7 @@ first_key:last_key='2':'5'<br />
 ^a._at[]=<b>native method of 'array' accepts minimum 1 parameter(s) (0 present)</b><br />
 ^a._at[first;key;hren]=<b>native method of 'array' accepts maximum 2 parameter(s) (3 present)</b><br />
 ^a._at(1){code}=<b>type must be string (parameter #2)</b><br />
-^a._at(1)(true)=<b>is 'bool', it has no string representation</b><br />
+^a._at(1)(true)=<b>type must be string (parameter #2)</b><br />
 ^a._at[hren]=<b>index must be 'first', 'last' or expression</b><br />
 ^a._at[first][hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
 ^a._at[last][hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
@@ -127,7 +127,7 @@ first_key:last_key='2':'5'<br />
 ^a._at[]=<b>native method of 'array' accepts minimum 1 parameter(s) (0 present)</b><br />
 ^a._at[first;key;hren]=<b>native method of 'array' accepts maximum 2 parameter(s) (3 present)</b><br />
 ^a._at(1){code}=<b>type must be string (parameter #2)</b><br />
-^a._at(1)(true)=<b>is 'bool', it has no string representation</b><br />
+^a._at(1)(true)=<b>type must be string (parameter #2)</b><br />
 ^a._at[hren]=<b>index must be 'first', 'last' or expression</b><br />
 ^a._at[first][hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
 ^a._at[last][hren]=<b>type must be 'key', 'value' or 'hash'</b><br />
