@@ -56,17 +56,25 @@ $t[^table::create{value
 
 7. ^json:string[$t; $.table[compact] ]
 
+$t1[^table::create[$t]]
+^t1.offset(4) $t1.value[n0]
+
+8. ^json:string[^t1.select(^test_delete[$t1])[ $.reverse(1) ]; $.table[compact] ]
+
+9. ^json:string[$t1; $.table[compact] ]
+
+
 ----------------------- table hash robust tests
 
-8. ^json:string[^t.hash{^hash_insert[$t]}]
-
-9. ^json:string[$t; $.table[compact] ]
-
-10. ^json:string[^t.hash{^hash_delete[$t]}]
+10. ^json:string[^t.hash{^hash_insert[$t]}]
 
 11. ^json:string[$t; $.table[compact] ]
 
-12. after offset: ^t.offset[]
+12. ^json:string[^t.hash{^hash_delete[$t]}]
+
+13. ^json:string[$t; $.table[compact] ]
+
+14. after offset: ^t.offset[]
 
 
 @test_insert[t]
