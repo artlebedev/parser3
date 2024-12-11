@@ -17,10 +17,10 @@
 #include "pa_random.h"
 #include "pa_vdate.h"
 #include "pa_vfile.h"
-#include "pa_vtable.h"
+#include "pa_varray.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.145 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.146 2024/12/11 04:07:07 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -33,7 +33,7 @@ extern "C" {
 // defines
 
 #define RAW_NAME "raw"
-#define TABLES_NAME "tables"
+#define ELEMENTS_NAME "elements"
 
 // internals
 
@@ -110,15 +110,15 @@ static void putReceived(HashStringValue& received, const char* name, time_t valu
 
 struct Field2received_info {
 	HashStringValue *hash;
-	HashStringValue *tables;
+	HashStringValue *elements;
 
 	Field2received_info(HashStringValue& part){
 		VHash* vhash(new VHash);
-		VHash* vtables(new VHash);
+		VHash* velements(new VHash);
 		putReceived(part, RAW_NAME, vhash);
-		putReceived(part, TABLES_NAME, vtables);
+		putReceived(part, ELEMENTS_NAME, velements);
 		hash=&vhash->hash();
-		tables=&vtables->hash();
+		elements=&velements->hash();
 	}
 };
 
@@ -128,26 +128,15 @@ static void MimeHeaderField2received(const char* name, const char* value, gpoint
 
 	if(name && value){
 		name = capitalize(pa_strdup(name));
-		String *svalue = new String(pa_strdup(value), String::L_TAINTED);
+		VString *svalue = new VString(*new String(pa_strdup(value), String::L_TAINTED));
 
-		info->hash->put(name, new VString(*svalue));
+		info->hash->put(name, svalue);
 
-		// tables
-		Value* vtable=info->tables->get(name);
-		if(!vtable) {
-			// first appearence
-			Table::columns_type columns(new ArrayString(1));
-			*columns+=new String("field");
-
-			vtable=new VTable(new Table(columns));
-			info->tables->put(name, vtable);
-		}
-		Table& table=*vtable->get_table();
-
-		// this string becomes next row
-		Table::element_type row(new ArrayString(1));
-		*row+=svalue;
-		table+=row;
+		// elements
+		VArray* varray=(VArray*)(info->elements->get(name));
+		if(!varray)
+			info->elements->put(name, varray=new VArray());
+		varray->array()+=svalue;
 	}
 }
 
@@ -542,7 +531,7 @@ static void store_message_element(HashStringValue::key_type raw_element_name, Ha
 		|| low_element_name==CHARSET_NAME
 		|| low_element_name==VALUE_NAME
 		|| low_element_name==RAW_NAME
-		|| low_element_name==TABLES_NAME
+		|| low_element_name==ELEMENTS_NAME
 		|| low_element_name==FORMAT_NAME
 		|| low_element_name==NAME_NAME
 		|| low_element_name==CID_NAME
