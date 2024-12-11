@@ -8,8 +8,9 @@
 #include "pa_vmethod_frame.h"
 #include "pa_vcaller_wrapper.h"
 #include "pa_request.h"
+#include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.50 2024/12/09 22:04:57 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.51 2024/12/11 00:37:04 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 // MethodParams: methods
 
@@ -55,6 +56,19 @@ Table* MethodParams::as_table(int index, const char* name) {
 	if(value.is_string() && value.get_string()->trim().is_empty())
 		return 0;
 	throw Exception(PARSER_RUNTIME, 0, "%s param must have table representation (parameter #%d)", name ? name : "options", 1+index);
+}
+
+const String& MethodParams::as_file_name(int index) {
+	const String& result=as_no_junction(index, FILE_NAME_MUST_BE_NE_STRING).as_string();
+	if(result.is_empty())
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", FILE_NAME_MUST_BE_NE_STRING, 1+index);
+	return result;
+}
+
+const String& MethodParams::as_file_spec(int index) {
+	if(VFile* vfile=dynamic_cast<VFile *>(&get(index)))
+		return vfile->get_element(name_name)->as_string();
+	return as_string(index, FILE_NAME_MUST_BE_STRING_OR_FILE);
 }
 
 // VMethodFrame: methods

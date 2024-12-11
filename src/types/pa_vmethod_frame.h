@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.140 2024/12/10 02:40:53 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.141 2024/12/11 00:37:04 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -126,12 +126,10 @@ public:
 	}
 
 	/// handy file name ensurer
-	const String& as_file_name(int index) {
-		const String& result=as_no_junction(index, FILE_NAME_MUST_BE_NE_STRING).as_string();
-		if(result.is_empty())
-			throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", FILE_NAME_MUST_BE_NE_STRING, 1+index);
-		return result;
-	}
+	const String& as_file_name(int index);
+
+	/// handy file name from string or file
+	const String& as_file_spec(int index);
 
 	/// handy hash ensurers
 	HashStringValue* as_hash(int index, const char* name=0);

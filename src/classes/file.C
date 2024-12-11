@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.291 2024/12/06 23:20:04 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.292 2024/12/11 00:37:04 moko Exp $";
 
 // defines
 
@@ -849,7 +849,7 @@ static void _find(Request& r, MethodParams& params) {
 }
 
 static void _dirname(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& file_spec=params.as_file_spec(0);
 	// works as *nix dirname
 
 	// empty   > .
@@ -883,7 +883,7 @@ static void _dirname(Request& r, MethodParams& params) {
 }
 
 static void _basename(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& file_spec=params.as_file_spec(0);
 	// works as *nix basename
 
 	// empty   > .
@@ -909,7 +909,7 @@ static void _basename(Request& r, MethodParams& params) {
 }
 
 static void _justname(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& file_spec=params.as_file_spec(0);
 	// /a/some.tar.gz > some.tar
 	// /a/b.c/ > empty
 	// /a/b.c  > b
@@ -919,7 +919,7 @@ static void _justname(Request& r, MethodParams& params) {
 }
 
 static void _justext(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& file_spec=params.as_file_spec(0);
 	// /a/some.tar.gz > gz
 	// /a/b.c/ > empty
 	size_t pos=afterlastslash(file_spec);
@@ -929,7 +929,7 @@ static void _justext(Request& r, MethodParams& params) {
 }
 
 static void _fullpath(Request& r, MethodParams& params) {
-	const String& file_spec=params.as_string(0, FILE_NAME_MUST_BE_STRING);
+	const String& file_spec=params.as_file_spec(0);
 	const String* result;
 	if(file_spec.first_char()=='/')
 		result=&file_spec;
