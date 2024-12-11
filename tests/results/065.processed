@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2024
+Content-Length: 2350
 
 src=<br />
 dirname=.<br />
@@ -127,3 +127,19 @@ basename=file.txt<br />
 justname=file<br />
 justext=txt
 <hr />
+src=noname.dat<br />
+dirname=.<br />
+basename=noname.dat<br />
+justname=noname<br />
+justext=dat
+<hr />
+src=name.ext<br />
+dirname=.<br />
+basename=name.ext<br />
+justname=name<br />
+justext=ext
+<hr />
+/tests/name.ext
+Exception type: parser.runtime,
+Source: fullpath,
+Comment: file name must be string or file (parameter #1)

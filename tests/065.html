@@ -28,6 +28,10 @@ $tRepl[^table::create[nameless]{$request:document-root	^$request:document-root}]
 ^do[C:\temp/file.txt]
 ^do[C:/temp\file.txt]
 
+^do[^file::create[text;/../;]]
+^do[^file::create[text;/path/name.ext;]]
+^file:fullpath[^file::create[text;/path/name.ext;]]
+^try-catch{^file:fullpath{code}}
 
 @do[sFileSpec]
 src=^printFS[$sFileSpec]<br />
@@ -39,4 +43,4 @@ justext=^file:justext[$sFileSpec]
 
 
 @printFS[sFileSpec]
-$result[^sFileSpec.replace[$tRepl]]
+$result[^if($sFileSpec is file){$sFileSpec.name}{^sFileSpec.replace[$tRepl]}]
