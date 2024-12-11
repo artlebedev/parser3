@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.142 2024/12/11 01:23:58 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.143 2024/12/11 02:47:48 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -58,7 +58,7 @@ public:
 		Value& value=get(index);
 		if(value.get_junction())
 			return value;
-		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d is '%s')", msg, 1+index, value.type());
 	}
 
 	/// handy value-is-not-a-junction ensurer
@@ -66,7 +66,7 @@ public:
 		Value& value=get(index);
 		if(!value.get_junction())
 			return value;
-		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d is '%s')", msg, 1+index, value.type());
 	}
 
 	/// handy is-value-a-junction ensurer or can be auto-processed
@@ -76,7 +76,7 @@ public:
 			return value;
 		if(value.get_junction())
 			return value;
-		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d is '%s')", msg, 1+index, value.type());
 	}
 
 	/// handy expression auto-processing to double
@@ -124,7 +124,7 @@ public:
 	const String& as_string(int index, const char* msg) {
 		if(const String *result=get(index).get_string())
 			return *result;
-		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
+		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d is '%s')", msg, 1+index, get(index).type());
 	}
 
 	/// handy file name ensurer

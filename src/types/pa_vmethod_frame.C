@@ -10,7 +10,7 @@
 #include "pa_request.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.52 2024/12/11 01:23:58 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.53 2024/12/11 02:47:48 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 // MethodParams: methods
 
@@ -44,7 +44,7 @@ HashStringValue* MethodParams::as_hash(int index, const char* name) {
 		return result;
 	if(value.is_string() && value.get_string()->trim().is_empty())
 		return 0;
-	throw Exception(PARSER_RUNTIME, 0, "%s must have hash representation (parameter #%d)", name ? name : "options", 1+index);
+	throw Exception(PARSER_RUNTIME, 0, "%s must have hash representation (parameter #%d is '%s')", name ? name : "options", 1+index, value.type());
 }
 
 Table* MethodParams::as_table(int index, const char* name) {
@@ -55,14 +55,14 @@ Table* MethodParams::as_table(int index, const char* name) {
 		return result;
 	if(value.is_string() && value.get_string()->trim().is_empty())
 		return 0;
-	throw Exception(PARSER_RUNTIME, 0, "%s param must have table representation (parameter #%d)", name ? name : "options", 1+index);
+	throw Exception(PARSER_RUNTIME, 0, "%s param must have table representation (parameter #%d is '%s')", name ? name : "options", 1+index, value.type());
 }
 
 const String& MethodParams::as_file_name(int index) {
 	const String* result=get(index).get_string();
 	if(result && !result->is_empty())
 		return *result;
-	throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", FILE_NAME_MUST_BE_NE_STRING, 1+index);
+	throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d is '%s')", FILE_NAME_MUST_BE_NE_STRING, 1+index, get(index).type());
 }
 
 const String& MethodParams::as_file_spec(int index) {
