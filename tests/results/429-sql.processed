@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 12634
+Content-Length: 12639
 
 
 		
@@ -515,7 +515,7 @@ Content-Length: 12634
 	3.6 
 	
 	Exception type: sql.execute,
-	Source: select weigth, * from pets,
+	Source: select weigth, pets.* from pets,
 	Comment: only 2 columns allowed for $.type[string] and $.sparse(true)
 
 
