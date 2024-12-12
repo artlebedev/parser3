@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 12640
+Content-Length: 12634
 
 
 		
@@ -438,20 +438,20 @@ Content-Length: 12640
 	3.1 	
 	{
 	"1":[
-		{"key":"1","pet":"hamster"},
-		{"key":"1","pet":"parrot"}
+		{"id":"1","pet":"hamster"},
+		{"id":"1","pet":"parrot"}
 	],
 	"5":[
-		{"key":"5","pet":"cat"}
+		{"id":"5","pet":"cat"}
 	],
 	"10":[
-		{"key":"10","pet":"dog"}
+		{"id":"10","pet":"dog"}
 	]
 }
 	3.1.1 
 	
 	Exception type: sql.execute,
-	Source: select weigth as key, pet from pets,
+	Source: select weigth as id, pet from pets,
 	Comment: duplicate key
 
 
@@ -464,7 +464,7 @@ Content-Length: 12640
 	3.2.1 
 	
 	Exception type: sql.execute,
-	Source: select weigth as key, pet from pets,
+	Source: select weigth as id, pet from pets,
 	Comment: duplicate key
 
 

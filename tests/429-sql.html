@@ -37,11 +37,11 @@
 
 @basic-tests-sparse[]
         basic tests sparse
-	3.1 ^a[select weigth as key, pet from pets; $.type[table] $.distinct(true) ]
-	3.1.1 ^try-catch{ ^a[select weigth as key, pet from pets; $.type[table] ] }
+	3.1 ^a[select weigth as id, pet from pets; $.type[table] $.distinct(true) ]
+	3.1.1 ^try-catch{ ^a[select weigth as id, pet from pets; $.type[table] ] }
 
-	3.2 ^a[select weigth as key, pet from pets; $.type[string] $.distinct(true) ]
-	3.2.1 ^try-catch{ ^a[select weigth as key, pet from pets; $.type[string] ] }
+	3.2 ^a[select weigth as id, pet from pets; $.type[string] $.distinct(true) ]
+	3.2.1 ^try-catch{ ^a[select weigth as id, pet from pets; $.type[string] ] }
 
 	^void:sql{delete from pets where pet='hamster'}
 
