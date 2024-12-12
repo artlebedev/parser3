@@ -1,9 +1,9 @@
 Content-Type: text/html
-Content-Length: 7251
+Content-Length: 7250
 
 <h2>POST in $response:charset (UTF-8) w/o file</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 487
+<pre>CONTENT_LENGTH	: 491
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
@@ -21,9 +21,7 @@ Content-Disposition: form-data; name="my-name"
 
 чЕ&н"И:е%
 ------------boundary-value
-Content-Disposition: form-data; name="
-
-фыв"
+Content-Disposition: form-data; name="%0A%0Aфыв"
 
 зна
 чение
@@ -40,7 +38,7 @@ Content-Disposition: form-data; name="table"
 <hr />
 <h2>POST in UTF-8 w/o file with own User-Agent and ommiting charset declaration</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 487
+<pre>CONTENT_LENGTH	: 491
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
@@ -59,9 +57,7 @@ Content-Disposition: form-data; name="my-name"
 
 чЕ&н"И:е%
 ------------boundary-value
-Content-Disposition: form-data; name="
-
-фыв"
+Content-Disposition: form-data; name="%0A%0Aфыв"
 
 зна
 чение
@@ -78,7 +74,7 @@ Content-Disposition: form-data; name="table"
 <hr />
 <h2>POST in WINDOWS-1251 w/o file</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 460
+<pre>CONTENT_LENGTH	: 464
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
@@ -96,9 +92,7 @@ Content-Disposition: form-data; name="my-name"
 
 чЕ&н"И:е%
 ------------boundary-value
-Content-Disposition: form-data; name="
-
-фыв"
+Content-Disposition: form-data; name="%0A%0Aфыв"
 
 зна
 чение
@@ -115,7 +109,7 @@ Content-Disposition: form-data; name="table"
 <hr />
 <h2>POST in $response:charset (UTF-8) with file in UTF-8</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 661
+<pre>CONTENT_LENGTH	: 665
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
@@ -133,9 +127,7 @@ Content-Disposition: form-data; name="my-name"
 
 чЕ&н"И:е%
 ------------boundary-value
-Content-Disposition: form-data; name="
-
-фыв"
+Content-Disposition: form-data; name="%0A%0Aфыв"
 
 зна
 чение
@@ -157,7 +149,7 @@ Content-Type: application/octet-stream
 <hr />
 <h2>POST in WINDOWS-1251 with file in UTF-8</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 632
+<pre>CONTENT_LENGTH	: 638
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
@@ -175,9 +167,7 @@ Content-Disposition: form-data; name="my-name"
 
 чЕ&н"И:е%
 ------------boundary-value
-Content-Disposition: form-data; name="
-
-фыв"
+Content-Disposition: form-data; name="%0A%0Aфыв"
 
 зна
 чение
@@ -190,8 +180,7 @@ Content-Disposition: form-data; name="table"
 
 значение
 ------------boundary-value
-Content-Disposition: form-data; name="file"; filename="фай
-л.html"
+Content-Disposition: form-data; name="file"; filename="фай%0Aл.html"
 Content-Type: application/octet-stream
 
 РџСЂРѕРІРµСЂРєР°
@@ -200,7 +189,7 @@ Content-Type: application/octet-stream
 <hr />
 <h2>POST in WINDOWS-1251 with file in WINDOWS-1251</h2>
 <h3>Headers</h3>
-<pre>CONTENT_LENGTH	: 629
+<pre>CONTENT_LENGTH	: 633
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
 HTTP_HOST	: www.parser.ru
@@ -218,9 +207,7 @@ Content-Disposition: form-data; name="my-name"
 
 чЕ&н"И:е%
 ------------boundary-value
-Content-Disposition: form-data; name="
-
-фыв"
+Content-Disposition: form-data; name="%0A%0Aфыв"
 
 зна
 чение
@@ -245,7 +232,6 @@ Content-Type: application/octet-stream
 <pre>CONTENT_LENGTH	: 1234
 CONTENT_TYPE	: multipart/form-data; boundary=------------boundary-value
 HTTP_ACCEPT	: */*
-HTTP_EXPECT	: 100-continue
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_________	: зна чение
