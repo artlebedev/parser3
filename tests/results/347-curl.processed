@@ -1,13 +1,10 @@
 Content-Type: text/html
-Content-Length: 336
+Content-Length: 138
 
 1. 2. Exception type: curl,
-Source: session,
-Comment: failed to load curl library ... no-such-library.ext ...
+Source: session
 3. Exception type: curl,
-Source: session,
-Comment: failed to load curl library ... no-such-library.ext ...
+Source: session
 4. 5. Exception type: curl,
-Source: session,
-Comment: failed to load curl library ... another-library.ext ...
+Source: session
 6. 7. OK 

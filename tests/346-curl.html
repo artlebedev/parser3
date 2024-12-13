@@ -75,7 +75,10 @@
 
 19. ^try-catch-filtered{ ^curl:load[ $.url[http://no-such-domain.parser.ru/] ] }
 
-@show[title;options][f;text;t;post]
+@show[title;options]
+^try-catch{^show-real[$title;$options]}
+
+@show-real[title;options][f;text;t;post]
 
 $f[^curl:load[
 	$options

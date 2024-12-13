@@ -1,17 +1,9 @@
 @main[]
 
 1. ^curl:options[ $.library[no-such-library.ext] ]
-2. ^try-catch{ ^curl:session{ } }
-3. ^try-catch{ ^curl:session{ } }
+2. ^try-catch-filtered{ ^curl:session{ } }
+3. ^try-catch-filtered{ ^curl:session{ } }
 4. ^curl:options[ $.library[another-library.ext] ]
-5. ^try-catch{ ^curl:session{ } }
+5. ^try-catch-filtered{ ^curl:session{ } }
 6. ^curl:options[ $.library[] ]
 7. ^try-catch{ ^curl:session{ OK } }
-
-@try-catch[jCode]
-^try{$jCode}{
-	$exception.handled(1)
-	Exception type: $exception.type,
-	Source: $exception.source,
-	Comment: ^exception.comment.match[(failed to load curl library).*(no-such-library.ext|another-library.ext).*][]{$match.1 ... $match.2 ...}
-}
