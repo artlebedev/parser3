@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.74 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.75 2024/12/13 13:14:28 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -45,10 +45,15 @@ typedef void (*t_curl_formfree)(struct curl_httppost *form); t_curl_formfree f_c
 #define GLINK(name) f_##name=(t_##name)lt_dlsym(handle, #name);
 #define DLINK(name) GLINK(name) if(!f_##name) return "function " #name " was not found";
 		
-static const char *dlink(const char *dlopen_file_spec) {
+static const char *dlink(char *dlopen_file_spec) {
 	pa_dlinit();
 
-	lt_dlhandle handle=lt_dlopen(dlopen_file_spec);
+	lt_dlhandle handle;
+	do {
+		char *next=lsplit(dlopen_file_spec, ',');
+		handle=lt_dlopen(dlopen_file_spec);
+		dlopen_file_spec=next;
+	} while (!handle && dlopen_file_spec);
 
 	if(!handle){
 		if(const char* result=lt_dlerror())
@@ -136,20 +141,27 @@ public:
 	}
 };
 
+#ifdef WIN32
+#define CURL_LIBRARY "libcurl" LT_MODULE_EXT
+#else
+#define CURL_LIBRARY "libcurl" LT_MODULE_EXT ",libcurl" LT_MODULE_EXT ".4"
+#endif
+
 bool curl_linked = false;
 const char *curl_status = 0;
-const char *curl_library="libcurl" LT_MODULE_EXT;
+
+const char *curl_library=CURL_LIBRARY;
 
 static void temp_curl(void (*action)(Request&, MethodParams&), Request& r, MethodParams& params){
 	if(!curl_linked)
-		curl_status=dlink(curl_library);
+		curl_status=dlink(pa_strdup(curl_library));
 
 	if(curl_status == 0){
 		curl_linked=true;
 		Temp_curl temp_curl;
 		action(r,params);
 	} else {
-		const char *hint=strcmp(curl_library, "libcurl" LT_MODULE_EXT) ? "" : " (at first call ^curl:options[ $.library[correct.libcurl" LT_MODULE_EXT ".name] ])";
+		const char *hint=strcmp(curl_library, CURL_LIBRARY) ? "" : " (before use, call ^curl:options[ $.library[correct.libcurl" LT_MODULE_EXT ".name] ])";
 		throw Exception("curl", 0, "failed to load curl library %s%s", curl_status, hint);
 	}
 }
@@ -554,6 +566,8 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			// 'library' parser option
 			if(!curl_linked){
 				curl_library=v.as_string().taint_cstr(String::L_FILE_SPEC);
+				if(!curl_library[0])
+					curl_library=CURL_LIBRARY;
 			} else 
 				throw Exception("curl", 0, "failed to set option '%s': already loaded", key.cstr());
 			break;
