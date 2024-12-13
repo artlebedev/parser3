@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3996
+Content-Length: 3817
 
 1. slow test result:
 {
@@ -182,17 +182,6 @@ Comment: Unsupported protocol
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-3,
 Comment: Unsupported protocol
-12. strange-status test result:
-{
-"class":"file",
-"name":"nph-379.pl",
-"size":0,
-"mode":"text",
-"content-type":"application\/octet-stream",
-"status":200,
-"tables":{},
-"text":""
-}
 13. strange-content-length-1 test result:
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
