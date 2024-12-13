@@ -59,7 +59,7 @@ $f[^curl:load[
 
 $text[^taint[as-is][$f.text]]
 # replace boundary by fixed string
-$text[^text.match[(-{10,12})-*[0-9a-fA-F]+(--)?][g]{${match.1}boundary-value$match.2}]
+$text[^text.match[(-{12})-*[0-9a-zA-Z]+(--)?][g]{${match.1}boundary-value$match.2}]
 # cut off the post's body is any
 $text[^text.match[POST:(.*)<EOF>][]{$post[$match.1]}]
 
@@ -67,7 +67,7 @@ $text[^text.match[POST:(.*)<EOF>][]{$post[$match.1]}]
 $t[^table::create[nameless]{^taint[as-is][^text.replace[^table::create{a	b
  = 	^taint[^#09]
 ^taint[^#0A]	^taint[^#0A]}]]}]
-#$t[^t.select(!$h.[$t.0])]
+$t[^t.select($t.0 ne 'CONTENT_LENGTH')]
 ^t.sort{$t.0}
 
 # print all
