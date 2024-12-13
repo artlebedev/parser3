@@ -30,26 +30,17 @@ $s[^taint[шило& рыло&]]
 '^empty.replace[&;-]'
 <hr />
 
-^try{
+^try-catch-comment{
 	'^s.replace[;-]'
-}{
-	$exception.handled(true)
-	exception ($exception.comment). it's OK
 }
 <hr />
 
 
-^try{
+^try-catch-comment{
 	'^s.replace[^table::create[nameless]{	-}]'
-}{
-	$exception.handled(true)
-	exception ($exception.comment). it's OK
 }
 <hr />
 
-^try{
+^try-catch-comment{
 	'^s.replace[^table::create[nameless]{}]'
-}{
-	$exception.handled(true)
-	exception ($exception.comment). it's OK
 }

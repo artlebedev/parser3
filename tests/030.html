@@ -20,14 +20,11 @@ e1: ^try-catch{
 	]
 }
 
-e2: ^try{
+e2: ^try-catch-filtered{
 	$cookie:x[
 		$.value[xxx-value]
 		$.expires(-5000*365)
 	]
-}{
-	$exception.handled(true)
-	Exception type: $exception.type
 }
 
 ^json:string[$cookie:fields; $.indent(1) ]

@@ -1,6 +1,8 @@
 Content-Type: text/html
-Content-Length: 34
+Content-Length: 87
 
 ^call[]
 <hr />
-exception, it's OK
+Exception type: parser.runtime,
+Source: call,
+Comment: undefined method

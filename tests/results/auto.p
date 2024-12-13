@@ -63,6 +63,15 @@ html	text/html
 }
 
 
+@try-catch-filtered[jCode;limit]
+^try{$jCode}{
+	$exception.handled(true)
+	Exception type: $exception.type,
+	Source: $exception.source^if(def $limit){,
+	Comment: ^exception.comment.left($limit)}
+}
+
+
 @try-catch-comment[jCode]
 ^try{$jCode}{
 	$exception.handled(true)

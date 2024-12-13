@@ -5,11 +5,7 @@ $str[^taint[^^call[]]]
 
 <hr />
 
-^try{
+^try-catch{
 	^process{^taint[as-is][$str]}
-}{
-	$exception.handled(1)
-	exception, it's OK
 }
-
 

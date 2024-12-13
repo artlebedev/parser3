@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3999
+Content-Length: 3962
 
 1. Exception type: curl,
 Source: info,
@@ -166,5 +166,4 @@ SERVER_NAME	: www.parser.ru</pre>
 <pre></pre>
 <hr />
 19. Exception type: curl.host,
-Source: http://no-such-domain.parser.ru/,
-Comment: Couldn't resolve host name
+Source: http://no-such-domain.parser.ru/
