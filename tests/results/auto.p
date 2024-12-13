@@ -51,6 +51,8 @@ html	text/html
 	$CLASS-GETTER-PROTECTED(false)
 }
 
+^os[;]{ ^curl:options[ $.library[libcurl.4.dylib] ] }
+
 @auto[]
 
 
@@ -96,6 +98,6 @@ $response:charset[windows-1251]
 @windows-1251[]
 ^1251[]
 
-@os[win;unix][name]
+@os[win;unix;mac][name]
 $name[^env:OS.left(7)]
-$result[^if(^name.lower[] eq 'windows'){$win}{$unix}]
+$result[^if(^name.lower[] eq 'windows'){$win}{^if(def $mac && ^env:HOME.left(6) eq '/Users'){$mac;$unix}}]
