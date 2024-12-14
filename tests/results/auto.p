@@ -100,4 +100,4 @@ $response:charset[windows-1251]
 
 @os[win;unix;mac][name]
 $name[^env:OS.left(7)]
-$result[^if(^name.lower[] eq 'windows'){$win}{^if(def $mac && ^env:HOME.left(6) eq '/Users'){$mac;$unix}}]
+$result[^if(^name.lower[] eq 'windows'){$win}{^if(^env:HOME.left(6) eq '/Users' && def $mac){$mac;$unix}}]
