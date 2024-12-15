@@ -18,7 +18,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.127 2024/12/15 15:13:44 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.128 2024/12/15 15:32:45 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -369,11 +369,11 @@ Value* VForm::get_element(const String& aname) {
 
 	// $tables
 	if(SYMBOLS_EQ(aname, TABLES_SYMBOL))
-		return new VHash(vtables);
+		return &vtables;
 
 	// $files
 	if(SYMBOLS_EQ(aname, FILES_SYMBOL))
-		return new VHash(vfiles);
+		return &vfiles;
 
 	// $imap
 	if(SYMBOLS_EQ(aname, IMAP_SYMBOL))
