@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.378 2024/12/11 15:46:38 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.379 2024/12/15 21:47:07 moko Exp $";
 
 // class
 
@@ -1071,7 +1071,7 @@ static void _cells(Request& r, MethodParams& params) {
 	size_t row_size=self_table[self_table.current()]->count(); // number of columns in current row
 
 	if(params.count()){
-		int limit=params.as_int(params.count()-1, "offset must be expression", r);
+		int limit=params.as_int(params.count()-1, "limit must be expression", r);
 		if(limit<0)
 			limit=0;
 		if((size_t)limit<row_size)
