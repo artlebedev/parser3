@@ -1,4 +1,153 @@
+2024-12-16  moko
+
+	* operators.txt: actualized for 3.5.0
+
+	* src/classes/table.C: exception text fixed
+
+2024-12-15  moko
+
+	* tests/: 102.html, results/102.processed: tests updated after
+	  $form:fields not editable again (related to feature #1254)
+
+	* src/types/pa_vform.C: $form:tables/files (not $form:fields) can
+	  be edited (related to feature #1254)
+
+	* src/types/pa_vform.C: reverted that
+	  $form:fields/tables/files/imap can be edited (related to feature
+	  #1254) for backward compatibility
+
+2024-12-14  moko
+
+	* operators.txt: + array in operators.txt
+
+	* tests/results/auto.p: avoid $mac execution unless on OS X
+
+	* tests/388-sql.html: more OS support
+
+2024-12-13  moko
+
+	* tests/388-sql.html: sql tests under OS X now fixed
+
+	* tests/results/auto.p: curl test under OS X now works
+
+	* tests/: 346-curl.html, 347-curl.html, results/347-curl.processed:
+	  no dll name under Windows, hiding
+
+	* tests/: 379-curl.html, results/379-curl.processed: some curl
+	  versions accept "HTTP/1.0 200OK? OK" status, some not, ignore
+
+	* tests/: 030.html, 212.html, 219.html, 273.html, 346-curl.html,
+	  389.html, results/030.processed, results/212.processed,
+	  results/219.processed, results/273.processed,
+	  results/320.processed, results/346-curl.processed,
+	  results/389.processed, results/auto.p: ^try-catch-filtered added
+	  and used
+
+	* tests/: 347-curl.html, results/347-curl.processed: support for
+	  different error messages
+
+	* src/classes/curl.C: several curl libraries supported,
+	  ^curl:options[ $.library[] ] resets to default
+
+	* tests/: 223-curl.html, results/223-curl.processed: CONTENT_LENGTH
+	  removed as depends on curl version
+
+	* tests/results/: 223-curl.processed, 394-curl.processed: curl
+	  fixed bug with \n in file names, test result updated
+
+	* tests/388-sql.html: +libmysqlclient.so
+
+	* etc/auto.p.in: +libmariadb
+
+2024-12-12  moko
+
+	* tests/: 388-sql.html, results/429-sql.processed: test results
+	  updated after test changed
+
+	* tests/: 388-sql.html, 428-sql.html, 429-sql.html: tests updated
+	  for newer MariaDB compatibility
+
+	* tests/: 388-sql.html, 429-sql.html, results/388-sql.processed,
+	  results/429-sql.processed: key -> id for new MariaDB
+	  compatibility
+
+	* src/types/pa_vmethod_frame.h: warning war
+
+	* src/: include/pa_charset.h, main/pa_charset.C: Adopted patch from
+	  Yavor Doganov <yavor@gnu.org> with extra libxml2 headers
+	  including for Debian package
+
+2024-12-11  moko
+
+	* src/: targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_vstatus.C:
+	  $status:log-filename added (related to feature #1262)
+
+	* tests/: 440.html, results/440.processed: test for row is checked
+	  before accessing when table is modified during select (related to
+	  bug #1258)
+
+	* src/: classes/table.C, include/pa_table.h: row should be checked
+	  before accessing as table can be modified during select (related
+	  to bug #1258)
+
+	* src/types/pa_vmail.C: $mail:received tables -> elements array
+	  (related to feature #1226)
+
+	* src/: classes/file.C, classes/image.C, classes/table.C,
+	  include/pa_exception.h: FIRST_ARG_MUST_NOT_BE_CODE replace with
+	  better messages (related to feature #1267)
+
+	* tests/results/: 065.processed, 246.processed, 337.processed,
+	  342.processed, 352.processed, 356.processed, 364.processed,
+	  372.processed, 373.processed, 389.processed, 404.processed,
+	  406.processed, 414.processed, 430.processed, 432.processed,
+	  442.processed: tests updated after params.as_string error
+	  reporting was improved (related to feature #1267)
+
+	* src/classes/reflection.C: error messages optimized (related to
+	  feature #1267)
+
+	* src/types/: pa_vmethod_frame.C, pa_vmethod_frame.h: even better
+	  error reporing for params.as_* (related to feature #1267)
+
+	* src/: classes/file.C, classes/string.C, include/pa_exception.h:
+	  MODE_MUST_NOT_BE_CODE -> MODE_MUST_BE_STRING (related to feature
+	  #1267)
+
+	* tests/results/: 246.processed, 414.processed, 432.processed:
+	  tests updated after params.as_string error reporting was improved
+	  (related to feature #1267)
+
+	* src/types/: pa_vmethod_frame.C, pa_vmethod_frame.h: better error
+	  reporing for params.as_string (implements feature #1267)
+
+	* tests/: 065.html, results/065.processed: tests for file methods
+	  accepting file as filename added (related to feature #1265)
+
+	* src/: classes/file.C, include/pa_exception.h,
+	  types/pa_vmethod_frame.C, types/pa_vmethod_frame.h: some file
+	  methods now accept file as path specification (adopted Sumo patch
+	  implements feature #1265)
+
+	* tests/: 400.html, results/400.processed: tests for result
+	  optimization "locks" after first method call (related to feature
+	  #1266)
+
+2024-12-10  moko
+
+	* src/types/: pa_method.h, pa_vmethod_frame.h: detailed
+	  result_optimization comments (related to feature #1266)
+
+	* src/types/: pa_vmethod_frame.C, pa_vmethod_frame.h: optimization:
+	  $result now stored in my_result, not in local variables hash
+	  (implements feature #1266)
+
 2024-12-09  moko
+
+	* src/types/: pa_vmethod_frame.C, pa_vmethod_frame.h: my.set ->
+	  set_my_variable in preparation for $result optimization (related
+	  to feature #1266)
 
 	* tests/results/119.processed: newline corrected for some OS
 
