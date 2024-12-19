@@ -130,19 +130,6 @@
             &datestyle=ISO,SQL,Postgres,European,NonEuropean=US,German,DEFAULT=ISO
             &ClientCharset=parser-charset << charset in which parser thinks client works
 
-        oracle://user:pass@service?
-            NLS_LANG=RUSSIAN_AMERICA.CL8MSWIN1251&
-            NLS_LANGUAGE  language-dependent conventions
-            NLS_TERRITORY  territory-dependent conventions
-            NLS_DATE_FORMAT=YYYY-MM-DD HH24:MI:SS
-            NLS_DATE_LANGUAGE  language for day and month names
-            NLS_NUMERIC_CHARACTERS  decimal character and group separator
-            NLS_CURRENCY  local currency symbol
-            NLS_ISO_CURRENCY  ISO currency symbol
-            NLS_SORT  sort sequence
-            ORA_ENCRYPT_LOGIN=TRUE
-            ClientCharset=parser-charset << charset in which parser thinks client works
-
         odbc://DSN=dsn^;UID=user^;PWD=password^;ClientCharset=parser-charset
             ClientCharset << charset in which parser thinks client works
 
@@ -157,29 +144,10 @@ $SQL[
     $.drivers[^table::create{protocol	driver	client
 mysql	/www/parser3/libparser3mysql.so	libmysqlclient.so
 pgsql	/www/parser3/libparser3pgsql.so	libpq.so
-oracle	/www/parser3/libparser3oracle.so	/u01/app/oracle/product/8.1.5/lib/libclntsh.so?ORACLE_HOME=/u01/app/oracle/product/8.1.5&ORA_NLS33=/u01/app/oracle/product/8.1.5/ocommon/nls/admin/data
 sqlite	/www/parser3/libparser3sqlite.so	sqlite3.so
-odbc	c:\drives\y\parser3project\odbc\debug\parser3odbc.dll
+odbc	parser3odbc.dll
 }]
 ]
-        в таблице у oracle в столбце клиентской библиотеки
-        допустимо задать environment параметры инициализации(если они не заданы иначе заранее),
-        допустимы имена, начинающиеся на NLS_ ORA_ и ORACLE_, или оканчивающиеся на +
-        под win32 
-            необходим PATH+=^;C:\Oracle\Ora81\bin
-        к сведению: 
-          ORA_NLS33 нужен для считывания файлика с клиентской кодировкой(задаваемой NLS_LANG)
-             если кодировка не по-умолчанию, обязательно указать в .drivers,
-             иначе будет сообщение про неправильный NLS параметр
-             (имеют в виду, что не нашли кодировку из NLS_LANG)
-          ORACLE_HOME нужен для считывания текстов сообщений об ошибках,
-        можно указывать и в строке соединения, но глобален, и лучше вынести за скобки,
-        в отличие от клиентской кодировки NLS_LANG, и прочего.
-
-        ВНИМАНИЕ: при работе с большими текстовыми блоками в oracle&pgsql[а лучше всегда],
-        ставить такой префикс перед открывающим апострофом, впритык, везде без проблелов
-        /**имя_поля**/'literal'
-
     ^rem{}
         комментарий, удаляется при компиляции
 
@@ -270,7 +238,6 @@ int,double
     ^int/double:sql{query}[[$.limit(2) $.offset(4) $.default{0} $.bind[см. table::sql]]]
         запрос, результат которого должен быть один столбец/одна строка
 
-
 string
     в выражении
         def значение равно "не пуста?"
@@ -279,21 +246,15 @@ string
         пример:
         ^if(def $form:name) не пуста?
         ^if($user.isAlive) истина? [автопреобразование к числу, не ноль?]
-
     ^string:sql{query}[[$.limit(1) $.offset(4) $.default{n/a} $.bind[см. table::sql]]]
         результат запроса должен быть один столбец/одна строка
-
-    ^строка.int[] .int(default) целочисленное значение строки. 
-        если ломается преобразование, берётся default
-
-    ^строка.double[] .double(default)  double значение строки
-        если ломается преобразование, берётся default
-
-    ^строка.bool[] .bool(default)  bool значение строки
-        если ломается преобразование, берётся default
-
+    ^строка.int[] ^строка.int(default)
+        целочисленное значение строки, если ломается преобразование, берётся default
+    ^строка.double[] ^строка.double(default)
+        double значение строки, если ломается преобразование, берётся default
+    ^строка.bool[] ^строка.bool(default)
+        bool значение строки, если ломается преобразование, берётся default
     ^строка.format[формат] %d  %.2f %02d...
-
     ^строка.match[шаблон-строка|шаблон-regex][[опции поиска]]  $prematch $match $postmatch $1 $2...
         опции поиска=
         i CASELESS
@@ -304,70 +265,59 @@ string
         ' создавать столбцы prematch, match, postmatch
         n вернуть цисло с количеством найденных совпадений, а не таблицу с результатами
         U инвертировать смысл модификатора '?'
-
     ^строка.match[шаблон-строка|шаблон-regex][опции поиска]{замена}
         опции поиска+=
         g заменить все вхождения, а не одно
-
     ^строка.split[разделитель|regex][[lrhva]][[название столбца для вертикального разбиения]]
         l слева направо [default]
         r справа налево
         h nameless таблица с ключами 0, 1, 2, ...
         v таблица из 1 столбца 'piece' или как передадут [default]
         a массив
-
     ^строка.{l|r}split[разделитель] таблица из столбца $piece
         оставлен для совместимости
-
     ^строка.upper|lower[]
-
     ^строка.length[]
-
     ^строка.mid(P[;N])
         без N - "до конца строки"
-
     ^строка.left(N), -1 выдает всю строку
-
     ^строка.right(N)
-
     ^строка.pos[подстрока]
-
     ^строка.pos[подстрока](позиция, с которой ищем)
         <0 = не найдено
-
     ^строка.replace[$таблица_подстановок_строка_на_строку]
-
     ^строка.replace[$что;$на-что]
-
     ^строка.save[[append;]путь]
-
     ^строка.save[путь[;$.charset[в какой кодировке сохраняем] $.append(true)]]
-
-    ^строка.trim[start|both|end|left|right[;chars]] выкидывает chars из начала/конца/и начала и конца
+        сохраняет строку в файл
+    ^строка.trim[start|both|end|left|right[;chars]]
+        выкидывает chars из начала/конца/и начала и конца
         default 'chars' -- whitespace chars
-
-    ^строка.trim[chars] выкидывает chars из начала и конца
-
+    ^строка.trim[chars]
+        выкидывает chars из начала и конца
     ^строка.base64[ $.pad(bool) $.wrap(bool) $.url-safe(bool) ] encode
     ^string:base64[encoded[; $.pad(bool) $.strict(bool) url-safe(bool) ]] decode
-
     ^строка.idna[]
         IDNA кодирование, поддержка кириллических доменов
-
     ^string:idna[encoded]
         IDNA декодирование, поддержка кириллических доменов
-
-    ^строка.js-escape[] кодирование для передачи в JS (%uXXXX)
-
-    ^string:js-unescape[escaped] декодирование переданного из js
-
-    ^string:unescape[js|uri;escaped; $.charset[] ] декодирование переданного из js или uri
-
+    ^строка.js-escape[]
+        кодирование для передачи в JS (%uXXXX)
+    ^string:js-unescape[escaped]
+        декодирование переданного из js
+    ^string:unescape[js|uri;escaped; $.charset[] ]
+        декодирование переданного из js или uri
+    ^строка.contains[ключ]
+        для совместимости с hash
 
 table
     в выражении
         логическое значение равно "не пуста?"
         числовое значение равно count[]
+    $таблица.поле
+    $таблица.поле[новое значение]
+    $таблица.fields
+        из named таблицы выдаёт текущую запись как Hash
     ^table::create[[nameless]]{данные}[[$.separator[^#09] $.encloser[]]]
     ^table::create[table][[$.limit(1) $.offset(5) $.offset[cur] $.reverse(1)]]
         клонирует таблицу
@@ -383,27 +333,32 @@ table
         в запросе надо написать ":имя"
         в параметре bind передать hash, из которого возьмётся (или куда запишется) значение
     ^таблица.save[[nameless|append;]путь[;опции, см. load]]
-    $таблица.поле
-    $таблица.поле[новое значение]
-    $таблица.fields  из named таблицы выдаёт текущую запись как Hash
+        сохраняет таблицу в файл
     ^таблица.menu{тело}[[разделитель]]
+        выполняет код тела для каждой строки таблицы
     ^таблица.foreach[позиция;значение]{тело}[[разделитель]]
-    ^таблица.line[] 1-based offset
-    ^таблица.offset[] печатает offset
-    ^таблица.offset[[whence]](5) сдвигает
-        whence=cur|set, без whence - это cur
-    ^таблица.count[], ^таблица.count[rows] - количество строк в таблице
-    ^таблица.count[columns] - количество столбцов таблицы
-    ^таблица.count[cells] - количество ячеек в текущей строке таблицы
+    ^таблица.line[]
+        текущий ряд таблицы, начинается с 1
+    ^таблица.offset[]
+        смещение текущего ряда таблицы от начала, начинается с 0
+    ^таблица.offset[[whence]](5) 
+        сдвигает whence=cur|set, без whence - это cur
+    ^таблица.count[], ^таблица.count[rows]
+        количество строк в таблице
+    ^таблица.count[columns]
+        количество столбцов таблицы
+    ^таблица.count[cells]
+        количество ячеек в текущей строке таблицы
     ^таблица.sort{{ключеделатель строка}|(ключеделатель число)}[{desc|asc}] default=asc
     ^таблица.append{данные}
     ^таблица.append[ $.имя столбца[значение столбца] ]
     ^таблица.insert{данные} добавить запись на текущую позицию
     ^таблица.insert[ $.имя столбца[значение столбца] ]
     ^таблица.delete[] - стирает запись с текущей позиции
-    ^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]] - добавляет записи из таблицы.
-        таблицы должны иметь одинаковую структуру.
-    ^таблица.flip[] выдаёт транспонированную, надо куда-то сложить, потом пользовать
+    ^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]
+        добавляет записи из таблицы, таблицы должны иметь одинаковую структуру
+    ^таблица.flip[]
+        выдаёт транспонированную
     ^таблица.locate[поле;значение][[$.limit(1) $.offset(5) $.offset[cur] $.reverse(1)]]
         передвигает текущую строку, если найдёт. выдаёт bool
     ^таблица.locate(логическое выражение)[[$.limit(1) $.offset(5) $.offset[cur] $.reverse(1)]]
@@ -414,17 +369,23 @@ table
         если distinct содержит true, то не будет ошибки при повторяющихся ключах
         если distinct содержит tables, то будет создан hash из таблиц, содержащих строки с ключом
         $.type[string/table] поменять значение элемента на строку (указать одну колонку) или таблицу
-    ^таблица.columns[[название столбца]] + таблица из одного столбца 'column' или как передадут
-    ^таблица.cells[], ^таблица.cells(лимит) - выдает массив ячеек текущей строки
-    ^таблица.array[] - возвращает массив, элементами которого являются хеши, отображающие данные каждой строки
-    ^таблица.array[колонка] - возвращает массив значений указанной колонки
-    ^таблица.array{код} - возвращает массив результатов выполнения переданного кода для каждой строки таблицы
-    ^таблица.rename[название столбца;новое навание столбца] - переименовывает столбец
-    ^таблица.rename[ $.название столбца[новое навание столбца] ] - переименовывает столбцы
-    $отобранное[^таблица.select(выражение)] = таблица из тех же столбцов и строк, у которых условие совпало
+    ^таблица.columns[[название столбца]]
+        таблица из одного столбца 'column' или как передадут
+    ^таблица.cells[], ^таблица.cells(лимит)
+        выдает массив ячеек текущей строки
+    ^таблица.array[]
+        возвращает массив, элементами которого являются хеши, отображающие данные каждой строки
+    ^таблица.array[колонка]
+        возвращает массив значений указанной колонки
+    ^таблица.array{код}
+        возвращает массив результатов выполнения переданного кода для каждой строки таблицы
+    ^таблица.rename[название столбца;новое навание столбца] ^таблица.rename[ $.название столбца[новое навание столбца] ]
+        переименовывает столбец или столбцы
+    $отобранное[^таблица.select(выражение)]
+        таблица из тех столбцов и строк, у которых условие совпало
         $adults[^man.select($man.age>=18)]
     ^таблица.color[цвет1;цвет2]
-
+        чередует цвет1 и цвет2 последовательно для каждого ряда
 
 hash
     в выражении
@@ -439,10 +400,10 @@ hash
     ^хеш.add[слагаемое]
         перезаписывает одноимённые
     ^хеш.sub[вычитаемое]
-    ^хеш.union[b] = объединение
-        одноимённые остаются
-    ^хеш.intersection[b][[$.order[self|arg]]] = пересечение
-        новый хеш, order задает порядок элементов (как в исходном хеше или хеше-параметре)
+    ^хеш.union[b]
+        объединение, одноимённые остаются
+    ^хеш.intersection[b][[$.order[self|arg]]]
+        пересечение, новый хеш, order задает порядок элементов (как в исходном хеше или хеше-параметре)
     ^хеш.intersects[b] = bool
     ^hash::sql{запрос}[[$.distinct(1) $.limit(2) $.offset(4) $.type[hash|string|table]]]
         получается hash(ключи=значения первая колонка ответа) of hash(ключи=названия остальных колонкок ответа) или
@@ -451,20 +412,23 @@ hash
     ^хеш.keys[[название колонки с ключами]] + таблица из одного столбца key или как передадут
     ^хеш.count[]
     ^хеш.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
-    ^хеш.delete[ключ]  удалить ключ
-    ^хеш.contain[ключ] - существует ли в хеше ключ (bool)
+    ^хеш.delete[ключ]
+        удалить ключ
+    ^хеш.contain[ключ]
+        существует ли в хеше ключ (bool)
     ^хеш.at[first|last][[key|value|hash]]
     ^хеш.at([-]N)[[key|value|hash]]
         доступ к заданным элементам упорядоченного хеша
     ^хеш.set[first|last;значение]
     ^хеш.set([-+]N)[значение]
-       устанавливает значение заданного элемента упорядоченного хеша
+        устанавливает значение заданного элемента упорядоченного хеша
     ^хеш.rename[старый_ключ;новый_ключ]
     ^хеш.rename[ $.старый_ключ[новый_ключ] ... ]
-       переименовывает заданные ключи хеша
+        переименовывает заданные ключи хеша
     ^хеш.sort[key;value]{{ключеделатель строка}|(ключеделатель число)}[[desc|asc]] default=asc
     $обратный_хеш[^хеш.reverse[]]
-    $отобранное[^хеш.select[key;value](выражение)[ $.limit(N) $.reverse(bool) $.default(bool) ]] = хеш из ключей и значений, для которых условие истинно
+    $отобранное[^хеш.select[key;value](выражение)[ $.limit(N) $.reverse(bool) $.default(bool) ]]
+        хеш из ключей и значений, для которых условие истинно
 
 hashfile
     ^hashfile::open[filename]
@@ -569,15 +533,22 @@ array
 
 form
     [берётся первый элемент из одноимённых из GET, потом первый из POST]
-    $form:поле = string/file 
-    $form:nameless = поле со значением поля без имени "?value&...", "...&value&...", "...&value"
-    $form:qtail = строка со значением текста после второго "?xxxxx", если там не было ',' [imap]
-    $form:fields = hash со всеми полями формы
-    $form:elements.поле = array со всеми значениями поля - как строковыми, так и файловыми
-    $form:tables.поле = table с одним столбцом "field" со значениями "поля", для множественных значений
-    $form:files.поле = hash со значениями полей типа файл, ключи - 0, 1, ..., значение - файл
-    $form:imap = хеш с ключами 'x' и 'y'
-        со значением ?1,2 приписки при использовании server-site image map
+    $form:поле
+        string/file
+    $form:nameless
+        поле со значением поля без имени "?value&...", "...&value&...", "...&value"
+    $form:qtail
+        строка со значением текста после второго "?xxxxx", если там не было ',' [imap]
+    $form:fields
+        hash со всеми полями формы
+    $form:elements.поле
+        array со всеми значениями поля - как строковыми, так и файловыми
+    $form:tables.поле
+        table с одним столбцом "field" со значениями "поля", для множественных значений
+    $form:files.поле
+        hash со значениями полей типа файл, ключи - 0, 1, ..., значение - файл
+    $form:imap
+        хеш с ключами 'x' и 'y' со значением ?1,2 приписки при использовании server-site image map
 
 env
     $env:переменная
@@ -590,24 +561,30 @@ cookie
     $cookie:имя[$.value[значение] $.expires[ЗНАЧЕНИЕ] $.secure(true) $.domain[имя домена] $.httponly(true)]
         значение поля expires может быть 'session', date, или число дней(0дней=session)
         если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
-    $cookie:fields = hash со всеми cookies
+    $cookie:fields
+        hash со всеми cookies
 
 request
     $request:query
     $request:uri
     $request:document-root
         каталог, относительно которого считаются пути в parser, по-умолчанию = $env:DOCUMENT_ROOT
-    $request:argv = hash с параметрами коммандной строки. ключи 0, 1, ... [0 -- имя обрабатываемого файла].
+    $request:argv
+        hash с параметрами коммандной строки. ключи 0, 1, ... [0 -- имя обрабатываемого файла]
     $request:charset
-        Кодировка исходного документа 
+        кодировка исходного документа 
         используется при upper/lower и match[][i]
         ПРЕДУПРЕЖДЕНИЕ: необходимо задать $request/response:charset до использования полей класса form
-    $request:method метод запроса (GET|POST|PUT)
-    $request:body тело POST-запроса в виде текста
-    $request:body-file тело POST-запроса в виде файла
-    $request:body-charset кодировка POST-запроса
-    $request:headers хеш с заголовками запроса (без префикса HTTP_)
-
+    $request:method
+        метод запроса (GET|POST|PUT)
+    $request:body
+        тело POST-запроса в виде текста
+    $request:body-file
+        тело POST-запроса в виде файла
+    $request:body-charset
+        кодировка POST-запроса
+    $request:headers
+        хеш с заголовками запроса (без префикса HTTP_)
 
 response
     $response:поле[значение]  и можно считать старое - $response:поле
@@ -645,6 +622,7 @@ regex
 
 reflection
     ^reflection:create[класс;конструктор[;пара;[мет[;ры]]]]  вызывает указанный конструктор класса (не более 100 параметров)
+    ^reflection:create[ $.class[name] $.constructor[name] $.arguments[ $.1[па] $.2[рам] $.3[етры] ] ]  вызывает указанный конструктор класса
     ^reflection:classes[]                 хеш со всеми классами. ключ -- имя класса, значение бывает methoded (класс с методами) или void
     ^reflection:class[объект]             класс переданного объекта
     ^reflection:class_name[объект]        имя класса переданного объекта
@@ -654,9 +632,12 @@ reflection
     ^reflection:class_alias[имя класса;новое имя класса]  задает псевдоним для указанного класса
     ^reflection:def[class;имя класса]     проверка класса на существование
     ^reflection:methods[класс]            хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
-    ^reflection:method[класс или объект;имя метода] возвращает junction-method класса или объекта
+    ^reflection:method[класс или объект;имя метода]  возвращает junction-method класса или объекта
+    ^reflection:filename[объект или класс или метод] возвращает имя файла, где определен объект, класс или метод
     ^reflection:fields[класс или объект]  хеш со списком статических полей указанного класса или динамических полей указанного объекта
+    ^reflection:fields_reference[объект]  редактируемый хеш динамических полей указанного объекта
     ^reflection:field[класс или объект;имя поля]  возвращает значение указанного поля класса или объекта. getter-ы игнорируются.
+    ^reflection:copy[источник;назначение] копирует поля из одного объекта или класса в другой
     ^reflection:uid[класс или объект]     возвращает идентификатор объекта или класса
     ^reflection:method_info[класс;метод]  хеш с параметрами указанного метода класса
         $.inherited[класс]                имя класса, где метод был определён (возвращается только если метод был определён в предке)
@@ -672,7 +653,10 @@ reflection
         параметра возвращает true, если передан динамический объект, false если класс
     ^reflection:delete[класс или объект;имя переменной]      удаляет переменную с указанным именем в указанном классе или объекте
     ^reflection:is[имя элемента;имя класса][[контекст]]      аналог оператора is, позволяющий определить, является ли элемент кодом.
-
+    ^reflection:tainting[[язык|tainted|optimized];строка]    строка, в которой каждому символу исходной строки соотвествует символ с кодом преобразования
+    ^reflection:stack[ $.args(false/true) $.locals(false/true) $.limit(n) $.offset(o)] текущее состояние стека вызовов методов на парсере
+    ^reflection:mixin[источник; $.to[получатель] $.name[имя] $.methods(true/false) $.fields(true/false) $.overwrite(false/true) ]
+        копирует в класс методы и поля другого класса
 
 mail
     $mail.received=MESSAGE:
@@ -800,7 +784,6 @@ mail
     под win32 используется SMTP протокол, сервер задаётся
         $MAIL.SMTP[smtp.domain.ru]
 
-
 image
     $картинка[^image::measure[DATA[; $.exif(bool) $.xmp(bool) $.xmp-charset[] $.video(bool) ]]]
         смотрит на .ext case insensitive,
@@ -814,7 +797,8 @@ image
     $картинка.src .width .height
     $картинка.line-width  число=ширина линий
         $картинка.line-style строка=стиль линий '*** * '='*** * *** * *** * '
-    ^картинка.html[[hash]] = <img ...>
+    ^картинка.html[[hash]]
+        <img ...>
     ^image::load[фон.gif]
         только gif пока
     ^image::create(размер X;размер Y[;цвет фона default белый]])
@@ -836,8 +820,8 @@ image
     ]
     ^картинка.text(x;y)[текст_надписи] AS_IS
     ^картинка.length[текст_надписи] AS_IS
-    ^картинка.gif[возможно, имя файла] -- кодирует в FILE с content-type=image/gif
-        имя файла будет использовано при $response:download
+    ^картинка.gif[возможно, имя файла]
+        кодирует в FILE с content-type=image/gif имя файла будет использовано при $response:download
     ^картинка.arc(center x;center y;width;height;start in degrees;end in degrees;color)
     ^картинка.sector(center x;center y;width;height;start in degrees;end in degrees;color)
     ^картинка.circle(center x;center y;r;color)
@@ -862,8 +846,10 @@ file
     ^файл.save[text|binary;имя файла[;$.charset[в какой кодировке сохраняем]]]
     ^file:delete[имя файла]
     ^file:find[имя файла][{когда не нашли}]
-    ^file:list[путь[;шаблон-строка|шаблон-regex]] = table с колонками name dir
-    ^file:list[путь;$.filter[шаблон-строка|шаблон-regex] $.stat(true)] = table с колонками name dir size [mca]date
+    ^file:list[путь[;шаблон-строка|шаблон-regex]]
+        table с колонками name dir
+    ^file:list[путь;$.filter[шаблон-строка|шаблон-regex] $.stat(true)]
+        table с колонками name dir size [mca]date
     ^file::load[text|binary;big.zip[;domain_press_release_2001_03_01.zip][;опции]]
     ^file::create[text|binary;имя;data]
     ^file::create[text|binary;имя;data[;$.charset[кодировка букв в создаваемом файле] $.content-type[...]]]
@@ -892,18 +878,15 @@ file
         блокируется
         выполняется код
         разблокируется
-    ^file:dirname[/a/some.tar.gz]=/a (работает аналогично комманде *nix)
-    ^file:dirname[/a/b/]=/a (работает аналогично комманде *nix)
-    ^file:basename[/a/some.tar.gz]=some.tar.gz (работает аналогично комманде *nix)
-    ^file:basename[/a/b/]=b (работает аналогично комманде *nix)
-    ^file:justname[/a/some.tar.gz]=some.tar
-    ^file:justext[/a/some.tar.gz]=gz
+    ^file:dirname[/a/some.tar.gz|file]=/a (работает аналогично комманде *nix)
+    ^file:dirname[/a/b/|file]=/a (работает аналогично комманде *nix)
+    ^file:basename[/a/some.tar.gz|file]=some.tar.gz (работает аналогично комманде *nix)
+    ^file:basename[/a/b/|file]=b (работает аналогично комманде *nix)
+    ^file:justname[/a/some.tar.gz|file]=some.tar
+    ^file:justext[/a/some.tar.gz|file]=gz
     /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
     ^файл.sql-string[] внутри ^connect даст правильно escaped строку, которую можно в запрос отдать
-    ^file::sql{query}[[
-        $.name[имя_файла_для_download]
-        $.content-type[пользовательский content-type]
-    ]]
+    ^file::sql{query}[[ $.name[имя_файла_для_download] $.content-type[пользовательский content-type] ]]
         результат запроса должен быть "одна строка".
         колонки:
         первая колонка - данные
@@ -924,7 +907,6 @@ file
         выдает digest файла, длиной 16 байт в виде строки, 
         где байты digest выданы в hex виде, впритык, в нижнем регистре
 
-
 math
     $math:PI
     ^math:round floor ceiling
@@ -935,8 +917,11 @@ math
     ^math:degrees radians
     ^math:pow sqrt
     ^math:random(ширина диапазона)
-    ^math:convert[number](base-from;base-to)
-        преобразует строку с числом из одной системы исчисления в другую
+    ^math:convert[number|файл](base-from;base-to)[[ $.format[string|file] ]]
+    ^math:convert[number|файл][алфавит](base-to)[[ $.format[string|file] ]]
+    ^math:convert[number|файл](base-from)[алфавит][[ $.format[string|file] ]]
+        преобразует строку или файл с числом из одной системы исчисления в другую
+        система счисления может быть задана алфавитом, числом от 2 до 16 (эквивалентно алфавиту 0123456789ABCDEF), числом 256 (все ASCII символы)
     ^math:uuid[ $.lower(bool) $.solid(bool) ]
         22C0983C-E26E-4169-BD07-77ECE9405BA5
         win32: пользуется cryptapi
@@ -964,14 +949,15 @@ math
         объединяет в себе возможность работы с разными алгоритмами криптографического хеширования.
         $.hmac[ключ] для проверки целостности переданных данных
 
-
 inet
     ^inet:ntoa(long)
     ^inet:aton[IP]
-    ^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]] прямое преобразование имени в IP адрес
-    ^inet:ip2name[ip][ $.ipv[4|6|any] ]] обратное преобразование из IP адреса в имя
-    ^inet:hostname[]: возвращает имя хоста
-
+    ^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]]
+        прямое преобразование имени в IP адрес
+    ^inet:ip2name[ip][ $.ipv[4|6|any] ]]
+        обратное преобразование из IP адреса в имя
+    ^inet:hostname[]
+        имя хоста
 
 json
     ^json:parse[-json-строка-[;
@@ -1023,9 +1009,12 @@ date
     Строковое значение в местном времени, численное в UTC, диапазон от 0000-00-00 00:00:00 до 9999-12-31 23:59:59.
     по умолчанию используется установленная средствами OS временная зона
     ^date::now[]
-    ^date::now(смещение в днях) выдаёт сейчас+смещение
-    ^date::today[] дата на 00:00:00 текущего дня
-    ^date::today(целочисленное смещение в днях) дата на 00:00:00 текущего дня+смещение
+    ^date::now(смещение в днях)
+        выдаёт сейчас+смещение
+    ^date::today[]
+        дата на 00:00:00 текущего дня
+    ^date::today(целочисленное смещение в днях)
+        дата на 00:00:00 текущего дня+смещение
     ^date::create(дней с epoch)
     ^date::create(year;month[;day[;hour[;minute[;second[;TZ]]]]])
     ^date::create[дата в формате %Y-%m-%d %H:%M:%S]
@@ -1040,20 +1029,25 @@ date
     $дата.year month day hour minute second weekday yearday(0...) daylightsaving TZ weekyear
         TZ="" << локальная зона
     $дата.year month day hour minute second можно задать новое значение, остальные read only
-    ^дата.roll[year|month|day](+-смещение) сдвигает дату
-    ^дата.roll[TZ;Новая зона] говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
-    ^date:roll[TZ;Новая зона] говорит, что по умолчанию все даты в таком-то часовом поясе
+    ^дата.roll[year|month|day](+-смещение)
+        сдвигает дату
+    ^дата.roll[TZ;Новая зона]
+        говорит, что дата в таком-то часовом поясе: влияет на .hour & Co
+    ^date:roll[TZ;Новая зона]
+        говорит, что по умолчанию все даты в таком-то часовом поясе
     ^дата.sql-string[[datetime|date|time]]
         datetime или без параметра -- %Y-%m-%d %H:%M:%S
         date                       -- %Y-%m-%d
         time                       -- %H:%M:%S
         where published='^дата.sql-string[]'
-    ^date:calendar[rus|eng](год;месяц) выдаёт неименованную таблицу
-        столбцы: 0..6, week, year
-    ^date:calendar[rus|eng](год;месяц;день) выдаёт именнованную таблицу
-        столбцы: year, month, day, weekday
-    ^date:last-day(год;месяц) вернёт последний день месяца
-    ^дата.last-day[] вернёт последний день месяца $дата
+    ^date:calendar[rus|eng](год;месяц)
+        выдаёт неименованную таблицу, столбцы: 0..6, week, year
+    ^date:calendar[rus|eng](год;месяц;день)
+        выдаёт именнованную таблицу, столбцы: year, month, day, weekday
+    ^date:last-day(год;месяц)
+        вернёт последний день месяца
+    ^дата.last-day[]
+        вернёт последний день месяца $дата
     ^дата.gmt-string[]  Fri, 23 Mar 2001 09:32:23 GMT
     ^дата.iso-string[]  2001-03-23T12:32:23+03
 
@@ -1228,7 +1222,6 @@ status
             file    time
             file    time
             file    time
-
     $status:rusage hash
         utime user time used
         stime system time used
@@ -1240,7 +1233,6 @@ status
         tv_usec
            $s[$status:rusage]
            ^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
-
     $status:memory hash
         used
             Includes some pages that were allocated but never written.
@@ -1250,10 +1242,14 @@ status
         ever_allocated_since_start
             Return the total number of bytes [EVER(c)PAF] allocated in this process.
             Never decreases.
-
-    $status:pid process id
-    $status:tid thread id
-
+    $status:pid
+        process id
+    $status:tid
+        thread id
+    $status:mode
+        режим работы, cgi|console|mail|httpd|apache|isapi
+    $status:log-filename
+        путь к журналу ошибок parser3.log
 
 console
     $console:timeout
