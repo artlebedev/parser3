@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.366 2024/12/11 18:35:31 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.367 2024/12/19 02:47:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -487,9 +487,11 @@ static void real_parser_handler(bool cgi) {
 
 	const char* request_method=getenv("REQUEST_METHOD");
 
-	if(!filespec_to_process)
-		SAPI::die("Parser/%s", PARSER_VERSION);
-	
+	if(!filespec_to_process){
+		SAPI::send_error(*sapi_info, "Parser/" PARSER_VERSION);
+		exit(1);
+	}
+
 	// global request info
 	Request_info request_info;
 	RequestInfoController ric(&request_info, sapi_info);
