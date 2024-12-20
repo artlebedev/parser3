@@ -14,14 +14,12 @@
             пустой hash не defined
         eq ne lt gt le ge для сравнения строк,
         in "/dir/" для проверки, находится ли текущий документ в каталоге
-            ["внутри не допустимы выражения, если надо сравнить со сложным,
-            пусть это будет переменная]
+            ["внутри не допустимы выражения, если надо сравнить со сложным, пусть это будет переменная]
         is 'type' для проверки типа левого операнда,
             можно проверить, "не hash ли параметр метода?"
         -f для проверки существования файла на диске,
         -d для проверки существования каталога на диске,
-        строка в кавычках или апострофах - строка, без кавычек или апострофов строка до
-            ближайшего whitespace
+        строка в кавычках или апострофах - строка, без кавычек или апострофов строка до ближайшего whitespace
         числовой литерал бывает 0xABC
         приоритеты:
             /* logical */
@@ -33,22 +31,24 @@
             %left "is" "def" "in" "-f" "-d"
             %left '!'
 
-           /* bitwise */
+            /* bitwise */
             %left '!|'
             %left '|'
             %left '&' 
             %left '~'
 
-           /* numerical */
+            /* numerical */
             %left '-' '+'
             %left '*' '/' '%' '\\'
             %left '~'     /* negation: unary */
-        литералы
+
+        литералы:
             true
             false
 
     ^if(условие){когда да}{когда нет}
-    ^if(условие1){да}[(условие2){да}[(условие2){да}[...]]]{нет} -- количество доп. условий не ограничено (в общем elseif это :)
+    ^if(условие1){да}[(условие2){да}[(условие2){да}[...]]]{нет}
+        количество доп. условий не ограничено (в общем elseif это :)
 
     ^switch[значение]{^case[вариант1[;вариант2...]]{действие}^case[DEFAULT]{действие по умолчанию}}
 
@@ -58,11 +58,11 @@
 
     ^try{
         ...
-        ^throw[sql.connect[;вася[;болван]]] // был ^error[текст]
+        ^throw[sql.connect[;вася[;ошибся]]] // был ^error[текст]
         ^throw[
             $.type[sql.connect]
             $.source[вася]
-            $.comment[болван]
+            $.comment[ошибся]
         ]
         ...
     }{
@@ -77,7 +77,7 @@
                 $exception.type = sql.connect
                 $exception.file $exception.lineno $exception.colno [если не запрещены при компиляции]
                 $exception.source = вася
-                $exception.comment = болван
+                $exception.comment = ошибся
             }
             ^case[DEFAULT]{
                 код, обрабатывающий другую ошибку
@@ -86,14 +86,20 @@
         }
     }
 
-    ^break[] - обрывает цикл
-    ^break(true|false) - обрывает цикл, если true
+    ^break[]
+        обрывает цикл
+    ^break(true|false)
+        обрывает цикл, если true
 
-    ^continue[] - обрывает итерацию цикла
-    ^continue(true|false) - обрывает итерацию цикла, если true
+    ^continue[]
+        обрывает итерацию цикла
+    ^continue(true|false)
+        обрывает итерацию цикла, если true
 
-    ^return[] - обрывает выполнение метода
-    ^return[value] - присваивает $result значение value и обрывает выполнение метода
+    ^return[]
+        обрывает выполнение метода
+    ^return[value]
+        присваивает $result значение value и обрывает выполнение метода
 
     ^untaint[[as-is|file-spec|uri|http-header|mail-header|sql|js|json|parser-code|regex|xml|html|optimized-[as-is|xml|html]]]{код}
         default as-is
@@ -107,7 +113,7 @@
     ^process[[$caller.CLASS|$object|$КЛАСС:CLASS]]{строка, которая будет process-ed, как код}[
         $.main[во что переименовать @main]
         $.file[имя файла из которого, якобы, данный текст]
-        $.lineno(номер строки в файле, откуда данный текст. можно отрицательный)
+        $.lineno(номер строки в файле, откуда данный текст, можно отрицательный)
     ]
     ^process..[путь][во что переименовать @main]
         по умолчанию, методы компилируются в $self [в случае оператора, $self=$MAIN:CLASS]
@@ -137,14 +143,13 @@
             ClientCharset=parser-charset& << charset in which parser thinks client works
             autocommit=1
 
-        для работы connect нужно, чтобы заранее(рекомендуется в системном конфигурационном auto.p)
-        была определена таблица
+        для работы connect нужно, чтобы заранее (рекомендуется в системном конфигурационном auto.p) была определена таблица
 #sql drivers
 $SQL[
     $.drivers[^table::create{protocol	driver	client
-mysql	/www/parser3/libparser3mysql.so	libmysqlclient.so
-pgsql	/www/parser3/libparser3pgsql.so	libpq.so
-sqlite	/www/parser3/libparser3sqlite.so	sqlite3.so
+mysql	$prefix/libparser3mysql.so	libmysqlclient.so
+pgsql	$prefix/libparser3pgsql.so	libpq.so
+sqlite	$prefix/libparser3sqlite.so	sqlite3.so
 odbc	parser3odbc.dll
 }]
 ]
@@ -158,12 +163,14 @@ odbc	parser3odbc.dll
         в catch коде $exception.handled[cache]  ^rem{флаг, что exception обработан}
     ^cache[файл][expires date]{код}[{catch код}]
         абсолютное задание времени
-    ^cache[файл] удалить файл [не ругает, если его нет]
+    ^cache[файл]
+        удалить файл [не ругает, если его нет]
     ^cache(секунд)
     ^cache[expires date]
         сигнализирует вышестоящему ^cache "уменьши до стольких-то 'секунд'/'expires'"
         в пределе: ^cache(0) отменить кеширование
-    ^cache[] выдаёт текущую expires date
+    ^cache[]
+        выдаёт текущую expires date
 
     у всех методов есть локальная переменная $result, если в неё что положить,
     то это будет результатом метода, а не его тело
@@ -173,13 +180,13 @@ odbc	parser3odbc.dll
 
     use(^use или @USE) ищет и подключает файл:
         1. если путь начинается с /, то считается, что это путь от корня веб пространства
-        2. относительно текущей директории.
-        3. относительно строк из table $MAIN:CLASS_PATH, снизу вверх.
+        2. относительно текущей директории
+        3. относительно строк из table $MAIN:CLASS_PATH, снизу вверх
            $MAIN:CLASS_PATH - глобальная строка или таблица с путём или путями к каталогу
            с классами (от корня веб пространства), задавайте её в конфигурационном auto.p
 
     глобальная табличка $CHARSETS[$.название[имя файла]]
-    задаёт какие буквы считаются какими(whitespace, letter, etc), а также их unicode
+    задаёт какие буквы считаются какими (whitespace, letter, etc), а также их unicode
     формат: tab delimited файл, с заголовком:
         char    white-space    digit    hex-digit    letter    word    lowercase    unicode1    unicode2
         A            x    x    x    a    0x0041    0xFF21
@@ -193,17 +200,17 @@ odbc	parser3odbc.dll
     $имя[новое значение]
     $имя(математическое выражение нового значения)
     $имя{код нового значения}
-    $имя whitespace или ${имя}неважно  подстановка значения
-    ^имя параметры  вызов
-    $имя.CLASS класс значения
-    $имя.CLASS_NAME имя класса
-    $имя[$.key[] () {}]  конструктор элемента переменной-хеша $имя.key
-    ^method[$.key[] () {}] конструктор элемента параметра-хеша $parameter.key
+    $имя whitespace или ${имя}неважно - вывод значения переменой
+    ^имя параметры - вызов
+    $имя.CLASS - класс значения
+    $имя.CLASS_NAME - имя класса
+    $имя[$.key[] () {}] - конструктор переменной-хеша с элементом $имя.key
+    ^method[$.key[] () {}] - конструктор параметра-хеша с элементом $parameter.key
     $CLASS.имя  обращение к переменной класса
 
-    имя заканчивается перед: пробел tab linefeed ; ] } ) " < >  + * / % & | = ! ' , ? {уточнить}
+    имя заканчивается перед: пробел tab linefeed ; ] } ) " < >  + * / % & | = ! ' , ?
         т.е. можно $имя,aaaa
-        но если нужно после имени букву, скажем -, то ${имя}-
+        но если нужно после имени символ, скажем -, то ${имя}-
 
     в выражениях + и - являются дополнительными концами имени
 
@@ -219,16 +226,19 @@ odbc	parser3odbc.dll
     (математическое выражение) вычисляется много раз внутри вызова,
 |   [код] вычисляется один раз перед вызовом,
 |   {код} вычисляется 0 или много раз внутри вызова,
-    везде допустимы ; внутри - делает много параметров в одних скобках
+    допустимы ';' чтобы сделать много параметров в одних скобках
 
 void
     доступны все методы, присутствующие у объекта класса string, результат как у пустой строки
     ^void:sql{запрос без результата}{$.bind[см. table::sql]}
 
 int,double
-    ^имя.int[]  целочисленное значение
-    ^имя.double[] double значение
-    ^имя.bool[] .bool(true|false)  bool значение
+    ^имя.int[]
+        целочисленное значение
+    ^имя.double[]
+        double значение
+    ^имя.bool[] ^name.bool(true|false)
+        bool значение
     ^имя.inc(на сколько +)
     ^имя.dec(на сколько -)
     ^имя.mul(на сколько *)
@@ -292,11 +302,11 @@ string
         сохраняет строку в файл
     ^строка.trim[start|both|end|left|right[;chars]]
         выкидывает chars из начала/конца/и начала и конца
-        default 'chars' -- whitespace chars
+        default 'chars' = whitespace chars
     ^строка.trim[chars]
         выкидывает chars из начала и конца
     ^строка.base64[ $.pad(bool) $.wrap(bool) $.url-safe(bool) ] encode
-    ^string:base64[encoded[; $.pad(bool) $.strict(bool) url-safe(bool) ]] decode
+    ^string:base64[encoded[; $.pad(bool) $.strict(bool) $.url-safe(bool) ]] decode
     ^строка.idna[]
         IDNA кодирование, поддержка кириллических доменов
     ^string:idna[encoded]
@@ -326,7 +336,7 @@ table
         если не nameless, названия колонок берутся из первой строки
         пустые строки, и строки в первой колонке содержащие '#', игнорируются
         $.separator[^#09]
-        $.encloser["] по-умолчанию, нет.
+        $.encloser["] по-умолчанию, нет
     ^table::sql{query}[[$.limit(2) $.offset(4) $.bind[hash]]]
         bind привязывает переменные в запросе к их значениям
         пока реализован только для oracle
@@ -354,7 +364,8 @@ table
     ^таблица.append[ $.имя столбца[значение столбца] ]
     ^таблица.insert{данные} добавить запись на текущую позицию
     ^таблица.insert[ $.имя столбца[значение столбца] ]
-    ^таблица.delete[] - стирает запись с текущей позиции
+    ^таблица.delete[]
+        стирает запись с текущей позиции
     ^таблица.join[таблица][$.limit(1) $.offset(5) $.offset[cur]]
         добавляет записи из таблицы, таблицы должны иметь одинаковую структуру
     ^таблица.flip[]
@@ -394,7 +405,8 @@ hash
     $хеш.ключ
         _default - специальный ключ, если задан,
         то при обращении по ключу, которому нет соответствия, выдаётся _default значение
-    $хеш.fields выдает $hash. чтобы класс hash был чуть больше похож на класс table
+    $хеш.fields
+        выдает $hash, чтобы класс hash был чуть больше похож на класс table
     ^hash::create[[|copy_from_hash|copy_from_hashfile]]
         создаёт новый hash, копию старого
     ^хеш.add[слагаемое]
@@ -409,7 +421,8 @@ hash
         получается hash(ключи=значения первая колонка ответа) of hash(ключи=названия остальных колонкок ответа) или
         string=значение каждого элемента - строка, при этом надо указать ровно два столбца или
         table=значение каждого элемента - таблица
-    ^хеш.keys[[название колонки с ключами]] + таблица из одного столбца key или как передадут
+    ^хеш.keys[[название колонки с ключами]]
+        таблица из одного столбца key или как передадут
     ^хеш.count[]
     ^хеш.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     ^хеш.delete[ключ]
@@ -432,11 +445,13 @@ hash
 
 hashfile
     ^hashfile::open[filename]
-    ^хешфайл.clear[]  забыть всё
-    $хешфайл.ключ[значение]  положить значение
+    ^хешфайл.clear[]
+        забыть всё
+    $хешфайл.ключ[значение]
+        положить значение
     $хешфайл.ключ[$.value[значение] $.expires[ЗНАЧЕНИЕ]}
-      положить значение до expires
-      значение поля expires может быть date, или число дней(0дней=на вечно)
+        положить значение до expires
+        значение поля expires может быть date, или число дней(0дней=на вечно)
     $хешфайл.ключ  достать
     ^хешфайл.delete[ключ]  удалить ключ
     ^хешфайл.delete[]  удалить файлы, содержащие данные
@@ -445,13 +460,13 @@ hashfile
         попутно стирает устаревшие пары
     ^хешфайл.foreach[key;value]{тело}[[разделитель]|{разделитель который выполняется перед непустым очередным не первым телом}]
     ^хешфайл.release[]
-        записать данные и снять блокировки.
-        при повторном обращении к элементам откроется автоматически.
-    ^хешфайл.cleanup[]  пробежаться по всем элементам и удалить устаревшие.
+        записать данные и снять блокировки
+        при повторном обращении к элементам откроется автоматически
+    ^хешфайл.cleanup[]
+        пробежаться по всем элементам и удалить устаревшие.
 
     пример:
     $sessions[^hashfile::open[/db/sessions]]
-
     $sid[^math:uuid[]]
     $sessions.$sid[$.value[$uid] $.expires(1)]
     $uid[$sessions.$sid]
@@ -502,8 +517,8 @@ array
         $.sparse(true) - создать разреженный массив. Первая колонка данных должна содержать индексы,
         по которым будут размещены значения (аналогично ^hash::sql{})
         получается array of hash (ключи=названия остальных колонкок ответа) или
-        string=значение каждого элемента - строка, при этом надо указать ровно два столбца или
-        table=значение каждого элемента - таблица
+        string = значение каждого элемента - строка, при этом надо указать ровно два столбца или
+        table = значение каждого элемента - таблица
     ^массив.keys[[название колонки с ключами]]
         таблица из одного столбца key или переданного названия с индексами инициализированных элементов массива
     ^массив.count[]
@@ -559,7 +574,7 @@ cookie
     $cookie:имя считать старое или свежезаданное
     $cookie:имя[значение] на 90 дней
     $cookie:имя[$.value[значение] $.expires[ЗНАЧЕНИЕ] $.secure(true) $.domain[имя домена] $.httponly(true)]
-        значение поля expires может быть 'session', date, или число дней(0дней=session)
+        значение поля expires может быть 'session', date, или число дней (0дней=session)
         если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
     $cookie:fields
         hash со всеми cookies
@@ -593,10 +608,12 @@ response
             $attribute[zzz] field: abc; {attribute=zzz}<<часть
         значение поля или атрибута может быть string или date
             если дата, она будет преобразована к формату "Sun, 25-Aug-2002 12:03:45 GMT"
-    $response:headers накопленные поля
-    $response:body[DATA]  замещает стандартный ответ
-    $response:download[DATA]  замещает стандартный ответ,
-        выставляет флаг, заставляющий browser предложить download
+    $response:headers
+        накопленные поля
+    $response:body[DATA]
+        замещает стандартный ответ
+    $response:download[DATA]
+        замещает стандартный ответ, выставляет флаг, заставляющий browser предложить download
     $response:status
     ^response:clear[] забыть все заданные response поля
     $response:charset
@@ -607,15 +624,14 @@ response
         не добавляет к content-type ничего, если хочется, это надо сделать вручную
         ПРЕДУПРЕЖДЕНИЕ: необходимо задать $request/response:charset до использования полей класса form
 
-
 regex
     в выражении
         логическое значение всегда равно true
-        числовое значение равно количеству байт скомпилированного шаблона.
+        числовое значение равно количеству байт скомпилированного шаблона
     ^regex::create[шаблон-строка|regex][[опции поиска]]
     ^шаблон.size[]
         количество байт скомпилированного шаблона
-        если значение очень большое - стоит почитать документацию по pcre и, возможно, переписать шаблон.
+        если значение очень большое - стоит почитать документацию по pcre и, возможно, переписать шаблон
     ^шаблон.study_size[]
         размер study-структуры. если==0 - шаблон не может быть "изучен"
     $шаблон.pattern
@@ -623,14 +639,13 @@ regex
     $шаблон.options
         строка с исходным текстом опций
 
-
 reflection
-    ^reflection:create[класс;конструктор[;пара;[мет[;ры]]]]
+    ^reflection:create[класс;конструктор[;пара[;мет[;ры]]]]
         вызывает указанный конструктор класса (не более 100 параметров)
     ^reflection:create[ $.class[name] $.constructor[name] $.arguments[ $.1[па] $.2[рам] $.3[етры] ] ]
         вызывает указанный конструктор класса
     ^reflection:classes[]
-        хеш со всеми классами. ключ -- имя класса, значение бывает methoded (класс с методами) или void
+        хеш со всеми классами. ключ = имя класса, значение бывает methoded (класс с методами) или void
     ^reflection:class[объект]
         класс переданного объекта
     ^reflection:class_name[объект]
@@ -646,7 +661,7 @@ reflection
     ^reflection:def[class;имя класса]
         проверка класса на существование
     ^reflection:methods[класс]
-        хеш со списком методов указанного класса, значения -- строки 'native' или 'parser'
+        хеш со списком методов указанного класса, значения - строки 'native' или 'parser'
     ^reflection:method[класс или объект;имя метода]
         возвращает junction-method класса или объекта
     ^reflection:filename[объект или класс или метод]
@@ -670,14 +685,14 @@ reflection
             .max_params(максимально возможное число параметров)
             .call_type[dynamic|static|any]
         для parser классов возвращается хеш:
-            ключ -- номер параметра (0, 1, ...), значение - имя параметра
+            ключ - номер параметра (0, 1, ...), значение - имя параметра
     ^reflection:dynamical[[object or class, caller if absent]]
         возвращает true, если метод был вызван из динамического контекста при передаче
         параметра возвращает true, если передан динамический объект, false если класс
     ^reflection:delete[класс или объект;имя переменной]
         удаляет переменную с указанным именем в указанном классе или объекте
     ^reflection:is[имя элемента;имя класса][[контекст]]
-        аналог оператора is, позволяющий определить, является ли элемент кодом.
+        аналог оператора 'is', позволяющий определить, является ли элемент кодом.
     ^reflection:tainting[[язык|tainted|optimized];строка]
         строка, в которой каждому символу исходной строки соотвествует символ с кодом преобразования
     ^reflection:stack[ $.args(false/true) $.locals(false/true) $.limit(n) $.offset(o)]
@@ -747,7 +762,7 @@ mail
         $.content-type[$.value[text/plain] $.charset[windows-1251]]
         $.from["вася" <vasya@design.ru>]
         $.to["петя" <petya@design.ru>]
-        $.subject[пойдём пивка]
+        $.subject[тема]
         $.body[
             слова
         ]
@@ -761,19 +776,19 @@ mail
         если body указан hash, то это части, будут собраны текстовые блоки, затем вложения
         это старый формат, поддерживается для обратной совместимости
         если имя части начинается со слова text, то это текстовый блок.
-        если имя части начинается со слова file, то это вложение, формат задания::
+        если имя части начинается со слова file, то это вложение, формат задания:
             $file[$.format[uue|base64] $.value[DATA] $.name[user-file-name]]
         важно: при multipart не указывать content-type
 
         ^mail:send[
-#           по-умолчанию, совпадает с source encoding.
+#           по-умолчанию, совпадает с source encoding
 #           задаёт кодировку body
             $.charset[windows-1251]
 #           нет умолчания
             $.content-type[$.value[text/plain] $.charset[windows-1251]]
             $.from["вася" <vasya@design.ru>]
             $.to["петя" <petya@design.ru>]
-            $.subject[пойдём пивка]
+            $.subject[тема]
             $.body[
                 слова
             ]
@@ -782,7 +797,7 @@ mail
         ^mail:send[
             $.from["вася" <vasya@design.ru>]
             $.to["петя" <petya@design.ru>]
-            $.subject[пойдём пивка]
+            $.subject[тема]
             $.body[
                 $.text[
 #                   задаёт кодировку body
@@ -793,14 +808,14 @@ mail
                 ]
 #               для удобства можно указать только одну часть, при этом не будет multipart
                 $.file[
-                   $.value[^file::load[my beloved.doc]]
-                   $.name[мой любимый.doc]
-                   $.format[base64]
+                    $.value[^file::load[my beloved.doc]]
+                    $.name[my beloved.doc]
+                    $.format[base64]
                 ]
                 $.file2[
-                   $.value[^file::load[my beloved.doc]]
-                   $.name[мой любимый.doc]
-               ]
+                    $.value[^file::load[my beloved.doc]]
+                    $.name[my beloved.doc]
+                ]
             ]
         ]
     для отправки под unix используется программа с параметрами, задаваемая
@@ -808,18 +823,18 @@ mail
     если не будет задана, проверяется, доступна ли /usr/sbin/sendmail или
     /usr/lib/sendmail и, если доступна, то запускается с параметром "-t".
 
-    под win32 используется SMTP протокол, сервер задаётся
+    под Windows используется SMTP протокол, сервер задаётся
         $MAIL.SMTP[smtp.domain.ru]
 
 image
     $картинка[^image::measure[DATA[; $.exif(bool) $.xmp(bool) $.xmp-charset[] $.video(bool) ]]]
         смотрит на .ext case insensitive,
-        умеет мерить .gif, .jpg, tiff, bmp, webp и mp4 (mov)
+        умеет мерить gif, jpg, tiff, bmp, webp и mp4 (mov)
     $картинка.exif << hash после measure jpeg с exif информацией и $.exif(true)
-        $image.exif.DateTime & co 
-            [полный список см. http://www.ba.wakwak.com/~tsuruzoh/Computer/Digicams/exif-e.html]
+        $image.exif.DateTime & co
+            [полный список см. https://exiftool.org/TagNames/EXIF.html]
         числа типа int/double,
-        даты типа date
+        даты типа dateб
         перечисления в виде hash с ключами 0..count-1
     $картинка.src .width .height
     $картинка.line-width  число=ширина линий
@@ -841,9 +856,9 @@ image
         высота символа = высота картинки/количество букв в наборе
         если указана ширина_символа, то monospaced, если 0, то ширина_символа = ширине gif
     ^картинка.font[набор_букв;имя_файла_шрифта.gif;
-           $.space(ширина_пробела)             // по умолчанию = ширине gif
-           $.width(ширина_символа)             // см. выше, по умолчанию proportional
-           $.spacing(расстояние между буквами) // по умолчанию = 1
+        $.space(ширина_пробела)             // по умолчанию = ширине gif
+        $.width(ширина_символа)             // см. выше, по умолчанию proportional
+        $.spacing(расстояние между буквами) // по умолчанию = 1
     ]
     ^картинка.text(x;y)[текст_надписи] AS_IS
     ^картинка.length[текст_надписи] AS_IS
@@ -856,15 +871,14 @@ image
         при заданных dest_w/dest_h делает изменение размера кусочка
             при уменьшении делает resample
             годится только для уменьшения простой[малоцветной] дребедени вроде графиков/pie,
-            для thumbnais не годится.
+            для thumbnais не годится
         при не указанном dest_h сохраняет aspect ratio
-        tolerance - некое число[квадрат расстояния в RGB пространстве до искомого цвета], 
+        tolerance - некое число[квадрат расстояния в RGB пространстве до искомого цвета],
         определяющее прожорливость выделялки цветов из палитры [default=150]
             меньше - точнее приближает цвета, но они быстро кончаются
-            больше - неточно приближает цвет, но бОльшей части хватит
+            больше - неточно приближает цвет, но большей части хватит
     ^картинка.pixel(x;y)[(color)]
         узнать или задать цвет пиксела
-
 
 file
     $файл_из_post.name
@@ -893,7 +907,7 @@ file
     ^file::exec[[text|binary;]имя файла[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under unix max 50 args]]]]]]]
         любой аргумент может быть строкой или массивом строк
         options:
-            $.stdin[текст|файл]  если пусто, отключается автоматическое пересовывание данных HTTP-POST
+            $.stdin[текст|файл] если пусто, отключается автоматическое пересовывание данных HTTP-POST
     ^file:move[старое имя файла;новое имя файла]
         можно переименовывать и двигать каталоги[win32: но не через границу дисков]
         каталоги для dest создаются с правами 775
@@ -933,7 +947,7 @@ file
     ^файл.crc32[]
         вычисляет crc32 объекта
     ^файл.md5[], ^file:md5[имя файла]
-        выдает digest файла, длиной 16 байт в виде строки, 
+        выдает digest файла, длиной 16 байт в виде строки,
         где байты digest выданы в hex виде, впритык, в нижнем регистре
 
 math
@@ -957,7 +971,6 @@ math
         unix: пользуется /dev/urandom,
             если нет, /dev/random,
             если нет, rand
-            [на solaris /dev/random можно добавить]
     ^math:uuid7[ $.lower(bool) $.solid(bool) ]
         0193CBF0-7898-7000-A391-AC513CC15658
         https://www.rfc-editor.org/rfc/rfc9562.html#name-uuid-version-7
@@ -969,7 +982,7 @@ math
     ^math:crypt[password;salt]
         salt prefix $apr1$ вызывает встроенный MD5 алгоритм,
         если нет тела salt, оно создаётся случайным
-        $1$ вызывает MD5 алгоритм функции OS 'crypt', если поддерживается [заведомо нет на solaris].
+        $1$ вызывает MD5 алгоритм функции OS 'crypt', если поддерживается.
         другие salt читайте документацию по функции OS 'crypt'.
     ^math:crc32[string]
         вычисляет crc32 строки
@@ -996,9 +1009,9 @@ json
         $.int(false)                 отключить встроенный парсинг целых чисел (по умолчанию включен)
                                      в этом случае они попадут в результирующий объект как строки
         $.distinct[first|last|all]   как будет происходить разбор дублирующихся ключей у объектов
-                                     first -- будет оставлен первый встретившийся элемент
-                                     last  -- будет оставлен последний встретившийся элемент
-                                     all   -- будут оставлены все элементы. при этом элементы, начиная со 2
+                                     first - будет оставлен первый встретившийся элемент
+                                     last  - будет оставлен последний встретившийся элемент
+                                     all   - будут оставлены все элементы. при этом элементы, начиная со 2
                                               получат числовые суффиксы (key_2 итд)
                                      по умолчанию дублирующиеся ключи приведут к exception
         $.object[method-junction]    пользовательский метод[ключ;объект], которому будут передаваться все разобранные 
@@ -1012,8 +1025,10 @@ json
         $.skip-unknown(false)    отключить exception и выдавать 'null' при сериализации объектов с типами
                                  отличных от void, bool, string, int, double, date, table, hash и file
         $.indent(true)           форматировать результирующую строку табуляциями по глубине вложенности
-        $.date[sql-string|gmt-string|iso-string|unix-timestamp]    формат вывода даты, по умолчанию -- sql-string
-        $.table[object|array|compact]    формат вывода таблицы, по умолчанию -- object
+        $.date[sql-string|gmt-string|iso-string|unix-timestamp]
+                                 формат вывода даты, по умолчанию -- sql-string
+        $.table[object|array|compact]
+                                 формат вывода таблицы, по умолчанию -- object
                                  object: [{"c1":"v11","c2":"v12",...},{"c1":"v21","c2":"v22",...},...]
                                  array:  [["c1","c2",...] || null (for nameless),["v11","v12",...],...]
                                  compact:  ["v11" || ["v11","v12",...],...]
@@ -1023,20 +1038,19 @@ json
         $.тип[method-junction]   любой тип можно вывести с помощью пользовательского метода, который 
                                  должен принимать 3 параметра: ключ, объект данного типа и опции 
                                  вызова ^json:string[]
-        $._default[метод]        пользовательский метод, будет вызываться для вывода всех объектов пользовательских 
+        $._default[метод]        пользовательский метод, будет вызываться для вывода всех объектов пользовательских
                                  классов. Метод должен принимать 3 параметра: ключ, объект и опции вызова.
-        $._default[имя метода]   имя пользователького метода, при его наличии он будет вызван для
-                                 сериализации
+        $._default[имя метода]   имя пользователького метода, при его наличии он будет вызван для сериализации
         $.void[null|string]      неопределенное значение будет выдано в виде null (по умолчанию)
                                  или пустой строки
     ]]
         сериализует системный или пользовательский объект в json-строку
 
-
 date
-    время типа time можно использовать в выражениях, подставляет количество дней с epoch [1 января 1970 (UTC)], дробное.
-    Строковое значение в местном времени, численное в UTC, диапазон от 0000-00-00 00:00:00 до 9999-12-31 23:59:59.
+    время типа date можно использовать в выражениях, подставляет количество дней с epoch [1 января 1970 (UTC)], дробное
+    строковое значение в местном времени, численное в UTC, диапазон от 0000-00-00 00:00:00 до 9999-12-31 23:59:59
     по умолчанию используется установленная средствами OS временная зона
+
     ^date::now[]
     ^date::now(смещение в днях)
         выдаёт сейчас+смещение
@@ -1058,6 +1072,8 @@ date
     $дата.year month day hour minute second weekday yearday(0...) daylightsaving TZ weekyear
         TZ="" << локальная зона
     $дата.year month day hour minute second можно задать новое значение, остальные read only
+    ^дата.double[] ^дата.int[]
+        количество дней с epoch [1 января 1970 (UTC)], дробное или целое
     ^дата.roll[year|month|day](+-смещение)
         сдвигает дату
     ^дата.roll[TZ;Новая зона]
@@ -1065,9 +1081,9 @@ date
     ^date:roll[TZ;Новая зона]
         говорит, что по умолчанию все даты в таком-то часовом поясе
     ^дата.sql-string[[datetime|date|time]]
-        datetime или без параметра -- %Y-%m-%d %H:%M:%S
-        date                       -- %Y-%m-%d
-        time                       -- %H:%M:%S
+        datetime или без параметра - %Y-%m-%d %H:%M:%S
+        date                       - %Y-%m-%d
+        time                       - %H:%M:%S
         where published='^дата.sql-string[]'
     ^date:calendar[rus|eng](год;месяц)
         выдаёт неименованную таблицу, столбцы: 0..6, week, year
@@ -1077,9 +1093,10 @@ date
         вернёт последний день месяца
     ^дата.last-day[]
         вернёт последний день месяца $дата
-    ^дата.gmt-string[]  Fri, 23 Mar 2001 09:32:23 GMT
-    ^дата.iso-string[]  2001-03-23T12:32:23+03
-
+    ^дата.gmt-string[]
+        Fri, 23 Mar 2001 09:32:23 GMT
+    ^дата.iso-string[]
+        2001-03-23T12:32:23+03
 
 xdoc(xnode)
     $xdoc.search-namespaces hash, where keys=prefixes, values=urls
@@ -1106,9 +1123,8 @@ xdoc(xnode)
         Implementations that do not know whether attributes are of type ID or not
         are expected to return null.
 
-    кодировка строк и умолчание для $.encoding 
-    равно текущей кодировке выходной страницы,
-        $response:charset
+    кодировка строк и умолчание для $.encoding равно текущей кодировке выходной страницы, $response:charset
+
     ::sql{...}
     ::create[[URI]]{<?xml?><string/>} старое имя 'set'
     ::create[[URI]][qualifiedName]
@@ -1123,13 +1139,13 @@ xdoc(xnode)
         или изменении даты файла "имя шаблона.stamp"[проверка даты stamp приоритетнее]
         <xsl:output
         method = "xml" | "html" | "text"
-        version = nmtoken 
-        encoding = string 
+        version = nmtoken
+        encoding = string
         omit-xml-declaration = "yes" | "no"
         standalone = "yes" | "no"
-        cdata-section-elements = qnames 
+        cdata-section-elements = qnames
         indent = "yes" | "no"
-        media-type = string /> 
+        media-type = string />
         параметры передаются как есть, не xpath выражения
 
     .string[[output options]]
@@ -1143,7 +1159,6 @@ xdoc(xnode)
         parser://method/param/to/that/method
         то в качестве документа используется ^MAIN:method[/param/to/that/method]
         [примечание: в параметр всегда приходит лидирующая /, даже, если параметров вообще не было]
-
 
 xnode
     DOM1 attributes:
@@ -1178,16 +1193,16 @@ xnode
     $element_node.tagName
     $attribute_node.specified = boolean
         true if the attribute received its value explicitly in the XML document,
-        or if a value was assigned programatically with the setValue function.
+        or if a value was assigned programmatically with the setValue function.
         false if the attribute value came from the default value declared in the document's DTD.
     $attribute_node.name
     $attribute_node.value
     $text_node/cdata_node/comment_node.substringData
     $pi_node.target = target of this processing instruction
-        XML defines this as being the first token following the markup
+        XML defines this as the first token following the markup
         that begins the processing instruction.
     $pi_node.data = The content of this processing instruction
-        This is from the first non white space character after the target
+        From the first non-whitespace character after the target
         to the character immediately preceding the ?>.
     document_node.
         readonly attribute DocumentType doctype
@@ -1219,7 +1234,6 @@ xnode
     NodeList getElementsByTagName(in DOMString name)
     void normalize()
 
-
     Introduced in DOM Level 2:
     Node importNode(in Node importedNode, in boolean deep) raises(DOMException)
     NodeList getElementsByTagNameNS(in DOMString namespaceURI, in DOMString localName)
@@ -1233,12 +1247,12 @@ xnode
     ^node.selectNumber[xpath/query/expression] = double if any or die
     ^node.selectString[xpath/query/expression] = string if any or die
 
-
 memory
-    ^memory:compact[] собрать мусор, освободив место под новые данные
-    (предупреждение: память процесса никогда не освобождается)
-    полезно делать перед XSL transform.
-
+    ^memory:compact[]
+        собрать мусор, освободив место под новые данные (предупреждение: память процесса никогда не освобождается)
+        полезно делать перед XSL transform
+    ^memory:auto-compact(частота сборки)
+        задает режим автоматической сборки мусора, от 0 (выключена) до 5 (максимальная)
 
 status
     $status:sql
@@ -1264,13 +1278,13 @@ status
            ^s.tv_sec.format[%.0f].^s.tv_usec.format[%06.0f]
     $status:memory hash
         used
-            Includes some pages that were allocated but never written.
+            includes some pages that were allocated but never written
         free
         ever_allocated_since_compact
-            Return the number of bytes allocated since the last collection.
+            return the number of bytes allocated since the last collection
         ever_allocated_since_start
-            Return the total number of bytes [EVER(c)PAF] allocated in this process.
-            Never decreases.
+            return the total number of bytes [EVER(c)PAF] allocated in this process,
+            never decreases
     $status:pid
         process id
     $status:tid
@@ -1285,16 +1299,13 @@ console
     $console:line
         read/write строку
 
-
 DATA::=string | file | hash
-
     hash вида
     [
         $.file[имя файла на диске]
         $.name[имя файла для пользователя]
         $.mdate[date]
     ]
-
 
 MAIN
     это класс, загружаемый на автомате из конфигурационного auto.p, кучи auto.p и запрашиваемого документа:
@@ -1319,8 +1330,7 @@ MAIN
         $exception.source строка, из-за которой случилась проблема
         $exception.comment комментарий english
         stack табличка из колонок file line name,
-            там лежат в обратном порядке имена[name] и места вызовов[file line]
-            операторов/методов, приведших к ошибке.
+            там лежат в обратном порядке имена[name] и места вызовов[file line] операторов/методов, приведших к ошибке.
 
 при загрузке файла (file::load, table::load, xdoc::load) можно указать такое имя файла:
     http://domain/document[?params<<deprecated, use $.form[...]]
@@ -1342,13 +1352,13 @@ MAIN
         $.body[string|file]
         по-умолчанию, user-agent=parser3
         по-умолчанию, получение http status != 200 >> создает http.status ошибку, это можно отключить, передав $.any-status(1)
-        $.charset[кодировка удалённых документов по-умолчанию], если сервер вернёт content-type:charset - ОНА_ПЕРЕБИВАЕТ
+        $.charset[кодировка удалённых документов по-умолчанию], если сервер вернёт content-type:charset - ОНА ПЕРЕБИВАЕТ
         $.response-charset[кодировка удалённых документов], не перебиваеся content-type:charset
         $.user[пользователь]
         $.password[пароль]
     file::load в дополнительные поля записывает
         ПОЛЕ:значение (имена полей ответа заглавными буквами)
-        tables << хеш их ПОЛЕ->table с единственным столбцом "value".
+        tables << хеш их ПОЛЕ->table с единственным столбцом "value"
             в таких таблицах можно брать повторяющиеся заголовки. например, несколько set-cookies
             todo:сделать отдельный cookies
 
@@ -1372,11 +1382,11 @@ MAIN
     xml                  ^xdoc::create{<forgot?>}                    any error in xml/xslt libs
     smtp.connect                                                     not found/timeout
     smtp.execute                                                     communication error
-    email.format         hren tam@null.ru                            wrong email format(bad chars/empty)
+    email.format         hren tam@null.ru                            wrong email format (bad chars/empty)
     email.send           $MAIL.sendmail[/shit]                       sendmail not executable
     http.host            ^file::load[http://notfound/there]          host not found
-    http.connect         ^file::load[http://not_accepting/there]     host found, but do not accept connections
-    http.timeout         ^file::load[http://host/doc]                whole load operation failed to complete in # seconds
+    http.connect         ^file::load[http://not_accepting/there]     host found, but does not accept connections
+    http.timeout         ^file::load[http://host/doc]                load operation failed to complete in # seconds
     http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
     http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
     date.range           ^date::create(10000;1;1)                    date out of valid range
