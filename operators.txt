@@ -901,9 +901,9 @@ mail
             $value[FILE]
         ]
     ]
-    if charset is specified, the email is transcoded to this charset
-    content-type.charset does not affect transcoding
-    after the part name a # number can follow
+        if charset is specified, the email is transcoded to this charset
+        content-type.charset does not affect transcoding
+        after the part name a # number can follow
 
     ^mail:send[
 #       by default, matches the source encoding.
@@ -1418,4 +1418,4 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.263 2024/12/20 19:20:02 moko Exp $
+$Id: operators.txt,v 1.264 2024/12/20 19:24:17 moko Exp $
