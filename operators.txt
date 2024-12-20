@@ -1396,3 +1396,5 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
+
+$Id: operators.txt,v 1.261 2024/12/20 17:39:37 moko Exp $
