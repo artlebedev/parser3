@@ -195,7 +195,6 @@ odbc	parser3odbc.dll
     UTF-8 is always available and is the default encoding for request and response
     WARNING: the encoding name is case-insensitive
 
-
 syntax
     $name[new value]
     $name(arithmetic expression of new value)
@@ -546,6 +545,216 @@ array
     $selected[^array.select[key;value](expression)[ $.limit(N) $.reverse(bool) ]]
         selects array elements for which the condition is true
 
+date
+    date type can be used in expressions, substituting the number of days since epoch [1 January 1970 (UTC)], fractional
+    the string value is in local time, numerically in UTC, range from 0000-00-00 00:00:00 to 9999-12-31 23:59:59
+    by default the OS-defined timezone is used
+
+    ^date::now[]
+    ^date::now(days offset)
+        returns now+offset
+    ^date::today[]
+        date at 00:00:00 of the current day
+    ^date::today(integer days offset)
+        date at 00:00:00 of current day+offset
+    ^date::create(days since epoch)
+    ^date::create(year;month[;day[;hour[;minute[;second[;TZ]]]]])
+    ^date::create[date in format %Y-%m-%d %H:%M:%S]
+        convenient creation from a value from a database
+        format1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
+        format2: %H:%M[:%S]
+    ^date::create[date in format %Y-%m-%dT%H:%M[:%S]TZ]
+        for creation from ISO 8601 format
+        TZ format: Z(UTC) or +-hour[:minute] (offset from UTC)
+    ^date::unix-timestamp()
+    ^date.unix-timestamp[]
+    $date.year month day hour minute second weekday yearday(0...) daylightsaving TZ weekyear
+        TZ="" << local zone
+    $date.year month day hour minute second can be set to new values, others are read-only
+    ^date.double[] ^date.int[]
+        the number of days since epoch [1 January 1970 (UTC)], fractional or truncated
+    ^date.roll[year|month|day](+-offset)
+        shifts the date
+    ^date.roll[TZ;New zone]
+        says that the date is in such a timezone: affects .hour & Co
+    ^date:roll[TZ;New zone]
+        says that by default all dates are in that timezone
+    ^date.sql-string[[datetime|date|time]]
+        datetime or without parameter - %Y-%m-%d %H:%M:%S
+        date                          - %Y-%m-%d
+        time                          - %H:%M:%S
+        where published='^date.sql-string[]'
+    ^date:calendar[rus|eng](year;month)
+        returns an unnamed table, columns: 0..6, week, year
+    ^date:calendar[rus|eng](year;month;day)
+        returns a named table, columns: year, month, day, weekday
+    ^date:last-day(year;month)
+        returns the last day of the month
+    ^date.last-day[]
+        returns the last day of $date's month
+    ^date.gmt-string[]
+        Fri, 23 Mar 2001 09:32:23 GMT
+    ^date.iso-string[]
+        2001-03-23T12:32:23+03
+
+file
+    $uploaded_file_from_post.name
+    $uploaded_file_from_post.size
+    $uploaded_file_from_post.text
+    ^file.save[text|binary;filename[;$.charset[which charset to save in]]]
+    ^file:delete[filename]
+    ^file:find[filename][{if not found}]
+    ^file:list[path[;pattern-string|pattern-regex]]
+        table with columns name dir
+    ^file:list[path;$.filter[pattern-string|pattern-regex] $.stat(true)]
+        table with columns name dir size [mca]date
+    ^file::load[text|binary;big.zip[;domain_press_release_2001_03_01.zip][;options]]
+    ^file::create[text|binary;filename;data]
+    ^file::create[text|binary;filename;data[;$.charset[charset of the created file] $.content-type[...]]]
+    ^file::create[string-or-file-content[;$.name[name] $.mode[text|binary] $.content-type[...] $.charset[...]]]
+    $loaded_file.size
+    $loaded_or_created_file.mode = text/binary
+    ^file::stat[filename]
+    $stated_or_loaded_file.size .adate .mdate .cdate
+    ^file::cgi[[text|binary;]filename[;env hash +options[;1cmd[;2line[;3ar[;4g[;5s]]]]]]]
+        any argument can be string or array of strings
+        the returned header is split into $fields
+        $status
+        $stderr
+    ^file::exec[[text|binary;]filename[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under unix max 50 args]]]]]]]
+        any argument can be string or array of strings
+        options:
+            $.stdin[text|file] if empty, disables automatic passing of HTTP-POST data
+    ^file:move[oldfilename;newfilename]
+        can rename and move directories [win32: but not across disk boundaries]
+        directories for dest are created with 775 permissions
+        source directory is removed if empty after move
+    ^file:copy[filename;copy_filename[; $.append(1) ]]
+        can only copy files
+    ^file:lock[filename]{code}
+        the file is created if necessary
+        locked
+        code executed
+        unlocked
+    ^file:dirname[/a/some.tar.gz|file]=/a (works like *nix command)
+    ^file:dirname[/a/b/|file]=/a (works like *nix command)
+    ^file:basename[/a/some.tar.gz|file]=some.tar.gz (like *nix)
+    ^file:basename[/a/b/|file]=b (like *nix)
+    ^file:justname[/a/some.tar.gz|file]=some.tar
+    ^file:justext[/a/some.tar.gz|file]=gz
+    /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+    ^file.sql-string[]
+        inside ^connect gives a correctly escaped string that can be used in queries
+    ^file::sql{query}[[ $.name[filename_for_download] $.content-type[user content-type] ]]
+        the query result should be "one row".
+        columns:
+        first column - data
+        if second exists - filename
+        if third - content-type
+    ^file.base64[ $.pad(bool) $.wrap(bool) $.url-safe(bool) ]
+        encode
+    ^file:base64[filename[; $.pad(bool) $.wrap(bool) $.url-safe(bool) ]]
+        encode
+    ^file::base64[encoded string[; $.pad(bool) $.strict(bool) $.url-safe(bool) ]]
+        decode
+    ^file::base64[mode;filename;encoded string[; $.content-type[...] $.pad(bool) $.strict(bool) $.url-safe(bool) ]]
+        decode
+    ^file:crc32[filename]
+        calculates crc32 of the specified file
+    ^file.crc32[]
+        calculates crc32 of the object
+    ^file.md5[], ^file:md5[filename]
+        returns the file's digest, 16 bytes as a string,
+        bytes in hex, contiguous, lowercase
+
+image
+    $image[^image::measure[DATA[; $.exif(bool) $.xmp(bool) $.xmp-charset[] $.video(bool) ]]]
+        checks the file extension case-insensitively
+        can measure gif, jpg, tiff, bmp, webp and mp4 (mov)
+    $image.exif << hash after measure jpeg with exif information and $.exif(true)
+        $image.exif.DateTime & co
+            [full list see https://exiftool.org/TagNames/EXIF.html]
+        numbers as int/double,
+        dates as date,
+        enumerations as hash with keys 0..count-1
+    $image.src .width .height
+    $image.line-width  number=line width
+    $image.line-style  string=line style '*** * '='*** * *** * *** * '
+    ^image.html[[hash]]
+        <img ...>
+    ^image::load[background.gif]
+        only gif so far
+    ^image::create(width X;height Y[;background color default white]])
+    ^image.line(x0;y0;x1;y1;0xffFFff)
+    ^image.fill(x;y;0xffFFff)
+    ^image.rectangle(x0;y0;x1;y1;0xffFFff)
+    ^image.bar(x0;y0;x1;y1;0xffFFff)
+    ^image.replace(hex-color1;hex-color2)[table x:y polygon_vertices]
+    ^image.polyline(color)[table x:y points]
+    ^image.polygon(color)[table x:y polygon_vertices]
+    ^image.polybar(color)[table x;y polygon_vertices]
+    ^image.font[set_of_letters;font_file.gif][(space_width[;char_width])]
+        the character height = image height/number of letters in the set
+        if char_width is specified, then monospaced, if 0, char_width = gif width
+    ^image.font[set_of_letters;font_file.gif;
+        $.space(space_width)      // default = gif width
+        $.width(char_width)       // see above, default proportional
+        $.spacing(letter_spacing) // default = 1
+    ]
+    ^image.text(x;y)[text] AS_IS
+    ^image.length[text] AS_IS
+    ^image.gif[optional filename]
+        encodes to FILE with content-type=image/gif the filename will be used by $response:download
+    ^image.arc(center x;center y;width;height;start in degrees;end in degrees;color)
+    ^image.sector(center x;center y;width;height;start in degrees;end in degrees;color)
+    ^image.circle(center x;center y;r;color)
+    ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
+        if dest_w/dest_h are specified, resizes the piece
+            when reducing size, does resample
+            only suitable for simplifying low-color graphics like charts/pie,
+            not suitable for thumbnails
+        if dest_h is not specified, aspect ratio is kept
+        tolerance - a number [square distance in RGB space to the target color],
+            defining how greedy the color approximation from the palette is [default=150]
+            smaller - more accurate but colors run out quickly
+            larger - less accurate approximation, but covers a bigger part
+    ^image.pixel(x;y)[(color)]
+        get or set pixel color
+
+regex
+    in expression
+        logical value is always true
+        numerical value is equal to the number of bytes of the compiled pattern
+    ^regex::create[pattern-string|regex][[search options]]
+    ^pattern.size[]
+        number of bytes of the compiled pattern
+        if the value is very large - it is worth consulting pcre documentation and possibly rewriting the pattern
+    ^pattern.study_size[]
+        size of the study-structure. if == 0 - the pattern cannot be "studied"
+    $pattern.pattern
+        the text of the pattern
+    $pattern.options
+        the string with the original text of the options
+
+console
+    $console:timeout
+    $console:line
+        read/write string
+
+cookie
+    $cookie:name read old or newly set cookie
+    $cookie:name[value] for 90 days
+    $cookie:name[$.value[value] $.expires[VALUE] $.secure(true) $.domain[domain name] $.httponly(true)]
+        the expires field value can be 'session', a date, or a number of days (0days=forever)
+        if it's a date, it will be converted to "Sun, 25-Aug-2002 12:03:45 GMT"
+    $cookie:fields
+        hash with all cookies
+
+env
+    $env:variable
+    $env:fields hash with environment variables
+    $env:PARSER_VERSION parser version
+
 form
     [the first element with the same name is taken from GET, then from POST]
     $form:field
@@ -565,140 +774,60 @@ form
     $form:imap
         a hash with keys 'x' and 'y' with ?1,2 suffixes when using server-side image map
 
-env
-    $env:variable
-    $env:fields hash with environment variables
-    $env:PARSER_VERSION parser version
+inet
+    ^inet:ntoa(long)
+    ^inet:aton[IP]
+    ^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]]
+        direct conversion of a name to an IP address
+    ^inet:ip2name[ip][ $.ipv[4|6|any] ]
+        reverse conversion from IP address to name
+    ^inet:hostname[]
+        host name
 
-cookie
-    $cookie:name read old or newly set cookie
-    $cookie:name[value] for 90 days
-    $cookie:name[$.value[value] $.expires[VALUE] $.secure(true) $.domain[domain name] $.httponly(true)]
-        the expires field value can be 'session', a date, or a number of days (0days=forever)
-        if it's a date, it will be converted to "Sun, 25-Aug-2002 12:03:45 GMT"
-    $cookie:fields
-        hash with all cookies
+json
+    ^json:parse[-json-string-[;
+        $.depth(maximum depth, default == 19)
+        $.double(false)              disable built-in parsing of floating-point numbers (enabled by default)
+                                     in this case they will appear in the resulting object as strings
+        $.int(false)                 disable built-in parsing of integers (enabled by default)
+                                     in this case they will appear in the resulting object as strings
+        $.distinct[first|last|all]   how duplicate keys in objects are handled
+                                     first - keep the first encountered element
+                                     last  - keep the last encountered element
+                                     all   - keep all elements. starting from the 2nd,
+                                              they get numeric suffixes (key_2 etc)
+                                     by default duplicate keys cause an exception
+        $.object[method-junction]    user method[key;object], called for all parsed
+                                     objects and object keys; method returns a new object
+        $.array[method-junction]     user method called for arrays
+        $.taint[taint language]      sets the transformation language for all result strings
+    ]]
+        parses a json-string into a hash
 
-request
-    $request:query
-    $request:uri
-    $request:document-root
-        directory relative to which paths are considered in parser, default = $env:DOCUMENT_ROOT
-    $request:argv
-        hash with command-line parameters. keys 0, 1, ... [0 - name of the processed file]
-    $request:charset
-        the source document encoding
-        used in upper/lower and match[][i]
-        WARNING: you must set $request/response:charset before using form class fields
-    $request:method
-        request method (GET|POST|PUT)
-    $request:body
-        POST-request body as text
-    $request:body-file
-        POST-request body as a file
-    $request:body-charset
-        POST-request encoding
-    $request:headers
-        hash with request headers (without HTTP_ prefix)
-
-response
-    $response:field[value] and can read old - $response:field
-        the value can be string or hash:
-            $value[abc] field: {abc}<<part
-            $attribute[zzz] field: abc; {attribute=zzz}<<part
-        field or attribute value can be string or date
-            if date, it will be converted to "Sun, 25-Aug-2002 12:03:45 GMT"
-    $response:headers
-         accumulated fields
-    $response:body[DATA]
-        replaces the standard response
-    $response:download[DATA]
-        replaces the standard response, sets a flag causing the browser to suggest download
-    $response:status
-    ^response:clear[] forget all set response fields
-    $response:charset
-        client encoding, i.e.:
-        1) from which $form: fields will be transcoded after retrieval from browser
-        2) into which the document will be transcoded before sending to browser
-        3) into which URI language text will be transcoded
-        does not add anything to content-type; if needed, do it manually
-        WARNING: you must set $request/response:charset before using form class fields
-
-regex
-    in expression
-        logical value is always true
-        numerical value is equal to the number of bytes of the compiled pattern
-    ^regex::create[pattern-string|regex][[search options]]
-    ^pattern.size[]
-        number of bytes of the compiled pattern
-        if the value is very large - it is worth consulting pcre documentation and possibly rewriting the pattern
-    ^pattern.study_size[]
-        size of the study-structure. if == 0 - the pattern cannot be "studied"
-    $pattern.pattern
-        the text of the pattern
-    $pattern.options
-        the string with the original text of the options
-
-reflection
-    ^reflection:create[class;constructor[;pa[;ra[;ms]]]]
-        calls the specified class constructor (no more than 100 parameters)
-    ^reflection:create[ $.class[name] $.constructor[name] $.arguments[ $.1[pa] $.2[ra] $.3[ms] ] ]
-        calls the specified class constructor
-    ^reflection:classes[]
-        a hash of all classes. key = class name, value can be methoded (a class with methods) or void
-    ^reflection:class[object]
-        the class of the given object
-    ^reflection:class_name[object]
-        the class name of the given object
-    ^reflection:base[object]
-        the parent class of the given object
-    ^reflection:base_name[object]
-        the parent class name of the given object
-    ^reflection:class_by_name[class name]
-        obtains the class by name
-    ^reflection:class_alias[class name;new class name]
-        sets an alias for the specified class
-    ^reflection:def[class;class name]
-        checks if the class exists
-    ^reflection:methods[class]
-        a hash with a list of methods of the specified class, values are strings 'native' or 'parser'
-    ^reflection:method[class or object;method name]
-        returns the junction-method of the class or object
-    ^reflection:filename[object or class or method]
-        returns the filename where the object, class or method is defined
-    ^reflection:fields[class or object]
-        a hash with the list of static fields of the specified class or dynamic fields of the specified object
-    ^reflection:fields_reference[object]
-        an editable hash of the dynamic fields of the specified object
-    ^reflection:field[class or object;field name]
-        returns the value of the specified field of the class or object. getters are ignored.
-    ^reflection:copy[source;destination]
-        copies fields from one object or class to another
-    ^reflection:uid[class or object]
-        returns the identifier of the object or class
-    ^reflection:method_info[class;method]
-        a hash with parameters of the specified class method
-        $.inherited[class] name of the class where the method was defined (returned only if the method was defined in an ancestor)
-        $.overridden[class] name of the class where the method was defined (returned only if the method was defined in an ancestor)
-        for native classes a hash is returned:
-            .min_params(minimum required number of parameters)
-            .max_params(maximum possible number of parameters)
-            .call_type[dynamic|static|any]
-        for parser classes a hash is returned:
-            key is parameter number (0, 1, ...), value is parameter name
-    ^reflection:dynamical[[object or class, caller if absent]]
-        returns true if the method was called from a dynamic context when passing
-        a parameter returns true if a dynamic object was passed, false if a class
-    ^reflection:delete[class or object;variable name]
-        deletes the variable with the specified name in the specified class or object
-    ^reflection:is[element name;class name][[context]]
-        analogous to the 'is' operator, allowing to determine if the element is code.
-    ^reflection:tainting[[language|tainted|optimized];string]
-        a string in which each character of the original string corresponds to a character with a transformation code
-    ^reflection:stack[ $.args(false/true) $.locals(false/true) $.limit(n) $.offset(o)]
-        the current state of the method call stack in the parser
-    ^reflection:mixin[source; $.to[target] $.name[name] $.methods(true/false) $.fields(true/false) $.overwrite(false/true)]
-        copies methods and fields from one class to another
+    ^json:string[system or user object[;
+        $.skip-unknown(false)    disable exception and output 'null' when serializing objects of types
+                                 other than void, bool, string, int, double, date, table, hash, and file
+        $.indent(true)           format the resulting string with indentation according to nesting depth
+        $.date[sql-string|gmt-string|iso-string|unix-timestamp]
+                                 date output format, default = sql-string
+        $.table[object|array|compact]
+                                 format for tables, default=object
+                                 object: [{"c1":"v11","c2":"v12",...},{"c1":"v21","c2":"v22",...},...]
+                                 array:  [["c1","c2",...] || null (for nameless),["v11","v12",...],...]
+                                 compact: ["v11" || ["v11","v12",...],...]
+        $.file[text|base64|stat] output file content in the specified mode (by default file content
+                                 is not included in output)
+        $.xdoc[hash]             parameters for converting xdoc to string (as in ^xdoc.string[])
+        $.type[method-junction]  any type can be output using a user method
+                                 that must take 3 parameters: key, object of that type, and options
+                                 of the ^json:string[] call
+        $._default[method]       user method, called to output all user-class objects.
+                                 The method must take 3 parameters: key, object, and call options.
+        $._default[method name]  method name of a user method, if present it will be called for serialization
+        $.void[null|string]      undefined value will be output as null (default)
+                                 or as an empty string
+    ]]
+        serializes a system or user object into a json-string
 
 mail
     $mail.received=MESSAGE:
@@ -826,130 +955,6 @@ mail
     under Windows, SMTP protocol is used, server is set by
         $MAIL.SMTP[smtp.domain.ru]
 
-image
-    $image[^image::measure[DATA[; $.exif(bool) $.xmp(bool) $.xmp-charset[] $.video(bool) ]]]
-        checks the file extension case-insensitively
-        can measure gif, jpg, tiff, bmp, webp and mp4 (mov)
-    $image.exif << hash after measure jpeg with exif information and $.exif(true)
-        $image.exif.DateTime & co
-            [full list see https://exiftool.org/TagNames/EXIF.html]
-        numbers as int/double,
-        dates as date,
-        enumerations as hash with keys 0..count-1
-    $image.src .width .height
-    $image.line-width  number=line width
-    $image.line-style  string=line style '*** * '='*** * *** * *** * '
-    ^image.html[[hash]]
-        <img ...>
-    ^image::load[background.gif]
-        only gif so far
-    ^image::create(width X;height Y[;background color default white]])
-    ^image.line(x0;y0;x1;y1;0xffFFff)
-    ^image.fill(x;y;0xffFFff)
-    ^image.rectangle(x0;y0;x1;y1;0xffFFff)
-    ^image.bar(x0;y0;x1;y1;0xffFFff)
-    ^image.replace(hex-color1;hex-color2)[table x:y polygon_vertices]
-    ^image.polyline(color)[table x:y points]
-    ^image.polygon(color)[table x:y polygon_vertices]
-    ^image.polybar(color)[table x;y polygon_vertices]
-    ^image.font[set_of_letters;font_file.gif][(space_width[;char_width])]
-        the character height = image height/number of letters in the set
-        if char_width is specified, then monospaced, if 0, char_width = gif width
-    ^image.font[set_of_letters;font_file.gif;
-        $.space(space_width)      // default = gif width
-        $.width(char_width)       // see above, default proportional
-        $.spacing(letter_spacing) // default = 1
-    ]
-    ^image.text(x;y)[text] AS_IS
-    ^image.length[text] AS_IS
-    ^image.gif[optional filename]
-        encodes to FILE with content-type=image/gif the filename will be used by $response:download
-    ^image.arc(center x;center y;width;height;start in degrees;end in degrees;color)
-    ^image.sector(center x;center y;width;height;start in degrees;end in degrees;color)
-    ^image.circle(center x;center y;r;color)
-    ^image.copy[source](src x;src y;src w;src h;dst x;dst y[;dest w[;dest h[;tolerance]]])
-        if dest_w/dest_h are specified, resizes the piece
-            when reducing size, does resample
-            only suitable for simplifying low-color graphics like charts/pie,
-            not suitable for thumbnails
-        if dest_h is not specified, aspect ratio is kept
-        tolerance - a number [square distance in RGB space to the target color],
-            defining how greedy the color approximation from the palette is [default=150]
-            smaller - more accurate but colors run out quickly
-            larger - less accurate approximation, but covers a bigger part
-    ^image.pixel(x;y)[(color)]
-        get or set pixel color
-
-file
-    $uploaded_file_from_post.name
-    $uploaded_file_from_post.size
-    $uploaded_file_from_post.text
-    ^file.save[text|binary;filename[;$.charset[which charset to save in]]]
-    ^file:delete[filename]
-    ^file:find[filename][{if not found}]
-    ^file:list[path[;pattern-string|pattern-regex]]
-        table with columns name dir
-    ^file:list[path;$.filter[pattern-string|pattern-regex] $.stat(true)]
-        table with columns name dir size [mca]date
-    ^file::load[text|binary;big.zip[;domain_press_release_2001_03_01.zip][;options]]
-    ^file::create[text|binary;filename;data]
-    ^file::create[text|binary;filename;data[;$.charset[charset of the created file] $.content-type[...]]]
-    ^file::create[string-or-file-content[;$.name[name] $.mode[text|binary] $.content-type[...] $.charset[...]]]
-    $loaded_file.size
-    $loaded_or_created_file.mode = text/binary
-    ^file::stat[filename]
-    $stated_or_loaded_file.size .adate .mdate .cdate
-    ^file::cgi[[text|binary;]filename[;env hash +options[;1cmd[;2line[;3ar[;4g[;5s]]]]]]]
-        any argument can be string or array of strings
-        the returned header is split into $fields
-        $status
-        $stderr
-    ^file::exec[[text|binary;]filename[;env hash[;1cmd[;2line[;3ar[;4g[;5s;...under unix max 50 args]]]]]]]
-        any argument can be string or array of strings
-        options:
-            $.stdin[text|file] if empty, disables automatic passing of HTTP-POST data
-    ^file:move[oldfilename;newfilename]
-        can rename and move directories [win32: but not across disk boundaries]
-        directories for dest are created with 775 permissions
-        source directory is removed if empty after move
-    ^file:copy[filename;copy_filename[; $.append(1) ]]
-        can only copy files
-    ^file:lock[filename]{code}
-        the file is created if necessary
-        locked
-        code executed
-        unlocked
-    ^file:dirname[/a/some.tar.gz|file]=/a (works like *nix command)
-    ^file:dirname[/a/b/|file]=/a (works like *nix command)
-    ^file:basename[/a/some.tar.gz|file]=some.tar.gz (like *nix)
-    ^file:basename[/a/b/|file]=b (like *nix)
-    ^file:justname[/a/some.tar.gz|file]=some.tar
-    ^file:justext[/a/some.tar.gz|file]=gz
-    /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
-    ^file.sql-string[]
-        inside ^connect gives a correctly escaped string that can be used in queries
-    ^file::sql{query}[[ $.name[filename_for_download] $.content-type[user content-type] ]]
-        the query result should be "one row".
-        columns:
-        first column - data
-        if second exists - filename
-        if third - content-type
-    ^file.base64[ $.pad(bool) $.wrap(bool) $.url-safe(bool) ]
-        encode
-    ^file:base64[filename[; $.pad(bool) $.wrap(bool) $.url-safe(bool) ]]
-        encode
-    ^file::base64[encoded string[; $.pad(bool) $.strict(bool) $.url-safe(bool) ]]
-        decode
-    ^file::base64[mode;filename;encoded string[; $.content-type[...] $.pad(bool) $.strict(bool) $.url-safe(bool) ]]
-        decode
-    ^file:crc32[filename]
-        calculates crc32 of the specified file
-    ^file.crc32[]
-        calculates crc32 of the object
-    ^file.md5[], ^file:md5[filename]
-        returns the file's digest, 16 bytes as a string,
-        bytes in hex, contiguous, lowercase
-
 math
     $math:PI
     ^math:round floor ceiling
@@ -991,124 +996,118 @@ math
         combines the ability to use various cryptographic hashing algorithms.
         $.hmac[key] for verifying the integrity of transmitted data
 
-inet
-    ^inet:ntoa(long)
-    ^inet:aton[IP]
-    ^inet:name2ip[name][[ $.ipv[4|6|any] $.table(true) ]]
-        direct conversion of a name to an IP address
-    ^inet:ip2name[ip][ $.ipv[4|6|any] ]
-        reverse conversion from IP address to name
-    ^inet:hostname[]
-        host name
-
-json
-    ^json:parse[-json-string-[;
-        $.depth(maximum depth, default == 19)
-        $.double(false)              disable built-in parsing of floating-point numbers (enabled by default)
-                                     in this case they will appear in the resulting object as strings
-        $.int(false)                 disable built-in parsing of integers (enabled by default)
-                                     in this case they will appear in the resulting object as strings
-        $.distinct[first|last|all]   how duplicate keys in objects are handled
-                                     first - keep the first encountered element
-                                     last  - keep the last encountered element
-                                     all   - keep all elements. starting from the 2nd,
-                                              they get numeric suffixes (key_2 etc)
-                                     by default duplicate keys cause an exception
-        $.object[method-junction]    user method[key;object], called for all parsed
-                                     objects and object keys; method returns a new object
-        $.array[method-junction]     user method called for arrays
-        $.taint[taint language]      sets the transformation language for all result strings
-    ]]
-        parses a json-string into a hash
-
-    ^json:string[system or user object[;
-        $.skip-unknown(false)    disable exception and output 'null' when serializing objects of types
-                                 other than void, bool, string, int, double, date, table, hash, and file
-        $.indent(true)           format the resulting string with indentation according to nesting depth
-        $.date[sql-string|gmt-string|iso-string|unix-timestamp]
-                                 date output format, default = sql-string
-        $.table[object|array|compact]
-                                 format for tables, default=object
-                                 object: [{"c1":"v11","c2":"v12",...},{"c1":"v21","c2":"v22",...},...]
-                                 array:  [["c1","c2",...] || null (for nameless),["v11","v12",...],...]
-                                 compact: ["v11" || ["v11","v12",...],...]
-        $.file[text|base64|stat] output file content in the specified mode (by default file content
-                                 is not included in output)
-        $.xdoc[hash]             parameters for converting xdoc to string (as in ^xdoc.string[])
-        $.type[method-junction]  any type can be output using a user method
-                                 that must take 3 parameters: key, object of that type, and options
-                                 of the ^json:string[] call
-        $._default[method]       user method, called to output all user-class objects.
-                                 The method must take 3 parameters: key, object, and call options.
-        $._default[method name]  method name of a user method, if present it will be called for serialization
-        $.void[null|string]      undefined value will be output as null (default)
-                                 or as an empty string
-    ]]
-        serializes a system or user object into a json-string
-
-date
-    date type can be used in expressions, substituting the number of days since epoch [1 January 1970 (UTC)], fractional
-    the string value is in local time, numerically in UTC, range from 0000-00-00 00:00:00 to 9999-12-31 23:59:59
-    by default the OS-defined timezone is used
-
-    ^date::now[]
-    ^date::now(days offset)
-        returns now+offset
-    ^date::today[]
-        date at 00:00:00 of the current day
-    ^date::today(integer days offset)
-        date at 00:00:00 of current day+offset
-    ^date::create(days since epoch)
-    ^date::create(year;month[;day[;hour[;minute[;second[;TZ]]]]])
-    ^date::create[date in format %Y-%m-%d %H:%M:%S]
-        convenient creation from a value from a database
-        format1: %Y[-%m[-%d[ %H[:%M[:%S]]]]]
-        format2: %H:%M[:%S]
-    ^date::create[date in format %Y-%m-%dT%H:%M[:%S]TZ]
-        for creation from ISO 8601 format
-        TZ format: Z(UTC) or +-hour[:minute] (offset from UTC)
-    ^date::unix-timestamp()
-    ^date.unix-timestamp[]
-    $date.year month day hour minute second weekday yearday(0...) daylightsaving TZ weekyear
-        TZ="" << local zone
-    $date.year month day hour minute second can be set to new values, others are read-only
-    ^date.double[] ^date.int[]
-        the number of days since epoch [1 January 1970 (UTC)], fractional or truncated
-    ^date.roll[year|month|day](+-offset)
-        shifts the date
-    ^date.roll[TZ;New zone]
-        says that the date is in such a timezone: affects .hour & Co
-    ^date:roll[TZ;New zone]
-        says that by default all dates are in that timezone
-    ^date.sql-string[[datetime|date|time]]
-        datetime or without parameter - %Y-%m-%d %H:%M:%S
-        date                          - %Y-%m-%d
-        time                          - %H:%M:%S
-        where published='^date.sql-string[]'
-    ^date:calendar[rus|eng](year;month)
-        returns an unnamed table, columns: 0..6, week, year
-    ^date:calendar[rus|eng](year;month;day)
-        returns a named table, columns: year, month, day, weekday
-    ^date:last-day(year;month)
-        returns the last day of the month
-    ^date.last-day[]
-        returns the last day of $date's month
-    ^date.gmt-string[]
-        Fri, 23 Mar 2001 09:32:23 GMT
-    ^date.iso-string[]
-        2001-03-23T12:32:23+03
-
-console
-    $console:timeout
-    $console:line
-        read/write string
-
 memory
     ^memory:compact[]
         collect garbage, freeing space for new data (warning: process memory is never released)
         useful before XSL transform
     ^memory:auto-compact(frequency)
         sets automatic garbage collection frequency, from 0 (off) up to 5 (max)
+
+reflection
+    ^reflection:create[class;constructor[;pa[;ra[;ms]]]]
+        calls the specified class constructor (no more than 100 parameters)
+    ^reflection:create[ $.class[name] $.constructor[name] $.arguments[ $.1[pa] $.2[ra] $.3[ms] ] ]
+        calls the specified class constructor
+    ^reflection:classes[]
+        a hash of all classes. key = class name, value can be methoded (a class with methods) or void
+    ^reflection:class[object]
+        the class of the given object
+    ^reflection:class_name[object]
+        the class name of the given object
+    ^reflection:base[object]
+        the parent class of the given object
+    ^reflection:base_name[object]
+        the parent class name of the given object
+    ^reflection:class_by_name[class name]
+        obtains the class by name
+    ^reflection:class_alias[class name;new class name]
+        sets an alias for the specified class
+    ^reflection:def[class;class name]
+        checks if the class exists
+    ^reflection:methods[class]
+        a hash with a list of methods of the specified class, values are strings 'native' or 'parser'
+    ^reflection:method[class or object;method name]
+        returns the junction-method of the class or object
+    ^reflection:filename[object or class or method]
+        returns the filename where the object, class or method is defined
+    ^reflection:fields[class or object]
+        a hash with the list of static fields of the specified class or dynamic fields of the specified object
+    ^reflection:fields_reference[object]
+        an editable hash of the dynamic fields of the specified object
+    ^reflection:field[class or object;field name]
+        returns the value of the specified field of the class or object. getters are ignored.
+    ^reflection:copy[source;destination]
+        copies fields from one object or class to another
+    ^reflection:uid[class or object]
+        returns the identifier of the object or class
+    ^reflection:method_info[class;method]
+        a hash with parameters of the specified class method
+        $.inherited[class] name of the class where the method was defined (returned only if the method was defined in an ancestor)
+        $.overridden[class] name of the class where the method was defined (returned only if the method was defined in an ancestor)
+        for native classes a hash is returned:
+            .min_params(minimum required number of parameters)
+            .max_params(maximum possible number of parameters)
+            .call_type[dynamic|static|any]
+        for parser classes a hash is returned:
+            key is parameter number (0, 1, ...), value is parameter name
+    ^reflection:dynamical[[object or class, caller if absent]]
+        returns true if the method was called from a dynamic context when passing
+        a parameter returns true if a dynamic object was passed, false if a class
+    ^reflection:delete[class or object;variable name]
+        deletes the variable with the specified name in the specified class or object
+    ^reflection:is[element name;class name][[context]]
+        analogous to the 'is' operator, allowing to determine if the element is code.
+    ^reflection:tainting[[language|tainted|optimized];string]
+        a string in which each character of the original string corresponds to a character with a transformation code
+    ^reflection:stack[ $.args(false/true) $.locals(false/true) $.limit(n) $.offset(o)]
+        the current state of the method call stack in the parser
+    ^reflection:mixin[source; $.to[target] $.name[name] $.methods(true/false) $.fields(true/false) $.overwrite(false/true)]
+        copies methods and fields from one class to another
+
+request
+    $request:query
+    $request:uri
+    $request:document-root
+        directory relative to which paths are considered in parser, default = $env:DOCUMENT_ROOT
+    $request:argv
+        hash with command-line parameters. keys 0, 1, ... [0 - name of the processed file]
+    $request:charset
+        the source document encoding
+        used in upper/lower and match[][i]
+        WARNING: you must set $request/response:charset before using form class fields
+    $request:method
+        request method (GET|POST|PUT)
+    $request:body
+        POST-request body as text
+    $request:body-file
+        POST-request body as a file
+    $request:body-charset
+        POST-request encoding
+    $request:headers
+        hash with request headers (without HTTP_ prefix)
+
+response
+    $response:field[value] and can read old - $response:field
+        the value can be string or hash:
+            $value[abc] field: {abc}<<part
+            $attribute[zzz] field: abc; {attribute=zzz}<<part
+        field or attribute value can be string or date
+            if date, it will be converted to "Sun, 25-Aug-2002 12:03:45 GMT"
+    $response:headers
+         accumulated fields
+    $response:body[DATA]
+        replaces the standard response
+    $response:download[DATA]
+        replaces the standard response, sets a flag causing the browser to suggest download
+    $response:status
+    ^response:clear[] forget all set response fields
+    $response:charset
+        client encoding, i.e.:
+        1) from which $form: fields will be transcoded after retrieval from browser
+        2) into which the document will be transcoded before sending to browser
+        3) into which URI language text will be transcoded
+        does not add anything to content-type; if needed, do it manually
+        WARNING: you must set $request/response:charset before using form class fields
 
 status
     $status:sql
@@ -1397,4 +1396,4 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.261 2024/12/20 17:39:37 moko Exp $
+$Id: operators.txt,v 1.262 2024/12/20 18:59:22 moko Exp $
