@@ -750,6 +750,28 @@ cookie
     $cookie:fields
         hash with all cookies
 
+curl
+    ^curl:load[[
+        $.url[http://URL]
+        $.timeout(N)
+        $.ssl_verifypeer(0)
+        $.mode[text|binary] type of the created file
+    ]]
+        downloads a file from a remote server, can be called multiple times within one session;
+        any libcurl option can be specified, option names in lowercase without the CURLOPT_ prefix
+    ^curl:options[[
+        $.library[libcurl.so.4]
+        $.charset[UTF-8]
+        ...
+    ]]
+        subsequent ^curl:load calls inherit the specified options, the path to libcurl must be set before using curl
+    ^curl:session{code}
+        creates a cURL session, common options can be set, multiple downloads performed
+    ^curl:info[name], ^curl:info[]
+        information about the last request (a value or a hash)
+    ^curl:version[]
+        the version of the cURL library in use
+
 env
     $env:variable
     $env:fields hash with environment variables
@@ -1396,4 +1418,4 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.262 2024/12/20 18:59:22 moko Exp $
+$Id: operators.txt,v 1.263 2024/12/20 19:20:02 moko Exp $
