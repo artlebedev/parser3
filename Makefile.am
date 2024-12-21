@@ -1,7 +1,7 @@
 SUBDIRS = src etc
 ACLOCAL_AMFLAGS = -I src/lib/ltdl/m4
 
-EXTRA_DIST = operators.txt parser3.sln gnu.vcproj buildall acsite.m4
+EXTRA_DIST = operators.txt operators.ru.txt parser3.sln gnu.vcproj buildall acsite.m4
 
 commit:
 #       trick to make 'make' happy at check out time
