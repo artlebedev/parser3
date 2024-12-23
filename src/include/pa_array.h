@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.101 2024/11/17 14:04:28 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.102 2024/12/23 16:59:17 moko Exp $"
 
 // includes
 
@@ -169,7 +169,7 @@ public:
 
 	inline void clear() {
 		if(fsize)
-			memset(felements, 0, fsize * sizeof(T));
+			memset((void *)felements, 0, fsize * sizeof(T));
 		fsize=0;
 	}
 

@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.19 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.20 2024/12/23 16:59:17 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -190,7 +190,7 @@ static void _name2ip(Request& r, MethodParams& params){
 	freeaddrinfo(info);
 }
 
-static void _hostname(Request& r, MethodParams& params){
+static void _hostname(Request& r, MethodParams&){
 	char buf[MAX_STRING];
 
 	if(gethostname(buf, MAX_STRING))

@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.216 2024/11/11 05:28:00 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.217 2024/12/23 16:59:17 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -180,11 +180,11 @@ static void pa_gc_free_maybeignore(void* ptr) {
 #ifdef HAVE_PCRE2
 pcre2_general_context* VRegex::fgen_ctxt;
 
-static void* pa_pcre_malloc(size_t size, void *ptr){
+static void* pa_pcre_malloc(size_t size, void *){
 	return pa_malloc(size);
 }
 
-static void pa_pcre_free(void *ptr, void *tag){
+static void pa_pcre_free(void *ptr, void *){
 	pa_free(ptr);
 }
 #endif

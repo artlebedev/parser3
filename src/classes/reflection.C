@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.96 2024/12/11 02:52:50 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.97 2024/12/23 16:59:17 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -376,7 +376,7 @@ static void _method_info(Request& r, MethodParams& params) {
 			VArray& named_params=*new VArray(named_count);
 			ArrayValue &array=named_params.array();
 
-			for(int i=0; i<named_count; i++) {
+			for(size_t i=0; i<named_count; i++) {
 				const String& fname=*(*method->named_params)[i];
 				array+=new VString(fname);
 			}

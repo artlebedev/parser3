@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.425 2024/11/04 03:53:25 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.426 2024/12/23 16:59:17 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -442,7 +442,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-				if(const VJunction* vjunction=ncontext.put_element(name, &value))
+				if(ncontext.put_element(name, &value))
 						throw Exception(PARSER_RUNTIME, 0, "property value cannot be code, use [] or () brackets");
 
 				break;

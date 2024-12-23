@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.270 2024/12/06 23:20:04 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.271 2024/12/23 16:59:17 moko Exp $";
 
 // defines
 
@@ -715,7 +715,7 @@ struct Cache_get_result {
 };
 #endif
 
-static Cache_get_result cache_get(Request_charsets& charsets, const String& file_spec, time_t now) {
+static Cache_get_result cache_get(const String& file_spec, time_t now) {
 	Cache_get_result result={0, false};
 
 	File_read_result file=file_read_binary(file_spec, false /*fail_on_read_problem*/);
@@ -797,7 +797,7 @@ static void _cache(Request& r, MethodParams& params) {
 		catch_code=&params.as_junction(3, "catch_code must be code");
 
 	if(scope.expires>now) {
-		Cache_get_result cached=cache_get(r.charsets, file_spec, now);
+		Cache_get_result cached=cache_get(file_spec, now);
 
 		if(cached.body) { // have cached copy
 			if(cached.expired) {

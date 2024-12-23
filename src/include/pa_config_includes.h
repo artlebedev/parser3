@@ -218,9 +218,9 @@ inline size_t min(size_t a, size_t b){ return a<b ? a : b; }
 
 
 #ifdef __GNUC__
-#  define PA_ATTR_UNUSED __attribute__((unused))
+#  define PA_UNUSED __attribute__((unused))
 #else
-#  define PA_ATTR_UNUSED
+#  define PA_UNUSED
 #endif
 
 #ifdef _MSC_VER

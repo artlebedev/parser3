@@ -28,7 +28,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.335 2024/11/04 17:09:28 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.336 2024/12/23 16:59:17 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -322,17 +322,17 @@ bool file_write_action_under_lock(const String& file_spec, const char* action_na
 		} catch(...) {
 #ifdef HAVE_FTRUNCATE
 			if(!do_append)
-				ftruncate(f, lseek(f, 0, SEEK_CUR)); // one cannot use O_TRUNC, read lower
+				PA_UNUSED int ignore_result=ftruncate(f, lseek(f, 0, SEEK_CUR)); // one cannot use O_TRUNC, read lower
 #endif
-			pa_unlock(f);close(f); 
+			pa_unlock(f);close(f);
 			rethrow;
 		}
 		
 #ifdef HAVE_FTRUNCATE
 		if(!do_append)
-			ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
+			PA_UNUSED int ignore_result=ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
 #endif
-		pa_unlock(f);close(f); 
+		pa_unlock(f);close(f);
 		return true;
 	} else
 		throw Exception(errno==EACCES ? "file.access" : 0, &file_spec, "%s failed: %s (%d), actual filename '%s'", action_name, strerror(errno), errno, fname);
@@ -806,7 +806,7 @@ enum EscapeState {
 // @todo prescan for reduce required size (unescaped sting in 1 byte charset requires less memory usually)
 char* unescape_chars(const char* cp, int len, Charset* charset, bool js){
 	char* s=new(PointerFreeGC) char[len+1]; // must be enough (%uXXXX==6 bytes, max utf-8 char length==6 bytes)
-	char* dst=s;
+	XMLByte* dst=(XMLByte *)s;
 	EscapeState escapeState=EscapeRest;
 	uint escapedValue=0;
 	int srcPos=0;
@@ -852,7 +852,7 @@ char* unescape_chars(const char* cp, int len, Charset* charset, bool js){
 						escapedValue=(escapedValue << 4) + hex_value[c];
 						if(++jsCnt==4){
 							// transcode utf8 char to client charset (we can lost some chars here)
-							charset->store_Char((XMLByte*&)dst, (XMLCh)escapedValue, '?');
+							charset->store_Char(dst, (XMLCh)escapedValue, '?');
 							escapeState=EscapeRest;
 						}
 					} else {

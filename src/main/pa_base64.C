@@ -8,7 +8,7 @@
 #include "pa_base64.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.13 2024/11/04 03:53:25 moko Exp $" IDENT_PA_BASE64_H;
+volatile const char * IDENT_PA_BASE64_C="$Id: pa_base64.C,v 1.14 2024/12/23 16:59:17 moko Exp $" IDENT_PA_BASE64_H;
 
 /*
  *  BASE64 part inspired by g_mime_utils
@@ -222,7 +222,7 @@ char* pa_base64_encode(const char *in, size_t in_size, Base64Options options) {
 
 	char* result = new(PointerFreeGC) char[new_size + 1 /*zero terminator*/];
 
-	size_t filled = pa_base64_encode((const uchar*)in, in_size, (uchar*)result, options);
+	PA_UNUSED size_t filled = pa_base64_encode((const uchar*)in, in_size, (uchar*)result, options);
 	assert(filled <= new_size);
 
 	return result;
