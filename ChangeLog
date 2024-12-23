@@ -1,6 +1,46 @@
+2024-12-21  moko
+
+	* Makefile.am: +operators.ru.txt
+
+	* operators.ru.txt, operators.txt: typo fixed
+
+2024-12-20  moko
+
+	* operators.txt: whitespace synced
+
+	* operators.ru.txt, operators.txt: curl added
+
+	* operators.ru.txt, operators.txt: logically sorted
+
+	* operators.ru.txt: id added
+
+	* operators.txt: ID added
+
+	* operators.txt: translated
+
+	* operators.ru.txt, operators.txt: operators.txt translated to
+	  english, synced format with operators.ru.txt
+
+	* operators.ru.txt, operators.txt: renamed to operators.ru.txt,
+	  formatted
+
+	* operators.ru.txt, operators.txt: formatted, actualized, oracle
+	  info moved to separate file
+
+2024-12-19  moko
+
+	* src/targets/cgi/parser3.C: avoid parser version requests logging
+	  in parser3.log
+
+2024-12-18  moko
+
+	* buildall: preventing --with-system-mailreceive linking with
+	  libglib-2.0/libgobject-2.0 left from --with-mailreceive (related
+	  to feature #1199)
+
 2024-12-16  moko
 
-	* operators.txt: actualized for 3.5.0
+	* operators.ru.txt, operators.txt: actualized for 3.5.0
 
 	* src/classes/table.C: exception text fixed
 
@@ -18,7 +58,7 @@
 
 2024-12-14  moko
 
-	* operators.txt: + array in operators.txt
+	* operators.ru.txt, operators.txt: + array in operators.txt
 
 	* tests/results/auto.p: avoid $mac execution unless on OS X
 
@@ -1726,7 +1766,7 @@
 
 2021-01-14  moko
 
-	* operators.txt: updated with 3.4.6 changes
+	* operators.ru.txt, operators.txt: updated with 3.4.6 changes
 
 	* tests/results/224.processed: test result modified after
 	  today(shift) implemented
@@ -3363,7 +3403,7 @@
 
 2017-02-20  moko
 
-	* operators.txt: actualization + beauty
+	* operators.ru.txt, operators.txt: actualization + beauty
 
 2017-02-16  moko
 
@@ -3431,9 +3471,9 @@
 
 2017-02-08  moko
 
-	* operators.txt: actualization 15% completed
+	* operators.ru.txt, operators.txt: actualization 15% completed
 
-	* operators.txt: cp1251 -> utf-8
+	* operators.ru.txt, operators.txt: cp1251 -> utf-8
 
 	* NEWS, README: minor update
 
@@ -4981,7 +5021,7 @@
 
 2015-10-29  moko
 
-	* operators.txt: updated for 3.4.4
+	* operators.ru.txt, operators.txt: updated for 3.4.4
 
 	* configure.ac, src/include/pa_version.h: 3.4.4rc -> 3.4.4
 
@@ -5366,10 +5406,11 @@
 
 	* src/classes/date.C: minor fix related to feature #1032
 
-	* operators.txt: ISO date creation documented (related to feature
-	  #1032)
+	* operators.ru.txt, operators.txt: ISO date creation documented
+	  (related to feature #1032)
 
-	* operators.txt: iso-string documented (related to feature #1032)
+	* operators.ru.txt, operators.txt: iso-string documented (related
+	  to feature #1032)
 
 	* tests/: 315.html, results/315.processed: more tests added
 	  (related to feature #1032)
@@ -5405,9 +5446,10 @@
 
 2015-09-05  moko
 
-	* operators.txt: actualized
+	* operators.ru.txt, operators.txt: actualized
 
-	* operators.txt: date changes documented (related to ticket #36)
+	* operators.ru.txt, operators.txt: date changes documented (related
+	  to ticket #36)
 
 2015-09-04  moko
 
@@ -6394,9 +6436,9 @@
 	* src/targets/cgi/: Makefile.am, getopt.c, getopt.h,
 	  parser3.vcproj: unused getopt.h / getopt.c removed
 
-	* operators.txt, src/classes/file.C, tests/022.html,
-	  tests/results/022.processed: ^file:list[path][$.filter[regexp]
-	  $.stat(true)] usage commented
+	* operators.ru.txt, operators.txt, src/classes/file.C,
+	  tests/022.html, tests/results/022.processed:
+	  ^file:list[path][$.filter[regexp] $.stat(true)] usage commented
 
 	* configure.in, src/classes/file.C, src/include/pa_dir.h,
 	  src/main/pa_dir.C: ^file:list[] now has dir column and when
@@ -7636,7 +7678,8 @@
 
 2011-05-18  misha
 
-	* operators.txt: - info about json-serialization of xdoc was added
+	* operators.ru.txt, operators.txt: - info about json-serialization
+	  of xdoc was added
 
 	* tests/256.html: - tests for json-serialization xdoc were added
 
@@ -7699,9 +7742,9 @@
 
 2011-02-22  misha
 
-	* src/include/pa_charset.h, operators.txt: - some methods mustn't
-	  be under #ifdef XML or parser can't be compiled without xml
-	  support
+	* src/include/pa_charset.h, operators.ru.txt, operators.txt: - some
+	  methods mustn't be under #ifdef XML or parser can't be compiled
+	  without xml support
 
 2011-02-21  misha
 
@@ -7809,11 +7852,11 @@
 
 2010-11-25  moko
 
-	* operators.txt: $.indent(true)
+	* operators.ru.txt, operators.txt: $.indent(true)
 
-	* operators.txt: another bugfix. :)
+	* operators.ru.txt, operators.txt: another bugfix. :)
 
-	* operators.txt: bugfix. :)
+	* operators.ru.txt, operators.txt: bugfix. :)
 
 	* buildall-with-xml: libxml2-2.7.8 + with-apache
 
@@ -7860,7 +7903,8 @@
 
 2010-11-18  moko
 
-	* operators.txt: $.table[compact] added for ^json:string[]
+	* operators.ru.txt, operators.txt: $.table[compact] added for
+	  ^json:string[]
 
 2010-11-16  moko
 
@@ -8016,7 +8060,7 @@
 
 	* src/classes/math.C: - error in math:convert was fixed
 
-	* operators.txt: - info about
+	* operators.ru.txt, operators.txt: - info about
 	  ^math:convert[number](from-base;to-base) was added
 
 	* src/classes/math.C: - method
@@ -8076,8 +8120,8 @@
 
 2010-10-02  misha
 
-	* operators.txt: - the X mark was removed from ^cache[file]. it is
-	  usable to delete cache file.
+	* operators.ru.txt, operators.txt: - the X mark was removed from
+	  ^cache[file]. it is usable to delete cache file.
 
 2010-10-02  moko
 
@@ -8144,7 +8188,8 @@
 
 2010-09-17  misha
 
-	* operators.txt: - info about json class was added
+	* operators.ru.txt, operators.txt: - info about json class was
+	  added
 
 	* src/classes/json.C: - ^json:string[object]
 
@@ -8694,8 +8739,8 @@
 
 2009-11-10  misha
 
-	* operators.txt: - info about hash-options in ^file::create was
-	  added
+	* operators.ru.txt, operators.txt: - info about hash-options in
+	  ^file::create was added
 
 	* tests/237.html: - test for ^file::create[...;$.charset[...]] was
 	  added
@@ -8740,8 +8785,8 @@
 
 	* src/types/pa_vregex.C: - check UTF8 only during 1st iteration
 
-	* operators.txt: - actually, there is no ^untaint[xml] in
-	  file::create
+	* operators.ru.txt, operators.txt: - actually, there is no
+	  ^untaint[xml] in file::create
 
 2009-10-15  misha
 
@@ -8871,8 +8916,8 @@
 	* tests/: 224.html, 224.p: - tests for ^reflection:fields[class or
 	  object] were added
 
-	* operators.txt: - info about method ^reflection:fields[class or
-	  object] was added
+	* operators.ru.txt, operators.txt: - info about method
+	  ^reflection:fields[class or object] was added
 
 	* src/classes/reflection.C: - method ^reflection:fields[class or
 	  object] was added
@@ -8930,7 +8975,8 @@
 
 2009-09-08  misha
 
-	* operators.txt: - changes in file.save and string.save were added
+	* operators.ru.txt, operators.txt: - changes in file.save and
+	  string.save were added
 
 	* tests/: 230.html, 230.txt: - tests for checking options in
 	  file.save and string.save were added
@@ -9181,9 +9227,9 @@
 	* tests/224.html: - method_params => method_info - checking for
 	  $.inherited
 
-	* src/classes/reflection.C, operators.txt: - method method_params
-	  was renamed to method_info and now it returns class name, if
-	  method was defined in ancestor
+	* src/classes/reflection.C, operators.ru.txt, operators.txt: -
+	  method method_params was renamed to method_info and now it
+	  returns class name, if method was defined in ancestor
 
 	* tests/225.html: - tests for cheching properties in hierarhical
 	  classes were added
@@ -9264,8 +9310,8 @@
 
 2009-07-28  misha
 
-	* operators.txt: - some changes in information about reflection
-	  class
+	* operators.ru.txt, operators.txt: - some changes in information
+	  about reflection class
 
 	* tests/: 224.html, 224.p: - tests for reflection class
 
@@ -9277,7 +9323,8 @@
 	* src/classes/classes.vcproj: - reflection class wass added to
 	  project
 
-	* operators.txt: - information about reflection class was added
+	* operators.ru.txt, operators.txt: - information about reflection
+	  class was added
 
 	* src/classes/reflection.C: - class was redesigned
 
@@ -9460,16 +9507,16 @@
 
 2009-06-25  misha
 
-	* src/classes/image.C, operators.txt: - options' names for
-	  ^image.font were changed to $.space, $.width and $spacing -
-	  default space width now == gif's width
+	* src/classes/image.C, operators.ru.txt, operators.txt: - options'
+	  names for ^image.font were changed to $.space, $.width and
+	  $spacing - default space width now == gif's width
 
 2009-06-24  misha
 
 	* tests/215.html: - tests for $file.mode were added
 
-	* operators.txt: - added info about $file.mode and changes in
-	  ^image.font[
+	* operators.ru.txt, operators.txt: - added info about $file.mode
+	  and changes in ^image.font[
 
 	* src/: types/pa_vimage.h, classes/image.C: ^image.font - third
 	  param now could be omited - third param now could be hash (with
@@ -9711,7 +9758,8 @@
 
 	* tests/212.html: - .size[] and .study_size[] were added to tests
 
-	* operators.txt: - info about regex class was added
+	* operators.ru.txt, operators.txt: - info about regex class was
+	  added
 
 	* tests/212.html: - tests for regex class were added
 
@@ -10420,8 +10468,9 @@
 
 	* tests/185.html: - test for ^str.pos[sub](offset) added
 
-	* src/classes/string.C, src/classes/void.C, operators.txt: -
-	  ^string.pos[substr](offset) -- 2nd param accepted now
+	* src/classes/string.C, src/classes/void.C, operators.ru.txt,
+	  operators.txt: - ^string.pos[substr](offset) -- 2nd param
+	  accepted now
 
 	* src/main/pa_string.C: - .pos works fine with offset for utf-8
 	  strings
@@ -11045,8 +11094,8 @@
 
 2007-11-14  misha
 
-	* operators.txt: - info about new text|binary option for
-	  file::exec/cgi was added
+	* operators.ru.txt, operators.txt: - info about new text|binary
+	  option for file::exec/cgi was added
 
 	* src/: include/pa_exec.h, main/pa_exec.C, classes/file.C: -
 	  ^file:exec[[text|binary];script;...]
@@ -11061,7 +11110,7 @@
 
 	* ChangeLog: - $request:argv [patch from Sumo]
 
-	* operators.txt: - $request:argv
+	* operators.ru.txt, operators.txt: - $request:argv
 
 	* src/: include/pa_request_info.h, types/pa_vrequest.C,
 	  types/pa_vrequest.h, targets/cgi/parser3.C: - $request:argv
@@ -11079,8 +11128,8 @@
 	* tests/: 170.html, results/170.processed: - test for
 	  @method[][result]
 
-	* operators.txt: - added info about node.prefix and
-	  node.namespaceURI
+	* operators.ru.txt, operators.txt: - added info about node.prefix
+	  and node.namespaceURI
 
 	* src/classes/xnode.C: - xmlHasProp used instead of xmlGetProp
 
@@ -11111,7 +11160,7 @@
 
 2007-10-17  misha
 
-	* operators.txt: - info about
+	* operators.ru.txt, operators.txt: - info about
 	  table::create[nameless]{data}[>options<] was added
 
 	* src/main/: compile.tab.C, compile.y: - if error occure while
@@ -11145,7 +11194,8 @@
 
 2007-09-17  misha
 
-	* operators.txt: - added info about $cookie:fields
+	* operators.ru.txt, operators.txt: - added info about
+	  $cookie:fields
 
 	* src/types/pa_vcookie.C: - $cookie:fields available now
 
@@ -11163,8 +11213,9 @@
 
 2007-08-28  misha
 
-	* operators.txt: - texts about ^table.columns[[column name]]  and
-	  ^string.split[...][v][column name] were added
+	* operators.ru.txt, operators.txt: - texts about
+	  ^table.columns[[column name]]  and ^string.split[...][v][column
+	  name] were added
 
 	* tests/: 168.html, 169.html, results/168.processed,
 	  results/169.processed: - tests for ^table.columns[[column name]]
@@ -11192,8 +11243,8 @@
 
 2007-08-20  misha
 
-	* operators.txt: - comment about new method ^node.hasAttributes[]
-	  was added
+	* operators.ru.txt, operators.txt: - comment about new method
+	  ^node.hasAttributes[] was added
 
 	* src/classes/: file.C, math.C, op.C, string.C, xdoc.C: - more
 	  duplicated exception text strings were removed
@@ -11230,9 +11281,9 @@
 	* src/: classes/math.C, targets/isapi/parser3isapi.C: - little
 	  syntax changes
 
-	* src/targets/cgi/parser3.C, operators.txt: - annoying 'SIGPIPE'
-	  messages in parser3.log switched off by default. If someone
-	  really still need it: use $SIGPIPE(1)
+	* src/targets/cgi/parser3.C, operators.ru.txt, operators.txt: -
+	  annoying 'SIGPIPE' messages in parser3.log switched off by
+	  default. If someone really still need it: use $SIGPIPE(1)
 
 2007-08-08  misha
 
@@ -11343,7 +11394,8 @@
 	* tests/160.html: - time increased because on unix 1 mean nothing
 	  :(
 
-	* operators.txt: - added info about ^hash.contain[key]
+	* operators.ru.txt, operators.txt: - added info about
+	  ^hash.contain[key]
 
 	* src/classes/hash.C: - added ^hash.contain[key]
 
@@ -11418,10 +11470,11 @@
 
 2007-04-20  misha
 
-	* operators.txt: - some comments changing
+	* operators.ru.txt, operators.txt: - some comments changing
 
-	* operators.txt: - added info about .^hashfile.release[],
-	  ^hashfile.clenaup[] and new ^string.match[][>N-option<]
+	* operators.ru.txt, operators.txt: - added info about
+	  .^hashfile.release[], ^hashfile.clenaup[] and new
+	  ^string.match[][>N-option<]
 
 	* configure: =cheching for unsetenv
 
@@ -11448,7 +11501,7 @@
 	* buildall-with-xml, buildall-without-xml: added commented lines
 	  with --disable-safe-mode option
 
-	* operators.txt: - info about $form:files
+	* operators.ru.txt, operators.txt: - info about $form:files
 
 2007-04-17  misha
 
@@ -11506,7 +11559,7 @@
 
 	* src/classes/date.C: - date.week was fixed
 
-	* operators.txt: - added info about date.weekyear
+	* operators.ru.txt, operators.txt: - added info about date.weekyear
 
 	* tests/: 159.html, results/159.processed: - tests for date.week
 	  and date.weekyear added
@@ -11559,7 +11612,8 @@
 
 	* src/classes/xdoc.C: - roll back last changes for a while
 
-	* src/classes/xdoc.C, operators.txt: - ^xdoc::create[$file] added.
+	* src/classes/xdoc.C, operators.ru.txt, operators.txt: -
+	  ^xdoc::create[$file] added.
 
 	* src/classes/file.C: - under lock we create non-exist dir anyway
 
@@ -11582,7 +11636,7 @@
 
 2007-02-19  misha
 
-	* operators.txt: - some comments changes
+	* operators.ru.txt, operators.txt: - some comments changes
 
 	* buildall-with-xml, buildall-without-xml: - some modifications
 
@@ -11623,7 +11677,8 @@
 
 2007-02-07  misha
 
-	* operators.txt: - ^file:base64[filespec]  was added
+	* operators.ru.txt, operators.txt: - ^file:base64[filespec]  was
+	  added
 
 	* tests/results/153.processed: - result test for
 	  ^file:base64[filespec]  was updated
@@ -11674,7 +11729,7 @@
 
 	* buildall-with-xml: - moved to libxml2-2.6.27 and libxslt-1.1.20
 
-	* operators.txt: - info bool class was added
+	* operators.ru.txt, operators.txt: - info bool class was added
 
 	* src/: classes/Makefile.am, classes/bool.C,
 	  classes/classes.vcproj, classes/double.C, classes/int.C,
@@ -11709,7 +11764,8 @@
 
 2006-12-07  misha
 
-	* operators.txt: - added info about bool params in cookie set
+	* operators.ru.txt, operators.txt: - added info about bool params
+	  in cookie set
 
 	* src/types/pa_vcookie.C: - bool param in cookies available now
 	  $cookie:name[   $.value[123]	 $.secure(true)   $.httponly(true)
@@ -11729,12 +11785,13 @@
 
 2006-12-01  misha
 
-	* operators.txt: - info about $var.CLASS_NAME was added
+	* operators.ru.txt, operators.txt: - info about $var.CLASS_NAME was
+	  added
 
 	* src/types/: pa_vstateless_class.C, pa_vstateless_class.h: -
 	  $var.CLASS_NAME added
 
-	* operators.txt: - added info about ^file:copy[]
+	* operators.ru.txt, operators.txt: - added info about ^file:copy[]
 
 	* src/classes/file.C: - ^file:copy[from;fo] was added
 
@@ -11766,8 +11823,8 @@
 
 2006-11-14  misha
 
-	* operators.txt: - added info about ^file.md5[] and
-	  ^file:md5[file-name]
+	* operators.ru.txt, operators.txt: - added info about ^file.md5[]
+	  and ^file:md5[file-name]
 
 	* src/classes/file.C: - ^file.md5[] and ^file:md5[file-name] were
 	  added
@@ -11785,8 +11842,8 @@
 
 2006-11-13  misha
 
-	* operators.txt: - added info about ^math:crc32[string],
-	  ^file:crc32[file-name] & ^file.crc32[]
+	* operators.ru.txt, operators.txt: - added info about
+	  ^math:crc32[string], ^file:crc32[file-name] & ^file.crc32[]
 
 	* src/classes/math.C: - added ^math:crc32[string]
 
@@ -11856,8 +11913,9 @@
 	  Wednesday, June 07, 2006 9:52 PM Subject: parser3: patch for
 	  $hash._default disappear while
 
-	* operators.txt: ^mail:send[   $.file1[      $.value[file]
-	  $.format[!uue|!base64] << new base64 option. default uue   ] ]
+	* operators.ru.txt, operators.txt: ^mail:send[	 $.file1[
+	  $.value[file]      $.format[!uue|!base64] << new base64 option.
+	  default uue	] ]
 
 	* src/types/pa_vmail.C: misha: Sent: Wednesday, June 07, 2006 8:51
 	  PM Subject: patch for base64 in ^mail:send[] %-)
@@ -11866,7 +11924,7 @@
 
 	* src/main/compile.tab.C: ` change compiled
 
-	* gnu.vcproj, operators.txt, parser3.sln,
+	* gnu.vcproj, operators.ru.txt, operators.txt, parser3.sln,
 	  src/classes/classes.vcproj, src/classes/file.C,
 	  src/classes/hash.C, src/classes/hashfile.C, src/classes/image.C,
 	  src/classes/op.C, src/classes/table.C, src/classes/xdoc.C,
@@ -13105,8 +13163,8 @@
 
 2005-02-17  paf
 
-	* operators.txt, src/classes/op.C: + operator ^sleep(double
-	  seconds)
+	* operators.ru.txt, operators.txt, src/classes/op.C: + operator
+	  ^sleep(double seconds)
 
 2005-02-02  paf
 
@@ -13153,7 +13211,7 @@
 	* src/main/pa_request.C: new: @unhandled_exception can prevent
 	  exception from being logged by setting $exception.handled(1)
 
-	* operators.txt, src/classes/file.C: change:
+	* operators.ru.txt, operators.txt, src/classes/file.C: change:
 	  ^file::sql{query}[[options]] options: $.name[file name]
 	  $.content-type[application/what]
 
@@ -13417,9 +13475,9 @@
 
 2004-07-26  paf
 
-	* operators.txt, src/include/pa_common.h, src/main/pa_common.C,
-	  src/main/pa_request.C, src/types/pa_vfile.h,
-	  src/types/pa_vhash.C, src/types/pa_vhash.h,
+	* operators.ru.txt, operators.txt, src/include/pa_common.h,
+	  src/main/pa_common.C, src/main/pa_request.C,
+	  src/types/pa_vfile.h, src/types/pa_vhash.C, src/types/pa_vhash.h,
 	  src/types/types.vcproj: new: $response:body/download[
 	  $.file[name on disk]	  $.name[of file for user]
 	  $.mdate[date of last-modified. default from directory] ]
@@ -13513,12 +13571,12 @@
 
 	* src/sql/pa_sql_driver.h: note: about possible optimization
 
-	* operators.txt, src/classes/hash.C, src/classes/memory.C,
-	  src/classes/string.C, src/classes/table.C, src/classes/void.C,
-	  src/include/pa_config_includes.h: new:	^void:sql{call
-	  paf(:a)}[		   $.bind[			   $.a[2]
-		 ]	 ] output variables work.  todo: check in out
-	  variables
+	* operators.ru.txt, operators.txt, src/classes/hash.C,
+	  src/classes/memory.C, src/classes/string.C, src/classes/table.C,
+	  src/classes/void.C, src/include/pa_config_includes.h: new:
+	  ^void:sql{call paf(:a)}[		  $.bind[
+		$.a[2]		]	] output variables work.  todo:
+	  check in out variables
 
 2004-06-18  paf
 
@@ -13552,7 +13610,8 @@
 
 	* src/include/pa_version.h: 3.1.3
 
-	* operators.txt: beauty: removed outdated level 'table'
+	* operators.ru.txt, operators.txt: beauty: removed outdated level
+	  'table'
 
 	* etc/parser3.charsets/x-mac-cyrillic.cfg: added: thanks to konst
 
@@ -13656,7 +13715,8 @@
 	* src/main/: compile.tab.C, compile.y: bugfix: step1 to fix
 	  explicit result problem
 
-	* operators.txt, src/classes/string.C: new: ^string.append[string]
+	* operators.ru.txt, operators.txt, src/classes/string.C: new:
+	  ^string.append[string]
 
 	* src/: include/pa_opcode.h, main/compile.tab.C, main/compile.y,
 	  main/execute.C: attempt_check_call_in_explicit_result_mode:
@@ -13676,14 +13736,16 @@
 	  @method[][result] means "no string output here" moved to lexical
 	  level [on grammar level it were too difficult]
 
-	* operators.txt, src/include/pa_string.h, src/main/compile.tab.C,
-	  src/main/compile.y, src/main/compile_tools.h,
-	  src/types/pa_vmethod_frame.C, src/types/pa_vmethod_frame.h: new:
-	  @method[][result] means "no string output here", implemented part
-	  of that idea: compiler throws away string literal generation
-	  code. and barks nonwhitespace chars
+	* operators.ru.txt, operators.txt, src/include/pa_string.h,
+	  src/main/compile.tab.C, src/main/compile.y,
+	  src/main/compile_tools.h, src/types/pa_vmethod_frame.C,
+	  src/types/pa_vmethod_frame.h: new: @method[][result] means "no
+	  string output here", implemented part of that idea: compiler
+	  throws away string literal generation code. and barks
+	  nonwhitespace chars
 
-	* operators.txt: truth: removed comment about $ORIGIN
+	* operators.ru.txt, operators.txt: truth: removed comment about
+	  $ORIGIN
 
 2004-04-05  paf
 
@@ -13787,7 +13849,7 @@
 	  and http status line parsing checked number of columns in table
 	  [user reported an assert]
 
-	* operators.txt: example: on hashfile
+	* operators.ru.txt, operators.txt: example: on hashfile
 
 	* src/: classes/op.C, types/pa_value.C, types/pa_wcontext.C:
 	  bugfix: junction reattach now actually reattaches a junction to
@@ -13804,23 +13866,24 @@
 
 2004-03-10  paf
 
-	* operators.txt, src/classes/xdoc.C, src/classes/xnode.C,
-	  src/classes/xnode.h, src/types/pa_vxdoc.C, src/types/pa_vxdoc.h,
-	  src/types/pa_vxnode.C, src/types/pa_vxnode.h: new: refined
-	  solution to search-in-namespaces problem:
+	* operators.ru.txt, operators.txt, src/classes/xdoc.C,
+	  src/classes/xnode.C, src/classes/xnode.h, src/types/pa_vxdoc.C,
+	  src/types/pa_vxdoc.h, src/types/pa_vxnode.C,
+	  src/types/pa_vxnode.h: new: refined solution to
+	  search-in-namespaces problem:
 	  $xdoc.search-namespaces.x[http://pif.design.ru/]
 	  $nodes[^xdoc.select[//x:second]]
 
-	* operators.txt, src/classes/xnode.C: new: xnode.select*[xpath
-	  expression][[NAMESPACES HASH]] allows to search for info in
-	  namespaces
+	* operators.ru.txt, operators.txt, src/classes/xnode.C: new:
+	  xnode.select*[xpath expression][[NAMESPACES HASH]] allows to
+	  search for info in namespaces
 
 	  $nodes[^xdoc.select[//x:second][
 	  $.x[http://pif.design.ru/] ]]
 
 2004-03-09  paf
 
-	* operators.txt, src/main/pa_common.C: new:
+	* operators.ru.txt, operators.txt, src/main/pa_common.C: new:
 	  ^file::load[...][options]	    $.form[
 	  !$.field1[string]
 	  !$.field2[^table::create{one_column_only^#0Avalue1^#0Avalue2}]
@@ -13836,27 +13899,30 @@
 
 2004-03-05  paf
 
-	* operators.txt, src/main/pa_common.C: new: file::load[;http://
-	  GET/POST $.form[$.fields started, not tested yet
-	  todo:$.field[table] for multiple values
+	* operators.ru.txt, operators.txt, src/main/pa_common.C: new:
+	  file::load[;http:// GET/POST $.form[$.fields started, not tested
+	  yet todo:$.field[table] for multiple values
 
-	* operators.txt: new: http:// options $.user $.password basic
-	  authorization
+	* operators.ru.txt, operators.txt: new: http:// options $.user
+	  $.password basic authorization
 
 	* src/main/pa_common.C: beauty: link to rtf added
 
-	* operators.txt, src/include/pa_common.h, src/main/pa_common.C:
-	  new: http:// options $.user $.password basic authorization
+	* operators.ru.txt, operators.txt, src/include/pa_common.h,
+	  src/main/pa_common.C: new: http:// options $.user $.password
+	  basic authorization
 
 	* src/main/pa_common.C: beauty: removed needless vars
 
-	* operators.txt: new: pgsql option [like that recently added to
-	  oracle driver]	     ClientCharset=parser-charset <<
-	  charset in which parser thinks client works
+	* operators.ru.txt, operators.txt: new: pgsql option [like that
+	  recently added to oracle driver]
+	  ClientCharset=parser-charset << charset in which parser thinks
+	  client works
 
-	* operators.txt: new: odbc option [like that recently added to
-	  oracle driver]	     ClientCharset=parser-charset <<
-	  charset in which parser thinks client works
+	* operators.ru.txt, operators.txt: new: odbc option [like that
+	  recently added to oracle driver]
+	  ClientCharset=parser-charset << charset in which parser thinks
+	  client works
 
 	* src/sql/pa_sql_driver.h: beauty: important warning added
 
@@ -13870,9 +13936,10 @@
 	* src/main/pa_sql_driver_manager.C: speedup: charset lookups
 	  cached, sql transcoding now goes faster
 
-	* operators.txt: new: mysql option [like that recently added to
-	  oracle driver]	     ClientCharset=parser-charset <<
-	  charset in which parser thinks client works
+	* operators.ru.txt, operators.txt: new: mysql option [like that
+	  recently added to oracle driver]
+	  ClientCharset=parser-charset << charset in which parser thinks
+	  client works
 
 	* etc/parser3.charsets/: koi8-r.cfg, windows-1251.cfg: keyboard
 	  typo error
@@ -13887,23 +13954,24 @@
 
 2004-03-02  paf
 
-	* operators.txt: new[update typo]:     !^void.left(n)
-	  nothing     !^void.right(n)	     nothing	 !^void.mid(p[;n])
-		nothing
+	* operators.ru.txt, operators.txt: new[update typo]:
+	  !^void.left(n)	nothing     !^void.right(n)	   nothing
+	  !^void.mid(p[;n])	      nothing
 
-	* operators.txt, src/classes/void.C: new:     !^void.left(n)
-	  nothing     !^void.right(n)	     nothing	 !^void.pos(p[;n])
-		nothing
+	* operators.ru.txt, operators.txt, src/classes/void.C: new:
+	  !^void.left(n)	nothing     !^void.right(n)	   nothing
+	  !^void.pos(p[;n])	      nothing
 
-	* operators.txt, src/classes/file.C, src/include/pa_string.h: new:
+	* operators.ru.txt, operators.txt, src/classes/file.C,
+	  src/include/pa_string.h: new:
 	  ^file::sql[[name_to_become_$.name]]{} query result must be one
 	  row with columns:   first: data   second: file name	third:
 	  content-type
 
-	* operators.txt, src/classes/file.C: ^file.sql-string[] inside
-	  ^connect gets properly escaped string, which can be passed to
-	  request now this for mysql only. it's up to parser sql driver to
-	  fix zeros properly
+	* operators.ru.txt, operators.txt, src/classes/file.C:
+	  ^file.sql-string[] inside ^connect gets properly escaped string,
+	  which can be passed to request now this for mysql only. it's up
+	  to parser sql driver to fix zeros properly
 
 	* INSTALL: note: added on building apache with this option:
 	  --enable-shared=max thanks to Victor Fedoseev <vvf_ru@mail.ru>
@@ -13913,12 +13981,12 @@
 	* src/targets/isapi/parser3isapi.C: new: apache module & isapi
 	  extension memory:compact befor processingrequest
 
-	* operators.txt, src/classes/hash.C: new: ^hash._keys[>>name<<] to
-	  call sole column of result
+	* operators.ru.txt, operators.txt, src/classes/hash.C: new:
+	  ^hash._keys[>>name<<] to call sole column of result
 
-	* operators.txt, src/classes/image.C, src/lib/gd/gif.C,
-	  src/lib/gd/gif.h: new: ^image.pixel(x;y)[(color)]	    get/set
-	  pixel color
+	* operators.ru.txt, operators.txt, src/classes/image.C,
+	  src/lib/gd/gif.C, src/lib/gd/gif.h: new:
+	  ^image.pixel(x;y)[(color)]	     get/set pixel color
 
 	* src/: classes/image.C, types/pa_vimage.C, types/pa_vimage.h:
 	  beauty: image -- less checks [were ugly impl]
@@ -13954,12 +14022,13 @@
 
 2004-02-27  paf
 
-	* operators.txt, src/classes/string.C, src/main/pa_string.C: new
-	  method: ^string.trim[start|both|end[;chars]]	      default
-	  'chars' -- whitespace chars finished
-
-	* operators.txt, src/classes/string.C, src/include/pa_string.h,
+	* operators.ru.txt, operators.txt, src/classes/string.C,
 	  src/main/pa_string.C: new method:
+	  ^string.trim[start|both|end[;chars]]	      default 'chars' --
+	  whitespace chars finished
+
+	* operators.ru.txt, operators.txt, src/classes/string.C,
+	  src/include/pa_string.h, src/main/pa_string.C: new method:
 	  ^string.trim[start|both|end[;chars]]	      default 'chars' --
 	  whitespace chars   started, only start works
 
@@ -13983,18 +14052,19 @@
 
 2004-02-26  paf
 
-	* operators.txt: feature: ^process...{CODE}[now has options] which
-	  are	      $.main[to what to rename @main]	      $.file[file,
-	  from which (user says) goes that CODE]	 $.lineno(line
-	  number in that file, where CODE starts. may be negative)
-
-	* operators.txt, src/classes/op.C, src/include/pa_request.h,
-	  src/main/compile.C, src/main/compile_tools.h,
-	  src/main/pa_request.C: feature: ^process...{CODE}[now has
-	  options] which are	     $.main[to what to rename @main]
+	* operators.ru.txt, operators.txt: feature: ^process...{CODE}[now
+	  has options] which are	 $.main[to what to rename @main]
 	  $.file[file, from which (user says) goes that CODE]
 	  $.lineno(line number in that file, where CODE starts. may be
 	  negative)
+
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/include/pa_request.h, src/main/compile.C,
+	  src/main/compile_tools.h, src/main/pa_request.C: feature:
+	  ^process...{CODE}[now has options] which are	       $.main[to
+	  what to rename @main] 	$.file[file, from which (user says)
+	  goes that CODE]	  $.lineno(line number in that file, where
+	  CODE starts. may be negative)
 
 2004-02-25  paf
 
@@ -14313,7 +14383,7 @@
 
 2004-01-13  paf
 
-	* operators.txt: typo erro
+	* operators.ru.txt, operators.txt: typo erro
 
 2003-12-25  paf
 
@@ -14327,7 +14397,7 @@
 	  make-dist-platform and badly updated proper config file in target
 	  [when .tar used for updating existing source tree]
 
-	* ChangeLog, operators.txt, src/classes/op.C,
+	* ChangeLog, operators.ru.txt, operators.txt, src/classes/op.C,
 	  src/include/pa_sql_connection.h,
 	  src/include/pa_sql_driver_manager.h,
 	  src/main/pa_sql_driver_manager.C, src/sql/pa_sql_driver.h:
@@ -14359,8 +14429,8 @@
 
 2003-12-11  paf
 
-	* operators.txt, src/types/pa_vstatus.C:     !$status:pid process
-	  id
+	* operators.ru.txt, operators.txt, src/types/pa_vstatus.C:
+	  !$status:pid process id
 	      !$status:tid thread id
 
 	* src/: include/pa_cache_managers.h, main/pa_cache_managers.C,
@@ -14390,11 +14460,12 @@
 	* src/include/pa_sql_connection.h: bugfix: $status:sql.cache back
 	  << time now ok
 
-	* operators.txt, src/main/pa_sql_driver_manager.C,
+	* operators.ru.txt, operators.txt,
+	  src/main/pa_sql_driver_manager.C,
 	  src/main/pa_stylesheet_manager.C: $status:stylesheet.cache back
 	  operational
 
-	* ChangeLog, operators.txt, src/classes/xdoc.C,
+	* ChangeLog, operators.ru.txt, operators.txt, src/classes/xdoc.C,
 	  src/include/pa_charset.h, src/include/pa_sql_connection.h,
 	  src/main/pa_charset.C, src/main/pa_sql_driver_manager.C,
 	  src/main/pa_string.C, src/types/pa_vxdoc.h: $status:sql.cache
@@ -14446,12 +14517,13 @@
 
 	* src/main/pa_xml_io.C: comment
 
-	* operators.txt, src/main/pa_xml_io.C: leading / in
-	  http://parser[abscent params]
+	* operators.ru.txt, operators.txt, src/main/pa_xml_io.C: leading /
+	  in http://parser[abscent params]
 
-	* operators.txt, src/include/pa_request.h, src/main/pa_xml_io.C:
-	  works.  todo: maybe replace original open mech of xdoc::create &
-	  co to use libxml open, so that this would work for root document
+	* operators.ru.txt, operators.txt, src/include/pa_request.h,
+	  src/main/pa_xml_io.C: works.	todo: maybe replace original open
+	  mech of xdoc::create & co to use libxml open, so that this would
+	  work for root document
 
 	  $xdoc[^xdoc::create{<?xml version="1.0"?> <!DOCTYPE test SYSTEM
 	  "parser://method/params/here"> <test>   &test^; </test> }]
@@ -14469,12 +14541,13 @@
 
 2003-11-26  paf
 
-	* operators.txt, src/include/Makefile.am, src/include/pa_globals.h,
-	  src/main/Makefile.am, src/main/main.vcproj,
-	  src/main/pa_globals.C, src/main/pa_request.C,
-	  src/include/pa_xml_io.h, src/main/pa_xml_io.C: simplification:
-	  xml errors to hash<thread_id,error> reorganization: xml io moved
-	  to pa_xml_io.C/h
+	* operators.ru.txt, operators.txt, src/include/Makefile.am,
+	  src/include/pa_globals.h, src/main/Makefile.am,
+	  src/main/main.vcproj, src/main/pa_globals.C,
+	  src/main/pa_request.C, src/include/pa_xml_io.h,
+	  src/main/pa_xml_io.C: simplification: xml errors to
+	  hash<thread_id,error> reorganization: xml io moved  to
+	  pa_xml_io.C/h
 
 	* src/types/pa_value.h: warnings: --
 
@@ -14502,9 +14575,10 @@
 	* src/main/pa_common.C: bugfix: ^file::load[binary;http://...]
 	  now not transcodes response body
 
-	* operators.txt, src/types/pa_vxnode.C, src/types/pa_vxnode.h:
-	  $xdoc[^xdoc::create[test]] $tn[^xdoc.createTextNode[text node
-	  value]] $dummy[^xdoc.firstChild.appendChild[$tn]]
+	* operators.ru.txt, operators.txt, src/types/pa_vxnode.C,
+	  src/types/pa_vxnode.h: $xdoc[^xdoc::create[test]]
+	  $tn[^xdoc.createTextNode[text node value]]
+	  $dummy[^xdoc.firstChild.appendChild[$tn]]
 	  $xdoc.firstChild.firstChild.nodeValue[different]
 	  ^taint[^xdoc.string[]]
 
@@ -14650,10 +14724,10 @@
 
 	* src/classes/op.C: more ansi C++ comp
 
-	* operators.txt, src/classes/op.C, src/include/pa_request.h,
-	  src/main/pa_request.C: ^cache[...]{body}{catch block with
-	  $exception.handled[cache] meaning "get expired cache, if any.
-	  else error"}
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/include/pa_request.h, src/main/pa_request.C:
+	  ^cache[...]{body}{catch block with $exception.handled[cache]
+	  meaning "get expired cache, if any. else error"}
 
 	* src/: classes/op.C, include/pa_os.h, include/pa_request.h,
 	  main/pa_common.C: cache: ^cache[] fallback todo: kinda ^try:
@@ -14673,19 +14747,20 @@
 
 	* src/types/pa_vconsole.h: flush
 
-	* operators.txt, src/main/pa_request.C, src/types/Makefile.am,
-	  src/types/types.vcproj, src/types/pa_vconsole.h: $console:line
-	  read/write  [for nntp]
+	* operators.ru.txt, operators.txt, src/main/pa_request.C,
+	  src/types/Makefile.am, src/types/types.vcproj,
+	  src/types/pa_vconsole.h: $console:line read/write  [for nntp]
 
-	* operators.txt: mysql: transaction support: ?autocommit=0
+	* operators.ru.txt, operators.txt: mysql: transaction support:
+	  ?autocommit=0
 
-	* operators.txt: comment: updated
+	* operators.ru.txt, operators.txt: comment: updated
 
 	* src/types/: pa_vhashfile.C, pa_vhashfile.h: add: hashfile old
 	  serialize version and exipire now removes entries
 
-	* operators.txt: ^hashfile.delete[] removes files altogether [and
-	  dir, if could]
+	* operators.ru.txt, operators.txt: ^hashfile.delete[] removes files
+	  altogether [and dir, if could]
 
 	* src/: classes/hashfile.C, include/pa_common.h, main/pa_common.C,
 	  types/pa_vhashfile.C, types/pa_vhashfile.h: ^hashfile.delete[]
@@ -14726,26 +14801,29 @@
 
 	* tests/todo.txt: hashfile: done
 
-	* operators.txt, src/types/pa_vhashfile.C: hashfile: clear &
-	  expiration [time in value. todo: move time to key]
+	* operators.ru.txt, operators.txt, src/types/pa_vhashfile.C:
+	  hashfile: clear & expiration [time in value. todo: move time to
+	  key]
 
 	* src/types/pa_vhashfile.C: hashfile: foreach body can bodify $self
 
 	* src/types/pa_vhashfile.C: hashfile: clear now works [were trying
 	  to do that in foreach, no errors, but surely wrong]
 
-	* operators.txt, src/types/pa_vhashfile.C,
+	* operators.ru.txt, operators.txt, src/types/pa_vhashfile.C,
 	  src/types/pa_vhashfile.h: hashfile: clear and proper locking
 
-	* operators.txt, src/classes/hash.C, src/classes/hashfile.C,
-	  src/types/pa_vhashfile.C, src/types/pa_vhashfile.h: hashfile:
-	  foreach
+	* operators.ru.txt, operators.txt, src/classes/hash.C,
+	  src/classes/hashfile.C, src/types/pa_vhashfile.C,
+	  src/types/pa_vhashfile.h: hashfile: foreach
 
 	* src/classes/hashfile.C, src/types/pa_vhashfile.C,
-	  src/types/pa_vhashfile.h, operators.txt: hashfile: hash
+	  src/types/pa_vhashfile.h, operators.ru.txt, operators.txt:
+	  hashfile: hash
 
-	* operators.txt, src/classes/hashfile.C, src/types/pa_vhashfile.C,
-	  src/types/pa_vhashfile.h, tests/todo.txt: hashfile: delete
+	* operators.ru.txt, operators.txt, src/classes/hashfile.C,
+	  src/types/pa_vhashfile.C, src/types/pa_vhashfile.h,
+	  tests/todo.txt: hashfile: delete
 
 	* src/: include/pa_memory.h, targets/cgi/parser3.C,
 	  types/pa_value.C, types/pa_value.h, types/pa_vcookie.C,
@@ -14769,8 +14847,8 @@
 	  main/pa_xml_exception.C: locking move to pa_os [along with
 	  pa_sleep] apr-impl locking done
 
-	* configure, configure.in, operators.txt, parser3.sln,
-	  src/classes/classes.vcproj, src/classes/hashfile.C,
+	* configure, configure.in, operators.ru.txt, operators.txt,
+	  parser3.sln, src/classes/classes.vcproj, src/classes/hashfile.C,
 	  src/classes/xdoc.C, src/include/pa_config_fixed.h,
 	  src/include/pa_exception.h, src/include/pa_globals.h,
 	  src/include/pa_memory.h, src/include/pa_version.h,
@@ -14801,7 +14879,7 @@
 
 2003-11-04  paf
 
-	* operators.txt: comment: ^mail:send[$.options[
+	* operators.ru.txt, operators.txt: comment: ^mail:send[$.options[
 
 	* src/classes/table.C: compiled on unix
 
@@ -14809,43 +14887,45 @@
 
 	* src/classes/mail.C: compiled on unix
 
-	* operators.txt, src/classes/mail.C, src/types/pa_vmail.C,
-	  src/types/pa_vmail.h:     !^mail:send[
+	* operators.ru.txt, operators.txt, src/classes/mail.C,
+	  src/types/pa_vmail.C, src/types/pa_vmail.h:	  !^mail:send[
 		  $.options[unix: string to append to sendmail command
 	  line]
 
-	* operators.txt, src/classes/table.C, src/main/pa_string.C,
-	  tests/todo.txt: ^table.save[...	   $.separator[^#09]
-	  $.encloser["] <nothing> by default
+	* operators.ru.txt, operators.txt, src/classes/table.C,
+	  src/main/pa_string.C, tests/todo.txt: ^table.save[...
+	  $.separator[^#09]	     $.encloser["] <nothing> by default
 
-	* operators.txt, src/classes/table.C, tests/todo.txt: ^table::load
-		 !$.separator[^#09]	    !$.encloser["] <nothing> by
-	  default
+	* operators.ru.txt, operators.txt, src/classes/table.C,
+	  tests/todo.txt: ^table::load	       !$.separator[^#09]
+	  !$.encloser["] <nothing> by default
 
 2003-11-03  paf
 
-	* operators.txt, src/classes/table.C, src/main/pa_common.C:
-	  ^table::load[; options:	  !$.column-separator[^#09]
-	  !$.column-encloser["]
+	* operators.ru.txt, operators.txt, src/classes/table.C,
+	  src/main/pa_common.C: ^table::load[; options:
+	  !$.column-separator[^#09]	    !$.column-encloser["]
 
-	* operators.txt, src/include/pa_config_fixed.h,
+	* operators.ru.txt, operators.txt, src/include/pa_config_fixed.h,
 	  src/types/pa_vrequest.C: $request:document-root
 
 	* src/targets/cgi/parser3.C: beauty: SIGUSRX removed qs= printing
 	  [already included into uri=xxx]
 
-	* operators.txt, src/classes/image.C, tests/todo.txt:
-	  ^image.gif[filename] for $response:download
+	* operators.ru.txt, operators.txt, src/classes/image.C,
+	  tests/todo.txt: ^image.gif[filename] for $response:download
 
 	* src/classes/date.C: minor precaution
 
-	* operators.txt, src/classes/date.C:	 !^date::unix-timestamp()
+	* operators.ru.txt, operators.txt, src/classes/date.C:
+	  !^date::unix-timestamp()
 	      !^date.unix-timestamp[]
 
 2003-10-30  paf
 
-	* operators.txt, src/classes/date.C, src/types/pa_vdate.h: merged
-	  from 3.0.8: ^date.roll[TZ;GMT] $date.hour
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/types/pa_vdate.h: merged from 3.0.8: ^date.roll[TZ;GMT]
+	  $date.hour
 
 	* src/classes/: date.C, image.C: improvement diagnostics:
 	  $now[^date::create[$undefined]] now is error
@@ -14866,9 +14946,9 @@
 
 2003-10-21  paf
 
-	* operators.txt, src/include/pa_string.h, src/main/pa_string.C:
-	  fixed: string.match[g] without <'> option produced columns with
-	  NULL's, which gpf'ed at table.save time
+	* operators.ru.txt, operators.txt, src/include/pa_string.h,
+	  src/main/pa_string.C: fixed: string.match[g] without <'> option
+	  produced columns with NULL's, which gpf'ed at table.save time
 
 	* src/: classes/op.C, include/pa_request.h: fixed: false 'endless
 	  recoursion' message with intensive throw-catches fixed: incorrect
@@ -15066,7 +15146,7 @@
 	* src/types/pa_wcontext.C: output message: more practical
 	  suggestion
 
-	* src/main/pa_common.C, operators.txt: merged
+	* src/main/pa_common.C, operators.ru.txt, operators.txt: merged
 	  $f[^file::load[binary;http://...]] $f.tables
 
 2003-09-02  paf
@@ -15209,7 +15289,7 @@
 	* src/main/: compile.tab.C, pa_memory.C: moved tempate_gc to HEAD
 
 	* ChangeLog, INSTALL, Makefile.am, acsite.m4, configure,
-	  configure.in, operators.txt, parser3.dsw,
+	  configure.in, operators.ru.txt, operators.txt, parser3.dsw,
 	  etc/parser3.charsets/koi8-r.cfg,
 	  etc/parser3.charsets/windows-1251.cfg, src/classes/Makefile.am,
 	  src/classes/classes.C, src/classes/classes.awk,
@@ -15479,8 +15559,8 @@
 
 2003-07-02  paf
 
-	* operators.txt, src/types/pa_vstatus.C: renamed $memory:status
-	  fields to reflect their real meaning
+	* operators.ru.txt, operators.txt, src/types/pa_vstatus.C: renamed
+	  $memory:status fields to reflect their real meaning
 
 2003-06-27  paf
 
@@ -15502,8 +15582,8 @@
 
 2003-06-20  paf
 
-	* operators.txt, src/include/pa_globals.h, src/main/pa_common.C,
-	  src/main/pa_globals.C: introducing
+	* operators.ru.txt, operators.txt, src/include/pa_globals.h,
+	  src/main/pa_common.C, src/main/pa_globals.C: introducing
 	  $f[^file::load[binary;http://...]] $f.tables
 
 2003-06-06  paf
@@ -15626,25 +15706,28 @@
 
 2003-04-15  paf
 
-	* operators.txt, src/classes/math.C, src/lib/md5/pa_md5.h,
-	  src/lib/md5/pa_md5c.c, tests/141.html,
+	* operators.ru.txt, operators.txt, src/classes/math.C,
+	  src/lib/md5/pa_md5.h, src/lib/md5/pa_md5c.c, tests/141.html,
 	  tests/results/141.processed: merged from head ^math:uuid[]
 	  ^math:uid64[] ^math:md5[string]
 
 	  test added: 141.html
 
-	* operators.txt, src/classes/math.C: ^math:uid64[]
+	* operators.ru.txt, operators.txt, src/classes/math.C:
+	  ^math:uid64[]
 
 	* src/classes/math.C: ^math:uuid[]
 
-	* operators.txt, src/classes/math.C: ^math:uuid[]
+	* operators.ru.txt, operators.txt, src/classes/math.C: ^math:uuid[]
 
-	* operators.txt, src/classes/math.C, src/lib/md5/pa_md5.h,
-	  src/lib/md5/pa_md5c.c: ^math:md5[string] 16-byte digest
+	* operators.ru.txt, operators.txt, src/classes/math.C,
+	  src/lib/md5/pa_md5.h, src/lib/md5/pa_md5c.c: ^math:md5[string]
+	  16-byte digest
 
-	* operators.txt, src/classes/file.C, src/include/pa_common.h,
-	  src/include/pa_config_fixed.h, src/main/pa_common.C:
-	  ^file::load[mode;name;     $.offset	  $.limit
+	* operators.ru.txt, operators.txt, src/classes/file.C,
+	  src/include/pa_common.h, src/include/pa_config_fixed.h,
+	  src/main/pa_common.C: ^file::load[mode;name;	   $.offset
+	  $.limit
 
 2003-04-14  paf
 
@@ -15671,26 +15754,26 @@
 
 2003-04-11  paf
 
-	* operators.txt, src/classes/date.C, src/classes/table.C,
-	  src/include/pa_array.h, src/include/pa_common.h,
-	  src/include/pa_config_includes.h, src/include/pa_string.h,
-	  src/include/pa_table.h, src/main/pa_request.C,
-	  src/main/pa_sql_driver_manager.C, src/main/pa_string.C,
-	  src/main/pa_table.C: merged from HEAD from
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/classes/table.C, src/include/pa_array.h,
+	  src/include/pa_common.h, src/include/pa_config_includes.h,
+	  src/include/pa_string.h, src/include/pa_table.h,
+	  src/main/pa_request.C, src/main/pa_sql_driver_manager.C,
+	  src/main/pa_string.C, src/main/pa_table.C: merged from HEAD from
 	  before_append_array_limit_sense_change to
 	  after_append_array_limit_sense_change
 
 	* src/classes/table.C: typo
 
-	* operators.txt, src/classes/date.C, src/classes/table.C,
-	  src/include/pa_array.h, src/include/pa_common.h,
-	  src/include/pa_config_includes.h, src/include/pa_globals.h,
-	  src/include/pa_table.h, src/main/pa_array.C,
-	  src/main/pa_globals.C, src/main/pa_request.C,
-	  src/main/pa_sql_driver_manager.C, src/main/pa_string.C,
-	  src/main/pa_table.C: append_array_limit_sense_change locate
-	  accepts options same as create new option: $.reverse(1)   [do not
-	  work in table::create]
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/classes/table.C, src/include/pa_array.h,
+	  src/include/pa_common.h, src/include/pa_config_includes.h,
+	  src/include/pa_globals.h, src/include/pa_table.h,
+	  src/main/pa_array.C, src/main/pa_globals.C,
+	  src/main/pa_request.C, src/main/pa_sql_driver_manager.C,
+	  src/main/pa_string.C, src/main/pa_table.C:
+	  append_array_limit_sense_change locate accepts options same as
+	  create new option: $.reverse(1)   [do not work in table::create]
 
 	* src/: include/pa_common.h, main/pa_common.C: gcc didn't like
 	  (stat xxx,
@@ -15713,16 +15796,16 @@
 	  appendChild without import 138.html mustfail: invalid encoding
 	  inside of xml 139.html mustfail: bad XPath
 
-	* operators.txt, src/classes/table.C, tests/084.html,
-	  tests/125.html, tests/126.html, tests/127.html, tests/128.html,
-	  tests/129.html, tests/results/125.processed,
+	* operators.ru.txt, operators.txt, src/classes/table.C,
+	  tests/084.html, tests/125.html, tests/126.html, tests/127.html,
+	  tests/128.html, tests/129.html, tests/results/125.processed,
 	  tests/results/126.processed, tests/results/127.processed,
 	  tests/results/128.processed, tests/results/129.processed: merged
 	  from HEAD ^table.hash[key][$.distinct[tables]]
 
 	  maked appropriate tests [changed one old nonconforming]
 
-	* operators.txt, src/classes/table.C:
+	* operators.ru.txt, operators.txt, src/classes/table.C:
 	  ^table.hash[key][$.distinct[tables]]
 
 	* src/: classes/xdoc.C, classes/xnode.C, include/pa_charset.h:
@@ -15835,8 +15918,8 @@
 	* src/targets/cgi/pp3.cmd: custom profiling script: plist/ST <<
 	  Sort by function time
 
-	* operators.txt, src/main/pa_charset.C, src/main/pa_common.C:
-	  http://   $.charset[] param done
+	* operators.ru.txt, operators.txt, src/main/pa_charset.C,
+	  src/main/pa_common.C: http://   $.charset[] param done
 
 	* tests/: 122.html, results/122.processed: 122 date test <= and ==
 	  added [after volatile fix. passes on win&intel-solaris]
@@ -16043,20 +16126,20 @@
 	  params receive zero reference, but they are expected not to look
 	  there]
 
-	* operators.txt, src/classes/date.C, src/classes/double.C,
-	  src/classes/file.C, src/classes/hash.C, src/classes/image.C,
-	  src/classes/int.C, src/classes/mail.C, src/classes/math.C,
-	  src/classes/memory.C, src/classes/op.C, src/classes/response.C,
-	  src/classes/string.C, src/classes/table.C, src/classes/void.C,
-	  src/classes/xdoc.C, src/classes/xnode.C, src/classes/xnode.h,
-	  src/main/execute.C, src/types/pa_method.h: MethodParams& now
-	  [methods without params receive zero reference, but they are
-	  expected not to look there]
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/classes/double.C, src/classes/file.C, src/classes/hash.C,
+	  src/classes/image.C, src/classes/int.C, src/classes/mail.C,
+	  src/classes/math.C, src/classes/memory.C, src/classes/op.C,
+	  src/classes/response.C, src/classes/string.C,
+	  src/classes/table.C, src/classes/void.C, src/classes/xdoc.C,
+	  src/classes/xnode.C, src/classes/xnode.h, src/main/execute.C,
+	  src/types/pa_method.h: MethodParams& now [methods without params
+	  receive zero reference, but they are expected not to look there]
 
-	* operators.txt, src/classes/op.C, src/include/pa_request.h,
-	  src/main/pa_request.C, src/types/pa_vmethod_frame.h:
-	  ^process...[filename] useful for better error reporting
-	  [file/line/col]
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/include/pa_request.h, src/main/pa_request.C,
+	  src/types/pa_vmethod_frame.h: ^process...[filename] useful for
+	  better error reporting  [file/line/col]
 
 	* src/: main/execute.C, types/pa_value.C, types/pa_value.h,
 	  types/pa_vstring.h: slightly improved error messages text: 1. is
@@ -16333,9 +16416,9 @@
 
 2003-03-25  paf
 
-	* operators.txt, src/main/pa_sql_driver_manager.C,
-	  src/types/pa_vstatus.C: $status.memory used free since_compact
-	  process
+	* operators.ru.txt, operators.txt,
+	  src/main/pa_sql_driver_manager.C, src/types/pa_vstatus.C:
+	  $status.memory used free since_compact process
 
 	* src/: include/pa_sql_connection.h, main/pa_globals.C,
 	  main/untaint.C, sql/pa_sql_driver.h: untaint.C L_SQL
@@ -16348,10 +16431,10 @@
 	  src/types/pa_vstring.C, src/types/pa_vstring.h, tests/121.html,
 	  tests/results/121.processed: untaint.C L_URI
 
-	* operators.txt, src/classes/Makefile.am, src/classes/classes.dsp,
-	  src/classes/op.C, src/main/pa_request.C, src/types/Makefile.am,
-	  src/types/pa_venv.h, src/types/types.dsp, src/classes/memory.C,
-	  src/types/pa_vmemory.h: ^memory:compact[]
+	* operators.ru.txt, operators.txt, src/classes/Makefile.am,
+	  src/classes/classes.dsp, src/classes/op.C, src/main/pa_request.C,
+	  src/types/Makefile.am, src/types/pa_venv.h, src/types/types.dsp,
+	  src/classes/memory.C, src/types/pa_vmemory.h: ^memory:compact[]
 
 	* tests/results/109.processed: it was a bug in parser. updated 109
 	  test result
@@ -17305,8 +17388,9 @@
 
 2003-02-21  paf
 
-	* operators.txt, src/targets/cgi/parser3.C, src/types/pa_vcookie.C:
-	  $cookie:name[$.expires[date << can be now]]
+	* operators.ru.txt, operators.txt, src/targets/cgi/parser3.C,
+	  src/types/pa_vcookie.C: $cookie:name[$.expires[date << can be
+	  now]]
 
 	  written makefile with regression tests [raw]
 
@@ -18022,10 +18106,11 @@
 
 2003-01-16  paf
 
-	* operators.txt, src/include/pa_globals.h, src/main/pa_common.C,
-	  src/main/pa_globals.C: http:// introducing	 $.any-status(1)
+	* operators.ru.txt, operators.txt, src/include/pa_globals.h,
+	  src/main/pa_common.C, src/main/pa_globals.C: http:// introducing
+	  $.any-status(1)
 
-	* operators.txt, src/include/pa_config_fixed.h,
+	* operators.ru.txt, operators.txt, src/include/pa_config_fixed.h,
 	  src/main/pa_common.C: http request now return status. and not
 	  fail on status!=200
 
@@ -18140,7 +18225,7 @@
 	* INSTALL: --without-iconv recommended [it crashes on some systems
 	  [tested on elik]]
 
-	* operators.txt, src/include/pa_globals.h,
+	* operators.ru.txt, operators.txt, src/include/pa_globals.h,
 	  src/include/pa_request.h, src/main/pa_globals.C,
 	  src/main/pa_request.C: $response:download
 
@@ -18219,8 +18304,9 @@
 
 2002-12-06  paf
 
-	* operators.txt, src/main/compile.tab.C, src/types/pa_vhash.h:
-	  $hash.fields -- pseudo field to make 'hash' more like 'table'
+	* operators.ru.txt, operators.txt, src/main/compile.tab.C,
+	  src/types/pa_vhash.h: $hash.fields -- pseudo field to make 'hash'
+	  more like 'table'
 
 2002-12-05  paf
 
@@ -18281,7 +18367,7 @@
 
 2002-12-02  paf
 
-	* operators.txt: removed outdated status:db
+	* operators.ru.txt, operators.txt: removed outdated status:db
 
 	* ChangeLog, src/classes/mail.C, src/include/pa_common.h,
 	  src/main/pa_common.C, src/main/pa_request.C,
@@ -18290,8 +18376,8 @@
 
 2002-11-29  paf
 
-	* src/classes/date.C, src/classes/image.C, operators.txt: exif
-	  dates now objects of type date
+	* src/classes/date.C, src/classes/image.C, operators.ru.txt,
+	  operators.txt: exif dates now objects of type date
 
 	* src/classes/image.C: file.seek removed [it were used in image.C
 	  only, and for parser user this  means that jpeg image has bad
@@ -18308,7 +18394,7 @@
 
 2002-11-28  paf
 
-	* operators.txt: http.timeout
+	* operators.ru.txt, operators.txt: http.timeout
 
 	* src/classes/image.C: ^image.length now counts interchar space.
 	  plus space after last char
@@ -18341,8 +18427,9 @@
 
 	* src/main/pa_common.C: utf8 prefix ignored @read text
 
-	* operators.txt, src/main/pa_common.C: http:// response status!=200
-	  made exception: http.status with source=bad status#
+	* operators.ru.txt, operators.txt, src/main/pa_common.C: http://
+	  response status!=200 made exception: http.status with source=bad
+	  status#
 
 2002-11-25  paf
 
@@ -18352,7 +18439,8 @@
 	  src/main/pa_common.C, src/main/pa_globals.C: http:// and image
 	  const void related probs fixed
 
-	* operators.txt, src/main/pa_common.C: http fields now UPPERCASE
+	* operators.ru.txt, operators.txt, src/main/pa_common.C: http
+	  fields now UPPERCASE
 
 	  $file[^file::load[http://there]] $file.SERVER
 
@@ -18361,8 +18449,8 @@
 	  http options [invalid onces now reported] made default
 	  user-agent: paf
 
-	* operators.txt, src/classes/file.C, src/classes/table.C,
-	  src/classes/xdoc.C, src/include/pa_common.h,
+	* operators.ru.txt, operators.txt, src/classes/file.C,
+	  src/classes/table.C, src/classes/xdoc.C, src/include/pa_common.h,
 	  src/include/pa_globals.h, src/main/pa_common.C,
 	  src/main/pa_globals.C, src/main/pa_request.C,
 	  src/types/pa_vfile.C, src/types/pa_vfile.h: table/xdoc/file::load
@@ -18374,8 +18462,8 @@
 
 	* src/classes/image.C, src/include/pa_globals.h,
 	  src/main/execute.C, src/main/pa_globals.C, src/types/pa_vimage.C,
-	  src/types/pa_vimage.h, operators.txt: $image.exif support
-	  $image.exif.DateTime & co
+	  src/types/pa_vimage.h, operators.ru.txt, operators.txt:
+	  $image.exif support $image.exif.DateTime & co
 
 2002-11-21  paf
 
@@ -18386,10 +18474,11 @@
 	  EXIF information [were big block and it's size were considered
 	  negative :(]
 
-	* operators.txt, src/classes/image.C, src/include/pa_common.h,
-	  src/main/pa_common.C, src/types/pa_vmail.C: image.measure
-	  internals rewritten. no there's reader.seek, and all's ready for
-	  EXIF extraction [now we fail to measure files with EXIF info]
+	* operators.ru.txt, operators.txt, src/classes/image.C,
+	  src/include/pa_common.h, src/main/pa_common.C,
+	  src/types/pa_vmail.C: image.measure internals rewritten. no
+	  there's reader.seek, and all's ready for EXIF extraction [now we
+	  fail to measure files with EXIF info]
 
 	* src/main/pa_common.C: O_TRUNCATE killed, ftruncate  used instead:
 	  O_TRUNC truncates even exclusevely write-locked file [thanks to
@@ -18414,8 +18503,8 @@
 
 	* src/main/pa_exec.C: pa_exec: data written only if size>0
 
-	* operators.txt, src/classes/file.C: ^file::exec/cgi[file;$.stdin[]
-	  << disable HTTP-POST repassing
+	* operators.ru.txt, operators.txt, src/classes/file.C:
+	  ^file::exec/cgi[file;$.stdin[] << disable HTTP-POST repassing
 
 	* src/: include/pa_config_fixed.h, main/pa_common.C,
 	  main/pa_exec.C, targets/cgi/parser3.C: ^file:exec/cgi [pa_exec]
@@ -18516,8 +18605,8 @@
 
 2002-10-23  paf
 
-	* operators.txt, src/classes/table.C: ^table.hash{code}...
-	  ^table.hash(expr)...
+	* operators.ru.txt, operators.txt, src/classes/table.C:
+	  ^table.hash{code}...	^table.hash(expr)...
 
 	* src/types/pa_vmail.C: email whitespace trimBoth-ed
 
@@ -18533,16 +18622,17 @@
 
 2002-10-21  paf
 
-	* operators.txt, src/types/pa_vform.C, src/types/pa_vform.h:
-	  $form:qtail $form:imap.x/y
+	* operators.ru.txt, operators.txt, src/types/pa_vform.C,
+	  src/types/pa_vform.h: $form:qtail $form:imap.x/y
 
-	* operators.txt, src/types/pa_vform.C: $form:nameless =
-	  "?value&...", "...&value&...", "...&value"
+	* operators.ru.txt, operators.txt, src/types/pa_vform.C:
+	  $form:nameless = "?value&...", "...&value&...", "...&value"
 
-	* operators.txt, src/types/pa_vform.C: $form:image-map
+	* operators.ru.txt, operators.txt, src/types/pa_vform.C:
+	  $form:image-map
 
-	* operators.txt, src/classes/file.C: /some/page.html:
-	  ^file:fullpath[a.gif] => /some/a.gif
+	* operators.ru.txt, operators.txt, src/classes/file.C:
+	  /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 
 2002-10-17  paf
 
@@ -18597,15 +18687,15 @@
 	  types/pa_vstateless_class.C, types/pa_vstateless_class.h:
 	  compiling to system classes disabled
 
-	* operators.txt, src/classes/op.C:
+	* operators.ru.txt, operators.txt, src/classes/op.C:
 	  ^process[$caller.CLASS]{code-string} added
 
-	* operators.txt, src/classes/op.C, src/main/compile.tab.C,
-	  src/main/compile.y, src/main/execute.C, src/main/pa_request.C,
-	  src/types/Makefile.am, src/types/pa_vjunction.C,
-	  src/types/pa_vjunction.h, src/types/pa_vmethod_frame.h,
-	  src/types/types.dsp: removed $junction.get $junction.set[]
-	  introducing $caller
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/main/compile.tab.C, src/main/compile.y, src/main/execute.C,
+	  src/main/pa_request.C, src/types/Makefile.am,
+	  src/types/pa_vjunction.C, src/types/pa_vjunction.h,
+	  src/types/pa_vmethod_frame.h, src/types/types.dsp: removed
+	  $junction.get $junction.set[] introducing $caller
 
 	* src/types/pa_value.h: removed outdated comments. doxygen would
 	  find them lower by inheritance tree
@@ -18647,7 +18737,7 @@
 	* src/types/pa_vxnode.C: misreplace fixed
 
 	* configure, configure.in, src/include/pa_config_auto.h.in,
-	  src/types/pa_vstatus.C, operators.txt:
+	  src/types/pa_vstatus.C, operators.ru.txt, operators.txt:
 	  $status:rusage.tv_secs/usecs introduced
 
 2002-10-09  paf
@@ -18660,7 +18750,7 @@
 	* src/main/untaint.C: mail header quoted printable changed after
 	  RFC reread
 
-	* operators.txt: plan on ^if(method
+	* operators.ru.txt, operators.txt: plan on ^if(method
 
 	* src/types/pa_vxnode.C: misreplace
 
@@ -18832,10 +18922,10 @@
 	* configure, configure.in: .so now detected [can be .sl on hpux,
 	  .dll on cygwin, .so in other cases)
 
-	* operators.txt, src/classes/hash.C, src/classes/table.C,
-	  src/include/pa_globals.h, src/main/pa_globals.C: table.sql
-	  hash::sql flag to allow duplicate keys [$.distinct(1/0)] first
-	  record taken [were last]
+	* operators.ru.txt, operators.txt, src/classes/hash.C,
+	  src/classes/table.C, src/include/pa_globals.h,
+	  src/main/pa_globals.C: table.sql hash::sql flag to allow
+	  duplicate keys [$.distinct(1/0)] first record taken [were last]
 
 	* src/: classes/hash.C, classes/table.C,
 	  include/pa_sql_connection.h: table.sql hash::sql duplicate keys
@@ -18857,16 +18947,17 @@
 
 2002-09-13  paf
 
-	* operators.txt, src/main/compile.tab.C, src/main/compile.y,
-	  src/main/compile_tools.h: (expression #comment)
+	* operators.ru.txt, operators.txt, src/main/compile.tab.C,
+	  src/main/compile.y, src/main/compile_tools.h: (expression
+	  #comment)
 
 	  (multiline expression #comment  line2  #comment )
 
 	  (expression #comment with (brackets) comment) << OK
 
-	* operators.txt, src/main/compile.tab.C, src/main/compile.y: !|
-	  bitwise !|| numerical xor now [preparing for expression
-	  #comments]
+	* operators.ru.txt, operators.txt, src/main/compile.tab.C,
+	  src/main/compile.y: !| bitwise !|| numerical xor now [preparing
+	  for expression #comments]
 
 	* src/main/: compile.tab.C, compile.y: @method[$name] now parse
 	  error
@@ -18957,8 +19048,8 @@
 
 2002-09-02  paf
 
-	* operators.txt, src/main/execute.C, src/targets/cgi/parser3.dsp:
-	  removed double_result, didn't help
+	* operators.ru.txt, operators.txt, src/main/execute.C,
+	  src/targets/cgi/parser3.dsp: removed double_result, didn't help
 
 	* src/main/execute.C: double_result made to move that var away from
 	  hungry g++ optimizer (-O2), before: it were optimized and
@@ -18995,15 +19086,15 @@
 	* src/types/pa_vcookie.C: fixed cookie delete when
 	  $cookie:name[$.value[]]
 
-	* operators.txt, src/classes/string.C:
+	* operators.ru.txt, operators.txt, src/classes/string.C:
 	  ^string.split[delim[;options]]
 
 2002-08-27  paf
 
 	* etc/parser3.charsets/Makefile.am: merged from 3.0.0005
 
-	* operators.txt, src/main/compile.tab.C, src/main/compile.y: # now
-	  delimiter
+	* operators.ru.txt, operators.txt, src/main/compile.tab.C,
+	  src/main/compile.y: # now delimiter
 
 	* INSTALL: recommended latest gmime 1.0.5
 
@@ -19038,15 +19129,17 @@
 
 	* src/classes/file.C: fixed language of file:file result
 
-	* operators.txt, src/classes/void.C: ^void.pos[...] = -1 merged
-	  from 3.0.0005
+	* operators.ru.txt, operators.txt, src/classes/void.C:
+	  ^void.pos[...] = -1 merged from 3.0.0005
 
-	* operators.txt, src/classes/void.C: ^void.pos[...] = -1
+	* operators.ru.txt, operators.txt, src/classes/void.C:
+	  ^void.pos[...] = -1
 
-	* operators.txt, src/classes/void.C: ^void.length[] = 0 merged from
-	  3.0.0005
+	* operators.ru.txt, operators.txt, src/classes/void.C:
+	  ^void.length[] = 0 merged from 3.0.0005
 
-	* src/classes/void.C, operators.txt: ^void.length[] = 0
+	* src/classes/void.C, operators.ru.txt, operators.txt:
+	  ^void.length[] = 0
 
 2002-08-19  paf
 
@@ -19065,26 +19158,28 @@
 	* src/classes/classes.h: write to static var caused useless
 	  Exception, introduced Methoded::put_element wich consumes those
 
-	* operators.txt, src/include/pa_common.h, src/main/pa_common.C,
-	  src/types/pa_vcookie.C, src/types/pa_vdate.h,
-	  src/types/pa_vresponse.C, src/types/pa_vresponse.h:
-	  $response:field[date] $response:field[$.xxx[date]]
+	* operators.ru.txt, operators.txt, src/include/pa_common.h,
+	  src/main/pa_common.C, src/types/pa_vcookie.C,
+	  src/types/pa_vdate.h, src/types/pa_vresponse.C,
+	  src/types/pa_vresponse.h: $response:field[date]
+	  $response:field[$.xxx[date]]
 
 	* src/: classes/hash.C, classes/string.C, classes/table.C,
 	  classes/void.C, include/pa_sql_connection.h: fixed source of
 	  ^hash::sql{bad}
 
-	* operators.txt: $request:body unprecessed POST request body
+	* operators.ru.txt, operators.txt: $request:body unprecessed POST
+	  request body
 
 	* src/types/pa_vrequest.C: $request:body unprecessed POST request
 
 	* src/types/: pa_value.h, pa_vdate.h, pa_vrequest.C, pa_vxdoc.C,
 	  pa_vxnode.C: few barks: bark("%s field not found", 0, &aname)
 
-	* operators.txt, src/classes/form.C, src/include/pa_pool.h,
-	  src/include/pa_request.h, src/main/pa_pool.C,
-	  src/types/pa_vform.C, src/types/pa_vform.h: planning/preparing_to
-	  $request:body r.post_data now const
+	* operators.ru.txt, operators.txt, src/classes/form.C,
+	  src/include/pa_pool.h, src/include/pa_request.h,
+	  src/main/pa_pool.C, src/types/pa_vform.C, src/types/pa_vform.h:
+	  planning/preparing_to $request:body r.post_data now const
 
 	* src/: classes/image.C, classes/op.C, classes/xdoc.C,
 	  classes/xnode.C, main/execute.C, types/pa_value.h,
@@ -19238,14 +19333,15 @@
 
 2002-08-08  paf
 
-	* operators.txt, src/classes/date.C, src/include/pa_globals.h,
-	  src/main/pa_globals.C: year column in month calendar [week year]
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/include/pa_globals.h, src/main/pa_globals.C: year column in
+	  month calendar [week year]
 
 	* src/main/execute.C: error reporting on object writes to MAIN
 	  improved [were ruind with fixing $obj[^if(1){$obj}] ]
 
-	* operators.txt, src/types/pa_vdate.h: $date.yearday
-	  $date.daylightsaving
+	* operators.ru.txt, operators.txt, src/types/pa_vdate.h:
+	  $date.yearday $date.daylightsaving
 
 	* src/: classes/mail.C, types/pa_vmail.C: in letter texts one can
 	  use tainted data now. only she must specify the language.
@@ -19260,9 +19356,9 @@
 	* src/include/pa_string.h: String::first_char now not fails on
 	  empty strings ^if(-f '') now ok and in 3 other places.
 
-	* operators.txt, src/include/pa_string.h, src/main/pa_string.C:
-	  String::first_char now not fails on empty strings ^if(-f '') now
-	  ok and in 3 other places.
+	* operators.ru.txt, operators.txt, src/include/pa_string.h,
+	  src/main/pa_string.C: String::first_char now not fails on empty
+	  strings ^if(-f '') now ok and in 3 other places.
 
 2002-08-07  paf
 
@@ -19277,8 +19373,9 @@
 	  mistakenly not completely transparent to object writes.
 	  $hash[^if(1){$hash}] now works
 
-	* operators.txt, src/classes/op.C: ^cache...{...^cache<<to past...}
-	  now erasing cache file [there were bad check on that]
+	* operators.ru.txt, operators.txt, src/classes/op.C:
+	  ^cache...{...^cache<<to past...} now erasing cache file [there
+	  were bad check on that]
 
 	* src/: classes/classes.dsp, classes/table.C,
 	  lib/pcre/pcre_parser_ctype.dsp, main/pa_array.C, types/types.dsp:
@@ -19286,21 +19383,24 @@
 
 	* etc/parser3.charsets/Makefile.am: all included into dist
 
-	* operators.txt, src/classes/mail.C: exception_type  email.send
+	* operators.ru.txt, operators.txt, src/classes/mail.C:
+	  exception_type  email.send
 
-	* operators.txt, src/types/pa_vmail.C: exception_type  email.format
+	* operators.ru.txt, operators.txt, src/types/pa_vmail.C:
+	  exception_type  email.format
 
 	* src/types/pa_vmail.C: mail:send empty  email checked
 
 2002-08-06  paf
 
-	* operators.txt, src/classes/table.C, src/include/pa_array.h,
-	  src/include/pa_table.h, src/main/pa_array.C, src/main/pa_table.C:
+	* operators.ru.txt, operators.txt, src/classes/table.C,
+	  src/include/pa_array.h, src/include/pa_table.h,
+	  src/main/pa_array.C, src/main/pa_table.C:
 	  ^table::create[$source;$.options] ^table::join[$source;$.options]
 
-	* operators.txt, src/classes/hash.C, src/classes/string.C,
-	  src/classes/table.C: sql options can be string now ^xxx:sql{...}[
-	  #  $.default() }
+	* operators.ru.txt, operators.txt, src/classes/hash.C,
+	  src/classes/string.C, src/classes/table.C: sql options can be
+	  string now ^xxx:sql{...}[ #  $.default() }
 
 	* src/classes/file.C: $f[file::cgi] $f.UPPER case fields
 
@@ -19317,7 +19417,8 @@
 
 	* src/types/pa_vmail.C: file buffer relocated to parser heap
 
-	* operators.txt: comment on date:calendar week column
+	* operators.ru.txt, operators.txt: comment on date:calendar week
+	  column
 
 	* src/main/pa_common.C: write checked
 
@@ -19340,9 +19441,9 @@
 	* src/types/: pa_vclass.h, pa_vform.C, pa_vobject.h: opera
 	  multipart post fixed
 
-	* operators.txt, src/main/pa_request.C, src/types/pa_vform.C:
-	  response transcoded source->client only when text/* or simple
-	  onoverridden $response:body
+	* operators.ru.txt, operators.txt, src/main/pa_request.C,
+	  src/types/pa_vform.C: response transcoded source->client only
+	  when text/* or simple onoverridden $response:body
 
 2002-08-01  paf
 
@@ -19448,8 +19549,8 @@
 	  classes/Makefile.am, main/Makefile.am, targets/cgi/Makefile.am,
 	  types/Makefile.am: ident.C* removed
 
-	* operators.txt, src/classes/file.C, src/main/pa_request.C:
-	  file:find[/can/do/this/now.txt]
+	* operators.ru.txt, operators.txt, src/classes/file.C,
+	  src/main/pa_request.C: file:find[/can/do/this/now.txt]
 
 	* src/targets/cgi/parser3.C: usage to stdout now
 
@@ -19491,7 +19592,7 @@
 
 	  now ok
 
-	* operators.txt: plan: sql detailed exception
+	* operators.ru.txt, operators.txt: plan: sql detailed exception
 
 2002-07-01  paf
 
@@ -19516,21 +19617,22 @@
 	  src/targets/cgi/pa_config_paths.h.in: lates changes from 4 build
 	  merged, makes updated
 
-	* ChangeLog, configure, operators.txt, src/classes/xdoc.C,
-	  src/include/pa_charset.h, src/include/pa_config_fixed.h,
-	  src/include/pa_pool.h, src/include/pa_version.h,
-	  src/main/pa_charset.C, src/main/pa_pool.C,
-	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.dsp,
-	  src/types/pa_vmail.C: merged latest updates to head
+	* ChangeLog, configure, operators.ru.txt, operators.txt,
+	  src/classes/xdoc.C, src/include/pa_charset.h,
+	  src/include/pa_config_fixed.h, src/include/pa_pool.h,
+	  src/include/pa_version.h, src/main/pa_charset.C,
+	  src/main/pa_pool.C, src/targets/cgi/parser3.dsp,
+	  src/targets/isapi/parser3isapi.dsp, src/types/pa_vmail.C: merged
+	  latest updates to head
 
 2002-06-27  paf
 
 	* src/targets/: cgi/parser3.dsp, isapi/parser3isapi.dsp: post-build
 	  not error now
 
-	* operators.txt, src/classes/xdoc.C, src/include/pa_charset.h,
-	  src/include/pa_config_fixed.h, src/include/pa_pool.h,
-	  src/main/pa_charset.C, src/main/pa_pool.C:
+	* operators.ru.txt, operators.txt, src/classes/xdoc.C,
+	  src/include/pa_charset.h, src/include/pa_config_fixed.h,
+	  src/include/pa_pool.h, src/main/pa_charset.C, src/main/pa_pool.C:
 	  ^xdoc::create[[uri]]... base uri for document being created,
 	  imports and other relative file names would be relative to this
 	  uri default uri=path_translated
@@ -19552,20 +19654,20 @@
 	* src/main/pa_string.C: emtpy string, or string of whitespaces
 	  considered bad number now
 
-	* operators.txt, src/classes/xdoc.C: ^xdoc.transform[xdoc <<can be
-	  now
+	* operators.ru.txt, operators.txt, src/classes/xdoc.C:
+	  ^xdoc.transform[xdoc <<can be now
 
-	* operators.txt, src/classes/string.C: ^string.normalize  [old
-	  name: optimize
+	* operators.ru.txt, operators.txt, src/classes/string.C:
+	  ^string.normalize  [old name: optimize
 
 	* configure, configure.in, src/include/pa_config_auto.h.in: crypt
 	  library configured
 
 	* src/main/pa_request.C: configure_admin forced if no @conf
 
-	* operators.txt, src/classes/math.C, src/types/pa_vmail.C:
-	  ^math:crypt updated to generate random salt when needed and to
-	  call system crypt() if not $apr1$ prefix
+	* operators.ru.txt, operators.txt, src/classes/math.C,
+	  src/types/pa_vmail.C: ^math:crypt updated to generate random salt
+	  when needed and to call system crypt() if not $apr1$ prefix
 
 2002-06-24  paf
 
@@ -19594,12 +19696,12 @@
 	  types/types.dsp: win32xml win32mailreceive pseudomodules paths
 	  now
 
-	* operators.txt, src/classes/mail.C, src/include/Makefile.am,
-	  src/include/pa_charset.h, src/include/pa_config_fixed.h,
-	  src/include/pa_request.h, src/include/pa_string.h,
-	  src/include/pa_uue.h, src/main/Makefile.am, src/main/main.dsp,
-	  src/main/pa_globals.C, src/main/pa_request.C,
-	  src/main/pa_string.C, src/main/pa_uue.C,
+	* operators.ru.txt, operators.txt, src/classes/mail.C,
+	  src/include/Makefile.am, src/include/pa_charset.h,
+	  src/include/pa_config_fixed.h, src/include/pa_request.h,
+	  src/include/pa_string.h, src/include/pa_uue.h,
+	  src/main/Makefile.am, src/main/main.dsp, src/main/pa_globals.C,
+	  src/main/pa_request.C, src/main/pa_string.C, src/main/pa_uue.C,
 	  src/targets/cgi/Makefile.am, src/targets/cgi/parser3.C,
 	  src/targets/cgi/parser3.dsp, src/targets/isapi/parser3isapi.C,
 	  src/types/pa_vform.C, src/types/pa_vform.h, src/types/types.dsp:
@@ -19619,8 +19721,8 @@
 	  pcre to libs/ added libs/md5 which is linked to non-apache
 	  targets ^math:crypt[password;$apr1$salt]
 
-	* INSTALL, configure.in, operators.txt, parser3.dsw,
-	  src/Makefile.am, src/classes/Makefile.am,
+	* INSTALL, configure.in, operators.ru.txt, operators.txt,
+	  parser3.dsw, src/Makefile.am, src/classes/Makefile.am,
 	  src/classes/classes.dsp, src/classes/math.C,
 	  src/lib/md5/Makefile.am, src/lib/pcre/LICENCE,
 	  src/lib/pcre/Makefile.am, src/lib/pcre/README,
@@ -19644,15 +19746,16 @@
 
 2002-06-20  paf
 
-	* INSTALL, configure, configure.in, operators.txt,
-	  src/classes/file.C, src/classes/op.C, src/doc/doxygen.cfg,
-	  src/include/pa_globals.h, src/include/pa_request.h,
-	  src/main/execute.C, src/main/pa_request.C,
-	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C,
-	  src/types/pa_vmethod_frame.h: marged latest HEAD updates, mainly
-	  file:justname&co & @auto/conf[filespec
+	* INSTALL, configure, configure.in, operators.ru.txt,
+	  operators.txt, src/classes/file.C, src/classes/op.C,
+	  src/doc/doxygen.cfg, src/include/pa_globals.h,
+	  src/include/pa_request.h, src/main/execute.C,
+	  src/main/pa_request.C, src/targets/cgi/parser3.C,
+	  src/targets/isapi/parser3isapi.C, src/types/pa_vmethod_frame.h:
+	  marged latest HEAD updates, mainly file:justname&co &
+	  @auto/conf[filespec
 
-	* operators.txt, src/classes/file.C:
+	* operators.ru.txt, operators.txt, src/classes/file.C:
 	  !^file:dirname[/a/some.tar.gz]=/a
 	      !^file:dirname[/a/b/]=/a
 	      !^file:basename[/a/some.tar.gz]=some.tar.gz
@@ -19665,9 +19768,10 @@
 
 	* configure: parser3.conf renamed to auto.p autoconf changes
 
-	* INSTALL, configure.in, operators.txt, src/doc/doxygen.cfg,
-	  src/include/pa_globals.h, src/targets/cgi/parser3.C,
-	  src/targets/isapi/parser3isapi.C: parser3.conf renamed to auto.p
+	* INSTALL, configure.in, operators.ru.txt, operators.txt,
+	  src/doc/doxygen.cfg, src/include/pa_globals.h,
+	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C:
+	  parser3.conf renamed to auto.p
 
 2002-06-18  paf
 
@@ -19703,9 +19807,9 @@
 
 2002-06-14  paf
 
-	* operators.txt: more precise xml-to-text options
+	* operators.ru.txt, operators.txt: more precise xml-to-text options
 
-	* operators.txt, src/types/pa_vxnode.C: xnode
+	* operators.ru.txt, operators.txt, src/types/pa_vxnode.C: xnode
 	  attribute_node.name/value xnode pi.node.data
 
 2002-06-12  paf
@@ -19713,11 +19817,12 @@
 	* configure, configure.in, src/targets/cgi/Makefile.am,
 	  src/targets/cgi/parser3.C: removed root conf define creation
 
-	* INSTALL, configure.in, operators.txt, etc/Makefile.am,
-	  src/include/pa_globals.h, src/include/pa_request.h,
-	  src/main/compile.tab.C, src/main/pa_globals.C,
-	  src/main/pa_request.C, src/targets/cgi/parser3.C,
-	  src/targets/isapi/parser3isapi.C: parser3.conf now one and only
+	* INSTALL, configure.in, operators.ru.txt, operators.txt,
+	  etc/Makefile.am, src/include/pa_globals.h,
+	  src/include/pa_request.h, src/main/compile.tab.C,
+	  src/main/pa_globals.C, src/main/pa_request.C,
+	  src/targets/cgi/parser3.C, src/targets/isapi/parser3isapi.C:
+	  parser3.conf now one and only
 
 	* src/classes/mail.C: sendmail -ti [default now]
 
@@ -19744,8 +19849,9 @@
 
 2002-06-10  paf
 
-	* operators.txt, src/classes/op.C, src/include/pa_common.h,
-	  src/main/pa_common.C: lock failures reported now
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/include/pa_common.h, src/main/pa_common.C: lock failures
+	  reported now
 
 	* src/main/compile_tools.C: ^if(" 1 "){y} bug fixed optimization
 	  string->double @ compile time were not-enough-checking...
@@ -19761,7 +19867,7 @@
 
 	* configure, configure.in: hpux check, nsl link, no socket
 
-	* operators.txt: old merge conflict removed
+	* operators.ru.txt, operators.txt: old merge conflict removed
 
 	* configure, configure.in: pack even address access on sparc&co
 	  arch checked in configure
@@ -19779,9 +19885,9 @@
 
 2002-06-03  paf
 
-	* ChangeLog, operators.txt, etc/parser3.charsets/windows-1251.cfg,
-	  src/classes/classes.dsp, src/main/compile.tab.C,
-	  src/main/main.dsp, src/main/pa_globals.C,
+	* ChangeLog, operators.ru.txt, operators.txt,
+	  etc/parser3.charsets/windows-1251.cfg, src/classes/classes.dsp,
+	  src/main/compile.tab.C, src/main/main.dsp, src/main/pa_globals.C,
 	  src/targets/cgi/parser3.C, src/targets/cgi/parser3.dsp,
 	  src/targets/isapi/parser3isapi.dsp, src/types/types.dsp: fixed
 	  .dsp-s along with reorganized cvs modules dirs structure
@@ -19806,13 +19912,13 @@
 
 2002-05-15  paf
 
-	* operators.txt, src/classes/date.C: ^date::create[%H:%M[:%S]]
-	  added
+	* operators.ru.txt, operators.txt, src/classes/date.C:
+	  ^date::create[%H:%M[:%S]] added
 
 	* etc/parser3.charsets/windows-1251.cfg: 0x forgot, fixed
 
-	* operators.txt, src/classes/date.C: ^date::create[%Y[-%m[-%d[
-	  %H[:%M[:%S]]]]]] [-%m now
+	* operators.ru.txt, operators.txt, src/classes/date.C:
+	  ^date::create[%Y[-%m[-%d[ %H[:%M[:%S]]]]]] [-%m now
 
 2002-05-14  paf
 
@@ -19883,10 +19989,10 @@
 	  under that dir got REDIRECT_ prefix before HTTP_PARSER_x_CONFIG,
 	  now that took into account
 
-	* operators.txt, src/classes/date.C: ^date::create[2002-12-33
-	  01:03:04]
+	* operators.ru.txt, operators.txt, src/classes/date.C:
+	  ^date::create[2002-12-33 01:03:04]
 
-	* ChangeLog, operators.txt, src/classes/date.C:
+	* ChangeLog, operators.ru.txt, operators.txt, src/classes/date.C:
 	  ^date::create[2002-12-33 01:03:04]
 
 	* ChangeLog: updated changelog
@@ -19903,7 +20009,7 @@
 
 2002-04-23  paf
 
-	* operators.txt, src/classes/string.C:
+	* operators.ru.txt, operators.txt, src/classes/string.C:
 	  int/double/string:sql{}[$.default{code}] fixed [were barking:
 	  "junction used outside of context"]
 
@@ -20109,7 +20215,8 @@
 
 2002-04-12  paf
 
-	* operators.txt, src/classes/table.C: table.select(expression) 0
+	* operators.ru.txt, operators.txt, src/classes/table.C:
+	  table.select(expression) 0
 
 2002-04-11  paf
 
@@ -20135,7 +20242,8 @@
 	  targets/isapi/parser3isapi.C: removed {   char *a;   {      /*sub
 	  local*/char b[...];	   a=b; situations
 
-	* operators.txt, src/classes/xdoc.C: xslt params made literal
+	* operators.ru.txt, operators.txt, src/classes/xdoc.C: xslt params
+	  made literal
 
 	* src/classes/xdoc.C: xslt params fixed
 
@@ -20143,8 +20251,8 @@
 	  types/pa_vdouble.h, types/pa_vint.h: int/double get_string now
 	  not pool.malloc(MAX_NUMBER) but really neaded
 
-	* operators.txt, src/classes/double.C, src/classes/int.C:
-	  int/double.int/double(default)
+	* operators.ru.txt, operators.txt, src/classes/double.C,
+	  src/classes/int.C: int/double.int/double(default)
 
 2002-04-04  paf
 
@@ -20180,30 +20288,32 @@
 
 	* etc/parser3.charsets/koi8-r.cfg: koi8-r += ukranian letters
 
-	* operators.txt, src/classes/date.C: ^date::create now may not
-	  supply day, default 1.  checked 29.03 -> 29.02 roll on non 366
-	  days' year.  | 31.05->31.04	roll
+	* operators.ru.txt, operators.txt, src/classes/date.C:
+	  ^date::create now may not supply day, default 1.  checked 29.03
+	  -> 29.02 roll on non 366 days' year.	| 31.05->31.04	 roll
 
 2002-03-28  paf
 
-	* operators.txt, src/classes/date.C, src/classes/op.C,
-	  src/include/pa_globals.h, src/include/pa_hash.h,
-	  src/main/pa_globals.C, src/types/pa_vdate.h: ^cache[file][date]{
-	  ^cache(seconds)    ^cache[date] }
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/classes/op.C, src/include/pa_globals.h,
+	  src/include/pa_hash.h, src/main/pa_globals.C,
+	  src/types/pa_vdate.h: ^cache[file][date]{    ^cache(seconds)
+	  ^cache[date] }
 
 	* src/classes/: xdoc.C, xnode.C, xnode.h: removed redundant pool
 	  param
 
 2002-03-27  paf
 
-	* operators.txt, src/classes/date.C, src/classes/double.C,
-	  src/classes/file.C, src/classes/form.C, src/classes/hash.C,
-	  src/classes/image.C, src/classes/int.C, src/classes/mail.C,
-	  src/classes/math.C, src/classes/op.C, src/classes/string.C,
-	  src/classes/table.C, src/classes/void.C, src/classes/xdoc.C,
-	  src/classes/xnode.C, src/include/pa_exception.h,
-	  src/include/pa_request.h, src/include/pa_stylesheet_connection.h,
-	  src/main/compile.C, src/main/compile_tools.C, src/main/execute.C,
+	* operators.ru.txt, operators.txt, src/classes/date.C,
+	  src/classes/double.C, src/classes/file.C, src/classes/form.C,
+	  src/classes/hash.C, src/classes/image.C, src/classes/int.C,
+	  src/classes/mail.C, src/classes/math.C, src/classes/op.C,
+	  src/classes/string.C, src/classes/table.C, src/classes/void.C,
+	  src/classes/xdoc.C, src/classes/xnode.C,
+	  src/include/pa_exception.h, src/include/pa_request.h,
+	  src/include/pa_stylesheet_connection.h, src/main/compile.C,
+	  src/main/compile_tools.C, src/main/execute.C,
 	  src/main/pa_array.C, src/main/pa_charset.C,
 	  src/main/pa_charsets.C, src/main/pa_common.C,
 	  src/main/pa_dictionary.C, src/main/pa_exception.C,
@@ -20218,10 +20328,10 @@
 	  src/types/pa_vxnode.h, src/types/pa_wcontext.C,
 	  src/types/pa_wwrapper.h: assigned exception types
 
-	* operators.txt, src/classes/op.C, src/include/pa_config_fixed.h,
-	  src/include/pa_request.h, src/main/execute.C,
-	  src/main/pa_request.C: decided agains resetting exception_trace,
-	  just changed name
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/include/pa_config_fixed.h, src/include/pa_request.h,
+	  src/main/execute.C, src/main/pa_request.C: decided agains
+	  resetting exception_trace, just changed name
 
 2002-03-26  paf
 
@@ -20232,17 +20342,18 @@
 	  to 'tainted', so that sql-langed-frags could be outputed outside
 	  of connect
 
-	* operators.txt: removed date.roll limit of +-1 offset
+	* operators.ru.txt, operators.txt: removed date.roll limit of +-1
+	  offset
 
 	* src/classes/date.C: removed date.roll limit of +-1 offset
 
-	* operators.txt, src/classes/date.C: fixed date roll on
-	  daylightsaving days mktime took into account tm_isdst flag, which
-	  remained from BEFORE roll, but should have been reset
+	* operators.ru.txt, operators.txt, src/classes/date.C: fixed date
+	  roll on daylightsaving days mktime took into account tm_isdst
+	  flag, which remained from BEFORE roll, but should have been reset
 
 2002-03-25  paf
 
-	* operators.txt, src/targets/cgi/parser3.C:
+	* operators.ru.txt, operators.txt, src/targets/cgi/parser3.C:
 	  http_site_config_filespec
 
 	* src/: classes/file.C, classes/mail.C, include/pa_exec.h,
@@ -20256,7 +20367,7 @@
 	  src/targets/cgi/Makefile.am: --disable-foreign-group-files now
 	  disables execs also.	introducing --sendmail
 
-	* operators.txt: pgsql options comment
+	* operators.ru.txt, operators.txt: pgsql options comment
 
 	* INSTALL: comment on --disable-link-stdcpp
 
@@ -20272,21 +20383,22 @@
 	* src/main/pa_exec.C: createprocess nowindow flag check on readfile
 	  false return
 
-	* operators.txt: few comments on sets
+	* operators.ru.txt, operators.txt: few comments on sets
 
 2002-03-18  paf
 
-	* operators.txt, src/classes/op.C, src/include/pa_exception.h,
-	  src/include/pa_globals.h, src/include/pa_request.h,
-	  src/include/pa_stack.h, src/main/pa_globals.C,
-	  src/main/pa_request.C: introducing ^try
+	* operators.ru.txt, operators.txt, src/classes/op.C,
+	  src/include/pa_exception.h, src/include/pa_globals.h,
+	  src/include/pa_request.h, src/include/pa_stack.h,
+	  src/main/pa_globals.C, src/main/pa_request.C: introducing ^try
 
 	* src/: main/pa_charset.C, targets/isapi/pa_threads.C,
 	  types/pa_vdouble.h: removed some tested @tests
 
 2002-03-15  paf
 
-	* operators.txt, src/classes/table.C: ^table.locate(logical expr)
+	* operators.ru.txt, operators.txt, src/classes/table.C:
+	  ^table.locate(logical expr)
 
 2002-03-13  paf
 
@@ -20313,11 +20425,11 @@
 
 2002-03-05  paf
 
-	* operators.txt, src/classes/date.C: date week calendar columns
-	  named
+	* operators.ru.txt, operators.txt, src/classes/date.C: date week
+	  calendar columns named
 
-	* operators.txt, src/classes/date.C: date week calendar columns
-	  named
+	* operators.ru.txt, operators.txt, src/classes/date.C: date week
+	  calendar columns named
 
 	* src/targets/isapi/: parser3isapi.C, parser3isapi.dsp: iis5 now
 	  requires headers to be terminated with \r\n manually [refuses to
@@ -20359,7 +20471,7 @@
 
 	* INSTALL: shared/static-xml with-pathlink
 
-	* operators.txt: SMTP comment
+	* operators.ru.txt, operators.txt: SMTP comment
 
 2002-02-26  paf
 
@@ -20392,8 +20504,8 @@
 
 	* src/types/pa_vcookie.C: cookie "expires=0" =	"session"
 
-	* operators.txt, src/types/pa_vcookie.C: cookie "expires=0" =
-	  "session"
+	* operators.ru.txt, operators.txt, src/types/pa_vcookie.C: cookie
+	  "expires=0" =  "session"
 
 	* configure, configure.in, src/include/pa_config_auto.h.in:
 	  --with-shared-xml --with-static-xml
@@ -20405,9 +20517,9 @@
 
 	* acconfig.h: acconfig move in cvs[from src/libltdl to /]
 
-	* operators.txt, src/classes/classes.dsp, src/main/main.dsp,
-	  src/types/types.dsp: removed hashfile support from sources for
-	  now
+	* operators.ru.txt, operators.txt, src/classes/classes.dsp,
+	  src/main/main.dsp, src/types/types.dsp: removed hashfile support
+	  from sources for now
 
 	* configure, configure.in, src/classes/Makefile.am,
 	  src/classes/hashfile.C, src/include/Makefile.am,
@@ -20447,7 +20559,7 @@
 	  main/untaint.C, targets/cgi/parser3.C, types/pa_vcookie.C,
 	  types/pa_vstring.h: speed uptimized: string::is_empty
 
-	* operators.txt, src/include/pa_common.h,
+	* operators.ru.txt, operators.txt, src/include/pa_common.h,
 	  src/include/pa_config_fixed.h, src/include/pa_string.h,
 	  src/include/pa_types.h, src/main/compile.tab.C,
 	  src/main/execute.C, src/main/pa_string.C, src/main/untaint.C,
@@ -20491,10 +20603,11 @@
 	  targets/cgi/parser3.dsp, types/types.dsp: win32xml now contains
 	  gnome xml libs parser .dsp-s changed accordingly
 
-	* operators.txt, src/targets/cgi/parser3.C: PARSER_ROOT_CONFIG
+	* operators.ru.txt, operators.txt, src/targets/cgi/parser3.C:
+	  PARSER_ROOT_CONFIG
 
-	* operators.txt, src/classes/date.C: date::create [were date::set,
-	  with backward comp
+	* operators.ru.txt, operators.txt, src/classes/date.C: date::create
+	  [were date::set, with backward comp
 
 	* src/classes/math.C: math:random range check fixed
 
@@ -20509,7 +20622,7 @@
 	  src/include/pa_config_includes.h, src/targets/cgi/Makefile.am,
 	  src/targets/cgi/parser3.C: removed libtool usage from build mech
 
-	* operators.txt: \ comment
+	* operators.ru.txt, operators.txt: \ comment
 
 2002-02-13  paf
 
@@ -20671,14 +20784,16 @@
 	* src/main/: compile.C, compile.tab.C, compile.y, compile_tools.h:
 	  disabled $if reference due to conflicts with local variables
 
-	* operators.txt, src/classes/xdoc.C, src/include/pa_config_fixed.h:
-	  xdoc::set obsolete now, now xdoc::create, with both sences
+	* operators.ru.txt, operators.txt, src/classes/xdoc.C,
+	  src/include/pa_config_fixed.h: xdoc::set obsolete now, now
+	  xdoc::create, with both sences
 
-	* operators.txt, src/classes/table.C, src/include/pa_array.h,
-	  src/include/pa_table.h, src/main/pa_array.C, src/main/pa_table.C:
-	  table::create now // 'set' name obsolete now table clone.
+	* operators.ru.txt, operators.txt, src/classes/table.C,
+	  src/include/pa_array.h, src/include/pa_table.h,
+	  src/main/pa_array.C, src/main/pa_table.C: table::create now //
+	  'set' name obsolete now table clone.
 
-	* operators.txt, src/classes/string.C,
+	* operators.ru.txt, operators.txt, src/classes/string.C,
 	  src/include/pa_config_fixed.h, src/main/compile.tab.C:
 	  ^int/double/string.format now can be called with normal []
 	  brackets, not stupid {} as it were implemented for some strange
@@ -20697,11 +20812,12 @@
 
 	* configure, configure.in: prefix expanded, grr
 
-	* operators.txt, src/classes/mail.C: mail:send config changed
+	* operators.ru.txt, operators.txt, src/classes/mail.C: mail:send
+	  config changed
 
 2002-02-05  paf
 
-	* operators.txt: regex options commented
+	* operators.ru.txt, operators.txt: regex options commented
 
 	* src/main/: pa_exec.C: argv0 now correct
 
@@ -20709,15 +20825,16 @@
 
 	* src/types/pa_vstatus.C: status:rusage 2
 
-	* operators.txt: status:rusage described int operators
+	* operators.ru.txt, operators.txt: status:rusage described int
+	  operators
 
 	* src/types/pa_vstatus.C: status:rusage 1
 
 	* configure.in, src/types/Makefile.am, src/types/pa_vstatus.h,
 	  src/types/types.dsp: status:rusage
 
-	* configure.in, operators.txt, src/classes/file.C,
-	  src/classes/op.C, src/include/pa_common.h,
+	* configure.in, operators.ru.txt, operators.txt,
+	  src/classes/file.C, src/classes/op.C, src/include/pa_common.h,
 	  src/include/pa_config_includes.h, src/main/compile.tab.C,
 	  src/main/pa_common.C: rewritten ^cache to use
 	  non-blocking-exclusive-caches
@@ -20780,8 +20897,8 @@
 	  acinclude.m4, aclocal.m4, asm.txt, config.guess, config.sub,
 	  configure, configure.in, form.txt, ident.awk, install-sh,
 	  lang.txt, ltconfig, ltmain.sh, missing, mkinstalldirs,
-	  operators.txt, parser3.dsw, sql.txt, types.txt, etc/Makefile.am,
-	  etc/parser3.charsets/Makefile.am,
+	  operators.ru.txt, operators.txt, parser3.dsw, sql.txt, types.txt,
+	  etc/Makefile.am, etc/parser3.charsets/Makefile.am,
 	  etc/parser3.charsets/koi8-r.cfg,
 	  etc/parser3.charsets/windows-1250.cfg,
 	  etc/parser3.charsets/windows-1251.cfg, src/Makefile.am,
