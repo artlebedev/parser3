@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.294 2024/12/11 03:22:23 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.295 2024/12/23 18:30:55 moko Exp $";
 
 // defines
 
@@ -208,9 +208,7 @@ static void copy_process_source(struct stat&, int from_file, const String&, void
 		nCount = file_block_read(from_file, buffer, sizeof(buffer));
 		int written=write(to_file, buffer, nCount); 
 		if( written < 0 )
-			throw Exception("file.access", 
-				0, 
-				"write failed: %s (%d)",  strerror(errno), errno); 
+			throw Exception("file.write", 0, "write failed: %s (%d)", strerror(errno), errno);
 		
 	} while(nCount > 0);
 }

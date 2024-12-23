@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.130 2024/11/23 00:36:40 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.131 2024/12/23 18:30:55 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1189,11 +1189,12 @@ size_t HTTPD_Connection::read_post(char *body, size_t max_bytes) {
 size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
 	LOG(pa_log("httpd [%d] response %d bytes", sock, size));
 	LOG(pa_log("httpd [%d] %s", sock, buf));
-	if((size=pa_send(sock, (const char*)buf, size)) < 0) {
+	ssize_t result=pa_send(sock, (const char*)buf, size);
+	if(result < 0) {
 		int no=pa_socks_errno();
 		throw Exception("httpd.write", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
 	}
-	return size;
+	return result;
 }
 
 HTTPD_Connection::~HTTPD_Connection(){

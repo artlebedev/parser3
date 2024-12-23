@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.105 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.106 2024/12/23 18:30:55 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -33,8 +33,7 @@ static const String path_value_default(PATH_VALUE_DEFAULT);
 // VCookie
 
 VCookie::VCookie(Request_charsets& acharsets, Request_info& arequest_info):
-	filled_source(0), filled_client(0),
-	fcharsets(acharsets), frequest_info(arequest_info) {
+	fcharsets(acharsets), frequest_info(arequest_info), filled_source(0), filled_client(0) {
 }
 
 Value* VCookie::get_element(const String& aname) {

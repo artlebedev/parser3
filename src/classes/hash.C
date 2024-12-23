@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.168 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.169 2024/12/23 18:30:55 moko Exp $";
 
 // class
 
@@ -767,7 +767,7 @@ static void _select(Request& r, MethodParams& params) {
 	r.write(*result);
 }
 
-static void _reverse(Request& r, MethodParams& params) {
+static void _reverse(Request& r, MethodParams&) {
 	VHashBase& self=GET_SELF(r, VHashBase);
 	HashStringValue& source_hash=self.hash();
 	HashStringValue& result_hash=*new HashStringValue();

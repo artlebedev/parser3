@@ -18,7 +18,7 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.271 2024/12/23 16:59:17 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.272 2024/12/23 18:30:55 moko Exp $";
 
 // defines
 
@@ -680,7 +680,8 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 		prolog.expires=info.scope->expires;
 		
 		// buffer -write> file
-		write(f, serialized.str, serialized.length);
+		if(write(f, serialized.str, serialized.length)<0)
+			throw Exception("file.write", 0, "write failed: %s (%d)",  strerror(errno), errno);
 	} else // expired!
 		info.scope->expires=0; // flag it so that could be easily checked by caller
 }

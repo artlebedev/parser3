@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.431 2024/11/10 12:57:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.432 2024/12/23 18:30:55 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -843,10 +843,9 @@ static void send_range(struct stat& /*finfo*/, int f, const String& /*file_spec*
 	SAPI::send_headers(info.r->sapi_info);
 	pa_lseek(f, info.offset, SEEK_SET);
 
-	const size_t BUFSIZE = 128*0x400;
-	char buf[BUFSIZE];
+	char buf[FILE_BUFFER_SIZE];
 	do{
-		size_t to_read = info.part_length < BUFSIZE ? (size_t)info.part_length : BUFSIZE;
+		size_t to_read = info.part_length < FILE_BUFFER_SIZE ? (size_t)info.part_length : FILE_BUFFER_SIZE;
 		size_t to_write = file_block_read(f, buf, to_read);
 
 		if(to_write == 0)

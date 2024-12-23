@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.195 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.196 2024/12/23 18:30:55 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -99,7 +99,7 @@ FILE *pa_fopen(const char *pathname, const char *mode);
 	file related functions
 */
 
-#define FILE_BUFFER_SIZE	4096
+#define FILE_BUFFER_SIZE (128*0x400)
 
 int pa_lock_shared_blocking(int fd);
 int pa_lock_exclusive_blocking(int fd);
