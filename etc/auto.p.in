@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.16 2024/12/12 21:15:33 moko Exp $
+#$Id: auto.p.in,v 1.17 2024/12/24 04:53:23 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -35,7 +35,7 @@ $CHARSETS[
 #change your client libraries paths to those on your system
 $SQL[
 	$.drivers[^table::create{protocol	driver	client
-mysql	$sqldriversdir/libparser3mysql.@dll_extension@	libmariadb.@dll_extension@,libmysqlclient.@dll_extension@
+mysql	$sqldriversdir/libparser3mysql.@dll_extension@	libmysqlclient.@dll_extension@
 #sqlite	$sqldriversdir/libparser3sqlite.@dll_extension@	libsqlite3.@dll_extension@
 #pgsql	$sqldriversdir/libparser3pgsql.@dll_extension@	libpq.@dll_extension@
 #oracle	$sqldriversdir/libparser3oracle.@dll_extension@	libclntsh.@dll_extension@
