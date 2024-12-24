@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.103 2024/11/26 00:34:09 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.104 2024/12/24 02:58:47 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -315,7 +315,7 @@ static pid_t execve_piped(const char* file_spec_cstr,
 		char dir[MAX_STRING];
 		pa_strncpy(dir, file_spec_cstr, MAX_STRING);
 		rsplit(dir,'/'); // trim filename
-		chdir(dir);
+		PA_UNUSED int ignore_result=chdir(dir);
 
 		//  execute
 		execve(file_spec_cstr, argv, env);
@@ -502,7 +502,7 @@ PA_exec_result pa_exec(bool forced_allow, const String& file_spec, const HashStr
 	if(pid>0) {
 		// in child
 		if(in.length>0) // there is some in data
-			write(pipe_write, in.str, in.length);
+			PA_UNUSED int ignore_result=write(pipe_write, in.str, in.length);
 		close(pipe_write);
 		read_pipe(result.out, pipe_read);
 		close(pipe_read);

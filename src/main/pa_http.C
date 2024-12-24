@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.131 2024/12/23 18:30:55 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.132 2024/12/24 02:58:47 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1204,21 +1204,17 @@ HTTPD_Connection::~HTTPD_Connection(){
 	}
 }
 
-static int sock_ready(SOCKET fd, int operation, int timeout_value){
+static int sock_ready(SOCKET fd, int timeout_value){
 	struct timeval timeout = {0, timeout_value * 1000};
 	fd_set fds;
 	FD_ZERO(&fds);
 	FD_SET(fd, &fds);
 	int nfds = (int)fd + 1; /* typecast as nfds is ignored in MSVC anyway */
-	switch (operation){
-		case 0: return select(nfds, &fds, NULL, NULL, &timeout)>0;  /* read */
-		case 1: return select(nfds, NULL, &fds, NULL, &timeout)>0;  /* write */
-		default: return select(nfds, &fds, &fds, NULL, &timeout)>0;  /* both */
-	}
+	return select(nfds, &fds, NULL, NULL, &timeout)>0;  /* read */
 }
 
 bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
-	int ready = sock_ready(server_sock, 0, timeout_value);
+	int ready = sock_ready(server_sock, timeout_value);
 	if (ready < 0) {
 		int no=pa_socks_errno();
 		if(no == EINTR)
