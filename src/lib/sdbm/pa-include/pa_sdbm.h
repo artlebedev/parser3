@@ -77,7 +77,6 @@ typedef struct {
  *           PA_CREATE         create the sdbm if it does not exist
  *           PA_TRUNCATE       empty the contents of the sdbm
  *           PA_EXCL           fail for PA_CREATE if the file exists
- *           PA_DELONCLOSE     delete the sdbm when closed
  *           PA_SHARELOCK      support locking across process/machines
  * </PRE>
  * @param perm Permissions to apply to if created

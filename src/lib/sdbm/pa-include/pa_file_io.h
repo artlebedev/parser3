@@ -47,15 +47,9 @@ extern "C" {
 #define PA_BINARY     32          /**< Open the file in binary mode */
 #define PA_EXCL       64          /**< Open should fail if PA_CREATE and file
                                         exists. */
-#define PA_BUFFERED   128         /**< Open the file for buffered I/O */
-#define PA_DELONCLOSE 256         /**< Delete the file after close */
-#define PA_XTHREAD    512         /**< Platform dependent tag to open the file
-                                        for use across multiple threads */
 #define PA_SHARELOCK  1024        /**< Platform dependent support for higher
                                         level locked read/write access to support
                                         writes across process/machines */
-#define PA_FILE_NOCLEANUP  2048   /**< Do not register a cleanup when the file
-                                        is opened */
  
 /** @} */
 
@@ -113,18 +107,10 @@ typedef struct pa_file_t         pa_file_t;
  *           PA_TRUNCATE         set length to zero if file exists
  *           PA_BINARY           not a text file (This flag is ignored on 
  *                                UNIX because it has no meaning)
- *           PA_BUFFERED         buffer the data.  Default is non-buffered
  *           PA_EXCL             return error if PA_CREATE and file exists
- *           PA_DELONCLOSE       delete the file after closing.
- *           PA_XTHREAD          Platform dependent tag to open the file
- *                                for use across multiple threads
  *           PA_SHARELOCK        Platform dependent support for higher
  *                                level locked read/write access to support
  *                                writes across process/machines
- *           PA_FILE_NOCLEANUP   Do not register a cleanup with the pool 
- *                                passed in on the <EM>cont</EM> argument (see below).
- *                                The pa_os_file_t handle in pa_file_t will not
- &                                be closed when the pool is destroyed.
  * </PRE>
  * @param perm Access permissions for file.
  * @param cont The pool to use.

@@ -173,8 +173,8 @@ pa_status_t pa_sdbm_open(pa_sdbm_t **db, const char *file,
                                         pa_int32_t flags, 
                                         pa_fileperms_t perms, pa_pool_t *p)
 {
-    char *dirname = pa_pstrcat(p, file, PA_SDBM_DIRFEXT, NULL);
-    char *pagname = pa_pstrcat(p, file, PA_SDBM_PAGFEXT, NULL);
+    char *dirname = pa_pstrcat(file, PA_SDBM_DIRFEXT);
+    char *pagname = pa_pstrcat(file, PA_SDBM_PAGFEXT);
     
     return prep(db, dirname, pagname, flags, perms, p);
 }

@@ -7,64 +7,12 @@
 
 #include "pa_strings.h"
 #include "pa_memory.h"
+#include "pa_common.h"
 
-volatile const char * IDENT_PA_STRINGS_C="$Id: pa_strings.C,v 1.8 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_PA_STRINGS_C="$Id: pa_strings.C,v 1.9 2024/12/26 02:16:31 moko Exp $";
 
-/** this is used to cache lengths in pa_pstrcat */
-#define MAX_SAVED_LENGTHS  6
-
-char *pa_pstrcat(pa_pool_t *p, ...)
-{
-    char *cp, *argp, *res;
-    pa_size_t saved_lengths[MAX_SAVED_LENGTHS];
-    int nargs = 0;
-
-    /* Pass one --- find length of required string */
-
-    pa_size_t len = 0;
-    va_list adummy;
-
-    va_start(adummy, p);
-
-    while ((cp = va_arg(adummy, char *)) != NULL) {
-        pa_size_t cplen = strlen(cp);
-        if (nargs < MAX_SAVED_LENGTHS) {
-            saved_lengths[nargs++] = cplen;
-        }
-        len += cplen;
-    }
-
-    va_end(adummy);
-
-    /* Allocate the required string */
-
-    res = (char *) pa_malloc_atomic(len + 1);
-    cp = res;
-
-    /* Pass two --- copy the argument strings into the result space */
-
-    va_start(adummy, p);
-
-    nargs = 0;
-    while ((argp = va_arg(adummy, char *)) != NULL) {
-        if (nargs < MAX_SAVED_LENGTHS) {
-            len = saved_lengths[nargs++];
-        }
-        else {
-            len = strlen(argp);
-        }
- 
-        memcpy(cp, argp, len);
-        cp += len;
-    }
-
-    va_end(adummy);
-
-    /* Return the result string */
-
-    *cp = '\0';
-
-    return res;
+char *pa_pstrcat(const char *a, const char *b){
+    return pa_strcat(a, b);
 }
 
 void* pa_sdbm_malloc(unsigned int size){

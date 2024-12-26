@@ -64,6 +64,9 @@ struct pa_sdbm_t {
     int  lckcnt;                       /* number of calls to sdbm_lock */
 };
 
+#define sdbm_hash pa_sdbm_hash
+#define sdbm_nullitem pa_sdbm_nullitem
+
 extern const pa_sdbm_datum_t sdbm_nullitem;
 
 long sdbm_hash(const char *str, int len);

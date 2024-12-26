@@ -25,7 +25,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 // Concatenate multiple strings, allocating memory out a pool
-char *pa_pstrcat(pa_pool_t *p, ...);
+char *pa_pstrcat(const char *a, const char *b);
 
 // use libgc
 void* pa_sdbm_malloc(unsigned int size);
