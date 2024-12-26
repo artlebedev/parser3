@@ -1,6 +1,6 @@
 dnl Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT(parser, 3.5.0rc)
+AC_INIT(parser, 3.5.0)
 AC_CONFIG_SRCDIR(README)
 
 
@@ -61,7 +61,7 @@ AC_SUBST(dll_extension)
 dnl Misc arguments
 AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time compiler warnings if gcc is used],
 	AC_MSG_WARN(enabling compiler warnings)
-	CXXFLAGS="$CXXFLAGS -Wextra -Wall -Wno-parentheses"
+	CXXFLAGS="$CXXFLAGS -D_FORTIFY_SOURCE=2 -Wextra -Wall -Wno-parentheses"
 )
 
 AC_ARG_WITH(coverage, [  --with-coverage         to enable gcov code coverage support],
