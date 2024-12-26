@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10729
+Content-Length: 10491
 
 <h2>POST in $response:charset (UTF-8) w/o file</h2>
 <h3>Headers</h3>
@@ -9,7 +9,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: parser3
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
@@ -25,7 +24,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: Мой-Странный-User-Agent
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
@@ -41,7 +39,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: parser3
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
@@ -57,7 +54,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: parser3
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
@@ -99,7 +95,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: parser3
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
@@ -142,7 +137,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: parser3
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
@@ -184,7 +178,6 @@ HTTP_COOKIE	: zigi=abcdefghijklmnopqrstuvwxyz%20ABCDEFGHIJKLMNOPQRSTUVWXYZ%0A012
 HTTP_HOST	: www.parser.ru
 HTTP_MY_NAME	: ЗнА  чЕ&н"И:е%
 HTTP_USER_AGENT	: parser3
-HTTP_________	: зна чение
 REQUEST_METHOD	: POST
 REQUEST_URI	: /_/tests/223.pl
 SCRIPT_NAME	: /_/tests/223.pl
