@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.71 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.72 2024/12/27 22:58:39 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -80,6 +80,8 @@ Value* VRequest::get_element(const String& aname) {
 		buf=finfo.query_string;
 	else if(aname=="uri")
 		buf=finfo.uri;
+	else if(aname=="path")
+		buf=path_from_uri(pa_strdup(finfo.uri));
 	else if(aname==DOCUMENT_ROOT_NAME)
 		buf=finfo.document_root;
 	else if(aname=="body")
@@ -122,4 +124,16 @@ void VRequest::fill(){
 			);
 		}
 	}
+}
+
+const char* VRequest::path_from_uri(char* uri){
+	const char *result=uri;
+	lsplit(uri,'?');
+	if(result && *result)
+		result=unescape_chars(result, strlen(result), &pa_UTF8_charset, false /* uri */);
+	if(result && *result)
+		result=Charset::transcode(result, pa_UTF8_charset, fcharsets.source()).cstr();
+	if(result && *result)
+		return result;
+	return "/";
 }

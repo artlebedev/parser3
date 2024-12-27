@@ -8,7 +8,7 @@
 #ifndef PA_VREQUEST_H
 #define PA_VREQUEST_H
 
-#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.48 2024/11/04 03:53:26 moko Exp $"
+#define IDENT_PA_VREQUEST_H "$Id: pa_vrequest.h,v 1.49 2024/12/27 22:58:39 moko Exp $"
 
 // includes
 
@@ -55,6 +55,7 @@ public: // usage
 private:
 	HashStringValue ffields;
 	void fill();
+	const char* path_from_uri(char* uri);
 };
 
 #endif
