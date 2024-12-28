@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.17 2024/12/24 04:53:23 moko Exp $
+#$Id: auto.p.in,v 1.18 2024/12/28 14:00:52 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -242,8 +242,7 @@ $cfg[^config[
 $response:server[Parser$env:PARSER_VERSION]
 $response:date[^date::now[]]
 $response:connection[close]
-$uri[^request:uri.match[\?.*][]{}]
-$uri[^string:unescape[uri;$uri; $.charset[UTF-8] ]]
+$uri[$request:path]
 
 ^if(def $cfg.log){
 	^log[$cfg.log]
