@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.72 2024/12/27 22:58:39 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.73 2024/12/28 15:05:15 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -135,5 +135,5 @@ const char* VRequest::path_from_uri(char* uri){
 		result=Charset::transcode(result, pa_UTF8_charset, fcharsets.source()).cstr();
 	if(result && *result)
 		return result;
-	return "/";
+	return ""; // to match an empty URI in console mode
 }
