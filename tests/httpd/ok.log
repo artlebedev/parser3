@@ -194,7 +194,7 @@ invalid request method
 running test 023.txt
 HTTP/1.0 403 Forbidden
 Content-Type: text/html; charset=UTF-8
-Server: Parser3.4.7b (compiled on x86_64-unknown-linux-gnu)
+Server: Parser3.5.0 (compiled on x86_64-unknown-linux-gnu)
 Date: WWW, DD MMM YYYY HH MM:SS GMT
 Connection: close
 Content-Length: 17
@@ -204,7 +204,7 @@ Permission denied
 running test 024.txt
 HTTP/1.0 401 Unauthorized
 Content-Type: text/html; charset=UTF-8
-Server: Parser3.4.7b (compiled on x86_64-unknown-linux-gnu)
+Server: Parser3.5.0 (compiled on x86_64-unknown-linux-gnu)
 Date: WWW, DD MMM YYYY HH MM:SS GMT
 Connection: close
 Www-Authenticate: Basic realm="auth test"
@@ -432,6 +432,85 @@ elements: {
 ]
 }
 name: value
+=============
+running test 032.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=Windows-1251
+Server: Parser3
+Connection: close
+Content-Length: 160
+
+uri: "/%D0%BF%D0%BE-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8/?name=%F2%E5%F1%F2&amp;charset=Windows-1251"
+path: "/по-русски/"
+"name"="тест"
+"charset"="Windows-1251"
+=============
+running test 033.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 87
+
+uri: "/%D0%BF%D0%BE-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8/"
+path: "/РїРѕ-СЂСѓСЃСЃРєРё/"
+
+=============
+running test 034.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 228
+
+uri: "/%D0%B1%D1%83%D0%BA%D0%B2%D1%8B%3F%20-%20%D0%BA%D0%BE%D0%BD%D0%B5%D1%87%D0%BD%D0%BE!%20%D0%B1%D1%83%D0%BA%D0%B2%D1%8B%25%F0%9F%98%8A/?name=%F2%E5%F1%F2"
+path: "/Р±СѓРєРІС‹? - РєРѕРЅРµС‡РЅРѕ! Р±СѓРєРІС‹%рџЉ/"
+"name"="тест"
+=============
+running test 035.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=Windows-1251
+Server: Parser3
+Connection: close
+Content-Length: 269
+
+uri: "/%D0%B1%D1%83%D0%BA%D0%B2%D1%8B%3F%20-%20%D0%BA%D0%BE%D0%BD%D0%B5%D1%87%D0%BD%D0%BE!%20%D0%B1%D1%83%D0%BA%D0%B2%D1%8B%25%F0%9F%98%8A/?name=%F2%E5%F1%F2&amp;charset=Windows-1251"
+path: "/буквы? - конечно! буквы%%F0%9F%98%8A/"
+"name"="тест"
+"charset"="Windows-1251"
+=============
+running test 036.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 69
+
+uri: "/broken-%D0%B1%D1%83%D0%BA%D0%B2%D1"
+path: "/broken-Р±СѓРєРІС"
+
+=============
+running test 037.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 51
+
+uri: "/broken-Р±СѓРєРІС"
+path: "/broken-Р±СѓРєРІС"
+
+=============
+running test 038.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 31
+
+uri: "/test/%D"
+path: "/test/"
+
 =============
 running test 040.txt
 HTTP/1.0 408 Request Timeout

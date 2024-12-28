@@ -1,0 +1,2 @@
+GET /broken-%D0%B1%D1%83%D0%BA%D0%B2%D1 HTTP/1.0
+

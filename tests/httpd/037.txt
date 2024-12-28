@@ -1,0 +1,2 @@
+GET /broken-букв� HTTP/1.0
+

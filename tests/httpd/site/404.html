@@ -1,0 +1,11 @@
+^if(def $form:charset){
+	$request:charset[$form:charset]
+	$response:charset[$form:charset]
+	$response:content-type.charset[$form:charset]
+}
+
+uri: "$request:uri"
+path: "$request:path"
+
+^form:fields.foreach[k;v]{"$k"="$v"}[
+]
