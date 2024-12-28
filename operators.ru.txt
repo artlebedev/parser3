@@ -1087,8 +1087,13 @@ reflection
         копирует в класс методы и поля другого класса
 
 request
+    https://site.name/a%20b/?name=some%20value
     $request:query
+        name=some%20value
     $request:uri
+        /a%20b/?name=value
+    $request:path
+        /a b/
     $request:document-root
         каталог, относительно которого считаются пути в parser, по-умолчанию = $env:DOCUMENT_ROOT
     $request:argv
@@ -1418,4 +1423,4 @@ MAIN
 если описание метода содержит локальную переменную result в явном виде (есть и неявная переменная)
     то код вывода пробельных литералов не попадает в конечный байт-код
 
-$Id: operators.ru.txt,v 1.263 2024/12/21 00:27:50 moko Exp $
+$Id: operators.ru.txt,v 1.264 2024/12/28 15:50:05 moko Exp $
