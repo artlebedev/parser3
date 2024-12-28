@@ -13,7 +13,8 @@ do
             curl -s --config "$f" http://localhost:8100/form.html >> tests.log
             ;;
     esac
-    echo "\n=============" >>tests.log
+    echo "" >>tests.log
+    echo "=============" >>tests.log
 done
 
 diff -u ok.log tests.log
