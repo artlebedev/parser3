@@ -1,3 +1,67 @@
+2024-12-28  moko
+
+	* tests/httpd/run_tests.sh: for FreeBSD compatibility
+
+	* tests/httpd/: 032.txt, 033.txt, 034.txt, 035.txt, 036.txt,
+	  037.txt, 038.txt, ok.log, site/404.html, site/httpd.p:
+	  $request:uri and $request:path tests added (related to feature
+	  #1269)
+
+	* operators.ru.txt, operators.txt: + $request:path documented
+	  (related to feature #1269)
+
+	* tests/: 065.html, results/065.processed: $request:path,
+	  $request:uri tested
+
+	* src/types/pa_vrequest.C: $request:path default is empty string to
+	  match an empty URI in console mode (related to feature #1269)
+
+	* etc/auto.p.in: $request:path used (related to feature #1269)
+
+	* src/types/: pa_vrequest.C, pa_vrequest.h: $request:path added
+	  (implements feature #1269)
+
+2024-12-26  moko
+
+	* configure, configure.ac, src/include/pa_version.h: 3.5.0rc ->
+	  3.5.0
+
+	* src/lib/sdbm/: pa_strings.C, sdbm.c, sdbm_private.h,
+	  pa-include/pa_errno.h, pa-include/pa_file_info.h,
+	  pa-include/pa_file_io.h, pa-include/pa_sdbm.h,
+	  pa-include/pa_strings.h: unused code cleaned, pa_pstrcat uses
+	  pa_strcat
+
+	* tests/results/223.processed: apache upgraded @parser.ru
+
+	* src/lib/sdbm/: sdbm.c, sdbm_hash.c, sdbm_lock.c, sdbm_pair.c,
+	  sdbm_pair.h, sdbm_private.h, sdbm_tune.h, pa-include/pa_apr.h,
+	  pa-include/pa_errno.h, pa-include/pa_file_info.h,
+	  pa-include/pa_file_io.h, pa-include/pa_sdbm.h,
+	  pa-include/pa_strings.h: sdbm updated from version included in
+	  apache 2.0.43 to version included in apache 2.0.65
+
+2024-12-24  moko
+
+	* etc/auto.p.in: to avoid patching Debian package
+
+	* src/main/: pa_exec.C, pa_http.C: final fixes for
+	  --with-build-warnings (dangling-reference warnings can be
+	  ignored)
+
+2024-12-23  moko
+
+	* src/: classes/file.C, classes/hash.C, classes/op.C,
+	  include/pa_common.h, main/pa_http.C, main/pa_request.C,
+	  types/pa_vcookie.C, types/pa_vform.C: more fixes for
+	  --with-build-warnings
+
+	* src/: classes/date.C, classes/inet.C, classes/op.C,
+	  classes/reflection.C, include/pa_array.h,
+	  include/pa_config_includes.h, main/execute.C, main/pa_base64.C,
+	  main/pa_common.C, main/pa_globals.C, types/pa_vfile.C: fixes for
+	  --with-build-warnings
+
 2024-12-21  moko
 
 	* Makefile.am: +operators.ru.txt
