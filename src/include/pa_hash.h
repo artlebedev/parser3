@@ -6,18 +6,10 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-/*
-	The prime numbers used from zend_hash.c,
-	the part of Zend scripting engine library,
-	Copyrighted (C) 1999-2000    Zend Technologies Ltd.
-	http://www.zend.com/license/0_92.txt
-	For more information about Zend please visit http://www.zend.com/
-*/
-
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.104 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.105 2025/01/06 19:47:18 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -25,15 +17,12 @@
 
 const int HASH_ALLOCATES_COUNT=29;
 
-/** Zend comment: Generated on an Octa-ALPHA 300MHz CPU & 2.5GB RAM monster 
-
-	paf: HPUX ld could not handle static member: unsatisfied symbols
-*/
+// nearest primes to 5 * 2^n
 static uint Hash_allocates[HASH_ALLOCATES_COUNT]={
-	5, 11, 19, 53, 107, 223, 463, 983, 1979, 3907, 7963, 
-	16229, 32531, 65407, 130987, 262237, 524521, 1048793, 
-	2097397, 4194103, 8388857, 16777447, 33554201, 67108961, 
-	134217487, 268435697, 536870683, 1073741621, 2147483399};
+	5, 11, 19, 41, 79, 163, 317, 641, 1279, 2557, 5119,
+	10243, 20479, 40961, 81919, 163841, 327673, 655357,
+	1310719, 2621447, 5242883, 10485767, 20971529, 41943049,
+	83886091, 167772161, 335544323, 671088637, 1342177283};
 
 /// useful generic hash function
 inline void generic_hash_code(uint& result, char c) {
