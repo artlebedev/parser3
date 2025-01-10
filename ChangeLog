@@ -1,3 +1,23 @@
+2025-01-10  moko
+
+	* operators.ru.txt, operators.txt: +
+	  ^syslog[ident;message[;info|warning|error|debug]]
+
+	* src/classes/op.C: +
+	  ^syslog[ident;message[;info|warning|error|debug]] (implelents
+	  feature #1270)
+
+	* configure, configure.ac, src/include/pa_config_auto.h.in,
+	  src/include/pa_version.h: 3.5.0 -> 3.5.1, syslog check
+
+2025-01-06  moko
+
+	* src/include/pa_hash.h: own prime numbers (nearest primes to 5 *
+	  2^n) calculated and used
+
+	* src/lib/md5/: pa_md5.h, pa_md5c.c: MD5 code now taken from
+	  https://www.hadrons.org/software/libmd/
+
 2024-12-28  moko
 
 	* tests/httpd/run_tests.sh: for FreeBSD compatibility
