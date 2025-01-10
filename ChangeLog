@@ -1,5 +1,9 @@
 2025-01-10  moko
 
+	* src/classes/op.C: minor MSVC fixes
+
+	* src/lib/md5/pa_md5c.c: MSVC warnings fixed
+
 	* operators.ru.txt, operators.txt: +
 	  ^syslog[ident;message[;info|warning|error|debug]]
 
