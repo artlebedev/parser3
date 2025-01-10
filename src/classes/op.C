@@ -18,7 +18,11 @@
 #include "pa_vclass.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.272 2024/12/23 18:30:55 moko Exp $";
+#ifdef HAVE_SYSLOG
+#include "syslog.h"
+#endif
+
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.273 2025/01/10 19:58:46 moko Exp $";
 
 // defines
 
@@ -902,6 +906,32 @@ static void _sleep_operator(Request& r, MethodParams& params) {
 		pa_sleep((int)trunc(seconds), (int)trunc((seconds-trunc(seconds))*1000000));
 }
 
+static int log_level(const String &name){
+	if(name.is_empty()) return LOG_INFO;
+	const char *sname = str_upper(name.cstr());
+
+	if(!strcmp(sname,"INFO")) return LOG_INFO;
+	if(!strcmp(sname,"WARNING")) return LOG_WARNING;
+	if(!strcmp(sname,"ERROR")) return LOG_ERR;
+	if(!strcmp(sname,"DEBUG")) return LOG_DEBUG;
+	throw Exception("syslog", &name, "invalid log level value");
+}
+
+
+static void _syslog_operator(Request& r, MethodParams& params) {
+	const char* ident=params.as_string(0, "ident must be string").cstr();
+	const char* message=params.as_string(1, "message must be string").cstr();
+	int level=params.count()>2 ? log_level(params.as_string(2, "level must be string")) : LOG_INFO;
+
+#ifdef HAVE_SYSLOG
+	openlog(*ident ? ident : "parser3", LOG_PID, LOG_USER);
+	syslog(level, "%s", message);
+	closelog();
+#else
+	SAPI::log(r.sapi_info, "syslog: %s", message);
+#endif
+}
+
 #if defined(WIN32) && defined(_DEBUG) && !defined(_WIN64)
 #	define PA_BPT
 static void _bpt(Request&, MethodParams&) {
@@ -990,6 +1020,9 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 	add_native_method("throw", Method::CT_ANY, _throw_operator, 1, 3);
 
 	add_native_method("sleep", Method::CT_ANY, _sleep_operator, 1, 1);
+
+	// ^syslog[ident;message[;info|warning|error|debug]]
+	add_native_method("syslog", Method::CT_ANY, _syslog_operator, 2, 3);
 }
 
 // constructor & configurator
