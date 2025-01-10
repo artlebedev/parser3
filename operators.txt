@@ -156,6 +156,9 @@ odbc	parser3odbc.dll
     ^rem{}
         a comment, removed at compile time
 
+    ^syslog[ident;message[;info|warning|error|debug]]
+        writes a message to syslog
+
     ^cache[file](seconds){code}[{catch code}]
         relative time assignment
         caches the string resulting from the code execution for 'seconds' seconds
@@ -1423,4 +1426,4 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.266 2024/12/28 15:50:05 moko Exp $
+$Id: operators.txt,v 1.267 2025/01/10 20:02:21 moko Exp $
