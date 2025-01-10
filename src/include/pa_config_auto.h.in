@@ -238,6 +238,9 @@
 /* Define to 1 if `d_type' is a member of `struct dirent'. */
 #undef HAVE_STRUCT_DIRENT_D_TYPE
 
+/* Define to 1 if you have the `syslog' function. */
+#undef HAVE_SYSLOG
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H

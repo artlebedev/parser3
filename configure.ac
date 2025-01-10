@@ -1,6 +1,6 @@
 dnl Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT(parser, 3.5.0)
+AC_INIT(parser, 3.5.1)
 AC_CONFIG_SRCDIR(README)
 
 
@@ -446,7 +446,7 @@ AC_CHECK_LIB(crypt, crypt)
 
 dnl Checks for functions
 AC_CHECK_FUNCS(flock fcntl lockf ftruncate fchmod)
-AC_CHECK_FUNCS(getrusage gettimeofday crypt sigsetjmp siglongjmp unsetenv)
+AC_CHECK_FUNCS(getrusage gettimeofday crypt sigsetjmp siglongjmp unsetenv syslog)
 
 
 dnl on some linux[seen on 2.4] it's a macro
