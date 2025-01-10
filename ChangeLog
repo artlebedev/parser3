@@ -1,5 +1,8 @@
 2025-01-10  moko
 
+	* tests/results/320.processed: test result updated after syslog
+	  added
+
 	* src/classes/op.C: minor MSVC fixes
 
 	* src/lib/md5/pa_md5c.c: MSVC warnings fixed
