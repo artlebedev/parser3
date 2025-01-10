@@ -22,7 +22,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.273 2025/01/10 19:58:46 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.274 2025/01/10 20:16:33 moko Exp $";
 
 // defines
 
@@ -743,7 +743,7 @@ static Cache_get_result cache_get(const String& file_spec, time_t now) {
 static time_t as_expires(Request& r, MethodParams& params, int index, time_t now) {
 	time_t result;
 	if(VDate* vdate=dynamic_cast<VDate*>(&params[index]))
-		result=vdate->get_time();
+		result=(time_t)vdate->get_time();
 	else
 		result=now+(time_t)params.as_double(index, "lifespan must be date or number", r);
 	
@@ -906,6 +906,7 @@ static void _sleep_operator(Request& r, MethodParams& params) {
 		pa_sleep((int)trunc(seconds), (int)trunc((seconds-trunc(seconds))*1000000));
 }
 
+#ifdef HAVE_SYSLOG
 static int log_level(const String &name){
 	if(name.is_empty()) return LOG_INFO;
 	const char *sname = str_upper(name.cstr());
@@ -916,14 +917,14 @@ static int log_level(const String &name){
 	if(!strcmp(sname,"DEBUG")) return LOG_DEBUG;
 	throw Exception("syslog", &name, "invalid log level value");
 }
-
+#endif
 
 static void _syslog_operator(Request& r, MethodParams& params) {
 	const char* ident=params.as_string(0, "ident must be string").cstr();
 	const char* message=params.as_string(1, "message must be string").cstr();
+#ifdef HAVE_SYSLOG
 	int level=params.count()>2 ? log_level(params.as_string(2, "level must be string")) : LOG_INFO;
 
-#ifdef HAVE_SYSLOG
 	openlog(*ident ? ident : "parser3", LOG_PID, LOG_USER);
 	syslog(level, "%s", message);
 	closelog();
