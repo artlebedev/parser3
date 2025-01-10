@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3186
+Content-Length: 3224
 
 MAIN: MAIN
 MAIN methods reversed: {
@@ -12,6 +12,7 @@ MAIN methods reversed: {
 "try-catch-comment":"parser",
 "try-catch-filtered":"parser",
 "try-catch":"parser",
+"syslog":"native",
 "sleep":"native",
 "throw":"native",
 "try":"native",
@@ -54,6 +55,7 @@ MAIN methods: {
 "try":"native",
 "throw":"native",
 "sleep":"native",
+"syslog":"native",
 "try-catch":"parser",
 "try-catch-filtered":"parser",
 "try-catch-comment":"parser",
