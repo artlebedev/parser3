@@ -43,7 +43,7 @@ AC_PREREQ(2.59)dnl We use AS_HELP_STRING
 AC_INIT([libltdl], [2.4.2], [bug-libtool@gnu.org])
 AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_CONFIG_SRCDIR([ltdl.c])
-AC_CONFIG_AUX_DIR([config])
+AC_CONFIG_AUX_DIR([../../..])
 AC_CONFIG_MACRO_DIR([m4])
 LT_CONFIG_LTDL_DIR([.]) # I am me!
 
@@ -52,7 +52,8 @@ LT_CONFIG_LTDL_DIR([.]) # I am me!
 ## Automake Initialisation. ##
 ## ------------------------ ##
 
-AM_INIT_AUTOMAKE([gnu])
+AM_INIT_AUTOMAKE([gnu subdir-objects])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 
 ## ------------------------------- ##
