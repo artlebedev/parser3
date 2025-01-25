@@ -2657,6 +2657,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+
 am__api_version='1.16'
 
 ac_aux_dir=
@@ -5059,7 +5060,8 @@ $as_echo_n "checking for libgc... " >&6; }
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $GC_LIBS"
 
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
  extern int GC_dont_gc;
 int
@@ -5083,9 +5085,11 @@ $as_echo "no" >&6; }
 			as_fn_error $? "$GC does not seem to be valid libgc installation directory" "$LINENO" 5
 		fi
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 	LIBS=$SAVE_LIBS
 fi
 
@@ -5134,7 +5138,8 @@ if test -z "$PCRE_OK"; then
 $as_echo_n "checking for pcre2... " >&6; }
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES -lpcre2-8"
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
  #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h>
@@ -5159,9 +5164,11 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 	LIBS=$SAVE_LIBS
 fi
 
@@ -5171,7 +5178,8 @@ $as_echo_n "checking for pcre... " >&6; }
 	PCRE_LIBS="$PCRE_LIBS -lpcre"
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
-	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
  #include <pcre.h>
 int
@@ -5195,9 +5203,11 @@ $as_echo "no" >&6; }
 			as_fn_error $? "$PCRE does not seem to be valid PCRE installation directory" "$LINENO" 5
 		fi
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 	LIBS=$SAVE_LIBS
 fi
 
@@ -5234,7 +5244,8 @@ $as_echo "$as_me: WARNING: --with-xml value was not specified, hoping linker wou
 $as_echo_n "checking for xml... " >&6; }
 		SAVE_LIBS=$LIBS
 		LIBS="$LIBS $XML_LIBS $XML_INCLUDES"
-		cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
  #include <libxslt/xslt.h>
 int
@@ -5258,9 +5269,11 @@ $as_echo "no" >&6; }
 				as_fn_error $? "$XML does not seem to be valid Gnome XML installation directory" "$LINENO" 5
 			fi
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 		LIBS=$SAVE_LIBS
 	fi
 
@@ -5313,7 +5326,8 @@ $as_echo "$as_me: WARNING: --with-mailreceive value was not specified, hoping li
 $as_echo_n "checking for mime... " >&6; }
 		SAVE_LIBS=$LIBS
 		LIBS="$LIBS $MIME_LIBS $MIME_INCLUDES"
-		cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
  #include <gmime/gmime.h>
 int
@@ -5337,9 +5351,11 @@ $as_echo "no" >&6; }
 				as_fn_error $? "$MIME does not seem to be valid Gnome MIME installation directory" "$LINENO" 5
 			fi
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 		LIBS=$SAVE_LIBS
 	fi
 
@@ -18185,154 +18201,6 @@ rm -rf conftest*
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
-$as_echo_n "checking for ANSI C header files... " >&6; }
-if ${ac_cv_header_stdc+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <float.h>
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_header_stdc=yes
-else
-  ac_cv_header_stdc=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-if test $ac_cv_header_stdc = yes; then
-  # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <string.h>
-
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "memchr" >/dev/null 2>&1; then :
-
-else
-  ac_cv_header_stdc=no
-fi
-rm -f conftest*
-
-fi
-
-if test $ac_cv_header_stdc = yes; then
-  # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <stdlib.h>
-
-_ACEOF
-if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
-  $EGREP "free" >/dev/null 2>&1; then :
-
-else
-  ac_cv_header_stdc=no
-fi
-rm -f conftest*
-
-fi
-
-if test $ac_cv_header_stdc = yes; then
-  # /bin/cc in Irix-4.0.5 gets non-ANSI ctype macros unless using -ansi.
-  if test "$cross_compiling" = yes; then :
-  :
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <ctype.h>
-#include <stdlib.h>
-#if ((' ' & 0x0FF) == 0x020)
-# define ISLOWER(c) ('a' <= (c) && (c) <= 'z')
-# define TOUPPER(c) (ISLOWER(c) ? 'A' + ((c) - 'a') : (c))
-#else
-# define ISLOWER(c) \
-		   (('a' <= (c) && (c) <= 'i') \
-		     || ('j' <= (c) && (c) <= 'r') \
-		     || ('s' <= (c) && (c) <= 'z'))
-# define TOUPPER(c) (ISLOWER(c) ? ((c) | 0x40) : (c))
-#endif
-
-#define XOR(e, f) (((e) && !(f)) || (!(e) && (f)))
-int
-main ()
-{
-  int i;
-  for (i = 0; i < 256; i++)
-    if (XOR (islower (i), ISLOWER (i))
-	|| toupper (i) != TOUPPER (i))
-      return 2;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-
-else
-  ac_cv_header_stdc=no
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_stdc" >&5
-$as_echo "$ac_cv_header_stdc" >&6; }
-if test $ac_cv_header_stdc = yes; then
-
-$as_echo "#define STDC_HEADERS 1" >>confdefs.h
-
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
-$as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
-if ${ac_cv_header_time+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/types.h>
-#include <sys/time.h>
-#include <time.h>
-
-int
-main ()
-{
-if ((struct tm *) 0)
-return 0;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_header_time=yes
-else
-  ac_cv_header_time=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_time" >&5
-$as_echo "$ac_cv_header_time" >&6; }
-if test $ac_cv_header_time = yes; then
-
-$as_echo "#define TIME_WITH_SYS_TIME 1" >>confdefs.h
-
-fi
-
-
 for ac_header in stdio.h sys/types.h sys/stat.h stdlib.h stddef.h memory.h string.h strings.h inttypes.h stdint.h unistd.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -18346,7 +18214,7 @@ fi
 
 done
 
-for ac_header in assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h pthread.h
+for ac_header in time.h sys/time.h assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h pthread.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -18740,7 +18608,8 @@ done
 pa_func=sigsetjmp
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for (maybe built-in) function $pa_func" >&5
 $as_echo_n "checking for (maybe built-in) function $pa_func... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #ifdef HAVE_SETJMP_H
@@ -18769,8 +18638,10 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 
 
 
@@ -18788,7 +18659,8 @@ do
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for (maybe built-in) math function $pa_func" >&5
 $as_echo_n "checking for (maybe built-in) math function $pa_func... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #ifdef HAVE_MATH_H
@@ -18816,8 +18688,10 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 
 done
 
@@ -18853,7 +18727,8 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for timezone variable" >&5
 $as_echo_n "checking for timezone variable... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <time.h>
 int
@@ -18871,8 +18746,10 @@ $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -18882,7 +18759,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tm_gmtoff in struct tm" >&5
 $as_echo_n "checking for tm_gmtoff in struct tm... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <time.h>
 int
@@ -18900,12 +18778,15 @@ $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tm_tzadj in struct tm" >&5
 $as_echo_n "checking for tm_tzadj in struct tm... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <time.h>
 int
@@ -18923,12 +18804,15 @@ $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettid" >&5
 $as_echo_n "checking for gettid... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #include <sys/types.h>
@@ -18949,12 +18833,15 @@ $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for TLS" >&5
 $as_echo_n "checking for TLS... " >&6; }
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 __thread int i=0;
 int
@@ -18972,8 +18859,10 @@ $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for 0..9999 year date range support" >&5
 $as_echo_n "checking for 0..9999 year date range support... " >&6; }
@@ -19119,6 +19008,7 @@ DEFS=-DHAVE_CONFIG_H
 
 ac_libobjs=
 ac_ltlibobjs=
+U=
 for ac_i in : $LIBOBJS; do test "x$ac_i" = x: && continue
   # 1. Remove the extension, and $U if already installed.
   ac_script='s/\$U\././;s/\.o$//;s/\.obj$//'

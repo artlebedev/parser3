@@ -270,6 +270,9 @@
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
 
@@ -278,6 +281,9 @@
 
 /* Define if you have timezone external variable in <time.h> */
 #undef HAVE_TIMEZONE
+
+/* Define to 1 if you have the <time.h> header file. */
+#undef HAVE_TIME_H
 
 /* Define if you have Thread-Local Storage */
 #undef HAVE_TLS
@@ -386,9 +392,6 @@
 
 /* system-wide auto.p */
 #undef SYSTEM_CONFIG_FILE
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#undef TIME_WITH_SYS_TIME
 
 /* Version number of package */
 #undef VERSION
