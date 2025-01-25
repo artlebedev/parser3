@@ -1,9 +1,25 @@
 # paf@design.ru
 # included in configure.ac
 
+AC_DEFUN([PA_TRY_COMPILE],[
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([$1], [$2])],
+    [$3],
+    [$4]
+  )
+])
+
+AC_DEFUN([PA_TRY_LINK],[
+  AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM([$1], [$2])],
+    [$3],
+    [$4]
+  )
+])
+
 AC_DEFUN([PA_CHECK_MATH_FUNC_ONE_ARG],[
 AC_MSG_CHECKING(for (maybe built-in) math function $1)
-AC_TRY_COMPILE([
+PA_TRY_COMPILE([
 #ifdef HAVE_MATH_H
 #       include <math.h>
 #endif
@@ -19,7 +35,7 @@ $3])
 
 
 AC_DEFUN([PA_CHECK_MATH_FUNCS_ONE_ARG],[
-AC_FOREACH([AC_Func], [$1],
+m4_foreach_w([AC_Func], [$1],
   [AH_TEMPLATE(AS_TR_CPP([HAVE_]AC_Func),
                [Define to 1 if you have the `]AC_Func[' (maybe built-in) math function function.])])dnl
 
@@ -35,7 +51,7 @@ done
 AC_DEFUN([PA_CHECK_SIGSETJMP],[
 pa_func=sigsetjmp
 AC_MSG_CHECKING(for (maybe built-in) function $pa_func)
-AC_TRY_COMPILE([
+PA_TRY_COMPILE([
 #ifdef HAVE_SETJMP_H
 #	include <setjmp.h>
 #endif

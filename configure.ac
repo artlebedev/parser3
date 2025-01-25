@@ -2,6 +2,7 @@ dnl Autoconf initialization
 AC_PREREQ(2.59)
 AC_INIT(parser, 3.5.1)
 AC_CONFIG_SRCDIR(README)
+AC_CONFIG_MACRO_DIRS(src/lib/ltdl/m4)
 
 
 dnl Automake Initialization
@@ -45,7 +46,7 @@ AC_PROG_CXX
 AC_PROG_CC
 
 dnl most tests should be compiled with C compiler [especially qsort test]
-AC_LANG_C
+AC_LANG([C])
 
 
 dnl Dll extension
@@ -161,7 +162,7 @@ if test -z "$GC_OK"; then
 	AC_MSG_CHECKING(for libgc)
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $GC_LIBS"
-	AC_TRY_LINK([ extern int GC_dont_gc; ],[ GC_dont_gc=0; ],
+	PA_TRY_LINK([ extern int GC_dont_gc; ],[ GC_dont_gc=0; ],
 		AC_MSG_RESULT(yes)
 	,
 		AC_MSG_RESULT(no)
@@ -209,7 +210,7 @@ if test -z "$PCRE_OK"; then
 	AC_MSG_CHECKING(for pcre2)
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES -lpcre2-8"
-	AC_TRY_LINK([ #define PCRE2_CODE_UNIT_WIDTH 8
+	PA_TRY_LINK([ #define PCRE2_CODE_UNIT_WIDTH 8
 #include <pcre2.h> ],[ void *v=pcre2_general_context_create(0,0,0); ],
 		AC_MSG_RESULT(yes)
 		PCRE_LIBS="$PCRE_LIBS -lpcre2-8"
@@ -226,7 +227,7 @@ if test -z "$PCRE_OK"; then
 	PCRE_LIBS="$PCRE_LIBS -lpcre"
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $PCRE_LIBS $PCRE_INCLUDES"
-	AC_TRY_LINK([ #include <pcre.h> ],[ const char *v=pcre_version(); ],
+	PA_TRY_LINK([ #include <pcre.h> ],[ const char *v=pcre_version(); ],
 		AC_MSG_RESULT(yes)
 	,
 		AC_MSG_RESULT(no)
@@ -269,7 +270,7 @@ AC_ARG_WITH(xml,[  --with-xml=DIR          DIR is the directory where
 		AC_MSG_CHECKING(for xml)
 		SAVE_LIBS=$LIBS
 		LIBS="$LIBS $XML_LIBS $XML_INCLUDES"
-		AC_TRY_LINK([ #include <libxslt/xslt.h> ],[ const char *v=xsltEngineVersion; ],
+		PA_TRY_LINK([ #include <libxslt/xslt.h> ],[ const char *v=xsltEngineVersion; ],
 			AC_MSG_RESULT(yes)
 		,
 			AC_MSG_RESULT(no)
@@ -324,7 +325,7 @@ AC_ARG_WITH(mailreceive,[  --with-mailreceive=DIR  is the directory where
 		AC_MSG_CHECKING(for mime)
 		SAVE_LIBS=$LIBS
 		LIBS="$LIBS $MIME_LIBS $MIME_INCLUDES"
-		AC_TRY_LINK([ #include <gmime/gmime.h> ],[ guint v=gmime_major_version; ],
+		PA_TRY_LINK([ #include <gmime/gmime.h> ],[ guint v=gmime_major_version; ],
 			AC_MSG_RESULT(yes)
 		,
 			AC_MSG_RESULT(no)
@@ -407,11 +408,8 @@ AC_STRUCT_DIRENT_D_TYPE
 AC_SYS_LARGEFILE
 
 dnl Checks for C header files
-AC_HEADER_STDC
-AC_HEADER_TIME
-
 AC_CHECK_HEADERS(stdio.h sys/types.h sys/stat.h stdlib.h stddef.h memory.h string.h strings.h inttypes.h stdint.h unistd.h)
-AC_CHECK_HEADERS(assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h pthread.h)
+AC_CHECK_HEADERS(time.h sys/time.h assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h pthread.h)
 AC_CHECK_HEADERS(errno.h dirent.h fcntl.h io.h sys/file.h sys/locking.h sys/select.h sys/resource.h sys/wait.h)
 AC_CHECK_HEADERS(sys/socket.h netinet/in.h arpa/inet.h netdb.h)
 
@@ -467,26 +465,26 @@ dnl For build-in date implementation we need to know local offset from GMT
 
 AC_LANG_PUSH(C++)
 AC_MSG_CHECKING(for timezone variable)
-AC_TRY_COMPILE([#include <time.h>], [int test=timezone;], AC_DEFINE(HAVE_TIMEZONE) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+PA_TRY_COMPILE([#include <time.h>], [int test=timezone;], AC_DEFINE(HAVE_TIMEZONE) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 AC_LANG_POP
 
 AC_MSG_CHECKING(for tm_gmtoff in struct tm)
-AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff=0;], AC_DEFINE(HAVE_TM_GMTOFF) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+PA_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_gmtoff=0;], AC_DEFINE(HAVE_TM_GMTOFF) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for tm_tzadj in struct tm)
-AC_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj=0;], AC_DEFINE(HAVE_TM_TZADJ) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+PA_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj=0;], AC_DEFINE(HAVE_TM_TZADJ) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for gettid)
-AC_TRY_COMPILE([
+PA_TRY_COMPILE([
 #include <sys/types.h>
 #include <sys/syscall.h>
 ], [uint tid=syscall(__NR_gettid);], AC_DEFINE(HAVE_GETTID) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for TLS)
-AC_TRY_COMPILE([__thread int i=0;], [], AC_DEFINE(HAVE_TLS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+PA_TRY_COMPILE([__thread int i=0;], [], AC_DEFINE(HAVE_TLS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for 0..9999 year date range support)
-AC_TRY_RUN([
+AC_RUN_IFELSE([AC_LANG_SOURCE([
 #include <string.h>
 #include <time.h>
 
@@ -501,7 +499,7 @@ int main() {
 	tmH.tm_mday=31;
 	return mktime(&tmL)==-1 || mktime(&tmH)==-1;
 }
-], AC_DEFINE(PA_DATE64) AC_MSG_RESULT(yes), AC_MSG_RESULT(no), AC_MSG_RESULT(no))
+])], AC_DEFINE(PA_DATE64) AC_MSG_RESULT(yes), AC_MSG_RESULT(no), AC_MSG_RESULT(no))
 
 dnl Output header and makefiles
 AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <time.h>])
@@ -511,22 +509,22 @@ AH_TEMPLATE([HAVE_GETTID],[Define if you have gettid()])
 AH_TEMPLATE([HAVE_TLS],[Define if you have Thread-Local Storage])
 AH_TEMPLATE([PA_DATE64],[Define if you have 0..9999 year date range support])
 
-AM_CONFIG_HEADER(src/include/pa_config_auto.h)
+AC_CONFIG_HEADERS(src/include/pa_config_auto.h)
 
-AC_OUTPUT(
-	Makefile 
-	src/Makefile 
-	src/types/Makefile 
-	src/classes/Makefile 
-	src/include/Makefile 
-	src/main/Makefile 
-	src/sql/Makefile 
-	src/lib/Makefile 
-	src/lib/gd/Makefile 
-	src/lib/smtp/Makefile 
-	src/lib/gc/Makefile 
+AC_CONFIG_FILES([
+	Makefile
+	src/Makefile
+	src/types/Makefile
+	src/classes/Makefile
+	src/include/Makefile
+	src/main/Makefile
+	src/sql/Makefile
+	src/lib/Makefile
+	src/lib/gd/Makefile
+	src/lib/smtp/Makefile
+	src/lib/gc/Makefile
 	src/lib/gc/include/Makefile
-	src/lib/pcre/Makefile 
+	src/lib/pcre/Makefile
 	src/lib/cord/Makefile
 	src/lib/cord/include/Makefile
 	src/lib/cord/include/private/Makefile
@@ -543,4 +541,5 @@ AC_OUTPUT(
 	src/targets/isapi/Makefile
 	etc/Makefile
 	etc/parser3.charsets/Makefile
-	etc/auto.p)
+	etc/auto.p])
+AC_OUTPUT
