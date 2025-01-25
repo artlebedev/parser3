@@ -1,6 +1,6 @@
 dnl Autoconf initialization
 AC_PREREQ(2.59)
-AC_INIT(parser, 3.5.1)
+AC_INIT(parser, 3.5.2b)
 AC_CONFIG_SRCDIR(README)
 AC_CONFIG_MACRO_DIRS(src/lib/ltdl/m4)
 
