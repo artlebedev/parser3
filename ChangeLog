@@ -1,3 +1,15 @@
+2025-01-25  moko
+
+	* configure.ac, src/include/pa_version.h: version 3.5.1 -> 3.5.2b
+
+	* aclocal.m4, configure, src/include/pa_config_auto.h.in,
+	  src/lib/ltdl/aclocal.m4, src/lib/ltdl/configure: aclocal &&
+	  autoheader && automake && autoconf
+
+	* src/lib/ltdl/configure.ac: new autotools used
+
+	* acsite.m4, configure.ac: new autotools warnings fixed
+
 2025-01-10  moko
 
 	* tests/results/320.processed: test result updated after syslog
@@ -7109,15 +7121,13 @@
 	  config_auto.h.in, config_fixed.h, configure, configure.ac,
 	  configure.in, lt__alloc.c, lt__dirent.c, lt__strl.c,
 	  lt_dlloader.c, lt_error.c, ltdl.c, ltdl.h, slist.c,
-	  config/compile, config/config.guess, config/config.sub,
-	  config/depcomp, config/install-sh, config/ltmain.sh,
-	  config/missing, libltdl/lt__alloc.h, libltdl/lt__dirent.h,
-	  libltdl/lt__glibc.h, libltdl/lt__private.h, libltdl/lt__strl.h,
-	  libltdl/lt_dlloader.h, libltdl/lt_error.h, libltdl/lt_system.h,
-	  libltdl/slist.h, loaders/dld_link.c, loaders/dlopen.c,
-	  loaders/dyld.c, loaders/load_add_on.c, loaders/loadlibrary.c,
-	  loaders/preopen.c, loaders/shl_load.c, m4/argz.m4, m4/libtool.m4,
-	  m4/ltdl.m4, m4/ltoptions.m4, m4/ltsugar.m4, m4/ltversion.m4,
+	  libltdl/lt__alloc.h, libltdl/lt__dirent.h, libltdl/lt__glibc.h,
+	  libltdl/lt__private.h, libltdl/lt__strl.h, libltdl/lt_dlloader.h,
+	  libltdl/lt_error.h, libltdl/lt_system.h, libltdl/slist.h,
+	  loaders/dld_link.c, loaders/dlopen.c, loaders/dyld.c,
+	  loaders/load_add_on.c, loaders/loadlibrary.c, loaders/preopen.c,
+	  loaders/shl_load.c, m4/argz.m4, m4/libtool.m4, m4/ltdl.m4,
+	  m4/ltoptions.m4, m4/ltsugar.m4, m4/ltversion.m4,
 	  m4/lt~obsolete.m4: libtool updated to version 2.4.2
 
 	* configure.in: preparation for new libtool
