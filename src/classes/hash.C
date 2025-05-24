@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.169 2024/12/23 18:30:55 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.170 2025/05/24 12:12:25 moko Exp $";
 
 // class
 
@@ -805,6 +805,35 @@ static void _rename(Request& r, MethodParams& params) {
 }
 
 
+static void _array(Request& r, MethodParams& params) {
+	HashStringValue& hash=GET_SELF(r, VHashBase).hash();
+
+	VArray& result=*new VArray;
+	ArrayValue& array=result.array();
+
+	if(params.count() > 0) {
+		const String& smode=params.as_string(0, "mode must be string");
+		if(smode == "keys"){
+			for(HashStringValue::Iterator i(hash); i; i.next()){
+				array+=new VString(*new String(i.key(), String::L_TAINTED));
+			}
+		} else if(smode == "values"){
+			for(HashStringValue::Iterator i(hash); i; i.next()){
+				array+=i.value();
+			}
+		} else {
+			throw Exception(PARSER_RUNTIME, &smode, "mode must be 'keys' or 'values'");
+		}
+	} else {
+		for(HashStringValue::Iterator i(hash); i; i.next()){
+			array.put(VArray::index(i.key()), i.value());
+		}
+	}
+
+	r.write(result);
+}
+
+
 // constructor
 
 MHash::MHash(): Methoded("hash") 
@@ -863,6 +892,9 @@ MHash::MHash(): Methoded("hash")
 	// ^hash.rename[from;to]
 	// ^hash.rename[ $.from[to] ... ]
 	add_native_method("rename", Method::CT_DYNAMIC, _rename, 1, 2);
+
+	// ^hash.array[[keys|values]]
+	add_native_method("array", Method::CT_DYNAMIC, _array, 0, 1);
 
 #ifdef FEATURE_GET_ELEMENT4CALL
 	// aliases without "_"
