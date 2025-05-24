@@ -1,0 +1,21 @@
+Content-Type: text/html
+Content-Length: 194
+
+1. {
+"0":"v0",
+"1":"v1",
+"3":"v3"
+}
+2. {
+"0":"0",
+"1":"1",
+"2":"3"
+}
+3. {
+"0":"v0",
+"1":"v1",
+"2":"v3"
+}
+4. Exception type: parser.runtime,
+Source: bug,
+Comment: mode must be 'keys' or 'values'
