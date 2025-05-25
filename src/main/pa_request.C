@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.432 2024/12/23 18:30:55 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.433 2025/05/25 20:55:23 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -70,10 +70,10 @@ const String auto_method_name(AUTO_METHOD_NAME);
 static const String use_method_name(USE_METHOD_NAME);
 static const String autouse_method_name(AUTOUSE_METHOD_NAME);
 
-const String exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
-const String exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
-const String exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
-const String exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
+const String::Body exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
+const String::Body exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
+const String::Body exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
+const String::Body exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 
 static const String origin_key(ORIGIN_KEY);
 

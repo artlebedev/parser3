@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.268 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.269 2025/05/25 20:55:23 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -29,10 +29,10 @@
 extern const String main_method_name;
 extern const String auto_method_name;
 
-extern const String exception_type_part_name;
-extern const String exception_source_part_name;
-extern const String exception_comment_part_name;
-extern const String exception_handled_part_name;
+extern const String::Body exception_type_part_name;
+extern const String::Body exception_source_part_name;
+extern const String::Body exception_comment_part_name;
+extern const String::Body exception_handled_part_name;
 
 // defines for statics
 
