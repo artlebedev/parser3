@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.281 2024/11/13 00:09:52 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.282 2025/05/25 17:44:27 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -233,7 +233,7 @@ public:
 		*this+=new String("match");
 		*this+=new String("postmatch");
 		for(int i=0; i<MAX_MATCH_GROUPS; i++) {
-			*this+=new String(pa_uitoa(1+i), String::L_CLEAN);
+			*this+=new String(String::Body::uitoa(1+i), String::L_CLEAN);
 		}
 	}
 };
@@ -246,6 +246,15 @@ static Table &string_match_table_template(){
 }
 
 // String::Body methods
+
+String::Body String::Body::uitoa(size_t aindex) {
+	static const size_t CACHE_SIZE=256;
+	static String::Body cache[CACHE_SIZE];
+	if (aindex < CACHE_SIZE)
+		return !cache[aindex] ? (cache[aindex]=Body(pa_uitoa(aindex))) : cache[aindex];
+	else
+		return Body(pa_uitoa(aindex));
+}
 
 String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_t* out_start, size_t* out_length, Charset* source_charset) const {
 	size_t our_length=length();

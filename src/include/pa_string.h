@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.235 2025/05/25 16:36:13 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.236 2025/05/25 17:44:27 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -400,6 +400,7 @@ public:
 #endif
 		}
 
+		static Body uitoa(size_t aindex);
 
 		void clear() { ZERO_LENGTH ZERO_HASH_CODE body=CORD_EMPTY; }
 
