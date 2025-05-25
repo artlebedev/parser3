@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.234 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.235 2025/05/25 16:36:13 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -650,17 +650,14 @@ public:
 	String& mid(size_t substr_begin, size_t substr_end) const;
 	String& mid(Charset& charset, size_t from, size_t to, size_t helper_length=0) const;
 
-	/** 
-		ignore lang if it's L_UNSPECIFIED
-		but when specified: look for substring that lies in ONE fragment in THAT lang
-		@return position of substr in string, -1 means "not found" [const char* version]
-	*/
-	size_t pos(const Body substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
-	/// String version of @see pos(const char*, int, Language)
-	size_t pos(const String& substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
-	size_t pos(char c, size_t this_offset=0) const {
-		return body.pos(c, this_offset);
-	}
+	/// return position of substr in string, -1 means "not found" [const char* version]
+	size_t pos(const char* substr, size_t this_offset=0) const { return body.pos(substr, this_offset); }
+	size_t pos(const Body substr, size_t this_offset=0) const { return body.pos(substr, this_offset); }
+	size_t pos(const String& substr, size_t this_offset=0) const { return body.pos(substr.body, this_offset); }
+	size_t pos(char c, size_t this_offset=0) const { return body.pos(c, this_offset); }
+	/// ignore lang if it's L_UNSPECIFIED, otherwise look for substring that lies in ONE fragment in THAT lang
+	size_t pos(const Body substr, size_t this_offset, Language lang) const;
+	size_t pos(const String& substr, size_t this_offset, Language lang) const;
 	size_t pos(Charset& charset, const String& substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
 
 	size_t strrpbrk(const char* chars, size_t left=0) const {
