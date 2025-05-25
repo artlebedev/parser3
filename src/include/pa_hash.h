@@ -9,7 +9,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.105 2025/01/06 19:47:18 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.106 2025/05/25 20:54:30 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -103,6 +103,9 @@ inline uint hash_code(int self) {
 		for(Pair *pair=*ref++; pair; pair=pair->link)
 
 #endif
+
+#define HASH_PUT_CSTR(h, cstr, v) \
+	{ static const String::Body body_##__LINE__(cstr); (h).put(body_##__LINE__, (v)); }
 
 template<typename K, typename V> class HASH: public PA_Object {
 protected:
