@@ -1,3 +1,50 @@
+2025-05-26  moko
+
+	* src/: classes/array.C, classes/curl.C, classes/hash.C,
+	  classes/hashfile.C, classes/image.C, classes/table.C,
+	  main/pa_request.C, main/pa_xml_io.C, types/pa_vconsole.h,
+	  types/pa_venv.C, types/pa_vmail.C, types/pa_vregex.C,
+	  types/pa_vrequest.C, types/pa_vresponse.C, types/pa_vstring.h:
+	  VString(const char *avalue) added and used to optimize new
+	  VString(*new String(i.key(), String::L_TAINTED)) (related to
+	  feature #1277)
+
+	* src/: classes/array.C, classes/curl.C, classes/file.C,
+	  classes/hash.C, classes/image.C, classes/json.C,
+	  classes/reflection.C, classes/xnode.C, include/pa_charset.h,
+	  include/pa_hash.h, include/pa_http.h, include/pa_string.h,
+	  main/pa_charsets.C, main/pa_http.C, main/pa_request.C,
+	  main/pa_string.C, main/pa_xml_io.C, targets/cgi/pa_sapi_info.h,
+	  types/pa_varray.C, types/pa_vform.C, types/pa_vhash.h,
+	  types/pa_vhashfile.C, types/pa_vimage.C, types/pa_vmail.C,
+	  types/pa_vmethod_frame.h, types/pa_vstatus.C, types/pa_vtable.C,
+	  types/pa_vxnode.C: implements feature #1277 String::Body(const
+	  char *abody) now explicit but HashString::put(const char *str, V
+	  value) added for simplicity optimizations: HASH_PUT_CSTR used
+	  where hash.put called several time during execution; caching
+	  String::Body::uitoa used at all pash.put(<uint> calls.
+
+2025-05-25  moko
+
+	* src/: include/pa_request.h, main/pa_request.C: minor opt (related
+	  to feature #1277)
+
+	* src/include/pa_hash.h: HASH_PUT_CSTR added (related to #1277)
+
+	* src/: include/pa_string.h, main/pa_string.C: String::Body::uitoa
+	  added for caching (related to feature #1277)
+
+	* src/include/pa_string.h: optimized String:pos versions added
+	  (without language + char *) (related to feature #1277)
+
+2025-05-24  moko
+
+	* tests/: 445.html, results/445.processed: test for
+	  ^hash.array[[keys|values]] added (related to feature #1274)
+
+	* src/classes/hash.C: ^hash.array[[keys|values]] added (implements
+	  feature #1274)
+
 2025-01-26  moko
 
 	* src/include/pa_config_includes.h: synced with pa_config_auto.h.in
