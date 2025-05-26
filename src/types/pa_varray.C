@@ -9,7 +9,7 @@
 #include "pa_vfile.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.8 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VARRAY_H;
+volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.9 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VARRAY_H;
 
 // Explicit instantiation for Visual Studio
 template class SparseArray<Value*>;
@@ -24,7 +24,7 @@ HashStringValue& VArray::hash(){
 	HashStringValue& result=*new HashStringValue();
 	for(ArrayValue::Iterator i(farray); i; i.next()) {
 		if(i.value())
-			result.put(i.key(), i.value());
+			result.put(String::Body::uitoa(i.index()), i.value());
 	}
 	return result;
 }

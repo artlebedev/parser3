@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.101 2024/11/04 03:53:25 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.102 2025/05/26 00:52:15 moko Exp $" IDENT_XNODE_H;
 
 // classes
 
@@ -230,9 +230,7 @@ struct AccumulateFoundInfo
 #endif
 static void AccumulateFound(xmlNode& node, AccumulateFoundInfo* info)
 {
-	info->hash->put(
-		pa_uitoa(info->index++), 
-		&info->vdoc->wrap(node));
+	info->hash->put(String::Body::uitoa(info->index++), &info->vdoc->wrap(node));
 }
 template<typename I> static void
 pa_xmlNamedPreorderTraversal (
@@ -723,7 +721,7 @@ static void selectNodesHandler(Request&,
 			if(int size=res->nodesetval->nodeNr) {
 				HashStringValue& hash=vhash.hash();
 				for(int i=0; i<size; i++)
-					hash.put(pa_uitoa(i), &xdoc.wrap(*res->nodesetval->nodeTab[i]));
+					hash.put(String::Body::uitoa(i), &xdoc.wrap(*res->nodesetval->nodeTab[i]));
 			}
 		break;
 	default: 

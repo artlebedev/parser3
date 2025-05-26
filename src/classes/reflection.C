@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.97 2024/12/23 16:59:17 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.98 2025/05/26 00:52:15 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -361,13 +361,13 @@ static void _method_info(Request& r, MethodParams& params) {
 		// parser code
 		const String* filespec = r.get_method_filespec(method);
 		if( filespec )
-			hash->put("file", new VString(*filespec));
+			HASH_PUT_CSTR(*hash, "file", new VString(*filespec));
 
 		hash->put(method_max_params, new VInt(method->params_count + (method->named_params ? 1 : 0)));
 
 		if(method->params_names)
 			for(size_t i=0; i<method->params_names->count(); i++)
-				hash->put(pa_uitoa(i), new VString(*method->params_names->get(i)));
+				hash->put(String::Body::uitoa(i), new VString(*method->params_names->get(i)));
 
 		if(method->extra_params)
 			hash->put(method_extra_param, new VString(*method->extra_params));
@@ -625,8 +625,8 @@ static void _stack(Request& r, MethodParams& params) {
 			if(!method.native_code){
 				Operation::Origin origin=r.get_method_origin(&method);
 				if(origin.file_no){
-					current->put("file", new VString(*r.get_used_filespec(origin.file_no)));
-					current->put("line", new VInt(origin.line)); // no +1 as declaration before first command
+					HASH_PUT_CSTR(*current, "file", new VString(*r.get_used_filespec(origin.file_no)));
+					HASH_PUT_CSTR(*current, "line", new VInt(origin.line)); // no +1 as declaration before first command
 				}
 
 				if(show_args || show_locals){
@@ -645,7 +645,7 @@ static void _stack(Request& r, MethodParams& params) {
 						args->put(*method.extra_params, caller->get_element(*method.extra_params));
 
 					if(show_args)
-						current->put("args", &vargs);
+						HASH_PUT_CSTR(*current, "args", &vargs);
 
 					if(show_locals){
 						VHash& vlocals=*new VHash;
@@ -660,12 +660,12 @@ static void _stack(Request& r, MethodParams& params) {
 								}
 							}
 
-						current->put("locals", &vlocals);
+						HASH_PUT_CSTR(*current, "locals", &vlocals);
 					}
 				}
 			}
 
-			result->put(pa_uitoa(index), &vcurrent);
+			result->put(String::Body::uitoa(index), &vcurrent);
 		}
 		caller=caller->caller();
 		index++;

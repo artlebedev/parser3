@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.282 2025/05/25 17:44:27 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.283 2025/05/26 00:52:15 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -285,7 +285,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 				char c=CORD_pos_fetch(pos);
 				if(strchr(chars, c)) {
 					if(++start==our_length)
-						return 0; // all chars are empty, just return empty string
+						return String::Body(); // all chars are empty, just return empty string
 				} else
 					break;
 
@@ -300,7 +300,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 				char c=CORD_pos_fetch(pos);
 				if(strchr(chars, c)) {
 					if(--end==0) // optimization: NO need to check for 'end>=start', that's(<) impossible
-						return 0; // all chars are empty, just return empty string
+						return String::Body(); // all chars are empty, just return empty string
 				} else
 					break;
 
@@ -330,7 +330,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 				if(found){
 					start+=char_length;
 					if(start==our_length)
-						return 0; // all chars are empty, just return empty string
+						return String::Body(); // all chars are empty, just return empty string
 				} else
 					break;
 			}
@@ -354,7 +354,7 @@ String::Body String::Body::trim(String::Trim_kind kind, const char* chars, size_
 				if(found){
 					end-=char_length;
 					if(end==0)
-						return 0; // all chars are empty, just return empty string
+						return String::Body(); // all chars are empty, just return empty string
 				} else
 					break;
 			}
@@ -631,7 +631,7 @@ void String::split(ArrayString& result, size_t pos_after, const char* delim, Lan
 	if(size_t delim_length=strlen(delim)) {
 		size_t pos_before;
 		// while we have 'delim'...
-		while((pos_before=pos(delim, pos_after, lang))!=STRING_NOT_FOUND) {
+		while((pos_before=pos(String::Body(delim), pos_after, lang)) != STRING_NOT_FOUND) {
 			result+=&mid(pos_after, pos_before);
 			pos_after=pos_before+delim_length;
 		}
@@ -777,7 +777,7 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 		}
 	}
 	result.langs=langs;
-	result.body=new_cstr;
+	result.body=String::Body(new_cstr);
 
 	return result;
 }

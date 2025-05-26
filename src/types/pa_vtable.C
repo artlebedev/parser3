@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.57 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.58 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -40,7 +40,7 @@ Value* VTable::fields_element() {
 		size_t row_size=ltable[ltable.current()]->count(); // number of columns in current row
 		for(size_t index=0; index<row_size; index++){
 			const String* column_item=ltable.item(index);
-			hash->put(pa_uitoa(index), column_item ? new VString(*column_item) : VString::empty() );
+			hash->put(String::Body::uitoa(index), column_item ? new VString(*column_item) : VString::empty() );
 		}
 	}
 

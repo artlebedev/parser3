@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.433 2025/05/25 20:55:23 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.434 2025/05/26 00:52:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -175,8 +175,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	pa_register_thread_request(*this);
 
 	// file_no=0 => unknown
-	file_list+="UNKNOWN";
-	file_list+="-body of process-"; // pseudo_file_no__process
+	file_list+=String::Body("UNKNOWN");
+	file_list+=String::Body("-body of process-"); // pseudo_file_no__process
 
 	// maybe expire old caches
 	cache_managers->maybe_expire();
@@ -251,7 +251,7 @@ VStateless_class& Request::get_class_ref(const String& name){
 
 bool Request::add_class(const char* atype, VStateless_class *aclass){
 	if(!allow_class_replace){
-		if(!classes().put_dont_replace(atype, aclass))
+		if(!classes().put_dont_replace(String::Body(atype), aclass))
 			return true;
 		if(strcmp(atype, VARRAY_TYPE))
 			return false;
@@ -1058,9 +1058,9 @@ Request::Exception_details Request::get_details(const Exception& e) {
 
 	// $.file $.lineno $.colno
 	if(origin.file_no){
-		hash.put("file", new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
-		hash.put("lineno", new VInt(1+origin.line));
-		hash.put("colno", new VInt(1+origin.col));
+		HASH_PUT_CSTR(hash, "file", new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
+		HASH_PUT_CSTR(hash, "lineno", new VInt(1+origin.line));
+		HASH_PUT_CSTR(hash, "colno", new VInt(1+origin.col));
 	}
 
 	// $.comment

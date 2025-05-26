@@ -9,7 +9,7 @@
 #ifndef PA_HASH_H
 #define PA_HASH_H
 
-#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.106 2025/05/25 20:54:30 moko Exp $"
+#define IDENT_PA_HASH_H "$Id: pa_hash.h,v 1.107 2025/05/26 00:52:15 moko Exp $"
 
 #include "pa_memory.h"
 #include "pa_types.h"
@@ -481,6 +481,10 @@ public:
 		HASH_NEW_PAIR(code, key, value);
 		this->fpairs_count++;
 		return false;
+	}
+
+	bool put(const char *str, V value) {
+		return put(String::Body(str), value);
 	}
 
 	/// remove the [key] @returns existed or not

@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.45 2024/11/04 03:53:25 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.46 2025/05/26 00:52:15 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -19,7 +19,7 @@ volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.45 2024/11/04 03:5
 
 THREAD_LOCAL HashStringBool* xml_dependencies = NULL; // every TLS should be referenced elsewhere, or GC will collect it
 
-static void add_dependency(const String::Body url) { 
+static void add_dependency(const char *url) { 
 	if(xml_dependencies) // do we need to monitor now?
 		xml_dependencies->put(url, true);
 }

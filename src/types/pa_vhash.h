@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.87 2024/11/04 03:53:26 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.88 2025/05/26 00:52:15 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -113,7 +113,7 @@ public: // usage
 	override HashStringValue& hash() { return fhash; }
 	override void set_default(Value* adefault) { _default=adefault; }
 	override Value* get_default() { return _default; }
-	override void add(Value* avalue) { fhash.put(pa_uitoa(fhash.count()), avalue); }
+	override void add(Value* avalue) { fhash.put(String::Body::uitoa(fhash.count()), avalue); }
 
 	void extract_default();
 
@@ -186,7 +186,7 @@ public: // usage
 	override HashStringValue& hash() { return *fhash; }
 	override void set_default(Value*) { }
 	override Value* get_default() { return 0; }
-	override void add(Value* avalue) { fhash->put(pa_uitoa(fhash->count()), avalue); }
+	override void add(Value* avalue) { fhash->put(String::Body::uitoa(fhash->count()), avalue); }
 
 private:
 

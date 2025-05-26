@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.66 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.67 2025/05/26 00:52:15 moko Exp $";
 
 // class
 
@@ -522,7 +522,7 @@ const String* Json_options::array_json_string(ArrayValue *array) {
 				result << indent;
 				delim = get_array_delim(json_string_recursion);
 			}
-			result << value_json_string(i.key(), i.value() ? *i.value() : static_cast<Value&>(*VVoid::get()), *this);
+			result << value_json_string(String::Body::uitoa(i.index()), i.value() ? *i.value() : static_cast<Value&>(*VVoid::get()), *this);
 		}
 		result << "\n" << (indent=get_indent(json_string_recursion-1)) << "]";
 
@@ -531,7 +531,7 @@ const String* Json_options::array_json_string(ArrayValue *array) {
 		bool need_delim=false;
 		for(ArrayValue::Iterator i(*array); i; i.next() ){
 			if(need_delim) result << ",\n";
-			result << value_json_string(i.key(), i.value() ? *i.value() : static_cast<Value&>(*VVoid::get()), *this);
+			result << value_json_string(String::Body::uitoa(i.index()), i.value() ? *i.value() : static_cast<Value&>(*VVoid::get()), *this);
 			need_delim=true;
 		}
 		result << "\n]";
@@ -561,7 +561,7 @@ const String* Json_options::array_compact_json_string(ArrayValue *array) {
 					result << indent;
 					delim = get_array_delim(json_string_recursion);
 				}
-				result << value_json_string(i.key(), *i.value(), *this);
+				result << value_json_string(String::Body::uitoa(i.index()), *i.value(), *this);
 			}
 		}
 		result << "\n" << (indent=get_indent(json_string_recursion-1)) << "]";
@@ -572,7 +572,7 @@ const String* Json_options::array_compact_json_string(ArrayValue *array) {
 		for(ArrayValue::Iterator i(*array); i; i.next() ){
 			if (i.value()){
 				if(need_delim) result << ",\n";
-				result << value_json_string(i.key(), *i.value(), *this);
+				result << value_json_string(String::Body::uitoa(i.index()), *i.value(), *this);
 				need_delim=true;
 			}
 		}
@@ -595,9 +595,10 @@ const String& value_json_string(String::Body key, Value& v, Json_options& option
 			options.methods->put(v.type(), method ? method : VVoid::get());
 		}
 		if(method && !method->is_void()) {
+			static const String::Body sindent("indent");
 			Junction* junction=method->get_junction();
 			HashStringValue* params_hash=options.params && options.indent ? options.params->get_hash() : NULL;
-			Temp_hash_value<HashStringValue, Value*> indent(params_hash, "indent", new VString(*new String(options.indent, String::L_AS_IS)));
+			Temp_hash_value<HashStringValue, Value*> indent(params_hash, sindent, new VString(*new String(options.indent, String::L_AS_IS)));
 
 			Value *params[]={new VString(*new String(key, String::L_JSON)), &v, options.params ? options.params : VVoid::get()};
 
@@ -701,7 +702,7 @@ static void _string(Request& r, MethodParams& params) {
 		for(char *c=result;*c;c++)
 			if(*c=='\n')
 				*c=' ';
-		result_body=result;
+		result_body=String::Body(result);
 	}
 	r.write(*new String(result_body, String::L_AS_IS));
 }

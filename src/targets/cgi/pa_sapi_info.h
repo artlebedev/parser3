@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.21 2024/11/10 12:57:17 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.22 2025/05/26 00:52:15 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -141,13 +141,13 @@ public:
 			env.put(name, value);
 		}
 
-		env.put("REQUEST_METHOD", connection.method());
-		env.put("REQUEST_URI", connection.uri());
-		env.put("QUERY_STRING", connection.query());
+		HASH_PUT_CSTR(env, "REQUEST_METHOD", String::Body(connection.method()));
+		HASH_PUT_CSTR(env, "REQUEST_URI", String::Body(connection.uri()));
+		HASH_PUT_CSTR(env, "QUERY_STRING", String::Body(connection.query()));
 
-		env.put("SERVER_NAME", host);
-		env.put("SERVER_PORT", HTTPD_Server::port);
-		env.put("REMOTE_ADDR", connection.remote_addr);
+		HASH_PUT_CSTR(env, "SERVER_NAME", host);
+		HASH_PUT_CSTR(env, "SERVER_PORT", String::Body(HTTPD_Server::port));
+		HASH_PUT_CSTR(env, "REMOTE_ADDR", String::Body(connection.remote_addr));
 
 	}
 

@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.132 2024/12/24 02:58:47 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.133 2025/05/26 00:52:15 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -72,7 +72,7 @@ bool HTTP_Headers::add_header(const char *line){
 	const char *value=strchr(line, ':');
 
 	if(value && value != line){ // we need only headers, not the response code
-		Header header(str_upper(line, value-line), String::Body(value+1).trim(String::TRIM_BOTH, " \t\n\r"));
+		Header header(String::Body(str_upper(line, value-line)), String::Body(value+1).trim(String::TRIM_BOTH, " \t\n\r"));
 
 		if(header.name == String::Body(HTTP_CONTENT_TYPE_UPPER) && content_type.is_empty())
 			content_type=header.value;
@@ -890,7 +890,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 	result.headers=new HashStringValue;
 	VHash* vtables=new VHash;
-	result.headers->put("tables", vtables);
+	HASH_PUT_CSTR(*result.headers, "tables", vtables);
 
 	if (!real_remote_charset && !response.headers.content_type.is_empty())
 		real_remote_charset=detect_charset(response.headers.content_type.cstr());
@@ -914,7 +914,7 @@ File_read_http_result pa_internal_file_read_http(Request& r, const String& file_
 
 	// filling $.cookies
 	if(vcookies=vtables->hash().get("SET-COOKIE"))
-		result.headers->put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
+		HASH_PUT_CSTR(*result.headers, HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 
 	// output response
 	String::C real_body=String::C(raw_body, raw_body_size);

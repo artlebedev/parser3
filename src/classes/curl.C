@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.75 2024/12/13 13:14:28 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.76 2025/05/26 00:52:15 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -798,11 +798,11 @@ static void _curl_load_action(Request& r, MethodParams& params){
 
 	long http_status = 0;
 	if(f_curl_easy_getinfo(curl(), CURLINFO_RESPONSE_CODE, &http_status) == CURLE_OK){
-		result.fields().put("status", new VInt(http_status));
+		HASH_PUT_CSTR(result.fields(), "status", new VInt(http_status));
 	}
 
 	VHash* vtables=new VHash;
-	result.fields().put("tables", vtables);
+	HASH_PUT_CSTR(result.fields(), "tables", vtables);
 
 	for(Array_iterator<HTTP_Headers::Header> i(response.headers); i; ){
 		HTTP_Headers::Header header=i.next();
@@ -818,7 +818,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 
 	// filling $.cookies
 	if(Value *vcookies=vtables->hash().get("SET-COOKIE"))
-		result.fields().put(HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
+		HASH_PUT_CSTR(result.fields(), HTTP_COOKIES_NAME, new VTable(parse_cookies(r, vcookies->get_table())));
 
 	r.write(result);
 }

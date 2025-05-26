@@ -18,7 +18,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.129 2024/12/23 18:30:55 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.130 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -253,7 +253,7 @@ void VForm::AppendFormFileEntry(const char* cname_cstr,
 		if(!vhash)
 			files.put(sname, vhash=new VHash);
 		HashStringValue& hash=*vhash->get_hash();
-		hash.put(pa_uitoa(hash.count()), vfile);
+		hash.put(String::Body::uitoa(hash.count()), vfile);
 	}
 
 	// elements

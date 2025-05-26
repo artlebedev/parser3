@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.60 2024/12/11 21:57:35 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.61 2025/05/26 00:52:15 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -61,6 +61,7 @@ public:
 
 	static String::C transcode(const String::C src, const Charset& source_charset, const Charset& dest_charset);
 	static String::Body transcode(const String::Body src, const Charset& source_transcoder, const Charset& dest_transcoder);
+	static String::Body transcode(const char* src,const Charset& source_transcoder, const Charset& dest_transcoder){ return transcode(String::Body(src), source_transcoder, dest_transcoder); }
 	static String& transcode(const String& src, const Charset& source_transcoder, const Charset& dest_transcoder);
 	static void transcode(ArrayString& src, const Charset& source_transcoder, const Charset& dest_transcoder);
 	static void transcode(HashStringString& src, const Charset& source_transcoder, const Charset& dest_transcoder);

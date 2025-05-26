@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.170 2025/05/24 12:12:25 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.171 2025/05/26 00:52:15 moko Exp $";
 
 // class
 
@@ -201,7 +201,7 @@ static void _create_or_add(Request& r, MethodParams& params) {
 		if(VArray* src=dynamic_cast<VArray*>(&vsrc)) {
 			for(ArrayValue::Iterator i(src->array()); i; i.next()){
 				if(i.value())
-					self_hash->put(i.key(), i.value());
+					self_hash->put(String::Body::uitoa(i.index()), i.value());
 			}
 			return;
 		} else if(VHashBase* src=dynamic_cast<VHashBase*>(&vsrc)) {

@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.295 2024/12/23 18:30:55 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.296 2025/05/26 00:52:15 moko Exp $";
 
 // defines
 
@@ -488,10 +488,10 @@ static void _exec_cgi(Request& r, MethodParams& params, bool cgi) {
 	const String& script_name=r.full_disk_path(params.as_file_name(param_index++));
 
 	HashStringString env;
-	#define ECSTR(name, value_cstr) if(value_cstr) env.put(#name, value_cstr);
+	#define ECSTR(name, value_cstr) if(value_cstr) env.put(#name, String::Body(value_cstr));
 	// passing environment
 	for(SAPI::Env::Iterator i(r.sapi_info); i; i.next() )
-		env.put(i.key(), i.value() );
+		env.put(i.key(), String::Body(i.value()) );
 
 	// const
 	ECSTR(GATEWAY_INTERFACE, "CGI/1.1");

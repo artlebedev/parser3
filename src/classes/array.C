@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.37 2024/11/29 16:09:53 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.38 2025/05/26 00:52:15 moko Exp $";
 
 // class
 
@@ -922,7 +922,7 @@ l1:			switch(result_type) {
 					r.write(*array.get(pos));
 					break;
 				case AtResultTypeHash:
-					r.write(SingleElementHash(pa_uitoa(pos), array.get(pos)));
+					r.write(SingleElementHash(String::Body::uitoa(pos), array.get(pos)));
 					break;
 			}
 		} else if((size_t)pos == count-1){
@@ -939,7 +939,7 @@ l1:			switch(result_type) {
 							r.write(*i.value());
 							break;
 						case AtResultTypeHash:
-							r.write(SingleElementHash(i.key(), i.value()));
+							r.write(SingleElementHash(String::Body::uitoa(i.index()), i.value()));
 							break;
 					}
 					break;

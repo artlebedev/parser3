@@ -11,36 +11,36 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.52 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.53 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height, gdImage* aimage, Value* aexif, Value* axmp) {
 	fimage=aimage;
 
 	// $src
 	if(src)
-		ffields.put("src", new VString(*src));
+		HASH_PUT_CSTR(ffields, "src", new VString(*src));
 
 	// $width
 	if(width)
-		ffields.put("width", new VInt(width));
+		HASH_PUT_CSTR(ffields, "width", new VInt(width));
 	// $height
 	if(height)
-		ffields.put("height", new VInt(height));
+		HASH_PUT_CSTR( ffields, "height", new VInt(height));
 
 	// $exif
 	if(aexif)
-		ffields.put("exif", aexif);
+		HASH_PUT_CSTR(ffields, "exif", aexif);
 	// $xmp
 	if(axmp)
-		ffields.put("xmp", axmp);
+		HASH_PUT_CSTR(ffields, "xmp", axmp);
 
 	// defaults
 	// $border(0)
-	ffields.put("border", new VInt(0));
+	HASH_PUT_CSTR(ffields, "border", new VInt(0));
 
 	// internals, take a look at image.C append_attrib_pair before update
 	// $line-width(1)
-	ffields.put("line-width", new VInt(1));
+	HASH_PUT_CSTR(ffields, "line-width", new VInt(1));
 }
 
 Value& VImage::as_expr_result() {

@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.144 2024/12/11 23:53:49 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.145 2025/05/26 00:52:15 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -330,7 +330,7 @@ public: // usage
 				HashStringValue& args = vargs.hash();
 
 				for(; i<count; i++) {
-					args.put(pa_uitoa(args.count()), params[i]);
+					args.put(String::Body::uitoa(args.count()), params[i]);
 				}
 
 				set_my_variable(*method.extra_params, &vargs);

@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.76 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.77 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -270,7 +270,7 @@ static bool for_each_string_callback(pa_sdbm_datum_t apkey, void* ainfo) {
 	if(const String* svalue=info.self->deserialize_value(apkey, apvalue)) {
 		const char *clkey=pa_strdup(apkey.dptr, apkey.dsize);
 
-		return info.nested_callback(clkey, *svalue, info.nested_info);
+		return info.nested_callback(String::Body(clkey), *svalue, info.nested_info);
 	}
 	return false;
 }

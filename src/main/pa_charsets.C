@@ -7,7 +7,7 @@
 
 #include "pa_charsets.h"
 
-volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.28 2024/11/10 20:28:15 moko Exp $" IDENT_PA_CHARSETS_H;
+volatile const char * IDENT_PA_CHARSETS_C="$Id: pa_charsets.C,v 1.29 2025/05/26 00:52:15 moko Exp $" IDENT_PA_CHARSETS_H;
 
 // defines for globals
 
@@ -27,7 +27,7 @@ Charsets::Charsets() {
 }
 
 Charset& Charsets::get(String::Body ANAME) {
-	ANAME=str_upper(ANAME.cstr(), ANAME.length());
+	ANAME=String::Body(str_upper(ANAME.cstr(), ANAME.length()));
 	if(Charset* result=HashString<value_type>::get(ANAME))
 		return *result;
 	else
@@ -52,7 +52,7 @@ Charset* Charsets::checkBOM(char *&body,size_t &body_size, Charset* enforced_cha
 }
 
 void Charsets::load_charset(Request_charsets& charsets, String::Body ANAME, const String& afile_spec) {
-	ANAME=str_upper(ANAME.cstr(), ANAME.length());
+	ANAME=String::Body(str_upper(ANAME.cstr(), ANAME.length()));
 	//we know that charset?
 	if(HashString<value_type>::get(ANAME))
 		return; // don't load it then

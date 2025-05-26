@@ -20,7 +20,7 @@
 #include "pa_varray.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.146 2024/12/11 04:07:07 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.147 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -783,7 +783,7 @@ const String& VMail::message_hash_to_string(Request& r, HashStringValue* message
 
 		Value* body=message_hash->get("body");
 		if(body) {
-			message_hash->remove("body");
+			message_hash->remove(String::Body("body"));
 			info.backward_compatibility=true;
 		}
 		message_hash->for_each<Store_message_element_info*>(store_message_element, &info);

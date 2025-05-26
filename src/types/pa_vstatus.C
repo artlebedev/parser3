@@ -14,7 +14,7 @@
 #include "pa_vstring.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.45 2024/12/11 18:35:31 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.46 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -83,11 +83,11 @@ Value& rusage_element() {
 				// dwHighDateTime & dwLowDateTime - 1/10 000 000 seconds in 64 bit
 				/* the amount of time that the process has executed in user mode */
 				d1 = double((LONGLONG)UserTime.ft_scalar)/10000000.0;
-				hash.put("utime", new VDouble(d1));
+				HASH_PUT_CSTR(hash, "utime", new VDouble(d1));
 				
 				/* the amount of time that the process has executed in kernel mode */
 				d1 = double((LONGLONG)KernelTime.ft_scalar)/10000000.0;
-				hash.put("stime", new VDouble(d1));
+				HASH_PUT_CSTR(hash, "stime", new VDouble(d1));
 			}
 		}
 
@@ -97,17 +97,17 @@ Value& rusage_element() {
 			IO_COUNTERS_ ioc;
 			if(pGetProcessIoCounters(hProc, &ioc)){
 				/* Specifies the number of I/O operations performed, other than read and write operations */
-				hash.put("OtherOperationCount", new VDouble(double((LONGLONG)ioc.OtherOperationCount)));
+				HASH_PUT_CSTR(hash, "OtherOperationCount", new VDouble(double((LONGLONG)ioc.OtherOperationCount)));
 				/* Specifies the number of bytes transferred during operations other than read and write operations */
-				hash.put("OtherTransferCount", new VDouble(double((LONGLONG)ioc.OtherTransferCount)/1024.0));
+				HASH_PUT_CSTR(hash, "OtherTransferCount", new VDouble(double((LONGLONG)ioc.OtherTransferCount)/1024.0));
 				/* Specifies the number of read operations performed */
-				hash.put("ReadOperationCount", new VDouble(double((LONGLONG)ioc.ReadOperationCount)));
+				HASH_PUT_CSTR(hash, "ReadOperationCount", new VDouble(double((LONGLONG)ioc.ReadOperationCount)));
 				/* Specifies the number of bytes read */
-				hash.put("ReadTransferCount", new VDouble(double((LONGLONG)ioc.ReadTransferCount)/1024.0));
+				HASH_PUT_CSTR(hash, "ReadTransferCount", new VDouble(double((LONGLONG)ioc.ReadTransferCount)/1024.0));
 				/* Specifies the number of write operations performed */
-				hash.put("WriteOperationCount", new VDouble(double((LONGLONG)ioc.WriteOperationCount)));
+				HASH_PUT_CSTR(hash, "WriteOperationCount", new VDouble(double((LONGLONG)ioc.WriteOperationCount)));
 				/* Specifies the number of bytes written */
-				hash.put("WriteTransferCount", new VDouble(double((LONGLONG)ioc.WriteTransferCount)/1024.0));
+				HASH_PUT_CSTR(hash, "WriteTransferCount", new VDouble(double((LONGLONG)ioc.WriteTransferCount)/1024.0));
 			}
 		}
 		FreeLibrary(hMod);
@@ -128,16 +128,16 @@ Value& rusage_element() {
 			if(pGetProcessMemoryInfo(hProc, &pmc, sizeof(PROCESS_MEMORY_COUNTERS))){
 				/* The peak working set size */
 				d1 = double(pmc.PeakWorkingSetSize)/1024.0;
-				hash.put("maxrss", new VDouble(d1));
+				HASH_PUT_CSTR(hash, "maxrss", new VDouble(d1));
 				/* The peak nonpaged pool usage */
 				d1 = double(pmc.QuotaPeakNonPagedPoolUsage)/1024.0;
-				hash.put("QuotaPeakNonPagedPoolUsage", new VDouble(d1));
+				HASH_PUT_CSTR(hash, "QuotaPeakNonPagedPoolUsage", new VDouble(d1));
 				/* The peak paged pool usage */
 				d1 = double(pmc.QuotaPeakPagedPoolUsage)/1024.0;
-				hash.put("QuotaPeakPagedPoolUsage", new VDouble(d1));
+				HASH_PUT_CSTR(hash, "QuotaPeakPagedPoolUsage", new VDouble(d1));
 				/* The peak pagefile usage */
 				d1 = double(pmc.PeakPagefileUsage)/1024.0;
-				hash.put("PeakPagefileUsage", new VDouble(d1));
+				HASH_PUT_CSTR(hash, "PeakPagefileUsage", new VDouble(d1));
 			}
 		}
 		FreeLibrary(hMod);
@@ -150,12 +150,12 @@ Value& rusage_element() {
     if(getrusage(RUSAGE_SELF,&u)<0)
 		throw Exception(0, 0, "getrusage failed (#%d)", errno);
 
-	hash.put("utime", new VDouble(u.ru_utime.tv_sec+u.ru_utime.tv_usec/1000000.0));
-	hash.put("stime", new VDouble(u.ru_stime.tv_sec+u.ru_stime.tv_usec/1000000.0));
-	hash.put("maxrss", new VDouble(u.ru_maxrss));
-	hash.put("ixrss", new VDouble(u.ru_ixrss));
-	hash.put("idrss", new VDouble(u.ru_idrss));
-	hash.put("isrss", new VDouble(u.ru_isrss));
+	HASH_PUT_CSTR(hash, "utime", new VDouble(u.ru_utime.tv_sec+u.ru_utime.tv_usec/1000000.0));
+	HASH_PUT_CSTR(hash, "stime", new VDouble(u.ru_stime.tv_sec+u.ru_stime.tv_usec/1000000.0));
+	HASH_PUT_CSTR(hash, "maxrss", new VDouble(u.ru_maxrss));
+	HASH_PUT_CSTR(hash, "ixrss", new VDouble(u.ru_ixrss));
+	HASH_PUT_CSTR(hash, "idrss", new VDouble(u.ru_idrss));
+	HASH_PUT_CSTR(hash, "isrss", new VDouble(u.ru_isrss));
 #endif
 
 #endif
@@ -164,8 +164,8 @@ Value& rusage_element() {
 	if(gettimeofday(&tp, NULL)<0)
 		throw Exception(0, 0, "gettimeofday failed (#%d)", errno);
 
-	hash.put("tv_sec", new VDouble(tp.tv_sec));
-	hash.put("tv_usec", new VDouble(tp.tv_usec));
+	HASH_PUT_CSTR(hash, "tv_sec", new VDouble(tp.tv_sec));
+	HASH_PUT_CSTR(hash, "tv_usec", new VDouble(tp.tv_usec));
 
 	return rusage;
 }
@@ -179,10 +179,10 @@ Value& memory_element() {
 	size_t bytes_since_gc=GC_get_bytes_since_gc();
 	size_t total_bytes=GC_get_total_bytes();
 
-	hash.put("used", new VDouble((heap_size-free_bytes)/1024.0));
-	hash.put("free", new VDouble(free_bytes/1024.0));
-	hash.put("ever_allocated_since_compact", new VDouble(bytes_since_gc/1024.0));
-	hash.put("ever_allocated_since_start", new VDouble(total_bytes/1024.0));
+	HASH_PUT_CSTR(hash, "used", new VDouble((heap_size-free_bytes)/1024.0));
+	HASH_PUT_CSTR(hash, "free", new VDouble(free_bytes/1024.0));
+	HASH_PUT_CSTR(hash, "ever_allocated_since_compact", new VDouble(bytes_since_gc/1024.0));
+	HASH_PUT_CSTR(hash, "ever_allocated_since_start", new VDouble(total_bytes/1024.0));
 
 	return memory;
 }

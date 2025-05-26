@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.236 2025/05/25 17:44:27 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.237 2025/05/26 00:52:15 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -378,8 +378,8 @@ public:
 		void dump() const;
 
 		Body(): body(CORD_EMPTY) INIT_HASH_CODE(0) INIT_LENGTH(0) {}
-		Body(const char *abody): body(AS_CORD(abody)) INIT_HASH_CODE(0) INIT_LENGTH(0) {}
-		Body(CORD abody, uint ahash_code): body(abody) INIT_HASH_CODE(ahash_code) INIT_LENGTH(0) {}
+		explicit Body(const char *abody): body(AS_CORD(abody)) INIT_HASH_CODE(0) INIT_LENGTH(0) {}
+		explicit Body(CORD abody, uint ahash_code): body(abody) INIT_HASH_CODE(ahash_code) INIT_LENGTH(0) {}
 		explicit Body(C ac): body(AS_CORD(ac.str)) INIT_HASH_CODE(0) INIT_LENGTH(ac.length) {}
 		explicit Body(CORD abody): body(abody) INIT_HASH_CODE(0) INIT_LENGTH(0) {
 #ifdef CORD_CAT_OPTIMIZATION
