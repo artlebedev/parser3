@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.379 2024/12/15 21:47:07 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.380 2025/05/26 01:56:54 moko Exp $";
 
 // class
 
@@ -1439,7 +1439,7 @@ void unmarshal_bind_updates(HashStringValue& hash, int placeholder_count, SQL_Dr
 			if(ph->is_null)
 				value=VVoid::get();
 			else
-				value=new VString(*new String(ph->value, String::L_TAINTED));
+				value=new VString(ph->value);
 			hash.put(ph->name, value);
 		}
 }

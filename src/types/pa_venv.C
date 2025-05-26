@@ -10,7 +10,7 @@
 #include "pa_vhash.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.24 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VENV_H;
+volatile const char * IDENT_PA_PA_VENV_C="$Id: pa_venv.C,v 1.25 2025/05/26 01:56:54 moko Exp $" IDENT_PA_VENV_H;
 
 #define PARSER_VERSION_ELEMENT_NAME "PARSER_VERSION"
 #define ENV_FIELDS_ELEMENT_NAME "fields"
@@ -34,14 +34,14 @@ Value* VEnv::get_element(const String& aname) {
 		for(SAPI::Env::Iterator i(finfo); i; i.next() )
 			result->put(
 				i.key(),
-				new VString(*new String(i.value(), String::L_TAINTED))
+				new VString(i.value())
 			);
 		return new VHash(*result);
 	}
 
 	// $env:field
 	if(const char* value=SAPI::Env::get(finfo, aname.cstr()))
-		return new VString(*new String(value, String::L_TAINTED));
+		return new VString(value);
 	
 	return 0;
 }

@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.434 2025/05/26 00:52:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.435 2025/05/26 01:56:54 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -699,7 +699,7 @@ void Request::use_buf(VStateless_class& aclass, const char* source, const String
 	ArrayClass& cclasses=compile(&aclass, source, main_alias, file_no, line_no_offset);
 
 	VString* vfilespec=
-		new VString(*new String(file_list[file_no], String::L_TAINTED));
+		new VString(file_list[file_no]);
 
 	for(size_t i=0; i<cclasses.count(); i++){
 		VStateless_class& cclass=*cclasses.get(i);
@@ -1054,18 +1054,18 @@ Request::Exception_details Request::get_details(const Exception& e) {
 
 	// $.source
 	if(problem_source)
-		hash.put(exception_source_part_name, new VString(*new String(*problem_source, String::L_TAINTED)));
+		hash.put(exception_source_part_name, new VString(*problem_source));
 
 	// $.file $.lineno $.colno
 	if(origin.file_no){
-		HASH_PUT_CSTR(hash, "file", new VString(*new String(file_list[origin.file_no], String::L_TAINTED)));
+		HASH_PUT_CSTR(hash, "file", new VString(file_list[origin.file_no]));
 		HASH_PUT_CSTR(hash, "lineno", new VInt(1+origin.line));
 		HASH_PUT_CSTR(hash, "colno", new VInt(1+origin.col));
 	}
 
 	// $.comment
 	if(const char* comment=e.comment(true))
-		hash.put(exception_comment_part_name, new VString(*new String(comment, String::L_TAINTED)));
+		hash.put(exception_comment_part_name, new VString(comment));
 
 	// $.handled(0)
 	hash.put(exception_handled_part_name, &VBool::get(false));

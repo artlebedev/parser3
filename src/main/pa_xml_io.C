@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.46 2025/05/26 00:52:15 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.47 2025/05/26 01:56:54 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -141,7 +141,7 @@ static void *xmlFileOpenMethod (const char* afilename) {
 		if(s)
 			param_body.append_know_length(s, strlen(s));
 
-		const String *body=r.execute_method(r.main_class, *method, new VString(*new String(param_body, String::L_TAINTED)));
+		const String *body=r.execute_method(r.main_class, *method, new VString(param_body));
 		if(!body)
 			throw Exception(0, new String(afilename), "'%s' method not found in %s class", method_cstr, MAIN_CLASS_NAME);
 		buf=body->untaint_cstr(String::L_XML);

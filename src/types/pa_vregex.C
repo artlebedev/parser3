@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.25 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.26 2025/05/26 01:56:54 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -223,10 +223,10 @@ int VRegex::exec(const char* string, size_t string_len, int* ovector, int ovecto
 
 Value* VRegex::get_element(const String& aname) { 
 	if(aname == REGEX_PATTERN_NAME)
-		return new VString(*new String(fpattern, String::L_TAINTED));
+		return new VString(fpattern);
 
 	if(aname == REGEX_OPTIONS_NAME)
-		return new VString(*new String(foptions_cstr, String::L_TAINTED));
+		return new VString(foptions_cstr);
 
 	// method (if any)
 	if(Value* result=VStateless_object::get_element(aname))

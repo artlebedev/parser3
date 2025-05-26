@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.171 2025/05/26 00:52:15 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.172 2025/05/26 01:56:54 moko Exp $";
 
 // class
 
@@ -433,7 +433,7 @@ static void _foreach(Request& r, MethodParams& params) {
 		bool need_delim=false;;
 		for(HashStringValue::Iterator i(hash); i; i.next()){
 			if(key_var_name){
-				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
+				VString* vkey=new VString(i.key());
 				r.put_element(caller, *key_var_name, vkey);
 			}
 
@@ -459,7 +459,7 @@ static void _foreach(Request& r, MethodParams& params) {
 	} else {
 		for(HashStringValue::Iterator i(hash); i; i.next()){
 			if(key_var_name){
-				VString* vkey=new VString(*new String(i.key(), String::L_TAINTED));
+				VString* vkey=new VString(i.key());
 				r.put_element(caller, *key_var_name, vkey);
 			}
 
@@ -531,7 +531,7 @@ static void _sort(Request& r, MethodParams& params){
 
 	for(HashStringValue::Iterator i(hash); i; i.next(), pos++ ){
 		if(key_var)
-			r.put_element(*context, *key_var, new VString(*new String(i.key(), String::L_TAINTED)));
+			r.put_element(*context, *key_var, new VString(i.key()));
 		if(value_var)
 			r.put_element(*context, *value_var, i.value());
 	
@@ -594,15 +594,15 @@ static void _at(Request& r, MethodParams& params) {
 				{
 #ifdef HASH_ORDER
 					if(pos == 0) {
-						r.write(*new VString(*new String(hash.first_key(), String::L_TAINTED)));
+						r.write(*new VString(hash.first_key()));
 					} else if((size_t)pos == count-1) {
-						r.write(*new VString(*new String(hash.last_key(), String::L_TAINTED)));
+						r.write(*new VString(hash.last_key()));
 					} else
 #endif
 					{
 						for(HashStringValue::Iterator i(hash); i; i.next(), pos-- )
 							if(!pos){
-								r.write(*new VString(*new String(i.key(), String::L_TAINTED)));
+								r.write(*new VString(i.key()));
 								break;
 							}
 					}
@@ -720,7 +720,7 @@ static void _select(Request& r, MethodParams& params) {
 		if(reverse){
 			for(HashStringValue::ReverseIterator i(source_hash); i; i.prev()){
 				if(key_var_name)
-					r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
+					r.put_element(caller, *key_var_name, new VString(i.key()));
 				if(value_var_name)
 					r.put_element(caller, *value_var_name, i.value());
 
@@ -741,7 +741,7 @@ static void _select(Request& r, MethodParams& params) {
 #endif
 			for(HashStringValue::Iterator i(source_hash); i; i.next() ){
 				if(key_var_name)
-					r.put_element(caller, *key_var_name, new VString(*new String(i.key(), String::L_TAINTED)));
+					r.put_element(caller, *key_var_name, new VString(i.key()));
 				if(value_var_name)
 					r.put_element(caller, *value_var_name, i.value());
 
@@ -815,7 +815,7 @@ static void _array(Request& r, MethodParams& params) {
 		const String& smode=params.as_string(0, "mode must be string");
 		if(smode == "keys"){
 			for(HashStringValue::Iterator i(hash); i; i.next()){
-				array+=new VString(*new String(i.key(), String::L_TAINTED));
+				array+=new VString(i.key());
 			}
 		} else if(smode == "values"){
 			for(HashStringValue::Iterator i(hash); i; i.next()){

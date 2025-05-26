@@ -20,7 +20,7 @@
 #include "pa_varray.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.147 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.148 2025/05/26 01:56:54 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -100,7 +100,7 @@ static void putReceived(HashStringValue& received, const char* name, Value* valu
 
 static void putReceived(HashStringValue& received, const char* name, const char* value, bool capitalizeName=false) {
 	if(name && value)
-		putReceived(received, name, new VString(*new String(pa_strdup(value), String::L_TAINTED)), capitalizeName);
+		putReceived(received, name, new VString(pa_strdup(value)), capitalizeName);
 }
 
 static void putReceived(HashStringValue& received, const char* name, time_t value) {
@@ -128,7 +128,7 @@ static void MimeHeaderField2received(const char* name, const char* value, gpoint
 
 	if(name && value){
 		name = capitalize(pa_strdup(name));
-		VString *svalue = new VString(*new String(pa_strdup(value), String::L_TAINTED));
+		VString *svalue = new VString(pa_strdup(value));
 
 		info->hash->put(name, svalue);
 

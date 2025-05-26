@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.73 2024/12/28 15:05:15 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.74 2025/05/26 01:56:54 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -32,7 +32,7 @@ VRequest::VRequest(Request_info& ainfo, Request_charsets& acharsets, VForm& afor
 		for(size_t i=0; ainfo.argv[i]; i++) {
 			fargv.put_dont_replace(
 				String(i, "%d"),
-				new VString(*new String(pa_strdup(ainfo.argv[i]), String::L_TAINTED))
+				new VString(pa_strdup(ainfo.argv[i]))
 			);
 		}
 }
@@ -46,12 +46,12 @@ Value* VRequest::get_element(const String& aname) {
 
 	// $request:charset
 	if(aname==CHARSET_NAME)
-		return new VString(*new String(fcharsets.source().NAME(), String::L_TAINTED));
+		return new VString(fcharsets.source().NAME());
 
 	// $request:body-charset
 	if(aname==REQUEST_BODY_CHARSET_NAME || aname==POST_CHARSET_NAME /*backward*/){
 		if(Charset* body_charset=fform.get_body_charset())
-			return new VString(*new String(body_charset->NAME(), String::L_TAINTED));
+			return new VString(body_charset->NAME());
 		else
 			return VVoid::get();
 	}
@@ -91,7 +91,7 @@ Value* VRequest::get_element(const String& aname) {
 	else
 		return bark("%s field not found", &aname);
 
-	return new VString(*new String(buf, String::L_TAINTED));
+	return new VString(buf);
 }
 
 const VJunction* VRequest::put_element(const String& aname, Value* avalue) {
@@ -120,7 +120,7 @@ void VRequest::fill(){
 
 			ffields.put(
 				key+5 /*skip "HTTP_" */,
-				new VString(*new String(i.value(), String::L_TAINTED))
+				new VString(i.value())
 			);
 		}
 	}

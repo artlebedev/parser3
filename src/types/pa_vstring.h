@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.81 2024/11/04 03:53:26 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.82 2025/05/26 01:56:54 moko Exp $"
 
 // includes
 
@@ -70,6 +70,9 @@ public: // usage
 
 	VString(): fstring(&String::Empty) {}
 	VString(const String& avalue): fstring(&avalue) {}
+	/// VString is L_TAINTED by default, opposite to String, which is L_CLEAN by default
+	VString(const char *avalue, String::Language alang=String::L_TAINTED): fstring(new String(avalue, alang)) {}
+	VString(String::Body avalue, String::Language alang=String::L_TAINTED): fstring(new String(avalue, alang)) {}
 
 	const String& string() const { return *fstring; }
 	void set_string(const String& astring) { fstring=&astring; }

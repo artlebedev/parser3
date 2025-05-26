@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.42 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.43 2025/05/26 01:56:54 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 
@@ -22,7 +22,7 @@ volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.42 2024/11/0
 Value* VResponse::get_element(const String& aname) {
 	// $charset
 	if(aname==CHARSET_NAME)
-		return new VString(*new String(fcharsets.client().NAME(), String::L_TAINTED));
+		return new VString(fcharsets.client().NAME());
 
 	// $headers
 	if(aname==REQUEST_HEADERS_ELEMENT_NAME)

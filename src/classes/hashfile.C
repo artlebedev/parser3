@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.67 2024/12/06 23:20:04 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.68 2025/05/26 01:56:54 moko Exp $";
 
 // class
 
@@ -98,7 +98,7 @@ static bool one_foreach_cycle(
 				void* ainfo) {
 	Foreach_info& info=*static_cast<Foreach_info*>(ainfo);
 	if(info.key_var_name){
-		VString* vkey=new VString(*new String(key, String::L_TAINTED));
+		VString* vkey=new VString(key);
 		info.r->put_element(*info.var_context, *info.key_var_name, vkey);
 	}
 	if(info.value_var_name){

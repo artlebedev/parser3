@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.196 2025/05/26 00:52:15 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.197 2025/05/26 01:56:54 moko Exp $";
 
 // defines
 
@@ -443,7 +443,7 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, size_t
 			catch(...) { /*ignore bad date times*/ }
 		}
 
-		return new VString(*new String(cstr, String::L_TAINTED));
+		return new VString(cstr);
 	}
 
 	if(components_count==1)

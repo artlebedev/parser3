@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.76 2025/05/26 00:52:15 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.77 2025/05/26 01:56:54 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -176,7 +176,7 @@ static void _curl_session(Request& r, MethodParams& params){
 }
 
 static void _curl_version_action(Request& r, MethodParams& ){
-	r.write(*new VString(*new String(f_curl_version(), String::L_TAINTED)));
+	r.write(*new VString(f_curl_version()));
 }
 
 static void _curl_version(Request& r, MethodParams& params){
@@ -644,7 +644,7 @@ static Value *curl_getinfo(const String::Body &key, CurlInfo *info, bool fail_on
 		case CurlInfo::CURL_HTTP_VERSION:{
 			long l=0;
 			CURL_GETINFO(l);
-			return new VString(*new String(curl_http_version_name(l), String::L_TAINTED));
+			return new VString(curl_http_version_name(l));
 		}
 	}
 	return VVoid::get();
