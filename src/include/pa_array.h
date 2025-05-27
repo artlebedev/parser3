@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.102 2024/12/23 16:59:17 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.103 2025/05/27 15:10:24 moko Exp $"
 
 // includes
 
@@ -349,10 +349,6 @@ public:
 	inline size_t index() {
 		return findex;
 	}
-
-	inline char* key() {
-		return pa_uitoa(findex);
-	}
 };
 
 // Robust as used for arrays that can be modified during iteration
@@ -374,10 +370,6 @@ public:
 
 	inline size_t index() {
 		return findex;
-	}
-
-	inline char *key() {
-		return pa_uitoa(index());
 	}
 };
 #endif

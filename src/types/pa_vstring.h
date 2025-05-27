@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.82 2025/05/26 01:56:54 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.83 2025/05/27 15:10:24 moko Exp $"
 
 // includes
 
@@ -77,10 +77,12 @@ public: // usage
 	const String& string() const { return *fstring; }
 	void set_string(const String& astring) { fstring=&astring; }
 
-	inline static VString *empty(){
+	inline static VString* empty(){
 		static VString singleton;
 		return &singleton;
 	}
+	// L_CLEAN as nothing to escape in digits
+	static VString* uitoa(size_t aindex);
 
 private:
 	const String* fstring;

@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.380 2025/05/26 01:56:54 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.381 2025/05/27 15:10:24 moko Exp $";
 
 // class
 
@@ -849,11 +849,11 @@ static void table_row_to_hash(Table::element_type row, Row_info *info) {
 				for(Array_iterator<int> i(*info->value_fields); i; ) {
 					size_t value_field=i.next();
 					if(value_field<row->count())
-						hash.put(columns ? *columns->get(value_field) : String(pa_uitoa(value_field)), new VString(*row->get(value_field)));
+						hash.put(columns ? *columns->get(value_field) : String::Body::uitoa(value_field), new VString(*row->get(value_field)));
 				}
 			} else { // all fields
 				for(size_t index=0; index<row->count(); index++) {
-					hash.put(columns && index < columns->count() ? *columns->get(index) : String(pa_uitoa(index)), new VString(*row->get(index)));
+					hash.put(columns && index < columns->count() ? *columns->get(index) : String::Body::uitoa(index), new VString(*row->get(index)));
 				}
 			}
 			exist=info->hash->put_dont_replace(*key, vhash);

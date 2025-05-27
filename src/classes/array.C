@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.39 2025/05/26 01:56:54 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.40 2025/05/27 15:10:24 moko Exp $";
 
 // class
 
@@ -692,11 +692,8 @@ static void _for(Request& r, MethodParams& params) {
 	if(delim_maybe_code){ // delimiter set
 		bool need_delim=false;
 		for(ArrayValue::RobustIterator i(array); i; i.next()){
-			if(key_var_name){
-				VString* vkey=new VString(i.key());
-				r.put_element(caller, *key_var_name, vkey);
-			}
-
+			if(key_var_name)
+				r.put_element(caller, *key_var_name, VString::uitoa(i.index()));
 			if(value_var_name)
 				r.put_element(caller, *value_var_name, i.value() ? i.value() : VVoid::get());
 
@@ -718,11 +715,8 @@ static void _for(Request& r, MethodParams& params) {
 		}
 	} else {
 		for(ArrayValue::RobustIterator i(array); i; i.next()){
-			if(key_var_name){
-				VString* vkey=new VString(i.key());
-				r.put_element(caller, *key_var_name, vkey);
-			}
-
+			if(key_var_name)
+				r.put_element(caller, *key_var_name, VString::uitoa(i.index()));
 			if(value_var_name)
 				r.put_element(caller, *value_var_name, i.value() ? i.value() : VVoid::get());
 
@@ -752,11 +746,8 @@ static void _foreach(Request& r, MethodParams& params) {
 		bool need_delim=false;
 		for(ArrayValue::RobustIterator i(array); i; i.next()){
 			if(i.value()){
-				if(key_var_name){
-					VString* vkey=new VString(i.key());
-					r.put_element(caller, *key_var_name, vkey);
-				}
-
+				if(key_var_name)
+					r.put_element(caller, *key_var_name, VString::uitoa(i.index()));
 				if(value_var_name)
 					r.put_element(caller, *value_var_name, i.value());
 
@@ -780,11 +771,8 @@ static void _foreach(Request& r, MethodParams& params) {
 	} else {
 		for(ArrayValue::RobustIterator i(array); i; i.next()){
 			if(i.value()){
-				if(key_var_name){
-					VString* vkey=new VString(i.key());
-					r.put_element(caller, *key_var_name, vkey);
-				}
-
+				if(key_var_name)
+					r.put_element(caller, *key_var_name, VString::uitoa(i.index()));
 				if(value_var_name)
 					r.put_element(caller, *value_var_name, i.value());
 
@@ -845,7 +833,7 @@ static void _sort(Request& r, MethodParams& params){
 	for(ArrayValue::RobustIterator i(array); i; i.next() ){
 		if(i.value()){
 			if(key_var)
-				r.put_element(*context, *key_var, new VString(i.key()));
+				r.put_element(*context, *key_var, VString::uitoa(i.index()));
 			if(value_var)
 				r.put_element(*context, *value_var, i.value());
 
@@ -916,7 +904,7 @@ static void _at(Request& r, MethodParams& params) {
 		if(count == array.count()){
 l1:			switch(result_type) {
 				case AtResultTypeKey:
-					r.write(*new VString(pa_uitoa(pos)));
+					r.write(*VString::uitoa(pos));
 					break;
 				case AtResultTypeValue:
 					r.write(*array.get(pos));
@@ -933,7 +921,7 @@ l1:			switch(result_type) {
 				if(i.value() && !(pos--)){
 					switch(result_type) {
 						case AtResultTypeKey:
-							r.write(*new VString(i.key()));
+							r.write(*VString::uitoa(i.index()));
 							break;
 						case AtResultTypeValue:
 							r.write(*i.value());
@@ -1017,7 +1005,7 @@ static void _select(Request& r, MethodParams& params) {
 			for(ArrayValue::ReverseIterator i(source_array); i; ){
 				if(Value *value=i.prev()){ // here for correct i.key()
 					if(key_var_name)
-						r.put_element(caller, *key_var_name, new VString(i.key()));
+						r.put_element(caller, *key_var_name, VString::uitoa(i.index()));
 					if(value_var_name)
 						r.put_element(caller, *value_var_name, value);
 
@@ -1037,7 +1025,7 @@ static void _select(Request& r, MethodParams& params) {
 			for(ArrayValue::RobustIterator i(source_array); i; i.next() ){
 				if(Value *value=i.value()){
 					if(key_var_name)
-						r.put_element(caller, *key_var_name, new VString(i.key()));
+						r.put_element(caller, *key_var_name, VString::uitoa(i.index()));
 					if(value_var_name)
 						r.put_element(caller, *value_var_name, value);
 
