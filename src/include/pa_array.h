@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.103 2025/05/27 15:10:24 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.104 2025/05/28 00:58:02 moko Exp $"
 
 // includes
 
@@ -317,11 +317,6 @@ public:
 	// returns the current index of the iterator
 	inline size_t index() {
 		return fcurrent - farray.felements;
-	}
-
-	// returns the current index string value of the iterator
-	inline char *key() {
-		return pa_uitoa(index());
 	}
 };
 

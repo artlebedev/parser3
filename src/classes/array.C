@@ -17,7 +17,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.40 2025/05/27 15:10:24 moko Exp $";
+volatile const char * IDENT_ARRAY_C="$Id: array.C,v 1.41 2025/05/28 00:58:02 moko Exp $";
 
 // class
 
@@ -588,7 +588,7 @@ static void _keys(Request& r, MethodParams& params) {
 	for(ArrayValue::Iterator i(array); i; i.next()){
 		if(i.value()){
 			Table::element_type row(new ArrayString(1));
-			*row+=new String(i.key(), String::L_TAINTED);
+			*row+=new String(pa_uitoa(i.index()));
 			*table+=row;
 		}
 	}
