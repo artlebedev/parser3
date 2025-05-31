@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.133 2025/05/26 00:52:15 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.134 2025/05/31 13:23:22 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -72,7 +72,7 @@ bool HTTP_Headers::add_header(const char *line){
 	const char *value=strchr(line, ':');
 
 	if(value && value != line){ // we need only headers, not the response code
-		Header header(String::Body(str_upper(line, value-line)), String::Body(value+1).trim(String::TRIM_BOTH, " \t\n\r"));
+		Header header = Header(String::Body(str_upper(line, value-line)), String::Body(value+1).trim(String::TRIM_BOTH, " \t\n\r"));
 
 		if(header.name == String::Body(HTTP_CONTENT_TYPE_UPPER) && content_type.is_empty())
 			content_type=header.value;
