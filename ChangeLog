@@ -1,3 +1,19 @@
+2025-05-31  moko
+
+	* src/main/pa_http.C: old gcc compilation fix (related to feature
+	  #1277)
+
+2025-05-28  moko
+
+	* src/: classes/array.C, include/pa_array.h: last
+	  Array_iterator::key() removed (related to feature #1277)
+
+2025-05-27  moko
+
+	* src/: classes/array.C, classes/table.C, include/pa_array.h,
+	  types/pa_vstring.C, types/pa_vstring.h: VString::uitoa() added
+	  and used (related to feature #1277)
+
 2025-05-26  moko
 
 	* src/: classes/array.C, classes/curl.C, classes/hash.C,
