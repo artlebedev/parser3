@@ -15,7 +15,7 @@
 
 #include "pa_httpd.h"
 
-volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.24 2024/11/04 03:53:25 moko Exp $" IDENT_PA_HTTPD_H;
+volatile const char * IDENT_MOD_PARSER3_C="$Id: mod_parser3.c,v 1.25 2025/06/28 15:48:12 moko Exp $" IDENT_PA_HTTPD_H;
 
 #define PARSER3_HANDLER "parser3-handler"
 
@@ -157,7 +157,7 @@ static void *parser_create_server_config(apr_pool_t *p, server_rec *s) {
 */
 static const command_rec parser_cmds[] =
 {
-	{"ParserConfig", (const char *(*)())cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec"},
+	{"ParserConfig", (const char *(*)(cmd_parms *, void *))cmd_parser_config, 0, OR_OPTIONS, TAKE1, "Parser config filespec"},
 	{NULL}
 };
 
