@@ -11,7 +11,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.116 2025/06/28 15:38:04 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.117 2025/06/28 15:42:00 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/xmlmemory.h"
@@ -1038,7 +1038,7 @@ void Charset::addEncoding(char *name_cstr) {
 
 	xmlCharEncodingHandler* handler=xmlNewCharEncodingHandler(name_cstr, ftranscoder_input, ftranscoder_output);
 	if(!handler)
-		throw Exception(0, new String(NAME, String::L_TAINTED), "unable to register XML encoding handler");
+		throw Exception(0, new String(name_cstr, String::L_TAINTED), "unable to register XML encoding handler");
 	xmlRegisterCharEncodingHandler(handler);
 }
 
