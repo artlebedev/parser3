@@ -11,14 +11,12 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.115 2024/12/11 21:57:35 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.116 2025/06/28 15:38:04 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/xmlmemory.h"
 #include "libxml/encoding.h"
 #endif
-
-//#define PA_PATCHED_LIBXML_BACKWARD
 
 // reduce memory usage by pre-calculation utf-8 string length
 #define PRECALCULATE_DEST_LENGTH
@@ -125,10 +123,6 @@ Charset::Charset(Request_charsets* acharsets, const String::Body ANAME, const St
 		// grab default onces [for UTF-8 so to be able to make a-z =>A-Z
 		memcpy(pcre_tables, pa_pcre_default_tables, sizeof(pcre_tables));
 	}
-
-#ifdef XML
-	initTranscoder(FNAME, FNAME_CSTR);
-#endif
 }
 
 void Charset::load_definition(Request_charsets& acharsets, const String& afile_spec) {
@@ -993,29 +987,6 @@ void Charset::store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found){
 #ifdef XML
 
 static const Charset::Tables* tables[MAX_CHARSETS];
-static xmlCharEncodingHandler xml_encoding_handlers[MAX_CHARSETS];
-
-#ifdef PA_PATCHED_LIBXML_BACKWARD
-
-#define declareXml256ioFuncs(i) \
-	static int xml256CharEncodingInputFunc##i( \
-		unsigned char *out, int *outlen, \
-		const unsigned char *in, int *inlen, void*) { \
-		return transcodeToUTF8( \
-			in, *inlen, \
-			out, *outlen, \
-			*tables[i]); \
-	} \
-	static int xml256CharEncodingOutputFunc##i( \
-		unsigned char *out, int *outlen, \
-		const unsigned char *in, int *inlen, void*) { \
-		return transcodeFromUTF8( \
-			in, *inlen, \
-			out, *outlen, \
-			*tables[i]); \
-	}
-
-#else
 
 #define declareXml256ioFuncs(i) \
 	static int xml256CharEncodingInputFunc##i( \
@@ -1034,9 +1005,6 @@ static xmlCharEncodingHandler xml_encoding_handlers[MAX_CHARSETS];
 			out, *outlen, \
 			*tables[i]); \
 	}
-
-#endif
-
 
 declareXml256ioFuncs(0)	declareXml256ioFuncs(1)
 declareXml256ioFuncs(2)	declareXml256ioFuncs(3)
@@ -1064,28 +1032,14 @@ void Charset::addEncoding(char *name_cstr) {
 	if(handlers_count==MAX_CHARSETS)
 		throw Exception(0, 0, "already allocated %d handlers, no space for new encoding '%s'", MAX_CHARSETS, name_cstr);
 
-	xmlCharEncodingHandler* handler=&xml_encoding_handlers[handlers_count];
-	{
-		handler->name=name_cstr;
-		handler->input=inputFuncs[handlers_count]; 
-		handler->output=outputFuncs[handlers_count]; 
-		::tables[handlers_count]=&tables;
-		handlers_count++;
-	}
-	
+	ftranscoder_input=inputFuncs[handlers_count];
+	ftranscoder_output=outputFuncs[handlers_count];
+	::tables[handlers_count++]=&tables;
+
+	xmlCharEncodingHandler* handler=xmlNewCharEncodingHandler(name_cstr, ftranscoder_input, ftranscoder_output);
+	if(!handler)
+		throw Exception(0, new String(NAME, String::L_TAINTED), "unable to register XML encoding handler");
 	xmlRegisterCharEncodingHandler(handler);
-
-}
-
-void Charset::initTranscoder(const String::Body NAME, const char* name_cstr) {
-	ftranscoder=xmlFindCharEncodingHandler(name_cstr);
-	transcoder(NAME); // check right way
-}
-
-xmlCharEncodingHandler& Charset::transcoder(const String::Body NAME) {
-	if(!ftranscoder)
-		throw Exception(PARSER_RUNTIME, new String(NAME, String::L_TAINTED), "unsupported encoding");
-	return *ftranscoder;
 }
 
 String::C Charset::transcode_cstr(const xmlChar* s) {
@@ -1100,14 +1054,8 @@ String::C Charset::transcode_cstr(const xmlChar* s) {
 	char *out=new(PointerFreeGC) char[outlen+1];
 	
 	int error;
-	if(xmlCharEncodingOutputFunc output=transcoder(FNAME).output) {
-		error=output(
-			(unsigned char*)out, &outlen,
-			(const unsigned char*)s, &inlen
-#ifdef PA_PATCHED_LIBXML_BACKWARD
-			,0
-#endif
-			);
+	if(!fisUTF8) {
+		error=ftranscoder_output((unsigned char*)out, &outlen, (const unsigned char*)s, &inlen);
 	} else {
 		memcpy(out, s, outlen=inlen);
 		error=0;
@@ -1131,19 +1079,13 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 #ifndef NDEBUG
 	int saved_outlen;
 #endif
-	if(xmlCharEncodingInputFunc input=transcoder(FNAME).input) {
+	if(!fisUTF8) {
 		outlen=buf_size*6/*max UTF8 bytes per char*/;
 #ifndef NDEBUG
 		saved_outlen=outlen;
 #endif
 		out=(xmlChar*)xmlMalloc(outlen+1);
-		error=input(
-			out, &outlen,
-			(const unsigned char*)buf, (int*)&buf_size
-#ifdef PA_PATCHED_LIBXML_BACKWARD
-			,0
-#endif
-			);
+		error=ftranscoder_input(out, &outlen, (const unsigned char*)buf, (int*)&buf_size);
 	} else {
 		outlen=buf_size;
 #ifndef NDEBUG

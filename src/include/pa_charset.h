@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.61 2025/05/26 00:52:15 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.62 2025/06/28 15:38:04 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -76,10 +76,6 @@ public:
 
 	void store_Char(XMLByte*& outPtr, XMLCh src, XMLByte not_found);
 
-#ifdef XML
-	xmlCharEncodingHandler& transcoder(const String::Body NAME);
-#endif
-
 public:
 
 	unsigned char pcre_tables[tables_length];
@@ -140,7 +136,6 @@ private:
 
 private:
 	void addEncoding(char* name_cstr);
-	void initTranscoder(const String::Body name, const char* name_cstr);
 
 public:
 	/// converts xmlChar* null-terminated string to char* 
@@ -159,7 +154,8 @@ public:
 
 private:
 
-	xmlCharEncodingHandler* ftranscoder;
+	xmlCharEncodingInputFunc ftranscoder_input;
+	xmlCharEncodingOutputFunc ftranscoder_output;
 
 #endif
 
