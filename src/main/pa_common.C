@@ -28,7 +28,7 @@
 #define pa_mkdir(path, mode) mkdir(path, mode)
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.336 2024/12/23 16:59:17 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.337 2025/07/02 23:42:10 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -87,6 +87,15 @@ FILE *pa_fopen(const char *pathname, const char *mode){
 	const UTF16* utf16mode=pa_utf16_encode(mode, pa_thread_request().charsets.source());
 	return _wfopen((const wchar_t *)utf16name, (const wchar_t *)utf16mode);
 }
+
+int pa_unlink(const char *pathname){
+	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
+	return _wunlink((const wchar_t *)utf16name);
+}
+
+#else
+
+#define pa_unlink unlink
 
 #endif
 
@@ -456,7 +465,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 
 bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_dirs) {
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
-	if(unlink(fname)!=0) {
+	if(pa_unlink(fname)!=0) {
 		if(fail_on_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
 				&file_spec, "unlink failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
