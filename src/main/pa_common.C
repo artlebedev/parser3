@@ -22,13 +22,7 @@
 #include <direct.h>
 #endif
 
-#ifdef _MSC_VER
-#define pa_mkdir(path, mode) _mkdir(path)
-#else
-#define pa_mkdir(path, mode) mkdir(path, mode)
-#endif
-
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.337 2025/07/02 23:42:10 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.338 2025/07/03 19:45:41 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -88,6 +82,22 @@ FILE *pa_fopen(const char *pathname, const char *mode){
 	return _wfopen((const wchar_t *)utf16name, (const wchar_t *)utf16mode);
 }
 
+int pa_mkdir(const char *pathname, int){
+	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
+	return _wmkdir((const wchar_t *)utf16name);
+}
+
+int pa_rmdir(const char *pathname){
+	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
+	return _wrmdir((const wchar_t *)utf16name);
+}
+
+int pa_rename(const char *oldpath, const char *newpath){
+	const UTF16* utf16old=pa_utf16_encode(oldpath, pa_thread_request().charsets.source());
+	const UTF16* utf16new=pa_utf16_encode(newpath, pa_thread_request().charsets.source());
+	return _wrename((const wchar_t *)utf16old, (const wchar_t *)utf16new);
+}
+
 int pa_unlink(const char *pathname){
 	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
 	return _wunlink((const wchar_t *)utf16name);
@@ -95,6 +105,9 @@ int pa_unlink(const char *pathname){
 
 #else
 
+#define pa_mkdir mkdir
+#define pa_rmdir rmdir
+#define pa_rename rename
 #define pa_unlink unlink
 
 #endif
@@ -450,7 +463,8 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 #ifdef _MSC_VER
 		if(!entry_ifdir(dir_spec, true))
 			break;
-		DWORD attrs=GetFileAttributes(dir_spec);
+		const UTF16* utf16spec=pa_utf16_encode(dir_spec, pa_thread_request().charsets.source());
+		DWORD attrs=GetFileAttributesW((const wchar_t *)utf16spec);
 		if(
 			(attrs==INVALID_FILE_ATTRIBUTES)
 			|| !(attrs & FILE_ATTRIBUTE_DIRECTORY)
@@ -458,7 +472,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 		)
 			break;
 #endif
-		if( rmdir(dir_spec) )
+		if(pa_rmdir(dir_spec))
 			break;
 	};
 }
@@ -485,7 +499,7 @@ void file_move(const String& old_spec, const String& new_spec, bool keep_empty_d
 	
 	create_dir_for_file(new_spec); 
 
-	if(rename(old_spec_cstr, new_spec_cstr)!=0)
+	if(pa_rename(old_spec_cstr, new_spec_cstr)!=0)
 		throw Exception(errno==EACCES ? "file.access" : errno==ENOENT ? "file.missing" : 0,
 			&old_spec, "rename failed: %s (%d), actual filename '%s' to '%s'", strerror(errno), errno, old_spec_cstr, new_spec_cstr);
 
