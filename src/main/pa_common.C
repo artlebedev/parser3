@@ -22,7 +22,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.338 2025/07/03 19:45:41 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.339 2025/07/04 00:17:12 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -66,41 +66,34 @@ const UTF16* pa_utf16_encode(const char* in, Charset& source_charset);
 
 #ifdef _MSC_VER
 
+#define PA_UTF16_ENC(value) (const wchar_t *)pa_utf16_encode(value, pa_thread_request().charsets.source())
+
 int pa_stat(const char *pathname, struct stat *buffer){
-	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
-	return _wstat64((const wchar_t *)utf16name, buffer);
+	return _wstat64(PA_UTF16_ENC(pathname), buffer);
 }
 
 int pa_open(const char *pathname, int flags, int mode){
-	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
-	return _wopen((const wchar_t *)utf16name, flags, mode);
+	return _wopen(PA_UTF16_ENC(pathname), flags, mode);
 }
 
 FILE *pa_fopen(const char *pathname, const char *mode){
-	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
-	const UTF16* utf16mode=pa_utf16_encode(mode, pa_thread_request().charsets.source());
-	return _wfopen((const wchar_t *)utf16name, (const wchar_t *)utf16mode);
+	return _wfopen(PA_UTF16_ENC(pathname), PA_UTF16_ENC(mode));
 }
 
 int pa_mkdir(const char *pathname, int){
-	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
-	return _wmkdir((const wchar_t *)utf16name);
+	return _wmkdir(PA_UTF16_ENC(pathname));
 }
 
 int pa_rmdir(const char *pathname){
-	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
-	return _wrmdir((const wchar_t *)utf16name);
+	return _wrmdir(PA_UTF16_ENC(pathname));
 }
 
 int pa_rename(const char *oldpath, const char *newpath){
-	const UTF16* utf16old=pa_utf16_encode(oldpath, pa_thread_request().charsets.source());
-	const UTF16* utf16new=pa_utf16_encode(newpath, pa_thread_request().charsets.source());
-	return _wrename((const wchar_t *)utf16old, (const wchar_t *)utf16new);
+	return _wrename(PA_UTF16_ENC(odlpath), PA_UTF16_ENC(newpath));
 }
 
 int pa_unlink(const char *pathname){
-	const UTF16* utf16name=pa_utf16_encode(pathname, pa_thread_request().charsets.source());
-	return _wunlink((const wchar_t *)utf16name);
+	return _wunlink(PA_UTF16_ENC(pathname));
 }
 
 #else
@@ -309,7 +302,7 @@ void create_dir_for_file(const String& file_spec) {
 	const char *str=file_spec.taint_cstr(String::L_FILE_SPEC);
 	if(str[0]){
 		const char *pos=str+1;
-		while((pos=strchr(pos,'/')) && pos[1]) { // to avoid trailing /, see #1166
+		while((pos=strpbrk(pos, "/\\")) && pos[1]) { // to avoid trailing /, see #1166
 			pa_mkdir(pa_strdup(str,pos-str), 0775);
 			pos++;
 		}
@@ -463,8 +456,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 #ifdef _MSC_VER
 		if(!entry_ifdir(dir_spec, true))
 			break;
-		const UTF16* utf16spec=pa_utf16_encode(dir_spec, pa_thread_request().charsets.source());
-		DWORD attrs=GetFileAttributesW((const wchar_t *)utf16spec);
+		DWORD attrs=GetFileAttributesW(PA_UTF16_ENC(dir_spec));
 		if(
 			(attrs==INVALID_FILE_ATTRIBUTES)
 			|| !(attrs & FILE_ATTRIBUTE_DIRECTORY)
