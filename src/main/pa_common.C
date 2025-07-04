@@ -22,7 +22,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.339 2025/07/04 00:17:12 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.340 2025/07/04 00:18:35 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
 
 // some maybe-undefined constants
 
@@ -89,7 +89,7 @@ int pa_rmdir(const char *pathname){
 }
 
 int pa_rename(const char *oldpath, const char *newpath){
-	return _wrename(PA_UTF16_ENC(odlpath), PA_UTF16_ENC(newpath));
+	return _wrename(PA_UTF16_ENC(oldpath), PA_UTF16_ENC(newpath));
 }
 
 int pa_unlink(const char *pathname){
