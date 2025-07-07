@@ -1,3 +1,28 @@
+2025-07-04  moko
+
+	* src/main/pa_common.C: typo fixed (related to bug #1282)
+
+	* src/main/pa_common.C: minor optimization + create_dir_for_file
+	  checks for \ (related to bug #1282)
+
+2025-07-03  moko
+
+	* src/main/pa_common.C: _wrename, _wrmdir и _wmkdir are now used
+	  under Windows (fixes bug #1282)
+
+	* src/main/pa_common.C: file:delete for UTF-8 files now works under
+	  Windows (fixes bug #1282)
+
+2025-06-28  moko
+
+	* src/targets/apache/mod_parser3.c: GCC 15 compatibility fixed by
+	  Yavor Doganov <yavor@gnu.org>
+
+	* src/main/pa_charset.C: typo fixed (related to feature #1281)
+
+	* src/: include/pa_charset.h, main/pa_charset.C: libxml 2.14
+	  compatibility fixed (implements feature #1281)
+
 2025-05-31  moko
 
 	* src/main/pa_http.C: old gcc compilation fix (related to feature
