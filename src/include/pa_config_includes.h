@@ -197,7 +197,7 @@ inline size_t min(size_t a, size_t b){ return a<b ? a : b; }
 
 #define GC_MALLOC(size) memset(malloc(size), 0 , size)
 #define GC_MALLOC_ATOMIC(size) memset(malloc(size), 0 , size)
-#define GC_REALLOC(ptr, size) realloc(ptr, size)
+#define GC_REALLOC(ptr, size) realloc(ptr, size) // warning: non-gc realloc doesn't zero expanded region
 #define GC_FREE(ptr) free(ptr)
 
 #define GC_NEW(t) (t *)GC_MALLOC(sizeof (t))

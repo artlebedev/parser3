@@ -8,7 +8,7 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.104 2025/05/28 00:58:02 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.105 2025/08/01 16:14:44 moko Exp $"
 
 // includes
 
@@ -227,6 +227,11 @@ protected:
 	void resize(size_t asize) {
 		if(fallocated){
 			felements=(T *)pa_realloc(felements, asize*sizeof(T));
+#ifdef PA_DEBUG_DISABLE_GC
+			// non-gc realloc doesn't zero; manually zero expanded region
+			if(asize > fallocated)
+				memset((void *)(felements+fallocated), 0, (asize-fallocated) * sizeof(T));
+#endif
 			fallocated=asize;
 		} else {
 			fallocated=asize;
