@@ -213,6 +213,11 @@ GC_API void GC_set_warn_proc GC_PROTO((GC_warn_proc p));
 /* to suppress all warnings (unless statistics printing is turned on).  */
 GC_API void GC_ignore_warn_proc(char *, GC_word);
 
+/* abort_func is invoked on GC fatal aborts (just before OS-dependent   */
+/* abort or exit(1) is called).  Must be non-NULL.                      */
+typedef void (* GC_abort_func)(const char * /* msg */);
+GC_API void GC_set_abort_func(GC_abort_func fn);
+
 #ifdef __cplusplus
     }  /* end of extern "C" */
 #endif

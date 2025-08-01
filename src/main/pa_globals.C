@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.217 2024/12/23 16:59:17 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.218 2025/08/01 17:10:14 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -194,6 +194,13 @@ void pa_CORD_oom_fn(void) {
 	pa_fail_alloc("expand string", 0);
 }
 
+#ifndef PA_DEBUG_DISABLE_GC
+extern "C" void *pa_fail_alloc(const char*);
+extern "C" void pa_GC_abort_func(const char *msg) {
+	pa_fail_alloc(msg);
+}
+#endif
+
 /**
 	@todo gc: libltdl: substitute lt_dlmalloc & co
 */
@@ -242,6 +249,8 @@ void pa_globals_init() {
 	GC_disable();
 	// as we log allocation errors, we don't need default gc warnings (without timestamp and URI)
 	GC_set_warn_proc(GC_ignore_warn_proc);
+	// to prevent "mmap(PROT_NONE) failed + Aborted" under Linux
+	GC_set_abort_func(pa_GC_abort_func);
 #endif
 
 	// init socks
