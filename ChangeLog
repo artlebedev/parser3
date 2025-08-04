@@ -1,3 +1,11 @@
+2025-08-01  moko
+
+	* src/: lib/gc/include/gc.h, main/pa_globals.C, main/pa_memory.C:
+	  pa_GC_abort_func added and used (implements feature #1283)
+
+	* src/include/: pa_array.h, pa_config_includes.h:
+	  PA_DEBUG_DISABLE_GC mode fixed for sparse array
+
 2025-07-04  moko
 
 	* src/main/pa_common.C: typo fixed (related to bug #1282)
