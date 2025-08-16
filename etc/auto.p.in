@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.18 2024/12/28 14:00:52 moko Exp $
+#$Id: auto.p.in,v 1.19 2025/08/16 14:34:25 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -99,7 +99,7 @@ $LIMITS[
 	$.post_max_size(64*0x400*0x400)
 #	$.max_file_size(512*0x400*0x400)
 #	$.max_loop(100000)
-#	$.max_array(1000000)
+#	$.max_array_size(1000000)
 #	$.max_recursion(1000)
 ]
 
