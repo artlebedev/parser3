@@ -1,3 +1,7 @@
+2025-08-16  moko
+
+	* etc/auto.p.in: LIMIT max_array_size actualized
+
 2025-08-01  moko
 
 	* src/: lib/gc/include/gc.h, main/pa_globals.C, main/pa_memory.C:
