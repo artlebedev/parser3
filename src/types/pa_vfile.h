@@ -8,7 +8,7 @@
 #ifndef PA_VFILE_H
 #define PA_VFILE_H
 
-#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.88 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_VFILE_H "$Id: pa_vfile.h,v 1.89 2025/08/30 01:12:31 moko Exp $"
 
 // include
 
@@ -78,7 +78,7 @@ public: // usage
 	void set_binary(bool atainted, const char* avalue_ptr, size_t avalue_size, const String* afile_name=0, Value* acontent_type=0, Request* r=0);
 	void set_binary_string(bool atainted, const char* avalue_ptr, size_t avalue_size);
 
-	void save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset=0);
+	void save(Request_charsets& charsets, const String& file_spec, bool is_text, bool do_append=false, Charset* asked_charset=0);
 
 	static bool is_text_mode(const String& mode);
 	static bool is_valid_mode (const String& mode);

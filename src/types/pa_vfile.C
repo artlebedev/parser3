@@ -14,7 +14,7 @@
 #include "pa_charsets.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.84 2024/12/23 16:59:17 moko Exp $" IDENT_PA_VFILE_H;
+volatile const char * IDENT_PA_VFILE_C="$Id: pa_vfile.C,v 1.85 2025/08/30 01:12:31 moko Exp $" IDENT_PA_VFILE_H;
 
 // externs
 
@@ -175,9 +175,9 @@ void VFile::transcode(Charset& from_charset, Charset& to_charset){
 	ffields.put(size_name, new VInt(fvalue_size));
 }
 
-void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_text, Charset* asked_charset) {
+void VFile::save(Request_charsets& charsets, const String& file_spec, bool is_text, bool do_append, Charset* asked_charset) {
 	if(fvalue_ptr)
-		file_write(charsets, file_spec, fvalue_ptr, fvalue_size, is_text, false/*do_append*/, asked_charset);
+		file_write(charsets, file_spec, fvalue_ptr, fvalue_size, is_text, do_append, asked_charset);
 	else
 		throw Exception(PARSER_RUNTIME, &file_spec, "saving stat-ed file");
 }

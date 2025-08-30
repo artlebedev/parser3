@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.296 2025/05/26 00:52:15 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.297 2025/08/30 01:12:31 moko Exp $";
 
 // defines
 
@@ -35,6 +35,7 @@ volatile const char * IDENT_FILE_C="$Id: file.C,v 1.296 2025/05/26 00:52:15 moko
 #define CHARSET_EXEC_PARAM_NAME "charset"
 
 #define NAME_NAME "name"
+#define MODE_APPEND "append"
 #define KEEP_EMPTY_DIRS_NAME "keep-empty-dirs"
 #define SUPPRESS_EXCEPTION_NAME "exception"
 
@@ -133,6 +134,7 @@ static const String::Body cdate_name("cdate");
 // methods
 
 static void _save(Request& r, MethodParams& params) {
+	bool do_append=false;
 	bool is_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_BE_STRING));
 	const String& file_name=params.as_file_name(1);
 
@@ -144,12 +146,16 @@ static void _save(Request& r, MethodParams& params) {
 				asked_charset=&pa_charsets.get(vcharset_name->as_string());
 				valid_options++;
 			}
+			if(Value* vappend=options->get(MODE_APPEND)){
+				do_append=vappend->as_bool();
+				valid_options++;
+			}
 			if(valid_options != options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	// save
-	GET_SELF(r, VFile).save(r.charsets, r.full_disk_path(file_name), is_text, asked_charset);
+	GET_SELF(r, VFile).save(r.charsets, r.full_disk_path(file_name), is_text, do_append, asked_charset);
 }
 
 static void _delete(Request& r, MethodParams& params) {
@@ -226,7 +232,7 @@ static void _copy(Request& r, MethodParams& params) {
 	if(params.count()>2)
 		if(HashStringValue* options=params.as_hash(2)){
 			int valid_options=0;
-			if(Value* vappend=options->get("append")){
+			if(Value* vappend=options->get(MODE_APPEND)){
 				append=r.process(*vappend).as_bool();
 				valid_options++;
 			}
@@ -1227,7 +1233,7 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 4);
 
 	// ^file.save[mode;file-name]
-	// ^file.save[mode;file-name;$.charset[...]]
+	// ^file.save[mode;file-name;$.charset[...]$.append(false)]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 3);
 
 	// ^file:delete[file-name]
