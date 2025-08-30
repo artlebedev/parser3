@@ -438,6 +438,8 @@ hash
     ^hash.set[first|last;value]
     ^hash.set([-+]N)[value]
         sets the value of the specified ordered hash element
+    ^hash.array[[keys|values]]
+        is equivalent to ^array::copy[$hash] or returns an array of the hash’s keys or values
     ^hash.rename[old_key;new_key]
     ^hash.rename[ $.old_key[new_key] ...]
         renames the specified hash keys
@@ -604,7 +606,7 @@ file
     $uploaded_file_from_post.name
     $uploaded_file_from_post.size
     $uploaded_file_from_post.text
-    ^file.save[text|binary;filename[;$.charset[which charset to save in]]]
+    ^file.save[text|binary;filename[;$.charset[which charset to save in] $.append(false)]]
     ^file:delete[filename]
     ^file:find[filename][{if not found}]
     ^file:list[path[;pattern-string|pattern-regex]]
@@ -1426,4 +1428,4 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.267 2025/01/10 20:02:21 moko Exp $
+$Id: operators.txt,v 1.268 2025/08/30 13:01:44 moko Exp $
