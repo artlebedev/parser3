@@ -14,6 +14,10 @@ $f[^file::load[text;$sSourceFile]]
 ^f.save[text;$sTargetFile;
 	$.charset[$s1251]
 ]
+^f.save[text;$sTargetFile;
+	$.charset[$s1251]
+	$.append(true)
+]
 ^load[$sTargetFile;$s1251]
 
 ^do{

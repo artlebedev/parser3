@@ -1,8 +1,8 @@
 Content-Type: text/html
-Content-Length: 411
+Content-Length: 427
 
 UTF-8=ПрОвЕрКа<br />
-windows-1251=ПрОвЕрКа<br />
+windows-1251=ПрОвЕрКаПрОвЕрКа<br />
 Exception type: parser.runtime,
 Source: save,
 Comment: called with invalid option
