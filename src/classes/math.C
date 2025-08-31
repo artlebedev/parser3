@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.109 2024/12/06 21:43:35 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.110 2025/08/31 18:46:29 moko Exp $";
 
 // defines
 
@@ -110,6 +110,27 @@ static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
 
 MATH2(pow)
 MATH2(atan2)
+
+static inline uint64_t ulp_key_double(double x) {
+	union { double d; uint64_t u; } v = { .d = x};
+	return (v.u & (1ull << 63)) ? (~v.u + 1ull) : (v.u | (1ull << 63));
+}
+
+static inline uint64_t ulp_distance_double(double a, double b) {
+	if (a == b) return 0;
+	uint64_t ka = ulp_key_double(a);
+	uint64_t kb = ulp_key_double(b);
+	return (ka > kb) ? (ka - kb) : (kb - ka);
+}
+
+static void _eq(Request& r, MethodParams& params) {
+	double a=params.as_double(0, "parameter must be expression", r);
+	double b=params.as_double(1, "parameter must be expression", r);
+	uint64_t max_ulp=3;
+	if(params.count() == 3)
+		max_ulp=params.as_int(2, "max distance must be integer", r);
+	r.write(VBool::get(ulp_distance_double(a,b)<=max_ulp));
+}
 
 inline bool is_salt_body_char(unsigned char c) {
 	return pa_isalnum(c) || c == '.' || c=='/';
@@ -767,6 +788,9 @@ MMath::MMath(): Methoded("math") {
 
 	// ^math:pow(x;y)
 	ADDN(pow, 2);
+
+	// ^math:eq(a;b[;precision])
+	add_native_method("eq", Method::CT_STATIC, _eq, 2, 3);
 
 	// ^math:crypt[password;salt]
 	ADDN(crypt, 2);
