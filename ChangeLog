@@ -1,3 +1,26 @@
+2025-09-01  moko
+
+	* src/classes/math.C: old compilers support in ^math:eq
+
+2025-08-31  moko
+
+	* tests/: 446.html, results/446.processed: tests for
+	  ^math:eq(a;b[;max URL distance]) added (related to feature #1285)
+
+	* src/classes/math.C: ^math:eq(a;b[;precision]) added (partly
+	  implements #1285)
+
+2025-08-30  moko
+
+	* operators.ru.txt, operators.txt: actualized
+
+	* tests/: 230.html, results/230.processed: test for ^file.save
+	  $.append(false|true) option added (related to feature #1284)
+
+	* src/: classes/file.C, types/pa_vfile.C, types/pa_vfile.h:
+	  ^file.save $.append(false|true) option added (implements feature
+	  #1284)
+
 2025-08-16  moko
 
 	* etc/auto.p.in: LIMIT max_array_size actualized
