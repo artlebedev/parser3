@@ -23,7 +23,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.110 2025/08/31 18:46:29 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.111 2025/09/01 00:21:37 moko Exp $";
 
 // defines
 
@@ -112,7 +112,7 @@ MATH2(pow)
 MATH2(atan2)
 
 static inline uint64_t ulp_key_double(double x) {
-	union { double d; uint64_t u; } v = { .d = x};
+	union { double d; uint64_t u; } v; v.d = x;
 	return (v.u & (1ull << 63)) ? (~v.u + 1ull) : (v.u | (1ull << 63));
 }
 
