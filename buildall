@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.40 2024/12/18 19:20:55 moko Exp $
+# $Id: buildall,v 1.41 2025/10/01 19:39:35 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -37,7 +37,7 @@ for PARAM in "$@"; do
 	    ;;
 	"--with-mailreceive")
 	    printf ", with mail receiving"
-	    options="$options --with-mailreceive=$project_dir/gnome"
+	    options="$options --with-mailreceive=$project_dir/gmime"
 	    build_gmime="yes"
 	    ;;
 	"--with-system-mailreceive")
