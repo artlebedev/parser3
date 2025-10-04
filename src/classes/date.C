@@ -14,7 +14,7 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.121 2024/12/23 16:59:17 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.122 2025/10/04 00:22:18 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 
@@ -283,7 +283,8 @@ static void _create(Request& r, MethodParams& params) {
 }
 
 static void _sql_string(Request& r, MethodParams& params) {
-	VDate& vdate=GET_SELF(r, VDate);
+	bool dynamic=&r.get_self() != date_class;
+	VDate& vdate=dynamic ? GET_SELF(r, VDate) : *new VDate((pa_time_t)time(0));
 
 	VDate::sql_string_type format = VDate::sql_string_datetime;
 	if(params.count() > 0) {
@@ -302,13 +303,15 @@ static void _sql_string(Request& r, MethodParams& params) {
 }
 
 static void _gmt_string(Request& r, MethodParams&) {
-	VDate& vdate=GET_SELF(r, VDate);
+	bool dynamic=&r.get_self() != date_class;
+	VDate& vdate=dynamic ? GET_SELF(r, VDate) : *new VDate((pa_time_t)time(0));
 
 	r.write(*vdate.get_gmt_string());
 }
 
 static void _iso_string(Request& r, MethodParams& params) {
-	VDate& vdate=GET_SELF(r, VDate);
+	bool dynamic=&r.get_self() != date_class;
+	VDate& vdate=dynamic ? GET_SELF(r, VDate) : *new VDate((pa_time_t)time(0));
 
 	VDate::iso_string_type format=VDate::iso_string_default;
 
@@ -571,13 +574,16 @@ MDate::MDate(): Methoded("date") {
 	add_native_method("set", Method::CT_DYNAMIC, _create, 1, 7);
 
 	// ^date.sql-string[]
-	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 1);
+	// ^date:sql-string[]
+	add_native_method("sql-string", Method::CT_ANY, _sql_string, 0, 1);
 
 	// ^date.gmt-string[]
-	add_native_method("gmt-string", Method::CT_DYNAMIC, _gmt_string, 0, 0);
+	// ^date:gmt-string[]
+	add_native_method("gmt-string", Method::CT_ANY, _gmt_string, 0, 0);
 
 	// ^date.iso-string[$.colon(true) $.z(true) $.ms(false)]
-	add_native_method("iso-string", Method::CT_DYNAMIC, _iso_string, 0, 1);
+	// ^date:iso-string[...]
+	add_native_method("iso-string", Method::CT_ANY, _iso_string, 0, 1);
 
 	// ^date:lastday(year;month)
 	// ^date.lastday[]
