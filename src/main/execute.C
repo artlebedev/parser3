@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.426 2024/12/23 16:59:17 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.427 2025/10/04 15:50:49 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -516,8 +516,7 @@ void Request::execute(ArrayOperation& ops) {
 				DEBUG_PRINT_STRING(name)
 
 				if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
-					if(!method->junction_template) method->junction_template=new VJunction(main_class, method);
-					stack.push(*method->junction_template);
+					stack.push(*method->get_vjunction(main_class));
 					break;
 				}
 				Value& value=get_element(*rcontext, name);
@@ -530,8 +529,7 @@ void Request::execute(ArrayOperation& ops) {
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
 				if(Method* method=main_class.get_method(name)){ // looking operator of that name FIRST
-					if(!method->junction_template) method->junction_template=new VJunction(main_class, method);
-					stack.push(*method->junction_template);
+					stack.push(*method->get_vjunction(main_class));
 					break;
 				}
 				Value& value=get_element(ncontext, name);
