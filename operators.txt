@@ -1003,6 +1003,8 @@ math
     ^math:convert[number|file](base-from)[alphabet][[ $.format[string|file] ]]
         converts a string or file with a number from one numeral system to another
         the numeral system can be set by an alphabet, a number from 2 to 16 (equivalent to the alphabet 0123456789ABCDEF), or 256 (all ASCII characters)
+    ^math:eq(a;b[;max ULP])
+        true if difference between doubles less or equal max ULPs (default 3)
     ^math:uuid[ $.lower(bool) $.solid(bool) ]
         22C0983C-E26E-4169-BD07-77ECE9405BA5
         win32: uses cryptapi
@@ -1436,4 +1438,4 @@ if $SIGPIPE(1) is defined in MAIN, then if processing was interrupted by the use
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.269 2025/10/04 19:20:01 moko Exp $
+$Id: operators.txt,v 1.270 2025/10/04 19:30:20 moko Exp $
