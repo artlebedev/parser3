@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.98 2025/05/26 00:52:15 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.99 2025/10/04 15:51:54 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -161,7 +161,7 @@ static void _class_name(Request& r, MethodParams& params) {
 }
 
 static void _class_by_name(Request& r, MethodParams& params) {
-	const String& class_name=params.as_string(0, "class_name must be string");
+	const String& class_name=params.as_string(0, "class name must be string");
 	r.write(r.get_class_ref(class_name));
 }
 
@@ -538,6 +538,41 @@ static void _mixin(Request& r, MethodParams& params) {
 	}
 }
 
+static void _override(Request& r, MethodParams& params) {
+	Junction *j=params[0].get_junction();
+	const Method* method=j ? j->method : 0;
+	if(!method)
+		throw Exception(PARSER_RUNTIME, 0, "param must be method junction");
+
+	const String *name=method->name;
+	Value* vtarget=0;
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1, "override options")) {
+			int valid_options=0;
+			for(HashStringValue::Iterator i(*options); i; i.next() ){
+				if(i.key() == "to") {
+					vtarget=i.value();
+					valid_options++;
+				} else if(i.key() == "name") {
+					name=&i.value()->as_string();
+					valid_options++;
+				}
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	if(!vtarget)
+		vtarget=&r.get_method_frame()->caller()->self();
+
+	VClass* target=dynamic_cast<VClass*>(vtarget->get_class());
+
+	if(!target)
+		throw Exception(PARSER_RUNTIME, 0, "destination must be parser object or class");
+
+	target->set_method(*name, new Method(*method));
+}
+
 String::Language get_untaint_lang(const String& lang_name); // op.C
 
 static void _tainting(Request& r, MethodParams& params) {
@@ -744,6 +779,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:mixin[object or class or junction;options]
 	add_native_method("mixin", Method::CT_STATIC, _mixin, 1, 2);
+
+	// ^reflection:override[method junction[;$.to[class] $.name[another_name]]]
+	add_native_method("override", Method::CT_STATIC, _override, 1, 2);
 
 	// ^reflection:tainting[[language or 'tainted' or 'optimized';]string]
 	add_native_method("tainting", Method::CT_STATIC, _tainting, 1, 2);
