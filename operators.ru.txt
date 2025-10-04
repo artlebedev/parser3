@@ -589,6 +589,8 @@ date
         date                       - %Y-%m-%d
         time                       - %H:%M:%S
         where published='^дата.sql-string[]'
+    ^date:sql-string[[datetime|date|time]]
+        sql-string для сейчас
     ^date:calendar[rus|eng](год;месяц)
         выдаёт неименованную таблицу, столбцы: 0..6, week, year
     ^date:calendar[rus|eng](год;месяц;день)
@@ -599,8 +601,12 @@ date
         вернёт последний день месяца $дата
     ^дата.gmt-string[]
         Fri, 23 Mar 2001 09:32:23 GMT
+    ^date:gmt-string[]
+        gmt-string для сейчас
     ^дата.iso-string[]
         2001-03-23T12:32:23+03
+    ^date:iso-string[]
+        iso-string для сейчас
 
 file
     $файл_из_post.name
@@ -1090,6 +1096,8 @@ reflection
         текущее состояние стека вызовов методов на парсере
     ^reflection:mixin[источник; $.to[получатель] $.name[имя] $.methods(true/false) $.fields(true/false) $.overwrite(false/true) ]
         копирует в класс методы и поля другого класса
+    ^reflection:override[метод[; $.to[получатель] $.name[новое имя]]]
+        переопределяет или определяет метод
 
 request
     https://site.name/a%20b/?name=some%20value
@@ -1428,4 +1436,4 @@ MAIN
 если описание метода содержит локальную переменную result в явном виде (есть и неявная переменная)
     то код вывода пробельных литералов не попадает в конечный байт-код
 
-$Id: operators.ru.txt,v 1.266 2025/08/30 13:01:44 moko Exp $
+$Id: operators.ru.txt,v 1.267 2025/10/04 19:20:01 moko Exp $
