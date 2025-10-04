@@ -1,0 +1,12 @@
+Content-Type: text/html
+Content-Length: 305
+
+my for
+1. new test for "MAIN" from "MAIN"
+1. new test for "MAIN" from "MAIN"
+3. static: test for "A"
+4. dynamic: test for "A"
+5. static: new test for "A" from "MAIN"
+6. dynamic: new test for "A" from "MAIN"
+7. extra static: extra new test for "A" from "A"
+8. extra dynamic: extra new test for "A" from "A"

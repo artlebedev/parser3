@@ -1,0 +1,46 @@
+@main[]
+
+^for[]
+
+^reflection:override[$B:test; $.name[gm] ]
+1. ^gm[]
+1. ^MAIN:gm[]
+
+$a[^A::create[]]
+3. static: ^A:test[]
+4. dynamic: ^a.test[]
+
+^reflection:override[$B:test; $.to[$A:CLASS] ]
+
+$a[^A::create[]]
+5. static: ^A:test[]
+6. dynamic: ^a.test[]
+
+7. extra static: ^A:extra[]
+8. extra dynamic: ^a.extra[]
+
+@for[]
+my for
+
+@gm[]
+before
+
+
+@CLASS
+B
+
+@create[]
+
+@test[]
+new test for "$self.CLASS_NAME" from "$caller.CLASS_NAME"
+
+@CLASS
+A
+
+@create[]
+
+@test[]
+test for "$self.CLASS_NAME"
+
+@extra[]
+extra ^test[]
