@@ -24,10 +24,16 @@ $data[^table::create{n1,n2
 ^for[i](0;4){
     ^cmp[$i]
 }
-
+^cmp2[]
 
 @cmp[max_ulp]
 ============ Max ULP distance: $max_ulp
 ^data.menu{ $n1($data.n1) $n2($data.n2)
     ^n1.format[%0.20g] ($data.n1) ^if(^math:eq($n1;$n2;$max_ulp)){==}{!=} ^n2.format[%0.20g] ($data.n2)
+}
+
+@cmp2[]
+============ String
+^data.menu{ $n1($data.n1) $n2($data.n2)
+    ^n1.format[%0.20g] ($data.n1) ^if($n1 eq $n2){==}{!=} ^n2.format[%0.20g] ($data.n2)
 }
