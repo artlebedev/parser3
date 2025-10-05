@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2127
+Content-Length: 2097
 
 cookie<br />env<br />hash - methoded<br />table - methoded<br />test - methoded<br />test1 - methoded<br />test2 - methoded
 <hr />
@@ -75,11 +75,11 @@ env<br />
 <br />
 @double[0-1] {dynamic}
 <br />
-@gmt-string[0] {dynamic}
+@gmt-string[0]
 <br />
 @int[0-1] {dynamic}
 <br />
-@iso-string[0-1] {dynamic}
+@iso-string[0-1]
 <br />
 @last-day[0-2]
 <br />
@@ -89,7 +89,7 @@ env<br />
 <br />
 @set[1-7] {dynamic}
 <br />
-@sql-string[0-1] {dynamic}
+@sql-string[0-1]
 <br />
 @today[0-1] {dynamic}
 <br />
