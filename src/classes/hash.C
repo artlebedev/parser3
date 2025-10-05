@@ -18,7 +18,7 @@
 #include "pa_vbool.h"
 #include "pa_vmethod_frame.h"
 
-volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.172 2025/05/26 01:56:54 moko Exp $";
+volatile const char * IDENT_HASH_C="$Id: hash.C,v 1.173 2025/10/05 19:41:27 moko Exp $";
 
 // class
 
@@ -333,29 +333,22 @@ static void _sql(Request& r, MethodParams& params) {
 	Table2hash_value_type value_type=C_HASH;
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "sql options")) {
-			int valid_options=0;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
 				if(key == sql_bind_name) {
 					bind=value->get_hash();
-					valid_options++;
 				} else if(key == sql_limit_name) {
 					limit=(ulong)r.process(*value).as_double();
-					valid_options++;
 				} else if(key == sql_offset_name) {
 					offset=(ulong)r.process(*value).as_double();
-					valid_options++;
 				} else if (key == sql_distinct_name) {
 					distinct=r.process(*value).as_bool();
-					valid_options++;
 				} else if (key == sql_value_type_name) {
 					value_type=get_value_type(r.process(*value));
-					valid_options++;
-				}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	SQL_Driver::Placeholder* placeholders=0;

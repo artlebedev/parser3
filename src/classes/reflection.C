@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.99 2025/10/04 15:51:54 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.100 2025/10/05 19:41:27 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -475,29 +475,22 @@ static void _mixin(Request& r, MethodParams& params) {
 
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "mixin options")) {
-			int valid_options=0;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
 				if(key == "to") {
 					vtarget=value;
-					valid_options++;
 				} else if(key == "name") {
 					name=&value->as_string();
-					valid_options++;
 				} else if(key == "methods") {
 					copy_methods=r.process(*value).as_bool();
-					valid_options++;
 				} else if(key == "fields") {
 					copy_fields=r.process(*value).as_bool();
-					valid_options++;
 				} else if(key == "overwrite") {
 					overwrite=r.process(*value).as_bool();
-					valid_options++;
-				}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	if(!vtarget)
@@ -548,18 +541,14 @@ static void _override(Request& r, MethodParams& params) {
 	Value* vtarget=0;
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "override options")) {
-			int valid_options=0;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				if(i.key() == "to") {
 					vtarget=i.value();
-					valid_options++;
 				} else if(i.key() == "name") {
 					name=&i.value()->as_string();
-					valid_options++;
-				}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	if(!vtarget)
@@ -616,28 +605,20 @@ static void _stack(Request& r, MethodParams& params) {
 
 	if(params.count()>0)
 		if(HashStringValue* options=params.as_hash(0, "stack options")) {
-			int valid_options=0;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
-
 				if(key == "args") {
 					show_args=r.process(*value).as_bool();
-					valid_options++;
 				} else if(key == "locals") {
 					show_locals=r.process(*value).as_bool();
-					valid_options++;
 				} else if(key == "limit") {
 					limit=r.process(*value).as_int();
-					valid_options++;
 				} else if(key == "offset") {
 					offset=r.process(*value).as_int();
-					valid_options++;
-				}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	limit+=offset;

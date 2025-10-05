@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.262 2024/12/11 02:30:24 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.263 2025/10/05 19:41:27 moko Exp $";
 
 // class
 
@@ -690,25 +690,19 @@ static void _trim(Request& r, MethodParams& params) {
 Base64Options base64_encode_options(Request& r, HashStringValue* options) {
 	Base64Options result;
 	if(options) {
-		int valid_options=0;
 		for(HashStringValue::Iterator i(*options); i; i.next()) {
 			String::Body key=i.key();
 			Value* value=i.value();
 			if(key == "pad") {
 				result.pad=r.process(*value).as_bool();
-				valid_options++;
 			} else if(key == "wrap") {
 				result.wrap=r.process(*value).as_bool();
-				valid_options++;
 			} else if(key == "url-safe") {
 				if(r.process(*value).as_bool())
 					result.set_url_safe_abc();
-				valid_options++;
-			}
+			} else
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
-
-		if(valid_options != options->count())
-			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 	return result;
 }
@@ -716,25 +710,19 @@ Base64Options base64_encode_options(Request& r, HashStringValue* options) {
 Base64Options base64_decode_options(Request& r, HashStringValue* options) {
 	Base64Options result;
 	if(options) {
-		int valid_options=0;
 		for(HashStringValue::Iterator i(*options); i; i.next() ) {
 			String::Body key=i.key();
 			Value* value=i.value();
 			if(key == "pad") {
 				result.pad=r.process(*value).as_bool();
-				valid_options++;
 			} else if(key == "strict") {
 				result.strict=r.process(*value).as_bool();
-				valid_options++;
 			} else if(key == "url-safe") {
 				if(r.process(*value).as_bool())
 					result.set_url_safe_abc();
-				valid_options++;
-			}
+			} else
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
-
-		if(valid_options != options->count())
-			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 	return result;
 }

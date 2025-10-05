@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.197 2025/05/26 01:56:54 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.198 2025/10/05 19:41:27 moko Exp $";
 
 // defines
 
@@ -994,31 +994,22 @@ static void _measure(Request& r, MethodParams& params) {
 
 	if(params.count()>1)
 		if(HashStringValue* options=params.as_hash(1, "methods options")) {
-			int valid_options=0;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
 				if(key == "exif") {
 					if(r.process(*value).as_bool())
 						info.exif=&exif;
-					valid_options++;
-				}
-				if(key == "xmp") {
+				} else if(key == "xmp") {
 					if(r.process(*value).as_bool())
 						info.xmp=&xmp;
-					valid_options++;
-				}
-				if(key == "xmp-charset") {
+				} else if(key == "xmp-charset") {
 					info.xmp_charset=&pa_charsets.get(value->as_string());
-					valid_options++;
-				}
-				if(key == "video") {
+				} else if(key == "video") {
 					info.video=r.process(*value).as_bool();
-					valid_options++;
-				}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
 	const String* file_name;

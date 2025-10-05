@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.67 2025/05/26 00:52:15 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.68 2025/10/05 19:41:27 moko Exp $";
 
 // class
 
@@ -621,64 +621,51 @@ static void _string(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(1)) {
 			json.params=&params[1];
 			HashStringValue* methods=new HashStringValue();
-			int valid_options=0;
 			HashStringValue* vvalue;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
 				String::Body key=i.key();
 				Value* value=i.value();
 				if(key == "skip-unknown"){
 					json.skip_unknown=r.process(*value).as_bool();
-					valid_options++;
 				} else if(key == "one-line"){
 					json.one_line=r.process(*value).as_bool();
-					valid_options++;
 				} else if(key == "date" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_date_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'sql-string', 'gmt-string', 'iso-string' or 'unix-timestamp'");
-					valid_options++;
 				} else if(key == "indent"){
 					if(value->is_string()){
 						json.indent=value->as_string().cstr();
 						json.json_string_recursion=strlen(json.indent);
 					} else json.indent=r.process(*value).as_bool() ? "" : NULL;
-					valid_options++;
 				} else if(key == "table" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_table_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array', 'object' or 'compact'");
-					valid_options++;
 				} else if(key == "array" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_array_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'array', 'object' or 'compact'");
-					valid_options++;
 				} else if(key == "file" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_file_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'base64', 'text' or 'stat'");
-					valid_options++;
 				} else if(key == "void" && value->is_string()){
 					const String& svalue=value->as_string();
 					if(!json.set_void_format(svalue))
 						throw Exception(PARSER_RUNTIME, &svalue, "must be 'string' or 'null'");
-					valid_options++;
 #ifdef XML
 				} else if(key == "xdoc" && (vvalue = value->get_hash())){
 					json.xdoc_options=new XDocOutputOptions();
 					json.xdoc_options->append(r, vvalue);
-					valid_options++;
 #endif
 				} else if(Junction* junction=value->get_junction()){
 					if(!junction->method || !junction->method->params_names || junction->method->params_count != 3)
 						throw Exception(PARSER_RUNTIME, 0, "$.%s must be parser method with 3 parameters", key.cstr());
 					methods->put(key, value);
-					valid_options++;
-				}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
-
-			if(valid_options!=options->count())
-				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 
 			// special handling for $._default 
 			if(VHashBase* vhash=dynamic_cast<VHashBase*>(&params[1]))

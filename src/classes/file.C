@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.297 2025/08/30 01:12:31 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.298 2025/10/05 19:41:27 moko Exp $";
 
 // defines
 
@@ -1070,28 +1070,21 @@ extern Base64Options base64_encode_options(Request& r, HashStringValue* options)
 Base64Options base64_decode_options(Request& r, HashStringValue* options, VString** vcontent_type) {
 	Base64Options result;
 	if(options) {
-		int valid_options=0;
 		for(HashStringValue::Iterator i(*options); i; i.next() ) {
 			String::Body key=i.key();
 			Value* value=i.value();
 			if(key == "pad") {
 				result.pad=r.process(*value).as_bool();
-				valid_options++;
 			} else if(key == "strict") {
 				result.strict=r.process(*value).as_bool();
-				valid_options++;
 			} else if(key == CONTENT_TYPE_NAME) {
 				*vcontent_type=new VString(value->as_string());
-				valid_options++;
 			} else if(key == "url-safe") {
 				if(r.process(*value).as_bool())
 					result.set_url_safe_abc();
-				valid_options++;
-			}
+			} else
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
-
-		if(valid_options != options->count())
-			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 	return result;
 }

@@ -22,7 +22,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.274 2025/01/10 20:16:33 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.275 2025/10/05 19:41:27 moko Exp $";
 
 // defines
 
@@ -186,30 +186,20 @@ static void _process(Request& r, MethodParams& params) {
 		size_t options_index=index+1;
 		if(options_index<params.count())
 			if(HashStringValue* options=params.as_hash(options_index)) {
-
-				int valid_options=0;
 				for(HashStringValue::Iterator i(*options); i; i.next() ){
-
 					String::Body key=i.key();
 					Value* value=i.value();
-
 					if(key == "main") {
-						valid_options++;
 						main_alias=&value->as_string();
 					} else if(key == "file") {
-						valid_options++;
 						file_alias=&value->as_string();
 					} else if(key == "lineno") {
-						valid_options++;
 						line_no_alias_offset=value->as_int();
 					} else if(key == "replace") {
-						valid_options++;
 						allow_class_replace=r.process(*value).as_bool();
-					}
+					} else
+						throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 				}
-
-				if(valid_options!=options->count())
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 
 		uint processe_file_no=file_alias ? r.register_file(r.full_disk_path(*file_alias)) : pseudo_file_no__process;
@@ -299,28 +289,16 @@ static void _use(Request& r, MethodParams& params) {
 
 	if(params.count()==2)
 		if(HashStringValue* options=params.as_hash(1)) {
-			int valid_options=0;
 			for(HashStringValue::Iterator i(*options); i; i.next() ){
-
 				String::Body key=i.key();
 				Value* value=i.value();
-
 				if(key == "origin") {
-					valid_options++;
 					use_origin=&value->as_string();
-				}
-
-				if(key == "replace") {
-					valid_options++;
+				} else if(key == "replace") {
 					allow_class_replace=r.process(*value).as_bool();
-				}
-
-				if(key == "main") {
-					valid_options++;
+				} else if(key == "main") {
 					load_auto_p=r.process(*value).as_bool();
-				}
-
-				if(valid_options!=options->count())
+				} else
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 		}
