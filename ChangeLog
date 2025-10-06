@@ -1,3 +1,40 @@
+2025-10-05  moko
+
+	* src/classes/: array.C, file.C, hash.C, image.C, json.C, op.C,
+	  reflection.C, string.C: Optimization: valid_options optimized
+	  where HashStringValue::Iterator used
+
+	* tests/results/224.processed: test result updated after date
+	  functions updated (related to #1287)
+
+2025-10-04  moko
+
+	* operators.ru.txt, operators.txt: actualized
+
+	* operators.ru.txt, operators.txt: actualized after #1285 and #1286
+
+	* tests/: 447.html, results/447.processed: tests for
+	  ^reflection:override[$method] added (related to feature #1286)
+
+	* tests/: 446.html, results/446.processed: tests for $n1 eq n2
+	  added (related to feature #1285)
+
+	* src/classes/reflection.C:
+	  ^reflection:override[$method[;$.to[class] $.name[another_name]]]
+	  added (implements feature #1286)
+
+	* src/main/execute.C: bugfix: when method is attached from another
+	  class, it's  junction_template is initialized with another class,
+	  thus get_vjunction should be used (related to feature #1286)
+
+	* src/classes/date.C: ^date:sql-string[], ^date:gmt-string[],
+	  ^date:iso-string[] - static call now formats current date
+	  (implements feature #1287)
+
+2025-10-01  moko
+
+	* buildall: built-in mailreceive path actualized
+
 2025-09-01  moko
 
 	* src/classes/math.C: old compilers support in ^math:eq
