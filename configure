@@ -688,6 +688,8 @@ COMPILE_APACHE_MODULE_TRUE
 APACHE_CFLAGS
 APACHE_INC
 APACHE
+AMQP_LIBS
+AMQP_INCLUDES
 MIME_LIBS
 MIME_INCLUDES
 XML_LIBS
@@ -814,6 +816,7 @@ with_gc
 with_pcre
 with_xml
 with_mailreceive
+with_amqp
 with_sendmail
 with_apache
 with_pic
@@ -1510,6 +1513,8 @@ Optional Packages:
                           Gnome XML libraries are installed
   --with-mailreceive=DIR  is the directory where
                           Gnome MIME library is installed
+  --with-amqp=DIR         DIR is the directory where
+                          RabbitMQ C library (librabbitmq) is installed
   \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"
                           (makes parser ignore user-defined sendmail commands)
@@ -5364,6 +5369,71 @@ $as_echo "#define WITH_MAILRECEIVE /**/" >>confdefs.h
 
 fi
 
+
+
+
+
+
+
+# Check whether --with-amqp was given.
+if test "${with_amqp+set}" = set; then :
+  withval=$with_amqp;
+    AMQP=$withval
+
+    if test -z "$AMQP" -o "$AMQP" = "yes"; then
+        AMQP_INCLUDES=""
+        AMQP_LIBS="-lrabbitmq"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: --with-amqp value was not specified, hoping linker would find it" >&5
+$as_echo "$as_me: WARNING: --with-amqp value was not specified, hoping linker would find it" >&2;}
+    else
+        AMQP_INCLUDES="-I$AMQP/include"
+        if test -f $AMQP/lib/librabbitmq.la; then
+            AMQP_LIBS="$AMQP/lib/librabbitmq.la"
+        else
+            AMQP_LIBS="-L$AMQP/lib -lrabbitmq"
+        fi
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for librabbitmq" >&5
+$as_echo_n "checking for librabbitmq... " >&6; }
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS $AMQP_LIBS $AMQP_INCLUDES"
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <amqp.h>
+int
+main ()
+{
+ amqp_connection_state_t c = 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+        if test -z "$AMQP"; then
+            as_fn_error $? "please specify path to librabbitmq: --with-amqp=DIR" "$LINENO" 5
+        else
+            as_fn_error $? "$AMQP does not seem to be valid librabbitmq installation directory" "$LINENO" 5
+        fi
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+    LIBS=$SAVE_LIBS
+
+$as_echo "#define WITH_AMQP /**/" >>confdefs.h
+
+
+fi
 
 
 

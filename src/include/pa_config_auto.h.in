@@ -399,6 +399,9 @@
 /* Windows32 target platform */
 #undef WIN32
 
+/* has amqp */
+#undef WITH_AMQP
+
 /* has \$mail:received */
 #undef WITH_MAILRECEIVE
 

@@ -344,6 +344,44 @@ AC_SUBST(MIME_INCLUDES)
 AC_SUBST(MIME_LIBS)
 
 
+dnl RabbitMQ library argument
+AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
+                          RabbitMQ C library (librabbitmq) is installed],[
+    AMQP=$withval
+
+    if test -z "$AMQP" -o "$AMQP" = "yes"; then
+        AMQP_INCLUDES=""
+        AMQP_LIBS="-lrabbitmq"
+        AC_MSG_WARN([--with-amqp value was not specified, hoping linker would find it])
+    else
+        AMQP_INCLUDES="-I$AMQP/include"
+        if test -f $AMQP/lib/librabbitmq.la; then
+            AMQP_LIBS="$AMQP/lib/librabbitmq.la"
+        else
+            AMQP_LIBS="-L$AMQP/lib -lrabbitmq"
+        fi
+    fi
+
+    AC_MSG_CHECKING(for librabbitmq)
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS $AMQP_LIBS $AMQP_INCLUDES"
+    PA_TRY_LINK([ #include <amqp.h> ],[ amqp_connection_state_t c = 0; ],
+        AC_MSG_RESULT(yes)
+    ,
+        AC_MSG_RESULT(no)
+        if test -z "$AMQP"; then
+            AC_MSG_ERROR(please specify path to librabbitmq: --with-amqp=DIR)
+        else
+            AC_MSG_ERROR($AMQP does not seem to be valid librabbitmq installation directory)
+        fi
+    )
+    LIBS=$SAVE_LIBS
+    AC_DEFINE(WITH_AMQP,,has amqp)
+])
+
+AC_SUBST(AMQP_INCLUDES)
+AC_SUBST(AMQP_LIBS)
+
 dnl Sendmail argument
 AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"

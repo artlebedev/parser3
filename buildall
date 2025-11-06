@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.41 2025/10/01 19:39:35 moko Exp $
+# $Id: buildall,v 1.42 2025/11/06 22:09:34 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -43,6 +43,10 @@ for PARAM in "$@"; do
 	"--with-system-mailreceive")
 	    printf ", with mail receiving"
 	    options="$options --with-mailreceive"
+	    ;;
+	"--with-system-amqp")
+	    printf ", with amqp"
+	    options="$options --with-amqp"
 	    ;;
 	"--strip")
 	    printf ", without debug information"

@@ -228,6 +228,8 @@ CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/depcomp
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
+AMQP_INCLUDES = @AMQP_INCLUDES@
+AMQP_LIBS = @AMQP_LIBS@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 APACHE = @APACHE@
@@ -394,7 +396,7 @@ mod_parser3_la_SOURCES = mod_parser3_core.C mod_parser3.c
 mod_parser3_la_DEPENDENCIES = Makefile $(PA_LIBS)
 mod_parser3_la_LDFLAGS = -module -avoid-version
 mod_parser3_la_CFLAGS = $(APACHE_CFLAGS)
-mod_parser3_la_LIBADD = $(PA_LIBS) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ $(LIBLTDL)
+mod_parser3_la_LIBADD = $(PA_LIBS) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ @AMQP_LIBS@ $(LIBLTDL)
 all: all-am
 
 .SUFFIXES:

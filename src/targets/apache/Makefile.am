@@ -17,4 +17,4 @@ mod_parser3_la_DEPENDENCIES = Makefile $(PA_LIBS)
 mod_parser3_la_LDFLAGS = -module -avoid-version
 mod_parser3_la_CFLAGS = $(APACHE_CFLAGS)
 
-mod_parser3_la_LIBADD = $(PA_LIBS) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ $(LIBLTDL)
+mod_parser3_la_LIBADD = $(PA_LIBS) @GC_LIBS@ @PCRE_LIBS@ @XML_LIBS@ @MIME_LIBS@ @AMQP_LIBS@ $(LIBLTDL)
