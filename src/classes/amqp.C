@@ -1,0 +1,569 @@
+/** @file
+	Parser: @b amqp parser class.
+
+	Copyright (c) 2001-2025 Art. Lebedev Studio (http://www.artlebedev.com)
+	Authors: Konstantin Morshnev <moko@design.ru>
+*/
+
+#include "pa_vmethod_frame.h"
+
+#include "pa_request.h"
+#include "pa_vstring.h"
+#include "pa_vhash.h"
+#include "pa_vbool.h"
+#include "pa_vamqp.h"
+
+#ifdef WITH_AMQP
+#include <amqp.h>
+#include <amqp_tcp_socket.h>
+#include <amqp_framing.h>
+#include <stdlib.h>
+#include <string.h>
+#endif
+
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.1 2025/11/06 22:08:03 moko Exp $" IDENT_PA_VAMQP_H;
+
+class MAmqp: public Methoded {
+public: // VStateless_class
+	Value* create_new_value(Pool&) { return new VAmqp(); }
+public:
+	MAmqp();
+};
+
+DECLARE_CLASS_VAR(amqp, new MAmqp);
+
+static void _create(Request& r, MethodParams& params) {
+VAmqp& self=GET_SELF(r, VAmqp);
+
+#ifdef WITH_AMQP
+	const char* host_c = "localhost";
+	int port = 5672;
+	const char* user_c = "guest";
+	const char* pass_c = "guest";
+	const char* vhost_c = "/";
+	const char* locale_c = "en_US";
+	int heartbeat = 30; // seconds
+
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="host"){
+					host_c=value->as_string().cstr();
+				} else if(key=="port"){
+					port=r.process(*value).as_int();
+				} else if(key=="user"){
+					user_c=value->as_string().cstr();
+				} else if(key=="password"){
+					pass_c=value->as_string().cstr();
+				} else if(key=="vhost"){
+					vhost_c=value->as_string().cstr();
+				} else if(key=="locale"){
+					locale_c=value->as_string().cstr();
+				} else if(key=="heartbeat"){
+					heartbeat=r.process(*value).as_int();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+
+	amqp_connection_state_t conn = amqp_new_connection();
+	amqp_socket_t* socket = amqp_tcp_socket_new(conn);
+	if(!socket)
+		throw Exception("amqp", 0, "failed to create TCP socket");
+	if(amqp_socket_open(socket, host_c, port))
+		throw Exception("amqp", 0, "failed to open TCP socket");
+
+	amqp_rpc_reply_t rlogin = amqp_login(conn, vhost_c, 0, 131072, heartbeat, AMQP_SASL_METHOD_PLAIN, user_c, pass_c);
+	if(rlogin.reply_type != AMQP_RESPONSE_NORMAL){
+		amqp_destroy_connection(conn);
+		throw Exception("amqp", 0, "login failed");
+	}
+
+	int channel = 1;
+	amqp_channel_open(conn, channel);
+	amqp_rpc_reply_t ropen = amqp_get_rpc_reply(conn);
+	if(ropen.reply_type != AMQP_RESPONSE_NORMAL){
+		amqp_connection_close(conn, AMQP_REPLY_SUCCESS);
+		amqp_destroy_connection(conn);
+		throw Exception("amqp", 0, "channel open failed");
+	}
+
+	self.fconnection = conn;
+	self.fchannel = channel;
+#else
+	(void)params; (void)self;
+	throw Exception("amqp", 0, "compiled without amqp support");
+#endif
+}
+
+#ifdef WITH_AMQP
+
+static void check(const char* action, amqp_rpc_reply_t rr){
+	if(rr.reply_type != AMQP_RESPONSE_NORMAL)
+		throw Exception("amqp", 0, "%s failed", action);
+}
+
+static void _publish(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const String &msg=params.as_string(0, "msg must be string");
+	const char* exchange_c = ""; // default exchange
+	const char* routing_key_c = 0;
+	bool have_queue_sugar=false;
+	bool mandatory=false;
+
+	amqp_basic_properties_t props;
+	props._flags = 0;
+
+	if(params.count()>1){
+		if(HashStringValue* options=params.as_hash(1)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="exchange"){
+					exchange_c=value->as_string().cstr();
+				} else if(key=="routing_key"){
+					routing_key_c=value->as_string().cstr();
+				} else if(key=="queue"){
+					routing_key_c=value->as_string().cstr(); have_queue_sugar=true;
+				} else if(key=="mandatory"){
+					mandatory=r.process(*value).as_bool();
+				} else if(key=="properties"){
+					// parse message properties
+					if(HashStringValue* ph=value->get_hash()){
+						for(HashStringValue::Iterator p(*ph); p; p.next()){
+							String::Body pkey=p.key();
+							Value* pval=p.value();
+							if(pkey=="content_type"){
+								const char* v=pval->as_string().cstr();
+								props.content_type=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_CONTENT_TYPE_FLAG;
+							} else if(pkey=="content_encoding"){
+								const char* v=pval->as_string().cstr();
+								props.content_encoding=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_CONTENT_ENCODING_FLAG;
+							} else if(pkey=="delivery_mode"){
+								uint8_t dm=(uint8_t)pval->as_int();
+								props.delivery_mode=dm;
+								props._flags|=AMQP_BASIC_DELIVERY_MODE_FLAG;
+							} else if(pkey=="priority"){
+								uint8_t pr=(uint8_t)pval->as_int();
+								props.priority=pr;
+								props._flags|=AMQP_BASIC_PRIORITY_FLAG;
+							} else if(pkey=="correlation_id"){
+								const char* v=pval->as_string().cstr();
+								props.correlation_id=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_CORRELATION_ID_FLAG;
+							} else if(pkey=="reply_to"){
+								const char* v=pval->as_string().cstr();
+								props.reply_to=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_REPLY_TO_FLAG;
+							} else if(pkey=="expiration"){
+								const char* v=pval->as_string().cstr();
+								props.expiration=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_EXPIRATION_FLAG;
+							} else if(pkey=="message_id"){
+								const char* v=pval->as_string().cstr();
+								props.message_id=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_MESSAGE_ID_FLAG;
+							} else if(pkey=="timestamp"){
+								uint64_t ts=(uint64_t)pval->as_double();
+								props.timestamp=ts;
+								props._flags|=AMQP_BASIC_TIMESTAMP_FLAG;
+							} else if(pkey=="type"){
+								const char* v=pval->as_string().cstr();
+								props.type=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_TYPE_FLAG;
+							} else if(pkey=="user_id"){
+								const char* v=pval->as_string().cstr();
+								props.user_id=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_USER_ID_FLAG;
+							} else if(pkey=="app_id"){
+								const char* v=pval->as_string().cstr();
+								props.app_id=amqp_cstring_bytes(v);
+								props._flags|=AMQP_BASIC_APP_ID_FLAG;
+							} else if(pkey=="headers"){
+/*								if(HashStringValue* hh=pval->get_hash()){
+									size_t count=hh->count();
+									amqp_table_entry_t* entries=count ? new amqp_table_entry_t[count] : 0;
+									size_t idx=0;
+									for(HashStringValue::Iterator hi(*hh); hi; hi.next()){
+										String::Body hkey=hi.key();
+										const char* hv=hi.value()->as_string().cstr();
+										entries[idx].key=amqp_cstring_bytes(hkey.cstr());
+										entries[idx].value.kind=AMQP_FIELD_KIND_UTF8;
+										entries[idx].value.value.bytes=amqp_cstring_bytes(hv);
+										idx++;
+									}
+									props.headers.num_entries=(int)count;
+									props.headers.entries=entries;
+									props._flags|=AMQP_BASIC_HEADERS_FLAG;
+								}
+*/							} else
+								throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+						}
+					}
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+
+	if(!routing_key_c)
+		throw Exception("amqp", 0, "routing_key or queue must be specified");
+
+	amqp_bytes_t body;
+	body.len = msg.length();
+	body.bytes=(void*)msg.cstr();
+
+	int ret = amqp_basic_publish(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), mandatory , 0, &props, body);
+
+	if(ret!=AMQP_STATUS_OK)
+		throw Exception("amqp", 0, "publish failed");
+
+	// free temporary headers entries if allocated
+	if(props._flags & AMQP_BASIC_HEADERS_FLAG){
+//		delete [] props.headers.entries;
+	}
+	(void)have_queue_sugar;
+}
+
+static void _release(Request& r, MethodParams&) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	if(self.fconnection){
+		amqp_connection_state_t conn=self.fconnection;
+		amqp_channel_close(conn, self.fchannel, AMQP_REPLY_SUCCESS);
+		amqp_connection_close(conn, AMQP_REPLY_SUCCESS);
+		amqp_destroy_connection(conn);
+		self.fconnection=0;
+		self.fchannel=0;
+	}
+}
+
+static void _ack(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const String &tag_s=params.as_string(0, "delivery tag must not be code");
+	int ret = amqp_basic_ack(self.connection(), self.channel(), pa_atoul(tag_s.cstr()), 0);
+	if(ret!=AMQP_STATUS_OK)
+		throw Exception("amqp", 0, "ack failed");
+}
+
+static void _nack(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const String &tag_s=params.as_string(0, "delivery tag must not be code");
+	bool requeue=false;
+	if(params.count()>1){
+		if(HashStringValue* options=params.as_hash(1)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				if(i.key()=="requeue"){
+					requeue=r.process(*i.value()).as_bool();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	int ret = amqp_basic_nack(self.connection(), self.channel(), pa_atoul(tag_s.cstr()), 0, requeue);
+	if(ret!=AMQP_STATUS_OK)
+		throw Exception("amqp", 0, "nack failed");
+}
+
+static void _qos(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	uint16_t prefetch_count=0;
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				if(i.key()=="prefetch_count"){
+					int pc=r.process(*i.value()).as_int();
+					prefetch_count= pc<0 ? 0 : (pc>65535 ? 65535 : (uint16_t)pc);
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	amqp_basic_qos_ok_t *ret = amqp_basic_qos(self.connection(), self.channel(), 0, prefetch_count, 0);
+	if(!ret)
+		throw Exception("amqp", 0, "qos failed");
+}
+
+static void _reject(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const String &tag_s=params.as_string(0, "delivery tag must not be code");
+	bool requeue=true; // by default return to queue
+	if(params.count()>1){
+		if(HashStringValue* options = params.as_hash(1)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				if(i.key() == "requeue"){
+					requeue=r.process(*i.value()).as_bool();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	int ret = amqp_basic_reject(self.connection(), self.channel(), pa_atoul(tag_s.cstr()), requeue);
+	if(ret!=AMQP_STATUS_OK)
+		throw Exception("amqp", 0, "reject failed");
+}
+
+static void _declare_exchange(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* name_c = 0;
+	const char* type_c = "direct";
+	bool passive=false, durable=false, auto_delete=true, nowait=false;
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="name"){
+					name_c=value->as_string().cstr();
+				} else if(key=="type"){
+					type_c=value->as_string().cstr();
+				} else if(key=="passive"){
+					passive=r.process(*value).as_bool();
+				} else if(key=="durable"){
+					durable=r.process(*value).as_bool();
+				} else if(key=="auto_delete"){
+					auto_delete=r.process(*value).as_bool();
+				} else if(key=="nowait"){
+					nowait=r.process(*value).as_bool();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	if(!name_c)
+		throw Exception("amqp", 0, "name is required");
+	amqp_exchange_declare(self.connection(), self.channel(), amqp_cstring_bytes(name_c), amqp_cstring_bytes(type_c), passive, durable, auto_delete, nowait, amqp_empty_table);
+	check("declare exchange", amqp_get_rpc_reply(self.connection()));
+}
+
+static void _delete_exchange(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* name_c = 0;
+	bool if_unused=false, nowait=false;
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="exchange"){
+					name_c=value->as_string().cstr();
+				} else if(key=="if_unused"){
+					if_unused=r.process(*value).as_bool();
+				} else if(key=="nowait"){
+					nowait=r.process(*value).as_bool();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	if(!name_c) throw Exception("amqp", 0, "exchange is required");
+	amqp_exchange_delete(self.connection(), self.channel(), amqp_cstring_bytes(name_c), if_unused);
+	check("delete exchange", amqp_get_rpc_reply(self.connection()));
+}
+
+static void _declare_queue(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* queue_c = 0; bool passive=false, durable=false, auto_delete=true, nowait=false;
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="queue"){
+					queue_c=value->as_string().cstr();
+				} else if(key=="passive"){
+					passive=r.process(*value).as_bool();
+				} else if(key=="durable"){
+					durable=r.process(*value).as_bool();
+				} else if(key=="auto_delete"){
+					auto_delete=r.process(*value).as_bool();
+				} else if(key=="nowait"){
+					nowait=r.process(*value).as_bool();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, auto_delete, nowait, amqp_empty_table);
+	check("declare queue", amqp_get_rpc_reply(self.connection()));
+	if(!queue_c && ok){
+		r.write(*new String(String::C(pa_strdup((const char *)ok->queue.bytes, ok->queue.len), ok->queue.len)));
+	}
+}
+
+static void _delete_queue(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* queue_c = 0; bool if_unused=false, if_empty=false, nowait=false;
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="queue"){
+					queue_c=value->as_string().cstr();
+				} else if(key=="if_unused"){
+					if_unused=r.process(*value).as_bool();
+				} else if(key=="if_empty"){
+					if_empty=r.process(*value).as_bool();
+				} else if(key=="nowait"){
+					nowait=r.process(*value).as_bool();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	if(!queue_c) throw Exception("amqp", 0, "queue is required");
+	amqp_queue_delete(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), if_unused, if_empty);
+	check("delete queue", amqp_get_rpc_reply(self.connection()));
+}
+
+static void _bind_queue(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* exchange_c=0;
+	const char* queue_c=0;
+	const char* routing_key_c="";
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="exchange"){
+					exchange_c=value->as_string().cstr();
+				} else if(key=="queue"){
+					queue_c=value->as_string().cstr();
+				} else if(key=="routing_key"){
+					routing_key_c=value->as_string().cstr();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	if(!exchange_c || !queue_c) throw Exception("amqp", 0, "exchange and queue are required");
+	amqp_queue_bind(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), amqp_empty_table);
+	check("bind queue", amqp_get_rpc_reply(self.connection()));
+}
+
+static void _unbind_queue(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* exchange_c=0;
+	const char* queue_c=0;
+	const char* routing_key_c="";
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="exchange"){
+					exchange_c=value->as_string().cstr();
+				} else if(key=="queue"){
+					queue_c=value->as_string().cstr();
+				} else if(key=="routing_key"){
+					routing_key_c=value->as_string().cstr();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+	if(!exchange_c || !queue_c) throw Exception("amqp", 0, "exchange and queue are required");
+	amqp_queue_unbind(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), amqp_empty_table);
+	check("unbind queue", amqp_get_rpc_reply(self.connection()));
+}
+
+static void _consume(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	const char* queue_c=0;
+	const char* consumer_tag_c=0;
+	bool no_ack=true, nowait=false;
+	Junction* callback=0;
+
+	if(params.count()>0){
+		if(HashStringValue* options=params.as_hash(0)){
+			for(HashStringValue::Iterator i(*options); i; i.next()){
+				String::Body key=i.key();
+				Value* value=i.value();
+				if(key=="queue"){
+					queue_c=value->as_string().cstr();
+				} else if(key=="consumer_tag"){
+					consumer_tag_c=value->as_string().cstr();
+				} else if(key=="no_ack"){
+					no_ack=r.process(*value).as_bool();
+				} else if(key=="nowait"){
+					nowait=r.process(*value).as_bool();
+				} else if(key=="callback"){
+					callback=value->get_junction();
+				} else
+					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+			}
+		}
+	}
+
+	if(!queue_c) throw Exception("amqp", 0, "queue is required");
+	if(!callback) throw Exception("amqp", 0, "callback is required");
+
+	amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
+		consumer_tag_c ? amqp_cstring_bytes(consumer_tag_c) : amqp_empty_bytes,
+		0 /*no_local*/, no_ack, nowait, amqp_empty_table);
+	amqp_rpc_reply_t rr = amqp_get_rpc_reply(self.connection());
+	if(rr.reply_type != AMQP_RESPONSE_NORMAL)
+		throw Exception("amqp", 0, "consume failed");
+
+	self.fstop=false;
+	while(!self.fstop){
+		amqp_envelope_t envelope; amqp_maybe_release_buffers(self.connection());
+		amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, NULL, 0);
+		if(res.reply_type == AMQP_RESPONSE_NORMAL){
+			VHash &vh=*new VHash; HashStringValue* h=vh.get_hash();
+			String msg(String::Body((const unsigned char*)envelope.message.body.bytes, envelope.message.body.len), String::L_CLEAN);
+			h->put("msg", new VString(msg));
+			h->put("delivery_tag", new VString(String::Body::uitoa((unsigned long long)envelope.delivery_tag)));
+			h->put("consumer_tag", new VString(String::Body((const unsigned char*)envelope.consumer_tag.bytes, envelope.consumer_tag.len)));
+			h->put("exchange", new VString(String::Body((const unsigned char*)envelope.exchange.bytes, envelope.exchange.len)));
+
+			Value *params_cb[]={&vh};
+			METHOD_FRAME_ACTION(*callback->method, r.method_frame, callback->self, {
+				frame.store_params(params_cb, 1);
+				r.call(frame);
+			});
+
+			amqp_destroy_envelope(&envelope);
+		} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
+			continue;
+		} else {
+			break;
+		}
+	}
+}
+
+static void _stop_consume(Request& r, MethodParams&) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+	self.fstop=true;
+}
+
+#endif
+
+// constructor
+MAmqp::MAmqp(): Methoded("amqp") {
+	add_native_method("create", Method::CT_DYNAMIC, _create, 0, 1);
+#ifdef WITH_AMQP
+	add_native_method("publish", Method::CT_DYNAMIC, _publish, 1, 2);
+	add_native_method("release", Method::CT_DYNAMIC, _release, 0, 0);
+	add_native_method("ack", Method::CT_DYNAMIC, _ack, 1, 1);
+	add_native_method("nack", Method::CT_DYNAMIC, _nack, 1, 2);
+	add_native_method("reject", Method::CT_DYNAMIC, _reject, 1, 2);
+	add_native_method("qos", Method::CT_DYNAMIC, _qos, 0, 1);
+	add_native_method("declare_exchange", Method::CT_DYNAMIC, _declare_exchange, 0, 1);
+	add_native_method("delete_exchange", Method::CT_DYNAMIC, _delete_exchange, 0, 1);
+	add_native_method("declare_queue", Method::CT_DYNAMIC, _declare_queue, 0, 1);
+	add_native_method("delete_queue", Method::CT_DYNAMIC, _delete_queue, 0, 1);
+	add_native_method("bind_queue", Method::CT_DYNAMIC, _bind_queue, 0, 1);
+	add_native_method("unbind_queue", Method::CT_DYNAMIC, _unbind_queue, 0, 1);
+	add_native_method("consume", Method::CT_DYNAMIC, _consume, 0, 1);
+	add_native_method("stop_consume", Method::CT_DYNAMIC, _stop_consume, 0, 0);
+#endif
+}
+
+
