@@ -21,7 +21,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.1 2025/11/06 22:08:03 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.2 2025/11/07 01:26:13 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -105,6 +105,9 @@ static void check(const char* action, amqp_rpc_reply_t rr){
 	if(rr.reply_type != AMQP_RESPONSE_NORMAL)
 		throw Exception("amqp", 0, "%s failed", action);
 }
+
+#define AMQP_STRING(s,l) new String(String::C(pa_strdup((const char*)(s), (l)), (l)))
+#define AMQP_VSTRING(s,l) new VString(*AMQP_STRING(s,l))
 
 static void _publish(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
@@ -391,7 +394,7 @@ static void _declare_queue(Request& r, MethodParams& params) {
 	amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, auto_delete, nowait, amqp_empty_table);
 	check("declare queue", amqp_get_rpc_reply(self.connection()));
 	if(!queue_c && ok){
-		r.write(*new String(String::C(pa_strdup((const char *)ok->queue.bytes, ok->queue.len), ok->queue.len)));
+		r.write(*AMQP_STRING(ok->queue.bytes, ok->queue.len));
 	}
 }
 
@@ -480,24 +483,22 @@ static void _consume(Request& r, MethodParams& params) {
 	bool no_ack=true, nowait=false;
 	Junction* callback=0;
 
-	if(params.count()>0){
-		if(HashStringValue* options=params.as_hash(0)){
-			for(HashStringValue::Iterator i(*options); i; i.next()){
-				String::Body key=i.key();
-				Value* value=i.value();
-				if(key=="queue"){
-					queue_c=value->as_string().cstr();
-				} else if(key=="consumer_tag"){
-					consumer_tag_c=value->as_string().cstr();
-				} else if(key=="no_ack"){
-					no_ack=r.process(*value).as_bool();
-				} else if(key=="nowait"){
-					nowait=r.process(*value).as_bool();
-				} else if(key=="callback"){
-					callback=value->get_junction();
-				} else
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			}
+	if(HashStringValue* options=params.as_hash(0)){
+		for(HashStringValue::Iterator i(*options); i; i.next()){
+			String::Body key=i.key();
+			Value* value=i.value();
+			if(key=="queue"){
+				queue_c=value->as_string().cstr();
+			} else if(key=="consumer_tag"){
+				consumer_tag_c=value->as_string().cstr();
+			} else if(key=="no_ack"){
+				no_ack=r.process(*value).as_bool();
+			} else if(key=="nowait"){
+				nowait=r.process(*value).as_bool();
+			} else if(key=="callback"){
+				callback=value->get_junction();
+			} else
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 	}
 
@@ -513,15 +514,16 @@ static void _consume(Request& r, MethodParams& params) {
 
 	self.fstop=false;
 	while(!self.fstop){
-		amqp_envelope_t envelope; amqp_maybe_release_buffers(self.connection());
+		amqp_envelope_t envelope;
+		memset(&envelope, 0, sizeof(envelope));
+		amqp_maybe_release_buffers(self.connection());
 		amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, NULL, 0);
 		if(res.reply_type == AMQP_RESPONSE_NORMAL){
 			VHash &vh=*new VHash; HashStringValue* h=vh.get_hash();
-			String msg(String::Body((const unsigned char*)envelope.message.body.bytes, envelope.message.body.len), String::L_CLEAN);
-			h->put("msg", new VString(msg));
+			h->put("msg", AMQP_VSTRING(envelope.message.body.bytes, envelope.message.body.len));
 			h->put("delivery_tag", new VString(String::Body::uitoa((unsigned long long)envelope.delivery_tag)));
-			h->put("consumer_tag", new VString(String::Body((const unsigned char*)envelope.consumer_tag.bytes, envelope.consumer_tag.len)));
-			h->put("exchange", new VString(String::Body((const unsigned char*)envelope.exchange.bytes, envelope.exchange.len)));
+			h->put("consumer_tag", AMQP_VSTRING(envelope.consumer_tag.bytes, envelope.consumer_tag.len));
+			h->put("exchange", AMQP_VSTRING(envelope.exchange.bytes, envelope.exchange.len));
 
 			Value *params_cb[]={&vh};
 			METHOD_FRAME_ACTION(*callback->method, r.method_frame, callback->self, {
@@ -561,7 +563,7 @@ MAmqp::MAmqp(): Methoded("amqp") {
 	add_native_method("delete_queue", Method::CT_DYNAMIC, _delete_queue, 0, 1);
 	add_native_method("bind_queue", Method::CT_DYNAMIC, _bind_queue, 0, 1);
 	add_native_method("unbind_queue", Method::CT_DYNAMIC, _unbind_queue, 0, 1);
-	add_native_method("consume", Method::CT_DYNAMIC, _consume, 0, 1);
+	add_native_method("consume", Method::CT_DYNAMIC, _consume, 1, 1);
 	add_native_method("stop_consume", Method::CT_DYNAMIC, _stop_consume, 0, 0);
 #endif
 }
