@@ -21,7 +21,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.2 2025/11/07 01:26:13 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.3 2025/11/07 22:36:35 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -114,7 +114,6 @@ static void _publish(Request& r, MethodParams& params) {
 	const String &msg=params.as_string(0, "msg must be string");
 	const char* exchange_c = ""; // default exchange
 	const char* routing_key_c = 0;
-	bool have_queue_sugar=false;
 	bool mandatory=false;
 
 	amqp_basic_properties_t props;
@@ -130,85 +129,75 @@ static void _publish(Request& r, MethodParams& params) {
 				} else if(key=="routing_key"){
 					routing_key_c=value->as_string().cstr();
 				} else if(key=="queue"){
-					routing_key_c=value->as_string().cstr(); have_queue_sugar=true;
+					routing_key_c=value->as_string().cstr();
 				} else if(key=="mandatory"){
 					mandatory=r.process(*value).as_bool();
-				} else if(key=="properties"){
-					// parse message properties
-					if(HashStringValue* ph=value->get_hash()){
-						for(HashStringValue::Iterator p(*ph); p; p.next()){
-							String::Body pkey=p.key();
-							Value* pval=p.value();
-							if(pkey=="content_type"){
-								const char* v=pval->as_string().cstr();
-								props.content_type=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_CONTENT_TYPE_FLAG;
-							} else if(pkey=="content_encoding"){
-								const char* v=pval->as_string().cstr();
-								props.content_encoding=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_CONTENT_ENCODING_FLAG;
-							} else if(pkey=="delivery_mode"){
-								uint8_t dm=(uint8_t)pval->as_int();
-								props.delivery_mode=dm;
-								props._flags|=AMQP_BASIC_DELIVERY_MODE_FLAG;
-							} else if(pkey=="priority"){
-								uint8_t pr=(uint8_t)pval->as_int();
-								props.priority=pr;
-								props._flags|=AMQP_BASIC_PRIORITY_FLAG;
-							} else if(pkey=="correlation_id"){
-								const char* v=pval->as_string().cstr();
-								props.correlation_id=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_CORRELATION_ID_FLAG;
-							} else if(pkey=="reply_to"){
-								const char* v=pval->as_string().cstr();
-								props.reply_to=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_REPLY_TO_FLAG;
-							} else if(pkey=="expiration"){
-								const char* v=pval->as_string().cstr();
-								props.expiration=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_EXPIRATION_FLAG;
-							} else if(pkey=="message_id"){
-								const char* v=pval->as_string().cstr();
-								props.message_id=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_MESSAGE_ID_FLAG;
-							} else if(pkey=="timestamp"){
-								uint64_t ts=(uint64_t)pval->as_double();
-								props.timestamp=ts;
-								props._flags|=AMQP_BASIC_TIMESTAMP_FLAG;
-							} else if(pkey=="type"){
-								const char* v=pval->as_string().cstr();
-								props.type=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_TYPE_FLAG;
-							} else if(pkey=="user_id"){
-								const char* v=pval->as_string().cstr();
-								props.user_id=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_USER_ID_FLAG;
-							} else if(pkey=="app_id"){
-								const char* v=pval->as_string().cstr();
-								props.app_id=amqp_cstring_bytes(v);
-								props._flags|=AMQP_BASIC_APP_ID_FLAG;
-							} else if(pkey=="headers"){
-/*								if(HashStringValue* hh=pval->get_hash()){
-									size_t count=hh->count();
-									amqp_table_entry_t* entries=count ? new amqp_table_entry_t[count] : 0;
-									size_t idx=0;
-									for(HashStringValue::Iterator hi(*hh); hi; hi.next()){
-										String::Body hkey=hi.key();
-										const char* hv=hi.value()->as_string().cstr();
-										entries[idx].key=amqp_cstring_bytes(hkey.cstr());
-										entries[idx].value.kind=AMQP_FIELD_KIND_UTF8;
-										entries[idx].value.value.bytes=amqp_cstring_bytes(hv);
-										idx++;
-									}
-									props.headers.num_entries=(int)count;
-									props.headers.entries=entries;
-									props._flags|=AMQP_BASIC_HEADERS_FLAG;
-								}
-*/							} else
-								throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+				} else if(key=="content_type"){
+					const char* v=value->as_string().cstr();
+					props.content_type=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_CONTENT_TYPE_FLAG;
+				} else if(key=="content_encoding"){
+					const char* v=value->as_string().cstr();
+					props.content_encoding=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_CONTENT_ENCODING_FLAG;
+				} else if(key=="delivery_mode"){
+					uint8_t dm=(uint8_t)value->as_int();
+					props.delivery_mode=dm;
+					props._flags|=AMQP_BASIC_DELIVERY_MODE_FLAG;
+				} else if(key=="priority"){
+					uint8_t pr=(uint8_t)value->as_int();
+					props.priority=pr;
+					props._flags|=AMQP_BASIC_PRIORITY_FLAG;
+				} else if(key=="correlation_id"){
+					const char* v=value->as_string().cstr();
+					props.correlation_id=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_CORRELATION_ID_FLAG;
+				} else if(key=="reply_to"){
+					const char* v=value->as_string().cstr();
+					props.reply_to=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_REPLY_TO_FLAG;
+				} else if(key=="expiration"){
+					const char* v=value->as_string().cstr();
+					props.expiration=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_EXPIRATION_FLAG;
+				} else if(key=="message_id"){
+					const char* v=value->as_string().cstr();
+					props.message_id=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_MESSAGE_ID_FLAG;
+				} else if(key=="timestamp"){
+					uint64_t ts=(uint64_t)value->as_double();
+					props.timestamp=ts;
+					props._flags|=AMQP_BASIC_TIMESTAMP_FLAG;
+				} else if(key=="type"){
+					const char* v=value->as_string().cstr();
+					props.type=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_TYPE_FLAG;
+				} else if(key=="user_id"){
+					const char* v=value->as_string().cstr();
+					props.user_id=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_USER_ID_FLAG;
+				} else if(key=="app_id"){
+					const char* v=value->as_string().cstr();
+					props.app_id=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_APP_ID_FLAG;
+				} else if(key=="headers"){
+/*					if(HashStringValue* hh=pval->get_hash()){
+						size_t count=hh->count();
+						amqp_table_entry_t* entries=count ? new amqp_table_entry_t[count] : 0;
+						size_t idx=0;
+						for(HashStringValue::Iterator hi(*hh); hi; hi.next()){
+							String::Body hkey=hi.key();
+							const char* hv=hi.value()->as_string().cstr();
+							entries[idx].key=amqp_cstring_bytes(hkey.cstr());
+							entries[idx].value.kind=AMQP_FIELD_KIND_UTF8;
+							entries[idx].value.value.bytes=amqp_cstring_bytes(hv);
+							idx++;
 						}
+						props.headers.num_entries=(int)count;
+						props.headers.entries=entries;
+						props._flags|=AMQP_BASIC_HEADERS_FLAG;
 					}
-				} else
+*/				} else
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 		}
@@ -221,7 +210,7 @@ static void _publish(Request& r, MethodParams& params) {
 	body.len = msg.length();
 	body.bytes=(void*)msg.cstr();
 
-	int ret = amqp_basic_publish(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), mandatory , 0, &props, body);
+	int ret = amqp_basic_publish(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), mandatory, 0, &props, body);
 
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "publish failed");
@@ -230,7 +219,6 @@ static void _publish(Request& r, MethodParams& params) {
 	if(props._flags & AMQP_BASIC_HEADERS_FLAG){
 //		delete [] props.headers.entries;
 	}
-	(void)have_queue_sugar;
 }
 
 static void _release(Request& r, MethodParams&) {
@@ -487,7 +475,9 @@ static void _consume(Request& r, MethodParams& params) {
 		for(HashStringValue::Iterator i(*options); i; i.next()){
 			String::Body key=i.key();
 			Value* value=i.value();
-			if(key=="queue"){
+			if(key=="callback"){
+				callback=value->get_junction();
+			} else if(key=="queue"){
 				queue_c=value->as_string().cstr();
 			} else if(key=="consumer_tag"){
 				consumer_tag_c=value->as_string().cstr();
@@ -495,8 +485,6 @@ static void _consume(Request& r, MethodParams& params) {
 				no_ack=r.process(*value).as_bool();
 			} else if(key=="nowait"){
 				nowait=r.process(*value).as_bool();
-			} else if(key=="callback"){
-				callback=value->get_junction();
 			} else
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
@@ -567,5 +555,3 @@ MAmqp::MAmqp(): Methoded("amqp") {
 	add_native_method("stop_consume", Method::CT_DYNAMIC, _stop_consume, 0, 0);
 #endif
 }
-
-
