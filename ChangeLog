@@ -1,3 +1,31 @@
+2025-11-08  moko
+
+	* src/classes/amqp.C: tls support added, errors reporting improved
+	  (related to feature #1288)
+
+	* src/classes/amqp.C: tls support added (related to feature #1288)
+
+	* src/classes/amqp.C: exceptions text now printed (related to
+	  feature #1288)
+
+	* src/classes/amqp.C: properties hash simplified (related to
+	  feature #1288)
+
+2025-11-07  moko
+
+	* src/classes/amqp.C: consume fixed (related to feature #1288)
+
+	* src/classes/classes.C: + amqp class
+
+	* buildall, configure, configure.ac, src/classes/Makefile.am,
+	  src/include/pa_config_auto.h.in, src/targets/apache/Makefile.am,
+	  src/targets/cgi/Makefile.am, src/types/Makefile.am: build scripts
+	  updated for librabbitmq support (relates to feature #1288)
+
+	* src/: classes/amqp.C, types/pa_vamqp.h: amqp class draft with
+	  basic RabbitMQ C library (librabbitmq) support (partially
+	  implements #1288)
+
 2025-10-05  moko
 
 	* src/classes/: array.C, file.C, hash.C, image.C, json.C, op.C,
