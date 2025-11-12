@@ -1,7 +1,8 @@
 Content-Type: text/html
-Content-Length: 933
+Content-Length: 955
 
 MAIN methoded MAIN ()
+amqp methoded amqp ()
 array methoded array ()
 bool methoded bool ()
 console console ()

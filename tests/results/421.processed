@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10612
+Content-Length: 10843
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -8,6 +8,12 @@ Comment: MAIN method not found
 Exception type: parser.runtime,
 Source: bad,
 Comment: MAIN method not found
+Class amqp methoded ^amqp:bad[] Exception type: parser.runtime,
+Source: bad,
+Comment: amqp method not found
+Exception type: parser.runtime,
+Source: bad,
+Comment: amqp method not found
 Class array methoded ^array:bad[] Exception type: parser.runtime,
 Source: bad,
 Comment: array method not found
@@ -199,6 +205,9 @@ Comment: xnode method not found
 2. nonexistent field exception check for all classes
 Class MAIN
 $MAIN:bad no exception
+no exception
+Class amqp
+$amqp:bad no exception
 no exception
 Class array
 $array:bad no exception
