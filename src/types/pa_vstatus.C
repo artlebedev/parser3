@@ -14,7 +14,7 @@
 #include "pa_vstring.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.46 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.47 2025/11/13 23:37:25 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -191,6 +191,17 @@ Value& memory_element() {
 extern const char* parser3_mode;
 const char *parser3_log_filespec();
 
+#ifndef _MSC_VER
+static int get_rlimit_resource(const String& aname) {
+	if(aname=="limit-cpu")
+		return RLIMIT_CPU;
+	else if(aname=="limit-mem")
+		return RLIMIT_DATA;
+	else // limit-nproc
+		return RLIMIT_NPROC;
+}
+#endif
+
 Value* VStatus::get_element(const String& aname) {
 #ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 	// CLASS, CLASS_NAME
@@ -222,5 +233,31 @@ Value* VStatus::get_element(const String& aname) {
 		return &memory_element();
 #endif
 
+#ifndef _MSC_VER
+	if(aname=="limit-cpu" || aname=="limit-mem" || aname=="limit-nproc") {
+		struct rlimit rlim;
+		if(getrlimit(get_rlimit_resource(aname), &rlim)<0)
+			throw Exception(0, 0, "getrlimit failed: %s (%d)", strerror(errno), errno);
+
+		return new VString(*new String(pa_itoa(rlim.rlim_cur)));
+	}
+#endif
 	return 0;
+}
+
+const VJunction* VStatus::put_element(const String& aname, Value* avalue) {
+#ifndef _MSC_VER
+	if(aname=="limit-cpu" || aname=="limit-mem" || aname=="limit-nproc") {
+		const String& value_str=avalue->as_string();
+		struct rlimit rlim;
+		rlim.rlim_cur=(rlim_t)pa_atoi(value_str.cstr(), 0, &value_str);
+		rlim.rlim_max=rlim.rlim_cur;
+
+		if(setrlimit(get_rlimit_resource(aname), &rlim)<0)
+			throw Exception(0, 0, "setrlimit failed: %s (%d)", strerror(errno), errno);
+
+		return 0;
+	}
+#endif
+	return Value::put_element(aname, avalue);
 }

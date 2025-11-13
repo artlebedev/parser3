@@ -8,7 +8,7 @@
 #ifndef PA_VSTATUS_H
 #define PA_VSTATUS_H
 
-#define IDENT_PA_VSTATUS_H "$Id: pa_vstatus.h,v 1.27 2024/11/04 03:53:26 moko Exp $"
+#define IDENT_PA_VSTATUS_H "$Id: pa_vstatus.h,v 1.28 2025/11/13 23:37:25 moko Exp $"
 
 // includes
 
@@ -23,6 +23,9 @@ public: // Value
 
 	// VStatus: field
 	Value* get_element(const String& aname);
+
+	// VStatus: (limit-*)=value
+	const VJunction* put_element(const String& aname, Value* avalue);
 
 public: //  usage
 
