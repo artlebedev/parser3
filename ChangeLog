@@ -1,3 +1,19 @@
+2025-11-14  moko
+
+	* src/types/pa_vstatus.C, tests/448.html,
+	  tests/results/448.processed: $status:limit-cpu,
+	  $status:limit-mem, $status:limit-nproc unlimited support added,
+	  test added (related to feature #1280)
+
+	* src/types/: pa_vstatus.C, pa_vstatus.h: r/w $status:limit-cpu,
+	  $status:limit-mem, $status:limit-nproc added (implements feature
+	  #1280)
+
+2025-11-12  moko
+
+	* tests/results/: 323.processed, 421.processed: tests results
+	  updated after amqp class added
+
 2025-11-08  moko
 
 	* src/classes/amqp.C: tls support added, errors reporting improved
