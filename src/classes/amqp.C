@@ -22,7 +22,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.6 2025/11/08 00:27:08 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.7 2025/11/22 15:36:40 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -329,8 +329,8 @@ static void _release(Request& r, MethodParams&) {
 
 static void _ack(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	const String &tag_s=params.as_string(0, "delivery tag must not be code");
-	int ret = amqp_basic_ack(self.connection(), self.channel(), pa_atoul(tag_s.cstr()), 0);
+	double tag=params.as_double(0, "delivery tag must be number", r);
+	int ret = amqp_basic_ack(self.connection(), self.channel(), (uint64_t)tag, 0);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "ack failed");
 }
@@ -601,7 +601,7 @@ static void _consume(Request& r, MethodParams& params) {
 		if(res.reply_type == AMQP_RESPONSE_NORMAL){
 			VHash &vh=*new VHash; HashStringValue* h=vh.get_hash();
 			h->put("msg", AMQP_VSTRING(envelope.message.body.bytes, envelope.message.body.len));
-			h->put("delivery_tag", new VString(String::Body::uitoa((unsigned long long)envelope.delivery_tag)));
+			h->put("delivery_tag", new VDouble((double)envelope.delivery_tag));
 			h->put("consumer_tag", AMQP_VSTRING(envelope.consumer_tag.bytes, envelope.consumer_tag.len));
 			h->put("exchange", AMQP_VSTRING(envelope.exchange.bytes, envelope.exchange.len));
 
