@@ -1,3 +1,8 @@
+2025-11-22  moko
+
+	* src/classes/amqp.C: delivery_tag changed from string to double
+	  (related to feature #1288)
+
 2025-11-14  moko
 
 	* src/types/pa_vstatus.C, tests/448.html,
