@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.94 2024/11/04 18:18:05 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.95 2025/11/30 19:00:26 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -66,6 +66,10 @@ typedef unsigned __int32 uint32_t;
 
 #ifndef uint64_t
 typedef unsigned __int64 uint64_t;
+#endif
+
+#ifndef int64_t
+typedef __int64 int64_t;
 #endif
 
 #define LT_MODULE_EXT ".dll"
