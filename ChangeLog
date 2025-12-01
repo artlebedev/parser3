@@ -1,3 +1,9 @@
+2025-11-30  moko
+
+	* configure, configure.ac, src/include/pa_config_auto.h.in,
+	  src/include/pa_config_fixed.h: int64_t added in preparation to
+	  feature #1273
+
 2025-11-22  moko
 
 	* src/classes/amqp.C: delivery_tag changed from string to double
