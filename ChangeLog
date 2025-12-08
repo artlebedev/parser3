@@ -1,3 +1,8 @@
+2025-12-08  moko
+
+	* src/include/pa_memory.h: PA_CHECK_REGULAR_ALLOC_UNAVAILABLE
+	  define added and used for OS X as well
+
 2025-11-30  moko
 
 	* configure, configure.ac, src/include/pa_config_auto.h.in,
