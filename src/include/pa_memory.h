@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.45 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.46 2025/12/08 01:15:39 moko Exp $"
 
 // include
 
@@ -113,9 +113,14 @@ typedef PA_Allocated PA_Object;
 #define PA_THROW(what) throw(what)
 #endif
 
-#if !defined(_MSC_VER) && !defined(FREEBSD1X)
+#if defined(_MSC_VER) || defined(FREEBSD1X) || defined(__APPLE__)
+// no checks for FreeBSD1X.X and OS X due to https://bugs.llvm.org/show_bug.cgi?id=40161 bug
+#define PA_CHECK_REGULAR_ALLOC_UNAVAILABLE
+#endif
+
+// #define PA_CHECK_REGULAR_ALLOC_UNAVAILABLE
+#if !defined(PA_CHECK_REGULAR_ALLOC_UNAVAILABLE)
 // regular new/delete are disabled from accidental use
-// no checks for FreeBSD1X.X due to https://bugs.llvm.org/show_bug.cgi?id=40161 bug
 
 void *new_disabled();
 void delete_disabled();
