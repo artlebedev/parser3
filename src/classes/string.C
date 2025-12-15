@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.263 2025/10/05 19:41:27 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.264 2025/12/15 23:07:29 moko Exp $";
 
 // class
 
@@ -71,25 +71,22 @@ static void _length(Request& r, MethodParams&) {
 
 static void _int(Request& r, MethodParams& params) {
 	const String& self_string=GET_SELF(r, VString).string();
-	int converted;
 
 	if(self_string.is_empty()) {
 		if(params.count()>0)
-			converted=params.as_int(0, "default must be int", r); // (default)
+			r.write(*new VInt(params.as_int(0, "default must be int", r))); // (default)
 		else
 			throw Exception(PARSER_RUNTIME, 0, "unable to convert empty string without default specified");
 	} else {
 		try {
-			converted=self_string.as_int();
+			r.write(*new VInt(self_string.as_int()));
 		} catch(...) { // convert problem
 			if(params.count()>0)
-				converted=params.as_int(0, "default must be int", r); // (default)
+				r.write(*new VInt(params.as_int(0, "default must be int", r))); // (default)
 			else
 				rethrow; // we have a problem when no default
 		}
 	}
-
-	r.write(*new VInt(converted));
 }
 
 static void _double(Request& r, MethodParams& params) {
