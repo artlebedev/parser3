@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.68 2025/10/05 19:41:27 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.69 2025/12/17 20:34:20 moko Exp $";
 
 // class
 
@@ -133,11 +133,15 @@ static void set_json_value(Json *json, Value *value){
 	}
 }
 
-String* json_string(Json *json, const char *value, uint32_t length){
-	String::C result = json->charset !=NULL ? 
-		Charset::transcode(String::C(value, length), pa_UTF8_charset, *json->charset) :
-		String::C(pa_strdup(value, length), length);
-	return new String(result, json->taint);
+String* json_string(Json *json, const char *value){
+	/* do_callback_withbuf guarantees a null-terminated value */
+	if (size_t length = strlen(value)){
+		String::C result = json->charset !=NULL ?
+			Charset::transcode(String::C(value, length), pa_UTF8_charset, *json->charset) :
+			String::C(pa_strdup(value, length), length);
+		return new String(result, json->taint);
+	}
+	return (String*)&String::Empty;
 }
 
 static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
@@ -149,7 +153,7 @@ static Value *json_hook(Request &r, Junction *hook, String* key, Value* value){
 	});
 }
 
-static int json_callback(Json *json, int type, const char *value, uint32_t length)
+static int json_callback(Json *json, int type, const char *value, uint32_t)
 {
 	switch(type) {
 		case JSON_OBJECT_BEGIN:{
@@ -204,23 +208,23 @@ static int json_callback(Json *json, int type, const char *value, uint32_t lengt
 			}
 			break;
 		case JSON_KEY:
-			json->key = json_string(json, value, length);
+			json->key = json_string(json, value);
 			break;
 		case JSON_INT:
 			if (json->handle_int){
-				set_json_value(json, new VDouble( json_string(json, value, length)->as_double() ));
+				set_json_value(json, new VDouble( json_string(json, value)->as_double() ));
 			} else {
 				// JSON_STRING
-				set_json_value(json, new VString(*json_string(json, value, length)));
+				set_json_value(json, new VString(*json_string(json, value)));
 			}
 			break;
 		case JSON_FLOAT:
 			if (json->handle_double){
-				set_json_value(json, new VDouble( json_string(json, value, length)->as_double() ));
+				set_json_value(json, new VDouble( json_string(json, value)->as_double() ));
 				break;
 			} // else is JSON_STRING
 		case JSON_STRING:
-			set_json_value(json, new VString(*json_string(json, value, length)));
+			set_json_value(json, new VString(*json_string(json, value)));
 			break;
 		case JSON_NULL:
 			set_json_value(json, VVoid::get());
