@@ -1,3 +1,13 @@
+2025-12-17  moko
+
+	* src/classes/json.C: optimization: String::Empty used and avoided
+	  using passed length.
+
+2025-12-16  moko
+
+	* src/classes/string.C: sync _int with _double, avoid int usage
+	  (related to #1273)
+
 2025-12-08  moko
 
 	* src/include/pa_memory.h: PA_CHECK_REGULAR_ALLOC_UNAVAILABLE
