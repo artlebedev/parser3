@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.61 2024/11/04 03:53:26 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.62 2026/01/06 13:07:58 moko Exp $"
 
 // include
 
@@ -36,9 +36,7 @@ public: // Value
 
 	/// VInt: finteger
 	override const String* get_string() {
-		char local_buf[MAX_NUMBER];
-		size_t length=snprintf(local_buf, MAX_NUMBER, "%d", finteger);
-		return new String(pa_strdup(local_buf, length));
+		return new String(pa_itoa(finteger));
 	}
 	/// VInt: finteger
 	override double as_double() const { return as_int(); }

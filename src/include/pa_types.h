@@ -8,7 +8,7 @@
 #ifndef PA_TYPES_H
 #define PA_TYPES_H
 
-#define IDENT_PA_TYPES_H "$Id: pa_types.h,v 1.59 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_TYPES_H "$Id: pa_types.h,v 1.60 2026/01/06 13:07:58 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -44,14 +44,5 @@ typedef unsigned long ulong;
 #ifndef SSIZE_MAX
 #define SSIZE_MAX (sizeof(size_t)==4 ? INT_MAX : LLONG_MAX)
 #endif
-
-inline int clip2int(double value) {
-	return value <= INT_MIN ? INT_MIN : ( value >= INT_MAX ? INT_MAX : (int)value );
-}
-
-inline uint clip2uint(double value) {
-	return value <= 0 ? 0 : ( value >= UINT_MAX ? UINT_MAX : (uint)value );
-}
-
 
 #endif

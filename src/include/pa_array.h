@@ -8,12 +8,13 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.105 2025/08/01 16:14:44 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.106 2026/01/06 13:07:58 moko Exp $"
 
 // includes
 
 #include "pa_memory.h"
 #include "pa_types.h"
+#include "pa_int.h"
 #include "pa_exception.h"
 
 // forwards
@@ -244,43 +245,6 @@ private: //disabled
 	Array(const Array&) {}
 	Array& operator = (const Array&) { return *this; }
 };
-
-
-/// Commonly used, templated to work with any integer type
-
-template<typename T> char* pa_itoa(T n, T base=10){
-	char buf[MAX_NUMBER + 1];
-	char* pos=buf + MAX_NUMBER;
-	*pos='\0';
-
-	bool negative=n < 0;
-	if (n < 0){
-		n=-n;
-	}
-
-	do {
-		*(--pos)=(char)(n % base) + '0';
-		n/=base;
-	} while (n > 0);
-
-	if (negative) {
-		*(--pos) = '-';
-	}
-	return pa_strdup(pos, buf + MAX_NUMBER - pos);
-}
-
-template<typename T> char* pa_uitoa(T n, T base=10){
-	char buf[MAX_NUMBER + 1];
-	char* pos=buf + MAX_NUMBER;
-	*pos='\0';
-
-	do {
-		*(--pos)=(char)(n % base) + '0';
-		n/=base;
-	} while (n > 0);
-
-	return pa_strdup(pos, buf + MAX_NUMBER - pos);
-}
 
 
 /** Array iterator, usage:
