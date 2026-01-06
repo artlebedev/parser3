@@ -112,12 +112,13 @@ libmain_la_LIBADD =
 am_libmain_la_OBJECTS = pa_pool.lo pa_os.lo pa_threads.lo pa_common.lo \
 	pa_base64.lo compile.tab.lo compile.lo compile_tools.lo \
 	execute.lo pa_cache_managers.lo pa_exception.lo \
-	pa_xml_exception.lo pa_globals.lo pa_xml_io.lo pa_memory.lo \
-	pa_request.lo pa_string.lo pa_table.lo untaint.lo pa_dir.lo \
-	pa_exec.lo pa_socks.lo pa_dictionary.lo pa_charset.lo \
-	pa_charsets.lo pa_uue.lo pa_sql_driver_manager.lo \
-	pa_stylesheet_manager.lo pa_stylesheet_connection.lo \
-	pa_http.lo pa_random.lo pa_symbols.lo
+	pa_xml_exception.lo pa_globals.lo pa_int.lo pa_xml_io.lo \
+	pa_memory.lo pa_request.lo pa_string.lo pa_table.lo untaint.lo \
+	pa_dir.lo pa_exec.lo pa_socks.lo pa_dictionary.lo \
+	pa_charset.lo pa_charsets.lo pa_uue.lo \
+	pa_sql_driver_manager.lo pa_stylesheet_manager.lo \
+	pa_stylesheet_connection.lo pa_http.lo pa_random.lo \
+	pa_symbols.lo
 libmain_la_OBJECTS = $(am_libmain_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -146,10 +147,10 @@ am__depfiles_remade = ./$(DEPDIR)/compile.Plo \
 	./$(DEPDIR)/pa_dictionary.Plo ./$(DEPDIR)/pa_dir.Plo \
 	./$(DEPDIR)/pa_exception.Plo ./$(DEPDIR)/pa_exec.Plo \
 	./$(DEPDIR)/pa_globals.Plo ./$(DEPDIR)/pa_http.Plo \
-	./$(DEPDIR)/pa_memory.Plo ./$(DEPDIR)/pa_os.Plo \
-	./$(DEPDIR)/pa_pool.Plo ./$(DEPDIR)/pa_random.Plo \
-	./$(DEPDIR)/pa_request.Plo ./$(DEPDIR)/pa_socks.Plo \
-	./$(DEPDIR)/pa_sql_driver_manager.Plo \
+	./$(DEPDIR)/pa_int.Plo ./$(DEPDIR)/pa_memory.Plo \
+	./$(DEPDIR)/pa_os.Plo ./$(DEPDIR)/pa_pool.Plo \
+	./$(DEPDIR)/pa_random.Plo ./$(DEPDIR)/pa_request.Plo \
+	./$(DEPDIR)/pa_socks.Plo ./$(DEPDIR)/pa_sql_driver_manager.Plo \
 	./$(DEPDIR)/pa_string.Plo \
 	./$(DEPDIR)/pa_stylesheet_connection.Plo \
 	./$(DEPDIR)/pa_stylesheet_manager.Plo \
@@ -362,7 +363,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/punycode $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LTLIBRARIES = libmain.la
-libmain_la_SOURCES = pa_pool.C pa_os.C pa_threads.C pa_common.C pa_base64.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
+libmain_la_SOURCES = pa_pool.C pa_os.C pa_threads.C pa_common.C pa_base64.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_exception.C pa_xml_exception.C pa_globals.C pa_int.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
 EXTRA_DIST = compile.y main.vcproj
 all: all-am
 
@@ -433,6 +434,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_exec.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_globals.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_http.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_int.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_memory.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_os.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_pool.Plo@am__quote@ # am--include-marker
@@ -624,6 +626,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/pa_exec.Plo
 	-rm -f ./$(DEPDIR)/pa_globals.Plo
 	-rm -f ./$(DEPDIR)/pa_http.Plo
+	-rm -f ./$(DEPDIR)/pa_int.Plo
 	-rm -f ./$(DEPDIR)/pa_memory.Plo
 	-rm -f ./$(DEPDIR)/pa_os.Plo
 	-rm -f ./$(DEPDIR)/pa_pool.Plo
@@ -701,6 +704,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/pa_exec.Plo
 	-rm -f ./$(DEPDIR)/pa_globals.Plo
 	-rm -f ./$(DEPDIR)/pa_http.Plo
+	-rm -f ./$(DEPDIR)/pa_int.Plo
 	-rm -f ./$(DEPDIR)/pa_memory.Plo
 	-rm -f ./$(DEPDIR)/pa_os.Plo
 	-rm -f ./$(DEPDIR)/pa_pool.Plo
