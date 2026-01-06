@@ -9,7 +9,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_int.C,v 1.1 2026/01/06 13:07:58 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.2 2026/01/06 13:18:23 moko Exp $" IDENT_PA_INT_H;
 
 // pa_atoui is based on Manuel Novoa III _strto_l for uClibc
 
