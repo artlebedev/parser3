@@ -242,6 +242,12 @@
 			RelativePath="..\include\pa_globals.h">
 		</File>
 		<File
+			RelativePath=".\pa_int.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_int.h">
+		</File>
+		<File
 			RelativePath="..\include\pa_hash.h">
 		</File>
 		<File

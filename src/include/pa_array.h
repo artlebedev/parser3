@@ -8,13 +8,12 @@
 #ifndef PA_ARRAY_H
 #define PA_ARRAY_H
 
-#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.106 2026/01/06 13:07:58 moko Exp $"
+#define IDENT_PA_ARRAY_H "$Id: pa_array.h,v 1.107 2026/01/06 13:27:59 moko Exp $"
 
 // includes
 
 #include "pa_memory.h"
 #include "pa_types.h"
-#include "pa_int.h"
 #include "pa_exception.h"
 
 // forwards

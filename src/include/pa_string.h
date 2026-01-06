@@ -8,10 +8,11 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.238 2026/01/06 13:07:58 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.239 2026/01/06 13:27:59 moko Exp $"
 
 // includes
 #include "pa_types.h"
+#include "pa_int.h"
 #include "pa_array.h"
 
 extern "C" { // cord's author forgot to do that
