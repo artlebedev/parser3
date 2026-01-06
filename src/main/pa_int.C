@@ -9,8 +9,15 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.2 2026/01/06 13:18:23 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.3 2026/01/06 16:36:39 moko Exp $" IDENT_PA_INT_H;
 
+#ifdef PA_WIDE_INT
+int check4int(pa_wint avalue){
+	if( (avalue > INT_MAX) || (avalue < INT_MIN))
+		throw Exception("number.format", 0, "%s is out of regular int range", pa_itoa(avalue));
+	return (int)avalue;
+}
+#endif
 // pa_atoui is based on Manuel Novoa III _strto_l for uClibc
 
 template<typename T> inline T pa_ato_any(const char *str, int base, const String* problem_source,const T max){
@@ -200,5 +207,101 @@ double pa_atod(const char* str, const String* problem_source /* never null */) {
 			throw Exception("number.format", problem_source, "invalid number (double)");
 
 	return negative ? -result : result;
+}
+
+
+// format: %[flags][width][.precision]type          https://msdn.microsoft.com/ru-ru/library/56e442dc(en-us,VS.80).aspx
+//		flags: '-', '+', ' ', '#', '0'      https://msdn.microsoft.com/ru-ru/library/8aky45ct(en-us,VS.80).aspx
+//		width, precision: non negative decimal number
+enum FormatType {
+	FormatInvalid,
+	FormatInt,
+	FormatUInt,
+	FormatDouble
+};
+
+FormatType format_type(const char* fmt){
+	enum FormatState {
+		Percent,
+		Flags,
+		Width,
+		Precision,
+		Done
+	} state=Percent;
+
+	FormatType result=FormatInvalid;
+
+	const char* pos=fmt;
+	while(char c=*(pos++)){
+		switch(state){
+			case Percent:
+				if(c=='%'){
+					state=Flags;
+				} else {
+					return FormatInvalid; // 1st char must be '%' only
+				}
+				break;
+			case Flags:
+				if(strchr("-+ #0", c)!=0){
+					break;
+				}
+				// go to the next step
+			case Width:
+				if(c=='.'){
+					state=Precision;
+					break;
+				}
+				// go to the next step
+			case Precision:
+				if(c>='0' && c<='9'){
+					if(state == Flags) state=Width; // no more flags
+					break;
+				} else if(c=='d' || c=='i'){
+					result=FormatInt;
+				} else if(strchr("feEgG", c)!=0){
+					result=FormatDouble;
+				} else if(strchr("uoxX", c)!=0){
+					result=FormatUInt;
+				} else {
+					return FormatInvalid; // invalid char
+				}
+				state=Done;
+				break;
+			case Done:
+				return FormatInvalid; // no chars allowed after 'type'
+		}
+	}
+	return result;
+}
+
+
+const char* format_double(double value, const char* fmt) {
+	char local_buf[MAX_NUMBER];
+	int size=-1;
+
+	if(fmt && strlen(fmt)){
+		switch(format_type(fmt)){
+			case FormatDouble:
+				size=snprintf(local_buf, sizeof(local_buf), fmt, value);
+				break;
+			case FormatUInt:
+				if(value >= 0){ // on Apple M1 (uint)<negative value> is 0
+					size=snprintf(local_buf, sizeof(local_buf), fmt, clip2uint(value));
+					break;
+				}
+			case FormatInt:
+				size=snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
+				break;
+			case FormatInvalid:
+				throw Exception(PARSER_RUNTIME, 0, "Incorrect format string '%s' was specified.", fmt);
+		}
+	} else
+		return pa_itoa(clip2wint(value));
+
+	if(size < 0 || size >= MAX_NUMBER-1){ // on win32 we manually reduce max size while printing
+		throw Exception(PARSER_RUNTIME, 0, "Error occurred white executing snprintf with format string '%s'.", fmt);
+	}
+
+	return pa_strdup(local_buf, (size_t)size);
 }
 

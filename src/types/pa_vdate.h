@@ -8,7 +8,7 @@
 #ifndef PA_VDATE_H
 #define PA_VDATE_H
 
-#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.71 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_VDATE_H "$Id: pa_vdate.h,v 1.72 2026/01/06 16:36:39 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -57,7 +57,7 @@ public: // Value
 
 	/// VDate: ftime -> int days
 	override int as_int() const {
-		return clip2int(trunc(as_double()));
+		return trunc(as_double());
 	}
 
 	/// VDate: 0 or !0

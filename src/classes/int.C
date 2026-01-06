@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.73 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.74 2026/01/06 16:36:39 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -49,11 +49,11 @@ static void _bool(Request& r, MethodParams&) {
 
 typedef void (*vint_op_func_ptr)(VInt& vint, double param);
 
-static void __inc(VInt& vint, double param) { vint.inc(clip2int(param)); }
-static void __dec(VInt& vint, double param) { vint.inc(clip2int(-param)); }
+static void __inc(VInt& vint, double param) { vint.inc(clip2wint(param)); }
+static void __dec(VInt& vint, double param) { vint.inc(clip2wint(-param)); }
 static void __mul(VInt& vint, double param) { vint.mul(param); }
 static void __div(VInt& vint, double param) { vint.div(param); }
-static void __mod(VInt& vint, double param) { vint.mod(clip2int(param)); }
+static void __mod(VInt& vint, double param) { vint.mod(clip2wint(param)); }
 
 static void vint_op(Request& r, MethodParams& params, vint_op_func_ptr func) {
 	VInt& vint=GET_SELF(r, VInt);
@@ -71,13 +71,13 @@ static void _mod(Request& r, MethodParams& params) { vint_op(r, params, &__mod);
 extern const String* sql_result_string(Request& r, MethodParams& params, Value*& default_code);
 
 static void _sql(Request& r, MethodParams& params) {
-	int val;
+	pa_wint val;
 	Value* default_code=0;
 	if(const String* string=sql_result_string(r, params, default_code))
-		val=string->as_int();
+		val=string->as_wint();
 	else
 		if(default_code)
-			val=r.process(*default_code).as_int();
+			val=r.process(*default_code).as_wint();
 		else {
 			throw Exception(PARSER_RUNTIME, 0, "produced no result, but no default option specified");
 		}

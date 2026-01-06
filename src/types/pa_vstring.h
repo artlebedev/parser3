@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.83 2025/05/27 15:10:24 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.84 2026/01/06 16:36:39 moko Exp $"
 
 // includes
 
@@ -40,12 +40,14 @@ public: // Value
 	override double as_double() const { return fstring->as_double(); }
 	/// VString: fstring
 	override int as_int() const { return fstring->as_int(); }
+	/// VString: fstring
+	override pa_wint as_wint() const { return fstring->as_wint(); }
 
 	/// VString: vfile
 	override VFile* as_vfile(String::Language lang, const Request_charsets *charsets=0);
 
 	/// VString: json string
-	override const String* get_json_string(Json_options&) { 
+	override const String* get_json_string(Json_options&) {
 		String* result = new String();
 		result->append_quoted(fstring);
 		return result;

@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.239 2026/01/06 13:27:59 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.240 2026/01/06 16:36:39 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -695,7 +695,8 @@ public:
 	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0, Charset* source_charset=0) const;
 	double as_double() const { return pa_atod(cstr(), this); }
 	int as_int() const { return pa_atoi(cstr(), 0, this); }
-	bool as_bool() const { return as_int()!=0; }
+	pa_wint as_wint() const { return pa_atowi(cstr(), 0, this); }
+	bool as_bool() const { return as_wint()!=0; }
 	const String& escape(Charset& source_charset) const;
 
 private: //disabled

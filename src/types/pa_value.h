@@ -8,7 +8,7 @@
 #ifndef PA_VALUE_H
 #define PA_VALUE_H
 
-#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.176 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_VALUE_H "$Id: pa_value.h,v 1.177 2026/01/06 16:36:39 moko Exp $"
 
 #include "pa_common.h"
 #include "pa_array.h"
@@ -169,6 +169,9 @@ public: // Value
 
 	/// extract integer
 	virtual int as_int () const { bark("is '%s', it does not have numerical (int) value"); return 0; }
+
+	/// extract wide integer
+	virtual pa_wint as_wint () const { return as_int(); }
 
 	/// extract bool
 	virtual bool as_bool() const { bark("is '%s', it does not have logical value"); return 0; }

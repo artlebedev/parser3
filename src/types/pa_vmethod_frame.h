@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.145 2025/05/26 00:52:15 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.146 2026/01/06 16:36:39 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -93,6 +93,14 @@ public:
 		if(value.is_evaluated_expr())
 			return value.as_int();
 		return get_processed(value, msg, index, r).as_int();
+	}
+
+	/// handy expression auto-processing to int
+	pa_wint as_wint(int index, const char* msg, Request& r) {
+		Value& value=get(index);
+		if(value.is_evaluated_expr())
+			return value.as_wint();
+		return get_processed(value, msg, index, r).as_wint();
 	}
 
 	/// handy param auto-processing to index

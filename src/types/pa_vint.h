@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.62 2026/01/06 13:07:58 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.63 2026/01/06 16:36:39 moko Exp $"
 
 // include
 
@@ -39,9 +39,11 @@ public: // Value
 		return new String(pa_itoa(finteger));
 	}
 	/// VInt: finteger
-	override double as_double() const { return as_int(); }
+	override double as_double() const { return finteger; }
 	/// VInt: finteger
-	override int as_int() const { return finteger; }
+	override int as_int() const { return check4int(finteger); }
+	/// VInt: finteger
+	override pa_wint as_wint() const { return finteger; }
 	/// VInt: 0 or !0
 	override bool as_bool() const { return finteger!=0; }
 	/// VInt: json-string
@@ -49,30 +51,30 @@ public: // Value
 
 public: // usage
 
-	VInt(int ainteger): finteger(ainteger) {}
+	VInt(pa_wint ainteger): finteger(ainteger) {}
 
-	int get_int() { return finteger; }
-	void set_int(int ainteger) { finteger=ainteger; }
+	pa_wint get_int() { return finteger; }
+	void set_int(pa_wint ainteger) { finteger=ainteger; }
 
-	void inc(int increment) { finteger+=increment; }
+	void inc(double increment) { finteger=clip2wint(finteger+increment); }
 	
-	void mul(double k) { finteger=clip2int(finteger*k); }
+	void mul(double k) { finteger=clip2wint(finteger*k); }
 	
 	void div(double d) {
 		if(d == 0)
 			throw Exception("number.zerodivision", 0, "Division by zero");
-		finteger=clip2int(finteger/d);
+		finteger=clip2wint(finteger/d);
 	}
 	
-	void mod(int d) {
+	void mod(pa_wint d) {
 		if(d == 0)
 			throw Exception("number.zerodivision", 0, "Modulus by zero");
-		finteger%=d; 
+		finteger%=d;
 	}
 
 private:
 
-	int finteger;
+	pa_wint finteger;
 
 };
 

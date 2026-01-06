@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.427 2025/10/04 15:50:49 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.428 2026/01/06 16:36:39 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -214,7 +214,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 		debug_printf(sapi_info, "%*s%s", level*4, "", opcode_name[opcode]);
 
 		switch(opcode) {
-		case OP::OP_CURLY_CODE__STORE_PARAM: 
+		case OP::OP_CURLY_CODE__STORE_PARAM:
 		case OP::OP_EXPR_CODE__STORE_PARAM:
 		case OP::OP_CURLY_CODE__CONSTRUCT:
 		case OP::OP_NESTED_CODE:
@@ -1014,8 +1014,8 @@ void Request::execute(ArrayOperation& ops) {
 			}
 		case OP::OP_INTDIV:
 			{
-				int b_int=stack.pop().value().as_int();
-				int a_int=stack.pop().value().as_int();
+				pa_wint b_int=stack.pop().value().as_wint();
+				pa_wint a_int=stack.pop().value().as_wint();
 
 				if(b_int == 0) {
 					//const String* problem_source=b.as_string();
@@ -1030,8 +1030,8 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
-					a.as_int() <<
-					b.as_int());
+					a.as_wint() <<
+					b.as_wint());
 				stack.push(value);
 				break;
 			}
@@ -1039,8 +1039,8 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
-					a.as_int() >>
-					b.as_int());
+					a.as_wint() >>
+					b.as_wint());
 				stack.push(value);
 				break;
 			}
@@ -1048,8 +1048,8 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
-					a.as_int() &
-					b.as_int());
+					a.as_wint() &
+					b.as_wint());
 				stack.push(value);
 				break;
 			}
@@ -1057,8 +1057,8 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
-					a.as_int() |
-					b.as_int());
+					a.as_wint() |
+					b.as_wint());
 				stack.push(value);
 				break;
 			}
@@ -1066,8 +1066,8 @@ void Request::execute(ArrayOperation& ops) {
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=*new VInt(
-					a.as_int() ^
-					b.as_int());
+					a.as_wint() ^
+					b.as_wint());
 				stack.push(value);
 				break;
 			}
@@ -1107,7 +1107,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_NUM_LT: 
+		case OP::OP_NUM_LT:
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -1115,7 +1115,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_NUM_GT: 
+		case OP::OP_NUM_GT:
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -1123,7 +1123,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_NUM_LE: 
+		case OP::OP_NUM_LE:
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -1131,7 +1131,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_NUM_GE: 
+		case OP::OP_NUM_GE:
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -1139,7 +1139,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_NUM_EQ: 
+		case OP::OP_NUM_EQ:
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -1147,7 +1147,7 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_NUM_NE: 
+		case OP::OP_NUM_NE:
 			{
 				volatile double b_double=stack.pop().value().as_double();
 				volatile double a_double=stack.pop().value().as_double();
@@ -1155,42 +1155,42 @@ void Request::execute(ArrayOperation& ops) {
 				stack.push(value);
 				break;
 			}
-		case OP::OP_STR_LT: 
+		case OP::OP_STR_LT:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=VBool::get(a.as_string() < b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP::OP_STR_GT: 
+		case OP::OP_STR_GT:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=VBool::get(a.as_string() > b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP::OP_STR_LE: 
+		case OP::OP_STR_LE:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=VBool::get(a.as_string() <= b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP::OP_STR_GE: 
+		case OP::OP_STR_GE:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=VBool::get(a.as_string() >= b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP::OP_STR_EQ: 
+		case OP::OP_STR_EQ:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=VBool::get(a.as_string() == b.as_string());
 				stack.push(value);
 				break;
 			}
-		case OP::OP_STR_NE: 
+		case OP::OP_STR_NE:
 			{
 				Value& b=stack.pop().value();  Value& a=stack.pop().value();
 				Value& value=VBool::get(a.as_string() != b.as_string());

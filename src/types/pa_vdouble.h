@@ -8,7 +8,7 @@
 #ifndef PA_VDOUBLE_H
 #define PA_VDOUBLE_H
 
-#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.77 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_VDOUBLE_H "$Id: pa_vdouble.h,v 1.78 2026/01/06 16:36:39 moko Exp $"
 
 // includes
 
@@ -60,7 +60,9 @@ public: // Value
 	/// VDouble: fdouble
 	override double as_double() const { return fdouble; }
 	/// VDouble: fdouble
-	override int as_int() const { return get_int(); }
+	override int as_int() const { return clip2int(trunc(fdouble)); }
+	/// VDouble: fdouble
+	override pa_wint as_wint() const { return clip2wint(trunc(fdouble)); }
 	/// VDouble: 0 or !0
 	override bool as_bool() const { return fdouble!=0; }
 	/// VDouble: json-string
@@ -73,7 +75,6 @@ public: // usage
 			throw Exception("number.format", 0, pa_isnan(adouble) ? "invalid number (double)" : "out of range (double)");
 	}
 
-	int get_int() const { return clip2int(trunc(fdouble)); }
 	double get_double() const { return fdouble; }
 
 	void inc(double increment) { fdouble+=increment; }

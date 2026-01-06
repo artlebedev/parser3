@@ -8,7 +8,7 @@
 #ifndef PA_INT_H
 #define PA_INT_H
 
-#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.1 2026/01/06 13:07:58 moko Exp $"
+#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.2 2026/01/06 16:36:39 moko Exp $"
 
 // includes
 
@@ -22,21 +22,26 @@
 #define PA_WINT_MAX 9007199254740991LL
 typedef int64_t pa_wint;
 typedef uint64_t pa_uwint;
+int check4int(pa_wint avalue);
 #else
 #define PA_WINT_MIN INT_MIN
 #define PA_WINT_MAX INT_MAX
 typedef int pa_wint;
 typedef uint pa_uwint;
+static int check4int(pa_wint avalue){ return avalue; }
 #endif
 
 inline int clip2int(double value) {
 	return value <= INT_MIN ? INT_MIN : ( value >= INT_MAX ? INT_MAX : (int)value );
 }
 
+inline pa_wint clip2wint(double value) {
+	return value <= PA_WINT_MIN ? PA_WINT_MIN : ( value >= PA_WINT_MAX ? PA_WINT_MAX : (pa_wint)value );
+}
+
 inline uint clip2uint(double value) {
 	return value <= 0 ? 0 : ( value >= UINT_MAX ? UINT_MAX : (uint)value );
 }
-
 
 /// Commonly used, templated to work with any integer type
 
@@ -103,5 +108,7 @@ pa_wint pa_atowi(const char* str, int base=10, const String* problem_source=0);
 // no sign or whitespace
 unsigned int pa_atoui(const char *str, int base=10, const String* problem_source=0);
 uint64_t pa_atoul(const char *str, int base=10, const String* problem_source=0);
+
+const char* format_double(double value, const char *fmt);
 
 #endif

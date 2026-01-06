@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.77 2024/11/04 03:53:25 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.78 2026/01/06 16:36:38 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 
@@ -34,7 +34,7 @@ DECLARE_CLASS_VAR(double, new MDouble);
 
 static void _int(Request& r, MethodParams&) {
 	VDouble& vdouble=GET_SELF(r, VDouble);
-	r.write(*new VInt(vdouble.as_int()));
+	r.write(*new VInt(vdouble.as_wint()));
 }
 
 static void _double(Request& r, MethodParams&) {
