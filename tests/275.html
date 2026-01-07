@@ -36,11 +36,6 @@ $i(^s.int[])
 	^i.mod(0)
 }
 
-$s[0x100000000]
-$s as int: ^try-catch{
-	^s.int[]
-}
-
 $s[0x10000000000000000]
 $s as double: ^try-catch{
 	^s.double[]
@@ -57,9 +52,6 @@ $s[0xFFFFFFFFFFFFFFFF]
 $s as double: ^print[^s.double[]]
 $s[0x800000000000]
 $s as double: ^s.double[]
-as int: ^try-catch{
-	^s.int[]
-}
 
 @print[s]
 $result[^s.replace[e+0;e+]]

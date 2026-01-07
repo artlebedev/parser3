@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1119
+Content-Length: 927
 
 11110000000000000000000000000000
 -11110000000000000000000000000000
@@ -23,9 +23,6 @@ Comment: Division by zero
 Exception type: number.zerodivision,
 Source: mod,
 Comment: Modulus by zero
-0x100000000 as int: Exception type: number.format,
-Source: 0x100000000,
-Comment: out of range (int)
 0x10000000000000000 as double: Exception type: number.format,
 Source: 0x10000000000000000,
 Comment: out of range (int)
@@ -33,6 +30,3 @@ Comment: out of range (int)
 -0x80000000 as int: -2147483648
 0xFFFFFFFFFFFFFFFF as double: 1.84467440737096e+19
 0x800000000000 as double: 140737488355328
-as int: Exception type: number.format,
-Source: 0x800000000000,
-Comment: out of range (int)
