@@ -7,8 +7,9 @@
 
 #include "pa_vmath.h"
 #include "pa_vdouble.h"
+#include "pa_vint.h"
 
-volatile const char * IDENT_PA_VMATH_C="$Id: pa_vmath.C,v 1.18 2024/11/04 03:53:26 moko Exp $" IDENT_PA_VMATH_H;
+volatile const char * IDENT_PA_VMATH_C="$Id: pa_vmath.C,v 1.19 2026/01/07 01:10:05 moko Exp $" IDENT_PA_VMATH_H;
 
 // externs
 
@@ -19,4 +20,6 @@ extern Methoded* math_class;
 VMath::VMath(): VStateless_class(math_class) {
 	fconsts.put("PI", new VDouble(PI));
 	fconsts.put("E", new VDouble(MathE));
+	fconsts.put("int_max", new VInt(PA_WINT_MAX));
+	fconsts.put("int_min", new VInt(PA_WINT_MIN));
 }

@@ -8,14 +8,14 @@
 #ifndef PA_INT_H
 #define PA_INT_H
 
-#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.2 2026/01/06 16:36:39 moko Exp $"
+#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.3 2026/01/07 01:10:05 moko Exp $"
 
 // includes
 
 #include "pa_memory.h"
 #include "pa_types.h"
 
-//#define PA_WIDE_INT
+#define PA_WIDE_INT
 #ifdef PA_WIDE_INT
 // int53, -(2^53-1) .. +(2^53-1) safe convertion from double
 #define PA_WINT_MIN -9007199254740991LL
