@@ -8,7 +8,7 @@
 #ifndef PA_INT_H
 #define PA_INT_H
 
-#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.4 2026/01/07 13:40:02 moko Exp $"
+#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.5 2026/01/07 18:58:26 moko Exp $"
 
 // includes
 
@@ -28,7 +28,7 @@ int check4int(pa_wint avalue);
 #define PA_WINT_MAX INT_MAX
 typedef int pa_wint;
 typedef uint pa_uwint;
-static int check4int(pa_wint avalue){ return avalue; }
+inline int check4int(pa_wint avalue){ return avalue; }
 #endif
 
 inline int clip2int(double value) {
