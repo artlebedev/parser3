@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.74 2026/01/06 16:36:39 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.75 2026/01/07 15:02:11 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -49,8 +49,8 @@ static void _bool(Request& r, MethodParams&) {
 
 typedef void (*vint_op_func_ptr)(VInt& vint, double param);
 
-static void __inc(VInt& vint, double param) { vint.inc(clip2wint(param)); }
-static void __dec(VInt& vint, double param) { vint.inc(clip2wint(-param)); }
+static void __inc(VInt& vint, double param) { vint.inc(param); }
+static void __dec(VInt& vint, double param) { vint.inc(-param); }
 static void __mul(VInt& vint, double param) { vint.mul(param); }
 static void __div(VInt& vint, double param) { vint.div(param); }
 static void __mod(VInt& vint, double param) { vint.mod(clip2wint(param)); }

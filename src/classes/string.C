@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.265 2026/01/06 16:36:39 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.266 2026/01/07 15:03:18 moko Exp $";
 
 // class
 
@@ -65,7 +65,7 @@ static const String match_var_name(MATCH_VAR_NAME);
 // methods
 
 static void _length(Request& r, MethodParams&) {
-	double result=GET_SELF(r, VString).string().length(r.charsets.source());
+	double result=(double)GET_SELF(r, VString).string().length(r.charsets.source());
 	r.write(*new VDouble(result));
 }
 
