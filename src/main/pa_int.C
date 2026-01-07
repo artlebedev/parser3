@@ -9,7 +9,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.6 2026/01/07 14:19:45 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.7 2026/01/07 14:48:54 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){
@@ -177,7 +177,7 @@ pa_wint pa_atowi(const char* str, int base, const String* problem_source) {
 	}
 
 	if(negative){
-		const pa_uwint min_abs = (pa_uwint)0 - (pa_wint)PA_WINT_MIN;
+		const pa_uwint min_abs = (pa_uwint)0 - (pa_uwint)PA_WINT_MIN;
 		pa_uwint result=pa_ato_any<pa_uwint>(str, base, problem_source, min_abs);
 		if(result==min_abs) return PA_WINT_MIN;
 		return -(pa_wint)result;
