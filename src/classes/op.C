@@ -22,7 +22,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.277 2026/01/07 14:51:54 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.278 2026/01/07 14:53:23 moko Exp $";
 
 // defines
 
@@ -898,9 +898,9 @@ static int log_level(const String &name){
 #endif
 
 static void _syslog_operator(Request& r, MethodParams& params) {
-	const char* ident=params.as_string(0, "ident must be string").cstr();
 	const char* message=params.as_string(1, "message must be string").cstr();
 #ifdef HAVE_SYSLOG
+	const char* ident=params.as_string(0, "ident must be string").cstr();
 	int level=params.count()>2 ? log_level(params.as_string(2, "level must be string")) : LOG_INFO;
 
 	openlog(*ident ? ident : "parser3", LOG_PID, LOG_USER);
