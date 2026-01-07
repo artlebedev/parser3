@@ -8,7 +8,7 @@
 #ifndef PA_VINT_H
 #define PA_VINT_H
 
-#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.63 2026/01/06 16:36:39 moko Exp $"
+#define IDENT_PA_VINT_H "$Id: pa_vint.h,v 1.64 2026/01/07 13:40:02 moko Exp $"
 
 // include
 
@@ -43,7 +43,7 @@ public: // Value
 	/// VInt: finteger
 	override int as_int() const { return check4int(finteger); }
 	/// VInt: finteger
-	override pa_wint as_wint() const { return finteger; }
+	override pa_wint as_wint() const { return (double)finteger; }
 	/// VInt: 0 or !0
 	override bool as_bool() const { return finteger!=0; }
 	/// VInt: json-string
