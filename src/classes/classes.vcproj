@@ -130,6 +130,9 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\amqp.C">
+		</File>
+		<File
 			RelativePath=".\bool.C">
 		</File>
 		<File
