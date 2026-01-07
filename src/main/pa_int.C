@@ -5,11 +5,12 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
+#include "pa_common.h"
 #include "pa_int.h"
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.7 2026/01/07 14:48:54 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.8 2026/01/07 18:11:33 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){
