@@ -10,7 +10,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.29 2026/01/06 16:36:39 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.30 2026/01/07 12:32:56 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -258,7 +258,11 @@ const String* VDate::get_json_string(Json_options& options) {
 			result->append_quoted(get_iso_string());
 			break;
 		case Json_options::D_TIMESTAMP:
+#ifdef PA_DATE64
 			*result << pa_uitoa(ftime);
+#else
+			*result << format_double(ftime, "%.15g");
+#endif
 			break;
 	}
 	return result;
