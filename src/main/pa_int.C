@@ -9,7 +9,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.5 2026/01/07 13:40:02 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.6 2026/01/07 14:19:45 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){
@@ -144,7 +144,7 @@ int pa_atoi(const char* str, int base, const String* problem_source) {
 	}
 
 	if(negative){
-		const uint min_abs = (uint)(-( (uint)INT_MIN + 1 )) + 1;
+		const uint min_abs = (uint)0 - (uint)INT_MIN;
 		uint result=pa_ato_any<uint>(str, base, problem_source, min_abs);
 		if(result==min_abs) return INT_MIN;
 		return -(int)result;
@@ -177,7 +177,7 @@ pa_wint pa_atowi(const char* str, int base, const String* problem_source) {
 	}
 
 	if(negative){
-		const pa_uwint min_abs = (pa_uwint)(-( (pa_wint)PA_WINT_MIN + 1 )) + 1;
+		const pa_uwint min_abs = (pa_uwint)0 - (pa_wint)PA_WINT_MIN;
 		pa_uwint result=pa_ato_any<pa_uwint>(str, base, problem_source, min_abs);
 		if(result==min_abs) return PA_WINT_MIN;
 		return -(pa_wint)result;
@@ -234,6 +234,9 @@ double pa_atod(const char* str, const String* problem_source /* never null */) {
 // format: %[flags][width][.precision]type          https://msdn.microsoft.com/ru-ru/library/56e442dc(en-us,VS.80).aspx
 //		flags: '-', '+', ' ', '#', '0'      https://msdn.microsoft.com/ru-ru/library/8aky45ct(en-us,VS.80).aspx
 //		width, precision: non negative decimal number
+
+#define MAX_FORMAT_LEN 10 // %+0XX.XXg\0
+
 enum FormatType {
 	FormatInvalid,
 	FormatInt,
@@ -292,7 +295,7 @@ FormatType format_type(const char* fmt){
 				return FormatInvalid; // no chars allowed after 'type'
 		}
 	}
-	return result;
+	return pos-fmt > MAX_FORMAT_LEN ? FormatInvalid : result;
 }
 
 #ifdef PA_WIDE_INT
@@ -329,7 +332,7 @@ const char* format_double(double value, const char* fmt) {
 			case FormatUInt:
 				if(value >= 0){ // on Apple M1 (uint)<negative value> is 0
 #ifdef PA_WIDE_INT
-					char fmt_buf[strlen(fmt)+4];
+					char fmt_buf[MAX_FORMAT_LEN+4];
 					size=snprintf(local_buf, sizeof(local_buf), wide_int_fmt(fmt, fmt_buf), (unsigned long long)clip2wint(value)); // WUINT_MAX == WINT_MAX
 #else
 					size=snprintf(local_buf, sizeof(local_buf), fmt, clip2uint(value));
@@ -341,7 +344,7 @@ const char* format_double(double value, const char* fmt) {
 				break;
 			case FormatInt:{
 #ifdef PA_WIDE_INT
-				char fmt_buf[strlen(fmt)+4];
+				char fmt_buf[MAX_FORMAT_LEN+4];
 				size=snprintf(local_buf, sizeof(local_buf), wide_int_fmt(fmt, fmt_buf), (long long)clip2wint(value));
 #else
 				size=snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
