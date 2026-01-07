@@ -8,7 +8,7 @@
 #ifndef PA_INT_H
 #define PA_INT_H
 
-#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.3 2026/01/07 01:10:05 moko Exp $"
+#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.4 2026/01/07 13:40:02 moko Exp $"
 
 // includes
 
@@ -45,7 +45,8 @@ inline uint clip2uint(double value) {
 
 /// Commonly used, templated to work with any integer type
 
-template<typename T> char* pa_itoa(T n, T base=10){
+template<typename T> char* pa_itoa(T n){
+	const T base=10;
 	char buf[MAX_NUMBER + 1];
 	char* pos=buf + MAX_NUMBER;
 	*pos='\0';
@@ -66,24 +67,7 @@ template<typename T> char* pa_itoa(T n, T base=10){
 	return pa_strdup(pos, buf + MAX_NUMBER - pos);
 }
 
-static char* pa_itoa(int i, int base=10){ // custom to support INT_MIN
-	char buf[MAX_NUMBER + 1];
-	char* pos=buf + MAX_NUMBER;
-	*pos='\0';
-
-	bool negative=i < 0;
-	unsigned int n= i < 0 ? -i : i;
-
-	do {
-		*(--pos)=(char)(n % base) + '0';
-		n/=base;
-	} while (n > 0);
-
-	if (negative) {
-		*(--pos) = '-';
-	}
-	return pa_strdup(pos, buf + MAX_NUMBER - pos);
-}
+char* pa_itoa(int); // custom to support INT_MIN
 
 template<typename T> char* pa_uitoa(T n, T base=10){
 	char buf[MAX_NUMBER + 1];

@@ -9,7 +9,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.4 2026/01/07 01:10:05 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.5 2026/01/07 13:40:02 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){
@@ -18,6 +18,27 @@ int check4int(pa_wint avalue){
 	return (int)avalue;
 }
 #endif
+
+char* pa_itoa(int i){ // custom to support INT_MIN
+	const int base=10;
+	char buf[MAX_NUMBER + 1];
+	char* pos=buf + MAX_NUMBER;
+	*pos='\0';
+
+	bool negative=i < 0;
+	unsigned int n= i < 0 ? 0u-(unsigned int)i : (unsigned int)i;
+
+	do {
+		*(--pos)=(char)(n % base) + '0';
+		n/=base;
+	} while (n > 0);
+
+	if (negative) {
+		*(--pos) = '-';
+	}
+	return pa_strdup(pos, buf + MAX_NUMBER - pos);
+}
+
 // pa_atoui is based on Manuel Novoa III _strto_l for uClibc
 
 template<typename T> inline T pa_ato_any(const char *str, int base, const String* problem_source,const T max){
