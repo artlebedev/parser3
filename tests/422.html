@@ -1,4 +1,7 @@
 @main[]
+
+Parser3 with ^if($math:int_max > 0x100000000){wide int (int53)}{32-bit int}
+
 ^show(2000000000)
 ^show(4000000000)
 ^show(5000000000)
@@ -6,7 +9,18 @@
 ^show(-4000000000)
 ^show(-5000000000)
 
-$n(100000000000)
+^show(-1)
+^show(-2)
+
+^show($math:int_max-1)
+^show($math:int_max)
+^show($math:int_max+1)
+
+^show($math:int_min-1)
+^show($math:int_min)
+^show($math:int_min+1)
+
+$n(10000000000000000)
 
 n:$n (clipped 0x^n.format[%x])
 
@@ -22,13 +36,17 @@ n:$n (clipped 0x^n.format[%x])
 
 6. % ^eval(1 % 0.3)
 
-7. mod ^n.mod($n-0.5) $n
+7. mod ^n.mod($n-10) $n - out of double precision, but works
 
 8. $i(10) $i(^i.int[])
    mod ^i.mod(4.8) $i
 
 9. $n(10)
    mod ^n.mod(4.8) $n
+
+   $d[^date::now[]]
+10. wide int.as_int overflow, exception : ^try-catch{ $d.year($math:int_max) }
+11. double.as_int overflow, no exception : ^try-catch{ $d.year($math:int_max+1) }
 
 @show[n]
 ${n}: ^n.format[%d] ^n.format[%u] ^n.format[%x]
