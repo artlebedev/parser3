@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.381 2025/05/27 15:10:24 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.382 2026/01/08 21:13:03 moko Exp $";
 
 // class
 
@@ -1308,6 +1308,9 @@ static void _append(Request& r, MethodParams& params) {
 	} else {
 		table+=row_from_string(r, params[0]);
 	}
+
+	if(table.count() > pa_array_limit)
+		throw Exception(PARSER_RUNTIME, 0, "table size (%d) exceeds limit $MAIN:LIMITS.max_array_size (%d)", table.count(), pa_array_limit);
 }
 
 static void _insert(Request& r, MethodParams& params) {
@@ -1320,6 +1323,9 @@ static void _insert(Request& r, MethodParams& params) {
 	} else {
 		table.insert(table.current(), row_from_string(r, params[0]));
 	}
+
+	if(table.count() > pa_array_limit)
+		throw Exception(PARSER_RUNTIME, 0, "table size (%d) exceeds limit $MAIN:LIMITS.max_array_size (%d)", table.count(), pa_array_limit);
 }
 
 static void _delete(Request& r, MethodParams&) {
