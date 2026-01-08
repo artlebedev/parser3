@@ -51,6 +51,12 @@ html	text/html
 	$CLASS-GETTER-PROTECTED(false)
 }
 
+^if($env:PATH_TRANSLATED eq '449.html'){
+	$LIMITS[
+		$.max_array_size(1000)
+	]
+}
+
 ^os[;]{ ^curl:options[ $.library[libcurl.4.dylib] ] }
 
 @auto[]

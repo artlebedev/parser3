@@ -1,0 +1,9 @@
+Content-Type: text/html
+Content-Length: 254
+
+1. Exception type: parser.runtime,
+Source: append,
+Comment: table size (1001) exceeds limit $MAIN:LIMITS.max_array_size (1000)
+2. Exception type: parser.runtime,
+Source: insert,
+Comment: table size (1002) exceeds limit $MAIN:LIMITS.max_array_size (1000)
