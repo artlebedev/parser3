@@ -23,7 +23,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.8 2026/01/08 15:45:25 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.9 2026/01/09 02:25:51 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -539,8 +539,9 @@ static void _purge(Request& r, MethodParams& params) {
 	if(!queue_c)
 		throw Exception("amqp", 0, "queue must be specified");
 
-	amqp_queue_purge(self.connection(), self.channel(), amqp_cstring_bytes(queue_c));
+	amqp_queue_purge_ok_t *ok = amqp_queue_purge(self.connection(), self.channel(), amqp_cstring_bytes(queue_c));
 	check(amqp_get_rpc_reply(self.connection()));
+	r.write(*new VInt(ok ? ok->message_count : 0));
 }
 
 static void _info(Request& r, MethodParams& params) {
@@ -566,9 +567,11 @@ static void _info(Request& r, MethodParams& params) {
 	check(amqp_get_rpc_reply(self.connection()));
 
 	Value& result=*new VHash;
-	result.put_element(*new String("queue"), AMQP_VSTRING(ok->queue.bytes, ok->queue.len));
-	result.put_element(*new String("messages"), new VInt(ok->message_count));
-	result.put_element(*new String("consumers"), new VInt(ok->consumer_count));
+	if(ok){
+		result.put_element(*new String("queue"), AMQP_VSTRING(ok->queue.bytes, ok->queue.len));
+		result.put_element(*new String("messages"), new VInt(ok->message_count));
+		result.put_element(*new String("consumers"), new VInt(ok->consumer_count));
+	}
 	r.write(result);
 }
 
@@ -613,7 +616,7 @@ static void _consume(Request& r, MethodParams& params) {
 
 	if(!queue_c) throw Exception("amqp", 0, "queue must be specified");
 
-	amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
+	amqp_basic_consume_ok_t *ok = amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
 		consumer_tag_c ? amqp_cstring_bytes(consumer_tag_c) : amqp_empty_bytes,
 		0 /*no_local*/, no_ack, nowait, amqp_empty_table);
 	check(amqp_get_rpc_reply(self.connection()));
@@ -656,6 +659,11 @@ static void _consume(Request& r, MethodParams& params) {
 			}
 		}
 		r.write(result);
+	}
+
+	if(ok){
+		amqp_basic_cancel(self.connection(), self.channel(), ok->consumer_tag);
+		check(amqp_get_rpc_reply(self.connection()));
 	}
 }
 
