@@ -23,7 +23,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.11 2026/01/09 03:30:39 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.12 2026/01/09 03:36:59 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -398,7 +398,7 @@ static void _declare(Request& r, MethodParams& params) {
 	const char* exchange_c = 0;
 	const char* queue_c = 0;
 	const char* type_c = "direct";
-	bool passive=false, durable=false, auto_delete=true, internal=false, exclusive=false;
+	bool passive=false, durable=false, auto_delete=false, internal=false, exclusive=false;
 	if(HashStringValue* options=params.as_hash(0)){
 		for(HashStringValue::Iterator i(*options); i; i.next()){
 			String::Body key=i.key();
