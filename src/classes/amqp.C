@@ -23,7 +23,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.10 2026/01/09 03:19:37 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.11 2026/01/09 03:30:39 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -398,7 +398,7 @@ static void _declare(Request& r, MethodParams& params) {
 	const char* exchange_c = 0;
 	const char* queue_c = 0;
 	const char* type_c = "direct";
-	bool passive=false, durable=false, auto_delete=true, nowait=false;
+	bool passive=false, durable=false, auto_delete=true, internal=false, exclusive=false;
 	if(HashStringValue* options=params.as_hash(0)){
 		for(HashStringValue::Iterator i(*options); i; i.next()){
 			String::Body key=i.key();
@@ -415,8 +415,10 @@ static void _declare(Request& r, MethodParams& params) {
 				durable=r.process(*value).as_bool();
 			} else if(key=="auto_delete"){
 				auto_delete=r.process(*value).as_bool();
-			} else if(key=="nowait"){
-				nowait=r.process(*value).as_bool();
+			} else if(key=="internal"){
+				internal=r.process(*value).as_bool();
+			} else if(key=="exclusive"){
+				exclusive=r.process(*value).as_bool();
 			} else
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
@@ -425,12 +427,12 @@ static void _declare(Request& r, MethodParams& params) {
 		throw Exception("amqp", 0, "exchange or queue must be specified");
 
 	if(exchange_c){
-		amqp_exchange_declare(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(type_c), passive, durable, auto_delete, nowait, amqp_empty_table);
+		amqp_exchange_declare(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(type_c), passive, durable, auto_delete, internal, amqp_empty_table);
 		check(amqp_get_rpc_reply(self.connection()));
 	}
 
 	if(queue_c){
-		amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), *queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, auto_delete, nowait, amqp_empty_table);
+		amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), *queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, exclusive, auto_delete, amqp_empty_table);
 		check(amqp_get_rpc_reply(self.connection()));
 		if(!*queue_c && ok){
 			r.write(*AMQP_STRING(ok->queue.bytes, ok->queue.len));
@@ -442,7 +444,7 @@ static void _delete(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	const char* exchange_c = 0;
 	const char* queue_c = 0;
-	bool if_unused=false, if_empty=false, nowait=false;
+	bool if_unused=false, if_empty=false;
 	if(HashStringValue* options=params.as_hash(0)){
 		for(HashStringValue::Iterator i(*options); i; i.next()){
 			String::Body key=i.key();
@@ -455,8 +457,6 @@ static void _delete(Request& r, MethodParams& params) {
 				if_unused=r.process(*value).as_bool();
 			} else if(key=="if_empty"){
 				if_empty=r.process(*value).as_bool();
-			} else if(key=="nowait"){
-				nowait=r.process(*value).as_bool();
 			} else
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
