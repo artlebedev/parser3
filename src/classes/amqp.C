@@ -23,7 +23,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.9 2026/01/09 02:25:51 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.10 2026/01/09 03:19:37 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -589,7 +589,7 @@ static void _consume(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	const char* queue_c=0;
 	const char* consumer_tag_c=0;
-	bool no_ack=true, nowait=false;
+	bool no_ack=true, exclusive=false;
 	int count=1;
 	Junction* callback=0;
 
@@ -605,8 +605,8 @@ static void _consume(Request& r, MethodParams& params) {
 				consumer_tag_c=value->as_string().cstr();
 			} else if(key=="no_ack"){
 				no_ack=r.process(*value).as_bool();
-			} else if(key=="nowait"){
-				nowait=r.process(*value).as_bool();
+			} else if(key=="exclusive"){
+				exclusive=r.process(*value).as_bool();
 			} else if(key=="count"){
 				count=r.process(*value).as_int();
 			} else
@@ -618,7 +618,7 @@ static void _consume(Request& r, MethodParams& params) {
 
 	amqp_basic_consume_ok_t *ok = amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
 		consumer_tag_c ? amqp_cstring_bytes(consumer_tag_c) : amqp_empty_bytes,
-		0 /*no_local*/, no_ack, nowait, amqp_empty_table);
+		0 /*no_local*/, no_ack, exclusive, amqp_empty_table);
 	check(amqp_get_rpc_reply(self.connection()));
 
 	if(callback){
