@@ -1,3 +1,97 @@
+2026-01-09  moko
+
+	* src/classes/amqp.C: auto_delete is better false by default
+	  (related to feature #1288)
+
+	* src/classes/amqp.C: more methods bool args fixes, nowait removed
+	  (related to feature #1288)
+
+	* src/classes/amqp.C: nowait was mixed up with exclusive in consume
+
+	* src/classes/amqp.C: amqp_basic_cancel added to consume, purge
+	  returns purged messages count (related to feature #1288)
+
+	* tests/: 449.html, results/449.processed, results/auto.p: test for
+	  table size limit added (related to feature #1276)
+
+	* src/classes/table.C: $MAIN:LIMITS.max_array_size now used to
+	  limit table size; note: for append and insert operations only
+	  (implements feature #1276)
+
+2026-01-08  moko
+
+	* src/classes/amqp.C: addition to feature #1288: declare_exchange +
+	  declare_queue = declare; delete_exchange + delete_queue = delete;
+	  bind_queue -> bind; unbind_queue -> unbind; + purge, + info;
+	  consume can be called without callback with optional $.count(N),
+	  returns array of messages;
+
+2026-01-07  moko
+
+	* tests/: 448.html, results/448.processed: avoid 500, show
+	  exception where not supported
+
+	* src/include/pa_int.h: warnings war
+
+	* tests/: 422.html, results/422.processed: test updated after wide
+	  int implemented (feature #1273)
+
+	* src/main/pa_int.C: warnings war
+
+	* src/classes/classes.vcproj: +amqp.C
+
+	* src/classes/: int.C, string.C: warnings war
+
+	* src/classes/: op.C: warnings war
+
+	* src/: classes/op.C, main/pa_int.C: warnings war
+
+	* src/types/pa_vdate.h: warnings war
+
+	* src/main/pa_int.C: warnings war continues
+
+	* src/: include/pa_int.h, main/pa_int.C, types/pa_vint.h: warnings
+	  war
+
+	* src/types/pa_vdate.C: reverted, format_double still required here
+
+	* src/: include/pa_int.h, main/pa_int.C, types/pa_vmath.C:
+	  format_double now supports wint, $math:int_max and $math:int_min
+	  added, PA_WIDE_INT is finally enabled by default (implements
+	  feature #1273)
+
+	* tests/: 275.html, results/275.processed: preparing tests for int
+	  extension
+
+	* tests/: 424.html, results/424.processed: actualized and prepared
+	  for wide int
+
+2026-01-06  moko
+
+	* src/: classes/double.C, classes/int.C, classes/string.C,
+	  include/pa_common.h, include/pa_int.h, include/pa_string.h,
+	  main/execute.C, main/pa_common.C, main/pa_int.C,
+	  types/pa_value.h, types/pa_vdate.C, types/pa_vdate.h,
+	  types/pa_vdouble.h, types/pa_vint.h, types/pa_vmethod_frame.h,
+	  types/pa_vstring.h: feature #1273 core implementation:
+	  value::as_wint added, implemented for int/double/string, and used
+	  where applicable; vint now holds pa_wint type; format_double
+	  moved to pa_int
+
+	* src/: include/pa_array.h, include/pa_string.h, main/main.vcproj:
+	  pa_int includes tuning, vcproj updated (related to feature #1273)
+
+	* src/main/pa_int.C: build fix
+
+	* src/: include/Makefile.am, main/Makefile.am: pa_int.h/pa_int.C
+	  added, another preparation for feature #1273
+
+	* src/: include/pa_array.h, include/pa_int.h, include/pa_string.h,
+	  include/pa_types.h, main/pa_int.C, main/pa_string.C,
+	  types/pa_vint.h: pa_int.h/pa_int.C added and all related code
+	  moved there, pa_wint and related functions added, another
+	  preparation for feature #1273
+
 2025-12-17  moko
 
 	* src/classes/json.C: optimization: String::Empty used and avoided
