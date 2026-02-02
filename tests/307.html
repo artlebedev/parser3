@@ -1,10 +1,36 @@
 @main[]
-^try-catch{^My:test[]}
-^try-catch{^My:Test[]}
+1. ^try-catch{^My:test[]}
+2. ^try-catch{^My:Test[]}
 
 $x[$My:AnotherTest]
-^My:AnotherTest[1]
-^x[2]
+3.^My:AnotherTest[1]
+4.^x[2]
+
+5. ^try-catch{
+    ^switch[]{ ^m1[] }
+}
+
+6. ^try-catch{
+    $code[^m2[]]
+    $code
+}
+
+^switch[1]{
+  $v[1]
+  ^case[1]{here!}
+  $v[2]
+  ^case[2]{not here! $v[3]}
+}
+
+7. After: $v
+
+
+@m1[]
+^case[DEFAULT]{here!}
+
+@m2[]
+$result{code}
+
 
 @CLASS
 My
