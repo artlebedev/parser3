@@ -1,3 +1,8 @@
+2026-02-02  moko
+
+	* tests/: 307.html, results/307.processed: more "junction used
+	  outside of context" tests added
+
 2026-01-09  moko
 
 	* src/classes/amqp.C: auto_delete is better false by default
