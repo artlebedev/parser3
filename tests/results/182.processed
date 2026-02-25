@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 321
+Content-Length: 325
 
 ^a:a1[]: a1<br />
 ^a:a2[]: a2<br />
@@ -19,3 +19,4 @@ Comment: a method not found
 b
 a
 c
+yes
