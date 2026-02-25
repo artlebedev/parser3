@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.269 2025/05/25 20:55:23 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.270 2026/02/25 18:22:40 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -140,7 +140,7 @@ private:
 	///@{ core data
 
 	/// classes
-	HashString<VStateless_class*> fclasses;
+	OrderedHashString<VStateless_class*> fclasses;
 
 	/// already used files to avoid cyclic uses
 	HashString<bool> used_files;
@@ -208,7 +208,7 @@ public:
 	~Request();
 
 	/// global classes
-	HashString<VStateless_class*>& classes() { return fclasses; }
+	OrderedHashString<VStateless_class*>& classes() { return fclasses; }
 	VStateless_class* get_class(const String& name);
 	VStateless_class& get_class_ref(const String& name);
 	void put_class(VStateless_class *aclass){ classes().put(aclass->type(), aclass); }

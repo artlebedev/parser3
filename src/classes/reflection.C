@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.100 2025/10/05 19:41:27 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.101 2026/02/25 18:22:40 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -126,7 +126,7 @@ static void _create(Request& r, MethodParams& params) {
 
 static void _classes(Request& r, MethodParams&) {
 	VHash& result=*new VHash;
-	for(HashString<VStateless_class*>::Iterator i(r.classes()); i; i.next()){
+	for(OrderedHashString<VStateless_class*>::Iterator i(r.classes()); i; i.next()){
 		result.hash().put(i.key(), i.value()->get_methods().count()>0 ? new VString(class_type_methoded) : VVoid::get() );
 	}
 	r.write(result);
