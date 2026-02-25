@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.436 2026/02/25 18:22:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.437 2026/02/25 18:48:50 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -252,8 +252,8 @@ VStateless_class& Request::get_class_ref(const String& name){
 bool Request::add_class(const char* atype, VStateless_class *aclass){
 	if(!classes().put_dont_replace(String::Body(atype), aclass))
 		return true;
-	if(!allow_class_replace)
-		return !strcmp(atype, VARRAY_TYPE);
+	if(!allow_class_replace && strcmp(atype, VARRAY_TYPE))
+		return false;
 	classes().remove(String::Body(atype));
 	classes().put(atype, aclass);
 	return true;
