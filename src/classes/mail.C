@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.137 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.138 2026/03/01 00:51:19 moko Exp $";
 
 // defines
 
@@ -35,7 +35,6 @@ const int ATTACHMENT_WEIGHT=100;
 class MMail: public Methoded {
 public: // Methoded
 	bool used_directly() { return false; }
-	void configure_user(Request& r);
 
 public:
 	MMail();
@@ -190,11 +189,18 @@ static void _send(Request& r, MethodParams& params) {
 	if(Value* vdebug=hash->get(MAIL_DEBUG_NAME))
 		print_debug=vdebug->as_bool();
 
-	Value* vmail_conf=static_cast<Value*>(r.classes_conf.get(mail_class->type()));
+	Value* vmail_conf=r.main_class.get_element(mail_name);
 	Value* smtp_server_port=0;
+
 	if(vmail_conf) {
-		// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
-		smtp_server_port=vmail_conf->get_hash()->get("SMTP");
+		if(vmail_conf->get_hash()) {
+			// $MAIN:MAIL.SMTP[mail.yourdomain.ru[:port]]
+			smtp_server_port=vmail_conf->get_hash()->get("SMTP");
+		} else {
+			if( !vmail_conf->is_string() )
+				throw Exception(PARSER_RUNTIME, 0, "$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
+			vmail_conf=0;
+		}
 	}
 
 	const String* from=0;
@@ -212,16 +218,4 @@ static void _send(Request& r, MethodParams& params) {
 MMail::MMail(): Methoded(MAIL_CLASS_NAME) {
 	// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
-}
-
-void MMail::configure_user(Request& r) {
-
-	// $MAIN:MAIL[$SMTP[mail.design.ru]]
-	if(Value* mail_element=r.main_class.get_element(mail_name)) {
-		if(mail_element->get_hash())
-			r.classes_conf.put(type(), mail_element);
-		else
-			if( !mail_element->is_string() )
-				throw Exception(PARSER_RUNTIME, 0, "$" MAIL_CLASS_NAME ":" MAIL_NAME " is not hash");
-	}
 }

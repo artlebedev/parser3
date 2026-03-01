@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.437 2026/02/25 18:48:50 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.438 2026/03/01 00:51:19 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -461,9 +461,6 @@ void Request::configure() {
 	// configure admin options if not configured yet
 	if(!configure_admin_done)
 		configure_admin(main_class);
-
-	// configure not-admin=user options
-	methoded_array().configure_user(*this);
 
 	// $MAIN:MIME-TYPES
 	if(Value* element=main_class.get_element(mime_types_name))

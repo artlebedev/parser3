@@ -8,7 +8,7 @@
 #ifndef CLASSES_H
 #define CLASSES_H
 
-#define IDENT_CLASSES_H "$Id: classes.h,v 1.46 2024/11/11 05:28:00 moko Exp $"
+#define IDENT_CLASSES_H "$Id: classes.h,v 1.47 2026/03/01 00:51:19 moko Exp $"
 
 // include
 
@@ -33,8 +33,6 @@ public: // Methoded
 	virtual bool used_directly() { return true; }
 	/// use this method to read parameters from root "auto.p"; access r.main_class
 	virtual void configure_admin(Request& ) {}
-	/// use this method to read parameters from 'MAIN' class; access r.main_class
-	virtual void configure_user(Request& ) {}
 
 private:
 
