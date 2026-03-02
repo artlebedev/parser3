@@ -1,3 +1,23 @@
+2026-03-01  moko
+
+	* src/: classes/classes.C, classes/classes.h, classes/mail.C,
+	  main/pa_request.C: configure_user removed, $MAIN:MAIL now
+	  processed inside ^mail:send[] (implements feature #1290)
+
+2026-02-25  moko
+
+	* tests/: 182.html, 182_dir/a7.p, results/182.processed: test for
+	  array redefinition added
+
+	* src/main/pa_request.C: array redefinition fixed
+
+	* tests/: 182.html, results/182.processed: test for
+	  ^reflection:classes[] order (related to feature #1289)
+
+	* src/: classes/reflection.C, include/pa_request.h,
+	  main/pa_request.C: classes now OrderedHashString, implements
+	  feature #1289
+
 2026-02-02  moko
 
 	* tests/: 307.html, results/307.processed: more "junction used
