@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.301 2024/12/03 04:07:02 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.302 2026/04/23 18:50:11 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -674,11 +674,8 @@ name_square_code_value: '[' {
 } codes {
 	PC.explicit_result=*reinterpret_cast<bool*>(&$2);
 } ']' {
-	$$=N(); 
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	if(!maybe_append_simple_diving_code(*$$, *$3))
-#endif
-	{
+	$$=N();
+	if(!maybe_append_simple_diving_code(*$$, *$3)) {
 		OA(*$$, OP::OP_OBJECT_POOL, $3); /* stack: empty write context */
 		/* some code that writes to that context */
 		/* context=pop; stack: context.value() */

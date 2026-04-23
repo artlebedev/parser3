@@ -8,7 +8,7 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.121 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.122 2026/04/23 18:50:11 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
@@ -326,9 +326,9 @@ inline bool maybe_make_get_object_var_element(ArrayOperation& opcodes, ArrayOper
 
 bool maybe_make_self(ArrayOperation& opcodes, ArrayOperation& diving_code, size_t diving_count);
 
-#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 bool maybe_append_simple_diving_code(ArrayOperation& code, ArrayOperation& diving_code);
 
+#ifdef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
 bool is_special_element(ArrayOperation& opcodes);
 #endif
 
