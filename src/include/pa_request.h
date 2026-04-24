@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.270 2026/02/25 18:22:40 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.271 2026/04/24 13:45:12 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -253,7 +253,7 @@ public:
 
 	/// execute ops with anti-recursion check
 	void recursion_checked_execute(ArrayOperation& ops) {
-		if(++anti_endless_execute_recursion==pa_execute_recursion_limit) {
+		if(++anti_endless_execute_recursion>=pa_execute_recursion_limit) {
 			anti_endless_execute_recursion=0; // give @exception a chance
 			throw Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion detected");
 		}

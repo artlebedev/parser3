@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.302 2026/04/23 18:50:11 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.303 2026/04/24 13:45:12 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -79,7 +79,7 @@ static const VString vempty;
 
 %}
 
-%pure-parser
+%define api.pure
 %lex-param {Parse_control* pc}
 %parse-param {Parse_control* pc}
 
