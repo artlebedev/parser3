@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.101 2026/02/25 18:22:40 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.102 2026/04/24 18:30:15 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -536,6 +536,8 @@ static void _override(Request& r, MethodParams& params) {
 	const Method* method=j ? j->method : 0;
 	if(!method)
 		throw Exception(PARSER_RUNTIME, 0, "param must be method junction");
+	if(method->native_code)
+		throw Exception(PARSER_RUNTIME, 0, "param must not be native method");
 
 	const String *name=method->name;
 	Value* vtarget=0;
