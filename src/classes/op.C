@@ -17,12 +17,13 @@
 #include "pa_vmethod_frame.h"
 #include "pa_vclass.h"
 #include "pa_charset.h"
+#include "pa_varray.h"
 
 #ifdef HAVE_SYSLOG
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.278 2026/01/07 14:53:23 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.279 2026/04/24 19:04:23 moko Exp $";
 
 // defines
 
@@ -884,6 +885,18 @@ static void _sleep_operator(Request& r, MethodParams& params) {
 		pa_sleep((int)trunc(seconds), (int)trunc((seconds-trunc(seconds))*1000000));
 }
 
+static void _a_operator(Request& r, MethodParams& params) {
+	VArray& result=*new VArray;
+	ArrayValue& array=result.array();
+
+	int count=params.count();
+	for(int i=0; i<count; i++)
+		array+=&r.process(params[i]);
+	array.confirm_all_used();
+
+	r.write(result);
+}
+
 #ifdef HAVE_SYSLOG
 static int log_level(const String &name){
 	if(name.is_empty()) return LOG_INFO;
@@ -1000,6 +1013,9 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 	add_native_method("throw", Method::CT_ANY, _throw_operator, 1, 3);
 
 	add_native_method("sleep", Method::CT_ANY, _sleep_operator, 1, 1);
+
+	// equivalent to ^array::create[...]
+	add_native_method("A", Method::CT_ANY, _a_operator, 0, 10000, Method::CO_WITHOUT_FRAME);
 
 	// ^syslog[ident;message[;info|warning|error|debug]]
 	add_native_method("syslog", Method::CT_ANY, _syslog_operator, 2, 3);
