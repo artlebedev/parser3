@@ -77,7 +77,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.191 2026/04/23 18:50:33 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.192 2026/04/24 13:47:10 moko Exp $";
 
 /**
 	@todo parser4: 
