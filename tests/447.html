@@ -19,6 +19,12 @@ $a[^A::create[]]
 7. extra static: ^A:extra[]
 8. extra dynamic: ^a.extra[]
 
+9. exceptions:
+  ^try-catch{ ^reflection:override[$nothing; $.to[$a] ] }
+  ^try-catch{ ^reflection:override[$table:append; $.to[$a] ] }
+  ^try-catch{ ^reflection:override[$B:test; $.to[$void] ] }
+
+
 @for[]
 my for
 

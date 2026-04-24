@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 305
+Content-Length: 603
 
 my for
 1. new test for "MAIN" from "MAIN"
@@ -10,3 +10,13 @@ my for
 6. dynamic: new test for "A" from "MAIN"
 7. extra static: extra new test for "A" from "A"
 8. extra dynamic: extra new test for "A" from "A"
+9. exceptions:
+Exception type: parser.runtime,
+Source: override,
+Comment: param must be method junction
+Exception type: parser.runtime,
+Source: override,
+Comment: param must not be native method
+Exception type: parser.runtime,
+Source: override,
+Comment: destination must be parser object or class
