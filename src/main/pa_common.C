@@ -8,6 +8,7 @@
 #include "pa_common.h"
 #include "pa_exception.h"
 #include "pa_hash.h"
+#include "pa_inline_hash.h"
 #include "pa_globals.h"
 #include "pa_charsets.h"
 #include "pa_http.h"
@@ -22,7 +23,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.341 2026/01/06 16:36:39 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H; 
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.342 2026/04/24 20:14:33 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // some maybe-undefined constants
 

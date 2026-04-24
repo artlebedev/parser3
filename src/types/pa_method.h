@@ -8,19 +8,20 @@
 #ifndef PA_METHOD_H
 #define PA_METHOD_H
 
-#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.37 2024/12/10 02:40:53 moko Exp $"
+#define IDENT_PA_METHOD_H "$Id: pa_method.h,v 1.38 2026/04/24 20:14:33 moko Exp $"
 
 #define OPTIMIZE_CALL
 #define OPTIMIZE_RESULT
+#define OPTIMIZE_MY_HASH
 
 #include "pa_operation.h"
 #include "pa_vjunction.h"
 
 /**
 	native code method
-	params can be NULL when 
+	params can be NULL when
 	method min&max params (see VStateless_class::add_native_method)
-	counts are zero.	
+	counts are zero.
 */
 typedef void (*NativeCodePtr)(Request& request, MethodParams& params);
 

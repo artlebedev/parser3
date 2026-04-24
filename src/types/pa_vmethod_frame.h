@@ -8,12 +8,13 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.146 2026/01/06 16:36:39 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.147 2026/04/24 20:14:33 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
 #include "pa_vvoid.h"
 #include "pa_vjunction.h"
+#include "pa_inline_hash.h"
 
 // forwards
 
@@ -317,7 +318,12 @@ public: // WContext
 
 public: // usage
 
-	HashString<Value*> my; // public for ^stack[]
+#ifdef OPTIMIZE_MY_HASH
+	typedef InlineHashString<Value*> MyHash;
+#else
+	typedef HashString<Value*> MyHash;
+#endif
+	MyHash my; // public for ^stack[]
 	Value* my_result;
 
 	VParserMethodFrame(const Method& amethod, VMethodFrame *acaller, Value& aself);

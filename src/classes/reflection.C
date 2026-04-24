@@ -11,7 +11,7 @@
 #include "pa_varray.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.102 2026/04/24 18:30:15 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.103 2026/04/24 20:14:33 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -598,6 +598,13 @@ static void _tainting(Request& r, MethodParams& params) {
 	}
 }
 
+struct LocalsInfo { HashStringValue* args; HashStringValue* locals; };
+
+static void collect_local(const String::Body& key, Value* value, LocalsInfo* info) {
+	if(!info->args->contains(key) && (key != "result"))
+		info->locals->put(key, value->get_junction() ? VVoid::get() : value);
+}
+
 static void _stack(Request& r, MethodParams& params) {
 	bool show_args=false;
 	bool show_locals=false;
@@ -669,14 +676,10 @@ static void _stack(Request& r, MethodParams& params) {
 						VHash& vlocals=*new VHash;
 						HashStringValue* locals=vlocals.get_hash();
 
-						if(VParserMethodFrame* frame=dynamic_cast<VParserMethodFrame*>(caller))
-							for(HashString<Value*>::Iterator h(frame->my); h; h.next()){
-								String::Body key=h.key();
-								Value* value=h.value();
-								if(!args->contains(key) && (key != "result")){
-									locals->put(key, value->get_junction() ? VVoid::get() : value);
-								}
-							}
+						if(VParserMethodFrame* frame=dynamic_cast<VParserMethodFrame*>(caller)){
+							LocalsInfo linfo = { args, locals };
+							frame->my.for_each(collect_local, &linfo);
+						}
 
 						HASH_PUT_CSTR(*current, "locals", &vlocals);
 					}
