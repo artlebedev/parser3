@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 385
+Content-Length: 414
 
 1. 4
 12 vs 7, pop 'last'
@@ -33,3 +33,8 @@ Comment: undefined method
 3. 2
 4
 2 // counted, OK
+4. {}
+{
+"0":"v1",
+"1":"v2"
+}
