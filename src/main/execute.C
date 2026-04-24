@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.428 2026/01/06 16:36:39 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.429 2026/04/24 13:57:35 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -450,6 +450,8 @@ void Request::execute(ArrayOperation& ops) {
 
 		case OP::OP_CONSTRUCT_ARRAY:
 			{
+				debug_name=0;
+
 				ArrayOperation* local_ops=i.next().ops;
 
 				DEBUG_PRINT_OPS(local_ops)
@@ -460,13 +462,9 @@ void Request::execute(ArrayOperation& ops) {
 				Value *value=new VArray(stack.top_index()-first, (Value**)stack.ptr(first));
 				stack.set_top_index(first);
 
-#ifdef OPTIMIZE_BYTECODE_CONSTRUCT
 				const String& name=stack.pop().string();  debug_name=&name;
 				Value& ncontext=stack.pop().value();
-#else
-				const String& name=stack.pop().string();  debug_name=&name;
-				Value& ncontext=stack.pop().value();
-#endif
+
 				put_element(ncontext, name, value);
 
 				DEBUG_PRINT_STR("<-returned")
