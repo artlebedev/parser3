@@ -8,7 +8,7 @@
 #ifndef PA_INLINE_HASH_H
 #define PA_INLINE_HASH_H
 
-#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.1 2026/04/24 20:00:48 moko Exp $"
+#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.2 2026/04/25 02:28:31 moko Exp $"
 
 #include "pa_hash.h"
 
@@ -17,7 +17,7 @@
 /// Inline-storage "hash" stores up to PA_HASH_INLINE_SIZE entries without heap allocation.
 /// Fallbacks to HashString for overflow.
 
-template<typename V> class InlineHashString {
+template<typename V> class InlineHashString: public PA_Object {
 public:
 
 	struct Pair {
@@ -26,6 +26,10 @@ public:
 	};
 
 	InlineHashString() : fcount(0), foverflow(0) {}
+
+#ifdef USE_DESTRUCTORS
+	~InlineHashString() { if(foverflow) delete foverflow; }
+#endif
 
 	V get(const String& name) const {
 		const String::Body& nb = name;
