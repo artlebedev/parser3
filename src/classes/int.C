@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b int parser class.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.75 2026/01/07 15:02:11 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.76 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 

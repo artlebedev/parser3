@@ -1,7 +1,7 @@
 /** @file
 	Parser: http support functions.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
  */
 
@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.134 2025/05/31 13:23:22 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.135 2026/04/25 13:38:46 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 

@@ -1,14 +1,14 @@
 /** @file
 	Parser: Charset connection decl.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.62 2025/06/28 15:38:04 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.63 2026/04/25 13:38:46 moko Exp $"
 
 
 #include "pa_exception.h"

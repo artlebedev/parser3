@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b amqp class decls.
 
-	Copyright (c) 2001-2025 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>
 */
 
 #ifndef PA_VAMQP_H
 #define PA_VAMQP_H
 
-#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.1 2025/11/06 22:08:03 moko Exp $"
+#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.2 2026/04/25 13:38:46 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"

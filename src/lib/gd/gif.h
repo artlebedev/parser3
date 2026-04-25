@@ -1,7 +1,7 @@
 /** @file
 	Parser: image manipulations decls.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 	based on:
 	gd.h: declarations file for the gifdraw module.
@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-#define IDENT_GIF_H "$Id: gif.h,v 1.11 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_GIF_H "$Id: gif.h,v 1.12 2026/04/25 13:38:46 moko Exp $"
 
 #include "pa_config_includes.h"
 

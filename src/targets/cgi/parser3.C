@@ -1,11 +1,11 @@
 /** @file
 	Parser: scripting and CGI main.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.367 2024/12/19 02:47:46 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.368 2026/04/25 13:38:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -617,7 +617,7 @@ static void usage(const char* message=NULL) {
 
 	printf(
 		"Parser/%s\n"
-		"Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)\n"
+		"Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)\n"
 		"Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>\n"
 		"\n"
 		"Usage: %s [options] [file]\n"

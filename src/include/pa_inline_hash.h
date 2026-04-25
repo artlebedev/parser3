@@ -1,14 +1,14 @@
 /** @file
 	Parser: inline-storage hash decls.
 
-	Copyright (c) 2001-2026 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>
 */
 
 #ifndef PA_INLINE_HASH_H
 #define PA_INLINE_HASH_H
 
-#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.2 2026/04/25 02:28:31 moko Exp $"
+#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.3 2026/04/25 13:38:46 moko Exp $"
 
 #include "pa_hash.h"
 

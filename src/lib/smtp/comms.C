@@ -1,13 +1,13 @@
 /** @file
 	Parser: SMTP sender impl.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #include "smtp.h"
 
-volatile const char * IDENT_COMMS_C="$Id: comms.C,v 1.15 2024/11/04 03:53:25 moko Exp $";
+volatile const char * IDENT_COMMS_C="$Id: comms.C,v 1.16 2026/04/25 13:38:46 moko Exp $";
 
 // ---------------------------------------------------------------------------
 int SMTP:: 

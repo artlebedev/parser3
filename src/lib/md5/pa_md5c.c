@@ -1,6 +1,6 @@
 /** @file
 	taken from libmd, added pa_ prefixes, Parser 3 includes,
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 */
 
 /*	$OpenBSD: md5.c,v 1.7 2004/05/28 15:10:27 millert Exp $	*/
@@ -35,7 +35,7 @@
 
 #include "pa_md5.h"
 
-volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.24 2025/01/10 20:12:17 moko Exp $" IDENT_PA_MD5_H;
+volatile const char * IDENT_PA_MD5_C="$Id: pa_md5c.c,v 1.25 2026/04/25 13:38:46 moko Exp $" IDENT_PA_MD5_H;
 
 #define PUT_64BIT_LE(cp, value) do {					\
 	(cp)[7] = (uint8_t)((value) >> 56);				\

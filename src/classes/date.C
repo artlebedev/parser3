@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b date parser class.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -14,7 +14,7 @@
 #include "pa_vtable.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DATE_C="$Id: date.C,v 1.122 2025/10/04 00:22:18 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_DATE_C="$Id: date.C,v 1.123 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VDATE_H;
 
 // class
 

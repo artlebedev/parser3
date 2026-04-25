@@ -1,4 +1,4 @@
-$Id: INSTALL,v 1.58 2024/11/04 04:37:43 moko Exp $
+$Id: INSTALL,v 1.59 2026/04/25 13:38:46 moko Exp $
 
 1. What is the process to compile Parser3?
 
@@ -12,11 +12,6 @@ $Id: INSTALL,v 1.58 2024/11/04 04:37:43 moko Exp $
 
   NOTE:
   If you have gc, prce, libxml and libxslt installed, you can use ./configure --with-xml
-
-  NOTE:
-  In case you later would experience problems with gcc runtime exception handling 
-  (most notable when reporting sql-related problems), pass this to buildall script:
-  --with-sjlj-exceptions (HPUX is reported to have such problems)
 
   NOTE:
   On some systems there are no "make" and you should run 'gmake', change buildall script accordingly then.
@@ -41,7 +36,7 @@ $Id: INSTALL,v 1.58 2024/11/04 04:37:43 moko Exp $
           windows-1251.cfg  -- cyrillic charset [windows-1251 encoding]
           ...
 
-3. I have heard about $mail:receive experimental support, how do I use it?
+3. I have heard about $mail:receive support, how do I use it?
 
   Just start ./buildall --with-mailreceive.
   If you have glib and gmime installed, you can run ./configure --with-mailreceive.

@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b array class.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -9,7 +9,7 @@
 #include "pa_vfile.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.9 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VARRAY_H;
+volatile const char * IDENT_PA_VARRAY_C="$Id: pa_varray.C,v 1.10 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VARRAY_H;
 
 // Explicit instantiation for Visual Studio
 template class SparseArray<Value*>;

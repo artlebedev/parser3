@@ -1,7 +1,7 @@
 /**	@file
 	Parser: @b form class.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 
 	based on The CGI_C library, by Thomas Boutell.
@@ -18,7 +18,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.130 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.131 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 

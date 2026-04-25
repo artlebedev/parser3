@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b table parser class.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.382 2026/01/08 21:13:03 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.383 2026/04/25 13:38:46 moko Exp $";
 
 // class
 

@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b image parser type.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -11,7 +11,7 @@
 #include "gif.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.53 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VIMAGE_H;
+volatile const char * IDENT_PA_VIMAGE_C="$Id: pa_vimage.C,v 1.54 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VIMAGE_H;
 
 void VImage::set(const String* src, int width, int height, gdImage* aimage, Value* aexif, Value* axmp) {
 	fimage=aimage;

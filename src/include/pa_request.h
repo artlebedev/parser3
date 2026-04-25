@@ -1,14 +1,14 @@
 /** @file
 	Parser: request class decl.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.271 2026/04/24 13:45:12 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.272 2026/04/25 13:38:46 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"

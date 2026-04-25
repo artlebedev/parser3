@@ -1,7 +1,7 @@
 /** @file
 	Parser: parser @b operators.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.279 2026/04/24 19:04:23 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.280 2026/04/25 13:38:46 moko Exp $";
 
 // defines
 

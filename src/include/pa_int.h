@@ -1,14 +1,14 @@
 /** @file
 	Parser: pa_int and support functions decls.
 
-	Copyright (c) 2001-2026 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_INT_H
 #define PA_INT_H
 
-#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.5 2026/01/07 18:58:26 moko Exp $"
+#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.6 2026/04/25 13:38:46 moko Exp $"
 
 // includes
 

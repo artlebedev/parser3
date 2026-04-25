@@ -1,7 +1,7 @@
 /** @file
 	Parser: commonly functions.
 
-	Copyright (c) 2000-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -23,7 +23,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.342 2026/04/24 20:14:33 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.343 2026/04/25 13:38:46 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // some maybe-undefined constants
 

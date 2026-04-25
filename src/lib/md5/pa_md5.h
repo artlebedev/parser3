@@ -1,6 +1,6 @@
 /** @file
 	taken from libmd, added pa_ prefixes, Parser 3 includes,
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 */
 
 /*	$OpenBSD: md5.h,v 1.15 2004/05/03 17:30:14 millert Exp $	*/
@@ -20,7 +20,7 @@
 #ifndef PA_MD5_H
 #define PA_MD5_H
 
-#define IDENT_PA_MD5_H "$Id: pa_md5.h,v 1.19 2025/01/06 18:22:23 moko Exp $"
+#define IDENT_PA_MD5_H "$Id: pa_md5.h,v 1.20 2026/04/25 13:38:46 moko Exp $"
 
 #ifdef __cplusplus
 extern "C" {

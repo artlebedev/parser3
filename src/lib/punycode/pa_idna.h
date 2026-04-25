@@ -1,6 +1,6 @@
 /** @file
    Parser: IDNA support, modified Libidn Version 1.28.
-   Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+   Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 */
 
 /* idna.h --- Prototypes for Internationalized Domain Name library.

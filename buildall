@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.42 2025/11/06 22:09:34 moko Exp $
+# $Id: buildall,v 1.43 2026/04/25 13:38:46 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -315,7 +315,7 @@ echo
 echo "********************************************************************************************************"
 echo "Now you can copy $install_directory/bin to your cgi-bin directory"
 echo "Read more about installing Parser here:"
-echo "  http://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
-echo "  http://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"
+echo "  https://www.parser.ru/en/docs/lang/install4apachecgi.htm in English"
+echo "  https://www.parser.ru/docs/lang/install4apachecgi.htm in Russian"
 echo "********************************************************************************************************"
 

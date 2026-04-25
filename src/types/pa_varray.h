@@ -1,14 +1,14 @@
 /** @file
 	Parser: @b array parser type decl.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.25 2024/11/09 17:14:40 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.26 2026/04/25 13:38:46 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"

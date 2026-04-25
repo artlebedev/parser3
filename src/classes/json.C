@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b json parser class.
 
-	Copyright (c) 2000-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2000-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>
 */
 
@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.69 2025/12/17 20:34:20 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.70 2026/04/25 13:38:46 moko Exp $";
 
 // class
 

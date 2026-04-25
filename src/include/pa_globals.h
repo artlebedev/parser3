@@ -1,14 +1,14 @@
 /** @file
 	Parser: global decls.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-#define IDENT_PA_GLOBALS_H "$Id: pa_globals.h,v 1.120 2024/11/04 03:53:25 moko Exp $"
+#define IDENT_PA_GLOBALS_H "$Id: pa_globals.h,v 1.121 2026/04/25 13:38:46 moko Exp $"
 
 #ifdef XML
 #	include "libxml/tree.h"

@@ -1,7 +1,7 @@
 /** @file
 	Parser: pa_int support functions
 
-	Copyright (c) 2001-2026 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -10,7 +10,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.8 2026/01/07 18:11:33 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.9 2026/04/25 13:38:46 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){

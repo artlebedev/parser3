@@ -1,7 +1,7 @@
 /** @file
 	Parser: @b table class.
 
-	Copyright (c) 2001-2024 Art. Lebedev Studio (http://www.artlebedev.com)
+	Copyright (c) 2001-2026 Art. Lebedev Studio (https://www.artlebedev.com)
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.77 2025/05/26 00:52:15 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.78 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
