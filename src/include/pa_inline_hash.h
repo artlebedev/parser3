@@ -8,55 +8,57 @@
 #ifndef PA_INLINE_HASH_H
 #define PA_INLINE_HASH_H
 
-#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.3 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.4 2026/04/29 23:30:44 moko Exp $"
 
 #include "pa_hash.h"
 
-#define PA_HASH_INLINE_SIZE 4
+#define PA_INLINE_HASH_N 13
 
-/// Inline-storage "hash" stores up to PA_HASH_INLINE_SIZE entries without heap allocation.
-/// Fallbacks to HashString for overflow.
+// Linear-probing inline hash with PA_INLINE_HASH_N slots before overflow to HashString<V>.
+// Inits 8*N bytes, while HASH allocates (and inits) at least 
 
 template<typename V> class InlineHashString: public PA_Object {
 public:
 
-	struct Pair {
-		String::Body key;
-		V value;
-	};
+	InlineHashString() : fkeys{}, foverflow(0) {
+	}
 
-	InlineHashString() : fcount(0), foverflow(0) {}
-
+	~InlineHashString() {
 #ifdef USE_DESTRUCTORS
-	~InlineHashString() { if(foverflow) delete foverflow; }
+		if(foverflow) delete foverflow;
 #endif
+	}
 
 	V get(const String& name) const {
 		const String::Body& nb = name;
-		const uint code = nb.get_hash_code();
-		for(int i = 0; i < fcount; i++) {
-			const String::Body& key = fpairs[i].key;
-			if(key.get_hash_code() == code && key == nb)
-				return fpairs[i].value;
+		const uint hash = nb.get_hash_code();
+		int i = hash % PA_INLINE_HASH_N;
+		for(int probe = 0; probe < PA_INLINE_HASH_N; probe++) {
+			if(!fkeys[i]) {
+				return foverflow ? foverflow->get(name) : 0;
+			}
+			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb)
+				return fvalues[i];
+			if(++i >= PA_INLINE_HASH_N) i = 0;
 		}
 		return foverflow ? foverflow->get(name) : 0;
 	}
 
 	bool put(const String& name, V value) {
 		const String::Body& nb = name;
-		const uint code = nb.get_hash_code();
-		for(int i = 0; i < fcount; i++) {
-			const String::Body& key = fpairs[i].key;
-			if(key.get_hash_code() == code && key == nb) {
-				fpairs[i].value = value;
+		const uint hash = nb.get_hash_code();
+		int i = hash % PA_INLINE_HASH_N;
+		for(int probe = 0; probe < PA_INLINE_HASH_N; probe++) {
+			if(!fkeys[i]) {
+				fkeys[i] = &nb;
+				fvalues[i] = value;
+				return false;
+			}
+			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) {
+				fvalues[i] = value;
 				return true;
 			}
-		}
-		if(fcount < PA_HASH_INLINE_SIZE) {
-			fpairs[fcount].key = name;
-			fpairs[fcount].value = value;
-			fcount++;
-			return false;
+			if(++i >= PA_INLINE_HASH_N) i = 0;
 		}
 		if(!foverflow)
 			foverflow = new HashString<V>();
@@ -65,32 +67,34 @@ public:
 
 	bool put_replaced(const String& name, V value) {
 		const String::Body& nb = name;
-		const uint code = nb.get_hash_code();
-		for(int i = 0; i < fcount; i++) {
-			const String::Body& key = fpairs[i].key;
-			if(key.get_hash_code() == code && key == nb) {
-				fpairs[i].value = value;
+		const uint hash = nb.get_hash_code();
+		int i = hash % PA_INLINE_HASH_N;
+		for(int probe = 0; probe < PA_INLINE_HASH_N; probe++) {
+			if(!fkeys[i])
+				return foverflow ? foverflow->put_replaced(name, value) : false;
+			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) {
+				fvalues[i] = value;
 				return true;
 			}
+			if(++i >= PA_INLINE_HASH_N) i = 0;
 		}
 		return foverflow ? foverflow->put_replaced(name, value) : false;
 	}
 
-	int count() const {
-		return fcount + (foverflow ? foverflow->count() : 0);
-	}
-
 	template<typename I> void for_each(void callback(const String::Body&, V, I), I info) const {
-		for(int i = 0; i < fcount; i++)
-			callback(fpairs[i].key, fpairs[i].value, info);
+		for(int i = 0; i < PA_INLINE_HASH_N; i++) {
+			if(fkeys[i])
+				callback(*fkeys[i], fvalues[i], info);
+		}
 		if(foverflow)
 			foverflow->for_each(callback, info);
 	}
 
 private:
-	int fcount;
-	Pair fpairs[PA_HASH_INLINE_SIZE];
 	HashString<V>* foverflow;
+	const String::Body* fkeys[PA_INLINE_HASH_N];  // NULL=empty, initialized in constructor
+	V fvalues[PA_INLINE_HASH_N];
+
 };
 
 #endif // PA_INLINE_HASH_H
