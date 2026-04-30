@@ -8,12 +8,12 @@
 #ifndef PA_INLINE_HASH_H
 #define PA_INLINE_HASH_H
 
-#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.6 2026/04/30 15:53:20 moko Exp $"
+#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.7 2026/04/30 16:06:48 moko Exp $"
 
 #include "pa_hash.h"
 
 #define PA_INLINE_HASH_N 13  // Low overflow rate, high first-hit ratio
-#define PA_PROBE_LIMIT 8     // Probe chains beyond this are very rare
+#define PA_PROBE_LIMIT 8     // Prevents long probe chains from degrading the inline table
 
 // Linear-probing inline hash with PA_INLINE_HASH_N slots before overflow to HashString<V>.
 
