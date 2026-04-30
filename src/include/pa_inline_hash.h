@@ -8,7 +8,7 @@
 #ifndef PA_INLINE_HASH_H
 #define PA_INLINE_HASH_H
 
-#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.4 2026/04/29 23:30:44 moko Exp $"
+#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.5 2026/04/30 01:40:39 moko Exp $"
 
 #include "pa_hash.h"
 
@@ -33,13 +33,15 @@ public:
 		const String::Body& nb = name;
 		const uint hash = nb.get_hash_code();
 		int i = hash % PA_INLINE_HASH_N;
-		for(int probe = 0; probe < PA_INLINE_HASH_N; probe++) {
-			if(!fkeys[i]) {
-				return foverflow ? foverflow->get(name) : 0;
-			}
-			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb)
-				return fvalues[i];
+
+		// Optimized first, >50% hits
+		if(!fkeys[i]) return 0;  // NULL implies foverflow==NULL
+		if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) return fvalues[i];
+		// Сollision
+		for(int n = 0; n < PA_INLINE_HASH_N-1; n++) {
 			if(++i >= PA_INLINE_HASH_N) i = 0;
+			if(!fkeys[i]) return 0;
+			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) return fvalues[i];
 		}
 		return foverflow ? foverflow->get(name) : 0;
 	}
@@ -48,17 +50,15 @@ public:
 		const String::Body& nb = name;
 		const uint hash = nb.get_hash_code();
 		int i = hash % PA_INLINE_HASH_N;
-		for(int probe = 0; probe < PA_INLINE_HASH_N; probe++) {
-			if(!fkeys[i]) {
-				fkeys[i] = &nb;
-				fvalues[i] = value;
-				return false;
-			}
-			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) {
-				fvalues[i] = value;
-				return true;
-			}
+
+		// Optimized first
+  		if(!fkeys[i]) { fkeys[i] = &nb; fvalues[i] = value; return false; }
+		if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) { fvalues[i] = value; return true; }
+		// Сollision
+		for(int n = 0; n < PA_INLINE_HASH_N-1; n++) {
 			if(++i >= PA_INLINE_HASH_N) i = 0;
+			if(!fkeys[i]) { fkeys[i] = &nb; fvalues[i] = value; return false; }
+			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) { fvalues[i] = value; return true; }
 		}
 		if(!foverflow)
 			foverflow = new HashString<V>();
@@ -69,14 +69,15 @@ public:
 		const String::Body& nb = name;
 		const uint hash = nb.get_hash_code();
 		int i = hash % PA_INLINE_HASH_N;
-		for(int probe = 0; probe < PA_INLINE_HASH_N; probe++) {
-			if(!fkeys[i])
-				return foverflow ? foverflow->put_replaced(name, value) : false;
-			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) {
-				fvalues[i] = value;
-				return true;
-			}
+
+		// Optimized first
+		if(!fkeys[i]) return false;
+		if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) { fvalues[i] = value; return true; }
+		// Сollision
+		for(int n = 0; n < PA_INLINE_HASH_N-1; n++) {
 			if(++i >= PA_INLINE_HASH_N) i = 0;
+			if(!fkeys[i]) return false;
+			if(fkeys[i]->get_hash_code() == hash && *fkeys[i] == nb) { fvalues[i] = value; return true; }
 		}
 		return foverflow ? foverflow->put_replaced(name, value) : false;
 	}
