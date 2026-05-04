@@ -1,3 +1,14 @@
+2026-04-30  moko
+
+	* src/include/pa_inline_hash.h: PA_PROBE_LIMIT added (related to
+	  feature #1293)
+
+	* src/include/pa_inline_hash.h: First lookup optimization added
+	  (related to feature #1293)
+
+	* src/include/pa_inline_hash.h: upgrade to linear-probing hash
+	  (related to feature #1293)
+
 2026-04-25  moko
 
 	* INSTALL, NEWS, README, buildall, src/classes/amqp.C,
