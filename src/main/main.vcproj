@@ -251,6 +251,9 @@
 			RelativePath="..\include\pa_hash.h">
 		</File>
 		<File
+			RelativePath="..\include\pa_inline_hash.h">
+		</File>
+		<File
 			RelativePath=".\pa_http.C">
 		</File>
 		<File
