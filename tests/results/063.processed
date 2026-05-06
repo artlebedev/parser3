@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 48
+Content-Length: 118
 
 6<br>
 13<br>
@@ -8,3 +8,13 @@ Content-Length: 48
 2.25<br>
 4.5<br>
 1<br>
+10. 1 vs 2
+double
+double
+11. 2 vs 3
+int
+int
+12. int
+double
+3 vs 2
+3 2
