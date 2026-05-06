@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.79 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VDOUBLE_H;
+volatile const char * IDENT_DOUBLE_C="$Id: double.C,v 1.80 2026/05/06 20:19:02 moko Exp $" IDENT_PA_VDOUBLE_H;
 
 // externs
 
@@ -67,6 +67,18 @@ static void _mul(Request& r, MethodParams& params) { vdouble_op(r, params, &__mu
 static void _div(Request& r, MethodParams& params) { vdouble_op(r, params, &__div); }
 static void _mod(Request& r, MethodParams& params) { vdouble_op(r, params, &__mod); }
 
+static void _plus_plus(Request& r, MethodParams& params) {
+	VDouble& vdouble=GET_SELF(r, VDouble);
+	r.write(*new VDouble(vdouble));
+	vdouble.inc(1);
+}
+
+static void _minus_minus(Request& r, MethodParams& params) {
+	VDouble& vdouble=GET_SELF(r, VDouble);
+	r.write(*new VDouble(vdouble));
+	vdouble.inc(-1);
+}
+
 // from string.C
 extern const String* sql_result_string(Request& r, MethodParams& params, Value*& default_code);
 
@@ -96,14 +108,20 @@ MDouble::MDouble(): Methoded("double") {
 	// ^double.bool[]
 	// ^double.bool[default for ^string.bool compatibility]
 	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
-	
-	// ^double.inc[] 
+
+	// ^double.inc[]
 	// ^double.inc[offset]
 	add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
-	// ^double.dec[] 
+	// ^double.dec[]
 	// ^double.dec[offset]
 	add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
-	// ^double.mul[k] 
+
+	// ^double.++[]
+	add_native_method("++", Method::CT_DYNAMIC, _plus_plus, 0, 0);
+	// ^double.--[]
+	add_native_method("--", Method::CT_DYNAMIC, _minus_minus, 0, 0);
+
+	// ^double.mul[k]
 	add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
 	// ^double.div[d]
 	add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
@@ -112,7 +130,7 @@ MDouble::MDouble(): Methoded("double") {
 
 	// ^double.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
-	
+
 	// ^sql[query]
 	// ^sql[query][$.limit(1) $.offset(2) $.default(0.0)]
 	add_native_method("sql", Method::CT_STATIC, _sql, 1, 2);

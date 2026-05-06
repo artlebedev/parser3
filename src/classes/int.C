@@ -13,7 +13,7 @@
 #include "pa_vint.h"
 #include "pa_vbool.h"
 
-volatile const char * IDENT_INT_C="$Id: int.C,v 1.76 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VINT_H;
+volatile const char * IDENT_INT_C="$Id: int.C,v 1.77 2026/05/06 20:19:02 moko Exp $" IDENT_PA_VINT_H;
 
 // externs
 
@@ -67,6 +67,18 @@ static void _mul(Request& r, MethodParams& params) { vint_op(r, params, &__mul);
 static void _div(Request& r, MethodParams& params) { vint_op(r, params, &__div); }
 static void _mod(Request& r, MethodParams& params) { vint_op(r, params, &__mod); }
 
+static void _plus_plus(Request& r, MethodParams& params) {
+	VInt& vint=GET_SELF(r, VInt);
+	r.write(*new VInt(vint));
+	vint.inc(1);
+}
+
+static void _minus_minus(Request& r, MethodParams& params) {
+	VInt& vint=GET_SELF(r, VInt);
+	r.write(*new VInt(vint));
+	vint.inc(-1);
+}
+
 // from string.C
 extern const String* sql_result_string(Request& r, MethodParams& params, Value*& default_code);
 
@@ -97,19 +109,24 @@ MInt::MInt(): Methoded("int") {
 	// ^int.bool[default for ^string.bool compatibility]
 	add_native_method("bool", Method::CT_DYNAMIC, _bool, 0, 1);
 
-	// ^int.inc[] 
+	// ^int.inc[]
 	// ^int.inc[offset]
 	add_native_method("inc", Method::CT_DYNAMIC, _inc, 0, 1);
-	// ^int.dec[] 
+	// ^int.dec[]
 	// ^int.dec[offset]
 	add_native_method("dec", Method::CT_DYNAMIC, _dec, 0, 1);
-	// ^int.mul[k] 
+
+	// ^int.++[]
+	add_native_method("++", Method::CT_DYNAMIC, _plus_plus, 0, 0);
+	// ^int.--[]
+	add_native_method("--", Method::CT_DYNAMIC, _minus_minus, 0, 0);
+
+	// ^int.mul[k]
 	add_native_method("mul", Method::CT_DYNAMIC, _mul, 1, 1);
 	// ^int.div[d]
 	add_native_method("div", Method::CT_DYNAMIC, _div, 1, 1);
 	// ^int.mod[offset]
 	add_native_method("mod", Method::CT_DYNAMIC, _mod, 1, 1);
-
 
 	// ^int.format{format}
 	add_native_method("format", Method::CT_DYNAMIC, _string_format, 1, 1);
