@@ -1,3 +1,19 @@
+2026-05-06  moko
+
+	* operators.ru.txt, operators.txt: ^int/double.++[] and
+	  ^int/double.--[] documented (related to feature #1294)
+
+	* tests/: 063.html, results/063.processed: test for
+	  ^int/double.++[]  and ^int/double.--[] added (related to feature
+	  #1294)
+
+	* src/classes/: double.C, int.C: ^int/double.++[]  and
+	  ^int/double.--[] added (adopted Sumo patch, implements feature
+	  #1294)
+
+	* src/main/main.vcproj: pa_inline_hash.h added (related to feature
+	  #1293)
+
 2026-04-30  moko
 
 	* src/include/pa_inline_hash.h: PA_PROBE_LIMIT added (related to
