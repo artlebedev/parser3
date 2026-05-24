@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.439 2026/04/25 13:38:46 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.440 2026/05/24 14:16:27 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -803,7 +803,7 @@ static void parse_range(const String* s, Array<Range> &ar) {
 		if(*p >= '0' && *p <= '9'){
 			const char *n=p;
 			while(*p>='0' && *p<='9') p++;
-			r.start = pa_atoul(pa_strdup(n, p-n));
+			r.start = pa_atoul(pa_strdup(n, p-n)); // ((uint64_t)-1) is treated as UNSET
 		}
 
 		while(*p==' ' || *p=='\t') p++;
@@ -815,7 +815,7 @@ static void parse_range(const String* s, Array<Range> &ar) {
 		if(*p >= '0' && *p <= '9'){
 			const char *n=p;
 			while(*p>='0' && *p<='9') p++;
-			r.end = pa_atoul(pa_strdup(n, p-n));
+			r.end = pa_atoul(pa_strdup(n, p-n)); // ((uint64_t)-1) is treated as UNSET
 		}
 
 		while(*p==' ' || *p=='\t') p++;
@@ -873,6 +873,8 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 				return SAPI::send_error(r.sapi_info, "", "416");
 
 			if(rg.start == UNSET && rg.end != UNSET){
+				if(rg.end == 0)
+					return SAPI::send_error(r.sapi_info, "", "416");
 				if(rg.end > content_length)
 					rg.end = content_length;
 				rg.start = content_length - rg.end;
