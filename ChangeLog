@@ -1,3 +1,9 @@
+2026-05-24  moko
+
+	* src/main/pa_request.C, tests/httpd/041.txt, tests/httpd/042.txt,
+	  tests/httpd/043.txt, tests/httpd/ok.log: more range check tests
+	  added
+
 2026-05-06  moko
 
 	* operators.ru.txt, operators.txt: ^int/double.++[] and
