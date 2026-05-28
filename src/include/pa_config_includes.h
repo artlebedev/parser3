@@ -239,6 +239,7 @@ inline size_t min(size_t a, size_t b){ return a<b ? a : b; }
 #pragma clang diagnostic ignored "-Wparentheses"         // if(a=b)
 #pragma clang diagnostic ignored "-Wpointer-sign"        // CORD (unsigned char *) to char * in libcord
 #pragma clang diagnostic ignored "-Winline-new-delete"   // test for regular new/delete usage in memory.h
+#pragma clang diagnostic ignored "-Winvalid-offsetof"    // intentional container_of-style offsetof(Pair,next) in OrderedHash reverse iterator
 
 #elif defined(__GNUC__) && (__GNUC__ >= 7)
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"  // case without break
