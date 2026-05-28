@@ -8,7 +8,7 @@
 #ifndef PA_INLINE_HASH_H
 #define PA_INLINE_HASH_H
 
-#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.7 2026/04/30 16:06:48 moko Exp $"
+#define IDENT_PA_INLINE_HASH_H "$Id: pa_inline_hash.h,v 1.8 2026/05/28 14:29:56 moko Exp $"
 
 #include "pa_hash.h"
 
@@ -20,7 +20,8 @@
 template<typename V> class InlineHashString: public PA_Object {
 public:
 
-	InlineHashString() : fkeys{}, foverflow(0) {
+	InlineHashString() : foverflow(0) {
+		memset(fkeys, 0, sizeof(fkeys));
 	}
 
 	~InlineHashString() {
