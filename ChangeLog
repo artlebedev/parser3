@@ -1,3 +1,11 @@
+2026-05-28  moko
+
+	* src/include/pa_config_includes.h: warnings war
+
+	* src/classes/classes.h: warnings war
+
+	* src/include/pa_inline_hash.h: fix for old gcc
+
 2026-05-24  moko
 
 	* src/main/pa_request.C, tests/httpd/041.txt, tests/httpd/042.txt,
