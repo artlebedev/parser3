@@ -1,8 +1,10 @@
 Set-Cookie: a=a-value; expires=Tue, 25 Feb 2003 21:00:00 GMT; path=/
 Set-Cookie: b=b-value; expires=Wed, 19 Feb 2003 21:00:00 GMT; path=/
 Set-Cookie: s=session-value; path=/
+Set-Cookie: s2=value2; path=/
+Set-Cookie: s3=value3; path=/
 Content-Type: text/html
-Content-Length: 317
+Content-Length: 411
 
 e1: Exception type: number.format,
 Source: zzz,
@@ -21,5 +23,13 @@ Source: x
 	"s":{
 		"value":"session-value",
 		"expires":"session"
+	},
+	"s2":{
+		"value":"value2",
+		"expires":0
+	},
+	"s3":{
+		"value":"value3",
+		"expires":"0"
 	}
 }

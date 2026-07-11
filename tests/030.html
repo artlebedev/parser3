@@ -13,6 +13,19 @@ $cookie:s[
 	$.expires[session]
 ]
 
+$cookie:s2[
+	$.value[value2]
+	$.expires(0)
+]
+
+$cookie:s3[
+	$.value[value3]
+	$.expires[0]
+]
+
+# $cookie:name4[ $.value[value4] ] - expires 90 days
+# $cookie:name5[value5] - expires 90 days
+
 e1: ^try-catch{
 	$cookie:z[
 		$.value[zzz-value]
