@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl.h,v 1.5 2017/11/26 21:24:07 moko Exp $
+ * $Id: curl.h,v 1.6 2026/07/13 21:42:16 moko Exp $
  ***************************************************************************/
 
 /*
@@ -144,6 +144,9 @@ typedef enum {
                                     7.19.0) */
   CURL_LAST /* never use! */
 } CURLcode;
+
+/* the minimum CURLOPT_ERRORBUFFER size, error messages are truncated to fit */
+#define CURL_ERROR_SIZE 256
 
 
 /* long may be 32 or 64 bits, but we should never depend on anything else

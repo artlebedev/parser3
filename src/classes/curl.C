@@ -18,7 +18,7 @@
 #include "pa_http.h" 
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.78 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.79 2026/07/13 21:42:16 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -739,6 +739,9 @@ static void _curl_load_action(Request& r, MethodParams& params){
 	CURL_SETOPT(CURLOPT_WRITEFUNCTION, curl_writer, "curl writer function");
 	CURL_SETOPT(CURLOPT_WRITEDATA, &body, "curl write buffer");
 
+	char error[CURL_ERROR_SIZE+1]="";
+	CURL_SETOPT(CURLOPT_ERRORBUFFER, error, "curl error buffer");
+
 	if(options().is_post && !options().has_content_length){
 		// libcurl bug walkaround. Prior to 7.38 (Debian Jessie) curl passed Content-length: -1
 		// after that no Content-length header is passed, that hangs request to nginx.
@@ -767,7 +770,7 @@ static void _curl_load_action(Request& r, MethodParams& params){
 				check_file_size(response.content_length, new String(options().url)); break;
 			default: break;
 		}
-		throw Exception( PA_DEFAULT(ex_type, "curl.fail"), new String(options().url), "%s", f_curl_easy_strerror(res));
+		throw Exception( PA_DEFAULT(ex_type, "curl.fail"), new String(options().url), "%s", error[0] ? error : f_curl_easy_strerror(res));
 	}
 
 	// assure trailing zero
