@@ -1,3 +1,10 @@
+2026-07-11  moko
+
+	* tests/: 030.html, results/030.processed: cookie $.expires(0) test
+	  added (code coverage)
+
+	* operators.txt: translation fixed
+
 2026-05-28  moko
 
 	* src/include/pa_config_includes.h: warnings war
