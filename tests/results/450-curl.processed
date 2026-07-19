@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1843
+Content-Length: 1911
 
 1. curl resolve exception:
 Exception type: curl.host,
@@ -23,8 +23,9 @@ status: 200, size: 61
 4. 'parser' mode can be set outside of 'session' operator:
 status: 200, size: 61
 5. explicit entries have priority over 'parser' mode:
-Exception type: curl.connect,
+connects to rol8: Exception type: curl.connect,
 Source: http://www.parser.ru/_/tests/readme
+parser resolves to real IP: status: 200, size: 61
 6. revert to 'curl' mode:
 Exception type: curl.host,
 Source: http://www.parser.ru/_/tests/readme,

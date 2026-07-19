@@ -32,8 +32,10 @@ $status:limit-nproc(1)
 
 5. explicit entries have priority over 'parser' mode:
   ^curl:session{
-    ^curl:options[ $.resolve[ $.[www.parser.ru:56423][127.0.0.1] ] ]
-    ^try-catch-filtered{ ^load[ $.port[56423] ] }
+    ^curl:options[ $.resolve[ $.[www.parser.ru][195.218.200.197] ] ]
+    connects to rol8: ^try-catch-filtered{ ^load[] }
+    ^curl:options[ $.resolve[^hash::create[]] ]
+    parser resolves to real IP: ^load[]
   }
 
 6. revert to 'curl' mode:
