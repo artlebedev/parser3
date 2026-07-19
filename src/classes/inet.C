@@ -14,7 +14,7 @@
 #include "ws2tcpip.h"
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.21 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.22 2026/07/19 14:25:42 moko Exp $";
 
 class MInet: public Methoded {
 public:
@@ -127,6 +127,40 @@ static void _ip2name(Request& r, MethodParams& params){
 	}
 }
 
+// also used in curl.C, returns first address or fills the table if not null
+const char *pa_name2ip(const char *name, int family, Table *table, const char *exception_type){
+	struct addrinfo hints, *info;
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_family=family;
+	hints.ai_socktype=SOCK_STREAM;
+
+	int error=getaddrinfo(name, NULL, &hints, &info);
+
+	if(error)
+		throw Exception(exception_type, 0, "Can't resolve domain name '%s': %s", name, gai_strerror(error));
+
+	const char *result=0;
+	char hbuf[INET6_ADDRSTRLEN];
+
+	for(struct addrinfo *cur=info; cur; cur=cur->ai_next) {
+		if(error=getnameinfo(cur->ai_addr, cur->ai_addrlen, hbuf, sizeof(hbuf), NULL, 0, NI_NUMERICHOST))
+			throw Exception(exception_type, 0, "Can't translate address: %s", gai_strerror(error));
+		if(table){
+			Table::element_type row(new ArrayString());
+			static const String sv4("4"), sv6("6"), sunknown("unknown");
+			*row+=new String(pa_strdup(hbuf), String::L_TAINTED);
+			*row+=cur->ai_family == AF_INET ? &sv4 : cur->ai_family == AF_INET6 ? &sv6 : &sunknown;
+			*table+=row;
+		} else {
+			result=pa_strdup(hbuf);
+			break;
+		}
+	}
+
+	freeaddrinfo(info);
+	return result;
+}
+
 static void _name2ip(Request& r, MethodParams& params){
 	const String sname=params.as_string(0, PARAMETER_MUST_BE_STRING);
 	if(sname.is_empty())
@@ -134,18 +168,14 @@ static void _name2ip(Request& r, MethodParams& params){
 
 	const char* name_cstr=pa_idna_encode(sname.cstr(), r.charsets.source());
 
-	struct addrinfo hints, *info;
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family=AF_INET;
-	hints.ai_socktype=SOCK_STREAM;
-
+	int family=AF_INET;
 	Table *table=NULL;
 
 	if(params.count() == 2)
 		if(HashStringValue* options=params.as_hash(1)){
 			int valid_options=0;
 			if(Value* value=options->get("ipv")){
-				hints.ai_family=ipv_format(r.process(*value).as_string());
+				family=ipv_format(r.process(*value).as_string());
 				valid_options++;
 			}
 			if(Value* value=options->get("table")){
@@ -161,33 +191,11 @@ static void _name2ip(Request& r, MethodParams& params){
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
-	int error=getaddrinfo(name_cstr, NULL, &hints, &info);
-
-	if(error)
-		throw Exception(PARSER_RUNTIME, 0, "Can't resolve domain name '%s': %s", name_cstr, gai_strerror(error));
-
-	char hbuf[INET6_ADDRSTRLEN];
-
-	for(struct addrinfo *cur=info; cur; cur=cur->ai_next) {
-		if(error=getnameinfo(cur->ai_addr, cur->ai_addrlen, hbuf, sizeof(hbuf), NULL, 0, NI_NUMERICHOST))
-			throw Exception(PARSER_RUNTIME, 0, "Can't translate address: %s", gai_strerror(error));
-		String *saddr=new String(pa_strdup(hbuf), String::L_TAINTED);
-		if(table){
-			Table::element_type row(new ArrayString());
-			static const String sv4("4"), sv6("6"), sunknown("unknown");
-			*row+=saddr;
-			*row+=cur->ai_family == AF_INET ? &sv4 : cur->ai_family == AF_INET6 ? &sv6 : &sunknown;
-			*table+=row;
-		} else {
-			r.write(*saddr);
-			break;
-		}
-	}
+	if(const char *ip=pa_name2ip(name_cstr, family, table, PARSER_RUNTIME))
+		r.write(*new String(ip, String::L_TAINTED));
 
 	if(table)
 		r.write(*new VTable(table));
-
-	freeaddrinfo(info);
 }
 
 static void _hostname(Request& r, MethodParams&){
