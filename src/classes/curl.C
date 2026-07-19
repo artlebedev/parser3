@@ -18,7 +18,11 @@
 #include "pa_http.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.81 2026/07/19 19:42:00 moko Exp $";
+#ifdef _MSC_VER
+#include "winsock2.h" // AF_INET & co
+#endif
+
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.82 2026/07/19 20:25:15 moko Exp $";
 
 class MCurl: public Methoded {
 public:
