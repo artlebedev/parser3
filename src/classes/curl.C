@@ -15,10 +15,10 @@
 #include "pa_vdate.h"
 #include "pa_vtable.h"
 #include "pa_common.h"
-#include "pa_http.h" 
+#include "pa_http.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.79 2026/07/13 21:42:16 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.80 2026/07/19 19:06:14 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -44,7 +44,7 @@ typedef void (*t_curl_formfree)(struct curl_httppost *form); t_curl_formfree f_c
 
 #define GLINK(name) f_##name=(t_##name)lt_dlsym(handle, #name);
 #define DLINK(name) GLINK(name) if(!f_##name) return "function " #name " was not found";
-		
+
 static const char *dlink(char *dlopen_file_spec) {
 	pa_dlinit();
 
@@ -74,6 +74,16 @@ static const char *dlink(char *dlopen_file_spec) {
 	return 0;
 }
 
+#ifdef WIN32
+#define CURL_LIBRARY "libcurl" LT_MODULE_EXT
+#else
+#define CURL_LIBRARY "libcurl" LT_MODULE_EXT ",libcurl" LT_MODULE_EXT ".4"
+#endif
+
+// 'parser' options can be set outside of 'session' operator
+const char *curl_library=CURL_LIBRARY;
+bool curl_parser_resolve = false;
+
 
 struct ParserOptions : public PA_Allocated {
 	// real options
@@ -87,13 +97,20 @@ struct ParserOptions : public PA_Allocated {
 	struct curl_httppost *f_post;
 	FILE *f_stderr;
 
+	// resolving
+	struct curl_slist *resolve;
+	bool parser_resolve;
+	long resolve_family;
+	long port;
+
 	// if response content-length check required
 	bool no_body;
 	// stuff to walkaround curl request content-length bugs
 	bool is_post;
 	bool has_content_length;
 
-	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0), no_body(false), is_post(false), has_content_length(false){}
+	ParserOptions() : filename(0), content_type(0), is_text(true), charset(0), response_charset(0), url(0), f_post(0), f_stderr(0), resolve(0),
+			  parser_resolve(curl_parser_resolve), resolve_family(CURL_IPRESOLVE_V4), port(0), no_body(false), is_post(false), has_content_length(false){}
 	~ParserOptions() {
 		f_curl_formfree(f_post);
 		if(f_stderr)
@@ -141,16 +158,8 @@ public:
 	}
 };
 
-#ifdef WIN32
-#define CURL_LIBRARY "libcurl" LT_MODULE_EXT
-#else
-#define CURL_LIBRARY "libcurl" LT_MODULE_EXT ",libcurl" LT_MODULE_EXT ".4"
-#endif
-
 bool curl_linked = false;
 const char *curl_status = 0;
-
-const char *curl_library=CURL_LIBRARY;
 
 static void temp_curl(void (*action)(Request&, MethodParams&), Request& r, MethodParams& params){
 	if(!curl_linked)
@@ -195,6 +204,7 @@ struct CurlOption : public PA_Allocated{
 		CURL_POSTFIELDS,
 		CURL_FORM,
 		CURL_HEADERS,
+		CURL_RESOLVE,
 		CURL_FILE,
 		CURL_STDERR,
 		CURL_HTTP_VERSION,
@@ -241,6 +251,7 @@ public:
 		CURL_OPT(CURL_INT, FOLLOWLOCATION);
 		CURL_OPT(CURL_INT, UNRESTRICTED_AUTH);
 		CURL_OPT(CURL_INT, IPRESOLVE);
+		CURL_OPT(CURL_RESOLVE, RESOLVE);
 
 		CURL_OPT(CURL_POST, POST);
 		CURL_OPT(CURL_INT, HTTPGET);
@@ -389,6 +400,24 @@ static struct curl_slist *curl_headers(HashStringValue *value_hash, Request& r) 
 	return slist;
 }
 
+static struct curl_slist *curl_resolve(HashStringValue *value_hash) {
+	struct curl_slist *slist=NULL;
+
+	for(HashStringValue::Iterator i(*value_hash); i; i.next() ){
+		const char *key=i.key().cstr();
+		const String &address=i.value()->as_string();
+
+		if(address.is_empty() || strchr(key, ':')){
+			slist=f_curl_slist_append(slist, address.is_empty() ? key : pa_strcat(key, ":", address.cstr()) );
+		} else {
+			// port-less specification covers both http and https ports by default
+			slist=f_curl_slist_append(slist, pa_strcat(key, ":80:", address.cstr()) );
+			slist=f_curl_slist_append(slist, pa_strcat(key, ":443:", address.cstr()) );
+		}
+	}
+	return slist;
+}
+
 static const char* curl_transcode(const String &s, Request& r){
 	return options().charset ? Charset::transcode(s.cstr(), r.charsets.source(), *options().charset).cstr() : s.cstr();
 }
@@ -491,6 +520,10 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			// integer curl option
 			long value_int=(long)v.as_double();
 			res=f_curl_easy_setopt(curl(), opt->id, value_int);
+			if(opt->id==CURLOPT_PORT)
+				options().port=value_int; // can be used instead of :port in url, saving for 'parser' resolve mode
+			if(opt->id==CURLOPT_IPRESOLVE)
+				options().resolve_family=value_int;
 			break;
 		}
 		case CurlOption::CURL_NO_BODY:{
@@ -537,6 +570,29 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 			// http headers curl option
 			HashStringValue *value_hash=v.as_hash("failed to set option 'httpheader': value");
 			res=f_curl_easy_setopt(curl(), opt->id, value_hash ? curl_headers(value_hash, r) : 0);
+			break;
+		}
+		case CurlOption::CURL_RESOLVE:{
+			// 'curl|parser' resolver mode
+			if(const String* mode=v.get_string()){
+				bool parser_resolve;
+				if(*mode == "parser")
+					parser_resolve=true;
+				else if(*mode == "curl" || mode->is_empty())
+					parser_resolve=false;
+				else
+					throw Exception("curl", mode, "invalid resolve option value, must be 'parser' or 'curl'");
+
+				if(foptions)
+					foptions->parser_resolve=parser_resolve;
+				else
+					curl_parser_resolve=parser_resolve;
+				break;
+			}
+
+			// hash of $.[host:port][address[,address]] entries to populate DNS cache with, bypassing the resolver
+			HashStringValue *value_hash=v.as_hash("failed to set option 'resolve': value");
+			res=f_curl_easy_setopt(curl(), opt->id, options().resolve=curl_resolve(value_hash));
 			break;
 		}
 		case CurlOption::CURL_FILE:{
@@ -724,6 +780,61 @@ static int curl_header(char *data, size_t size, size_t nmemb, HTTP_Headers *resu
 		throw Exception("curl", 0, "failed to set " message ": %s", f_curl_easy_strerror(res)); \
 	}
 
+// defined in inet.C
+const char *pa_name2ip(const char *name, int family, Table *table, const char *exception_type);
+
+static void pa_curl_parser_resolve(){
+	const char *url=options().url;
+	if(!url)
+		return;
+
+	// url scheme was validated to be http:// or https:// before
+	bool is_http=!pa_strncasecmp(url, "http://");
+
+	char *host=pa_strdup(url+(is_http ? 7 : 8));
+	if(char *uri=strpbrk(host, "/?#"))
+		*uri=0;
+
+	char *name=host;
+	if(char *userinfo_host=lsplit(name, '@'))
+		name=userinfo_host;
+
+	if(*name=='[') // no resolving for IPv6 literal
+		return;
+
+	long port=options().port;
+	if(char *port_cstr=lsplit(name, ':'))
+		if(!port)
+			port=atol(port_cstr);
+	if(!port)
+		port=is_http ? 80 : 443;
+
+	if(!*name)
+		return;
+
+	const char *prefix=pa_strcat(name, ":", pa_itoa(port));
+	size_t prefix_length=strlen(prefix);
+
+	// explicit entries have priority over auto-resolving + last duplicate wins in curl, so we should check
+	for(struct curl_slist *e=options().resolve; e; e=e->next){
+		const char *data=e->data;
+		// support optional '+host:port:address' curl 7.75+ syntax, '-host:port' should not match
+		if(*data=='+')
+			data++;
+		if(!pa_strncasecmp(data, prefix, prefix_length) && data[prefix_length]==':')
+			return;
+	}
+
+	int family=options().resolve_family==CURL_IPRESOLVE_V4 ? AF_INET : options().resolve_family==CURL_IPRESOLVE_V6 ? AF_INET6 : AF_UNSPEC;
+	const char *address=pa_name2ip(name, family, 0, "curl.host");
+	if(!address)
+		return;
+
+	options().resolve=f_curl_slist_append(options().resolve, pa_strcat(prefix, ":", address));
+	CURLcode res;
+	CURL_SETOPT(CURLOPT_RESOLVE, options().resolve, "curl resolve list");
+}
+
 static void _curl_load_action(Request& r, MethodParams& params){
 	if(params.count()==1)
 		_curl_options(r, params);
@@ -747,6 +858,9 @@ static void _curl_load_action(Request& r, MethodParams& params){
 		// after that no Content-length header is passed, that hangs request to nginx.
 		CURL_SETOPT(CURLOPT_POSTFIELDSIZE, 0, "post content-length");
 	}
+
+	if(options().parser_resolve)
+		pa_curl_parser_resolve();
 
 	ALTER_EXCEPTION_SOURCE(res=f_curl_easy_perform(curl()), new String(options().url));
 	if(res != CURLE_OK){
