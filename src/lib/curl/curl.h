@@ -20,7 +20,7 @@
  * This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY
  * KIND, either express or implied.
  *
- * $Id: curl.h,v 1.6 2026/07/13 21:42:16 moko Exp $
+ * $Id: curl.h,v 1.7 2026/07/19 19:14:55 moko Exp $
  ***************************************************************************/
 
 /*
@@ -33,6 +33,12 @@
 
 
 typedef struct CURL CURL;
+
+/* linked-list structure for the CURLOPT_QUOTE option (and other) */
+struct curl_slist {
+  char *data;
+  struct curl_slist *next;
+};
 
 typedef enum {
   CURLE_OK = 0,
@@ -793,6 +799,10 @@ typedef enum {
 
   /* set the SSH host key callback custom pointer */
   CINIT(SSH_KEYDATA, OBJECTPOINT, 185),
+
+  /* linked-list of host:port:address entries to populate the DNS cache with,
+     bypassing the resolver (added in 7.21.3) */
+  CINIT(RESOLVE, OBJECTPOINT, 203),
 
   CURLOPT_LASTENTRY /* the last unused */
 } CURLoption;
