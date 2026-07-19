@@ -18,7 +18,7 @@
 #include "pa_http.h"
 #include "ltdl.h"
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.80 2026/07/19 19:06:14 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.81 2026/07/19 19:42:00 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -592,7 +592,7 @@ static void curl_setopt(HashStringValue::key_type key, HashStringValue::value_ty
 
 			// hash of $.[host:port][address[,address]] entries to populate DNS cache with, bypassing the resolver
 			HashStringValue *value_hash=v.as_hash("failed to set option 'resolve': value");
-			res=f_curl_easy_setopt(curl(), opt->id, options().resolve=curl_resolve(value_hash));
+			res=f_curl_easy_setopt(curl(), opt->id, options().resolve=value_hash ? curl_resolve(value_hash) : 0);
 			break;
 		}
 		case CurlOption::CURL_FILE:{
