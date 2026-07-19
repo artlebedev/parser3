@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 3817
+Content-Length: 3912
 
 1. slow test result:
 {
@@ -169,23 +169,23 @@ Comment: content size of 10000000000 bytes exceeds the limit (536870912 bytes)
 8. invalid-status test result:
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?invalid-status,
-Comment: Unsupported protocol
+Comment: Unsupported HTTP/1 subversion in response
 9. no-status-1 test result:
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-1,
-Comment: Unsupported protocol
+Comment: Unsupported HTTP/1 subversion in response
 10. no-status-2 test result:
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-2,
-Comment: Unsupported protocol
+Comment: Unsupported HTTP/1 subversion in response
 11. no-status-3 test result:
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?no-status-3,
-Comment: Unsupported protocol
+Comment: Unsupported HTTP/1 subversion in response
 13. strange-content-length-1 test result:
 Exception type: curl.fail,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-1,
-Comment: Weird server reply
+Comment: Invalid Content-Length: value
 14. strange-content-length-2 test result:
 Exception type: number.format,
 Source: http://www.parser.ru/_/tests/nph-379.pl?strange-content-length-2,
