@@ -1,0 +1,68 @@
+@main[]
+
+1. curl resolve exception:
+  ^try-catch{ ^curl:load[ $.url[https://no-such-domain] ] }
+
+#resolve option tests: with the nproc limit set below, the curl threaded resolver
+#fails to start a getaddrinfo thread, so every request must be resolved
+#either via explicit resolve entries or via the 'parser' resolve mode
+
+$ip[^inet:name2ip[www.parser.ru]]
+$status:limit-nproc(1)
+
+1.2. parser resolve exception:
+  ^try-catch{ ^curl:load[ $.url[https://no-such-domain] $.resolve[parser] ] }
+
+1.3. detailed resolver error message from CURLOPT_ERRORBUFFER:
+  ^try-catch{ ^curl:load[ $.url[https://no-such-domain] ] }
+
+2. explicit resolve entries populate DNS cache bypassing the resolver:
+  ^load[ $.resolve[ $.[www.parser.ru:80][$ip] ] ]
+
+2.1. port-less entry covers both http and https:
+  ^load[ $.resolve[ $.[www.parser.ru][$ip] ] ]
+  ^load[ $.resolve[ $.[www.parser.ru][$ip] ] ;https://www.parser.ru/_/tests/readme]
+
+3. 'parser' mode resolves synchronously and populates the resolve list automatically:
+  ^load[ $.resolve[parser] ]
+
+4. 'parser' mode can be set outside of 'session' operator:
+  ^curl:options[ $.resolve[parser] ]
+  ^load[]
+
+5. explicit entries have priority over 'parser' mode:
+  ^curl:session{
+    ^curl:options[ $.resolve[ $.[www.parser.ru:56423][127.0.0.1] ] ]
+    ^try-catch-filtered{ ^load[ $.port[56423] ] }
+  }
+
+6. revert to 'curl' mode:
+  ^curl:options[ $.resolve[curl] ]
+  ^try-catch{ ^load[] }
+
+7. second load finds the entry added by the first one:
+  ^curl:session{
+    ^curl:options[ $.resolve[parser] ]
+    ^load[]
+    ^curl:options[ $.resolve[curl] ]
+    7.1. http OK: ^load[]
+    7.2. https fails (OK): ^try-catch{ ^load[;https://www.parser.ru/_/tests/readme] }
+  }
+
+8. port option is used instead of :port in url:
+  8.1. ^try-catch-filtered{ ^load[ $.resolve[parser] $.port(8080) ] }
+  ^curl:options[ $.resolve[parser] ]
+  8.2. ^load[;http://www.parser.ru:80/_/tests/readme]
+  8.3. ^try-catch-filtered{ ^load[ $.port(8080) ;http://www.parser.ru:80/_/tests/readme] }
+
+9. ^try-catch{ ^curl:options[ $.resolve[dns] ] }
+
+10. empty mode = 'curl' mode:
+  ^curl:options[ $.resolve[] ]
+  ^try-catch{ ^load[] }
+
+@load[options;url]
+^show[^curl:load[ $options $.url[^if(def $url){$url}{http://www.parser.ru/_/tests/readme}] $.timeout(4) ]]
+
+@show[f]
+status: $f.status, size: $f.size

@@ -1,0 +1,50 @@
+Content-Type: text/html
+Content-Length: 1843
+
+1. curl resolve exception:
+Exception type: curl.host,
+Source: https://no-such-domain,
+Comment: Could not resolve host: no-such-domain
+1.2. parser resolve exception:
+Exception type: curl.host,
+Source: load,
+Comment: Can't resolve domain name 'no-such-domain': Name or service not known
+1.3. detailed resolver error message from CURLOPT_ERRORBUFFER:
+Exception type: curl.host,
+Source: https://no-such-domain,
+Comment: getaddrinfo() thread failed to start
+2. explicit resolve entries populate DNS cache bypassing the resolver:
+status: 200, size: 61
+2.1. port-less entry covers both http and https:
+status: 200, size: 61
+status: 200, size: 61
+3. 'parser' mode resolves synchronously and populates the resolve list automatically:
+status: 200, size: 61
+4. 'parser' mode can be set outside of 'session' operator:
+status: 200, size: 61
+5. explicit entries have priority over 'parser' mode:
+Exception type: curl.connect,
+Source: http://www.parser.ru/_/tests/readme
+6. revert to 'curl' mode:
+Exception type: curl.host,
+Source: http://www.parser.ru/_/tests/readme,
+Comment: getaddrinfo() thread failed to start
+7. second load finds the entry added by the first one:
+status: 200, size: 61
+7.1. http OK: status: 200, size: 61
+7.2. https fails (OK): Exception type: curl.host,
+Source: https://www.parser.ru/_/tests/readme,
+Comment: getaddrinfo() thread failed to start
+8. port option is used instead of :port in url:
+8.1. Exception type: curl.connect,
+Source: http://www.parser.ru/_/tests/readme
+8.2. status: 200, size: 61
+8.3. Exception type: curl.connect,
+Source: http://www.parser.ru:80/_/tests/readme
+9. Exception type: curl,
+Source: dns,
+Comment: invalid resolve option value, must be 'parser' or 'curl'
+10. empty mode = 'curl' mode:
+Exception type: curl.host,
+Source: http://www.parser.ru/_/tests/readme,
+Comment: getaddrinfo() thread failed to start
