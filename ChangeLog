@@ -1,3 +1,36 @@
+2026-07-19  moko
+
+	* src/classes/curl.C: win32 compatibility (related to feature
+	  #1295)
+
+	* tests/: 450-curl.html, results/450-curl.processed:
+	  $.resolve[^hash::create[]] test added (related to feature #1295)
+
+	* tests/results/379-curl.processed: curl test results actualized
+	  after ERRORBUFFER was used
+
+	* src/classes/curl.C: check for empty hash added (related to
+	  feature #1295)
+
+	* src/lib/curl/curl.h: curl_slist + CURLOPT_RESOLVE added (related
+	  to feature #1295)
+
+	* tests/: 450-curl.html, results/450-curl.processed: tests for curl
+	  $.resolve option added (related to feature #1295)
+
+	* src/classes/curl.C: curl $.resolve[curl|parser] parser option
+	  added to avoid getaddrinfo() curl thread creation; $.resolve[
+	  $.[domain.name][ip] or $.[domain.name:port][ip] ] curl option
+	  also added (implements feature #1295)
+
+	* src/classes/inet.C: pa_name2ip extracted to be used in curl.C
+	  (related to feature #1295)
+
+2026-07-14  moko
+
+	* src/: classes/curl.C, lib/curl/curl.h: CURLOPT_ERRORBUFFER used
+	  to get more detailed error description (related to feature #1295)
+
 2026-07-11  moko
 
 	* tests/: 030.html, results/030.processed: cookie $.expires(0) test
