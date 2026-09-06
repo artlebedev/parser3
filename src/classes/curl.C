@@ -22,7 +22,7 @@
 #include "winsock2.h" // AF_INET & co
 #endif
 
-volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.82 2026/07/19 20:25:15 moko Exp $";
+volatile const char * IDENT_CURL_C="$Id: curl.C,v 1.83 2026/09/06 21:30:54 moko Exp $";
 
 class MCurl: public Methoded {
 public:
@@ -426,35 +426,47 @@ static const char* curl_transcode(const String &s, Request& r){
 	return options().charset ? Charset::transcode(s.cstr(), r.charsets.source(), *options().charset).cstr() : s.cstr();
 }
 
+static bool curl_form_element(struct curl_httppost **f_last, const char *key, HashStringValue::value_type value, Request& r){
+	if(const String* svalue = value->get_string()){
+		f_curl_formadd(&options().f_post, f_last,
+			CURLFORM_PTRNAME, key,
+			CURLFORM_PTRCONTENTS, curl_transcode(String(svalue->cstr()), r),
+			CURLFORM_END);
+	} else if(VFile* fvalue = dynamic_cast<VFile *>(value)){
+		f_curl_formadd(&options().f_post, f_last,
+			CURLFORM_PTRNAME, key,
+			CURLFORM_BUFFER, curl_transcode(String(fvalue->fields().get("name")->as_string(), String::L_FILE_SPEC), r),
+			CURLFORM_BUFFERLENGTH, (long)fvalue->value_size(),
+			CURLFORM_BUFFERPTR, fvalue->value_ptr(),
+			CURLFORM_CONTENTTYPE, fvalue->fields().get("content-type")->as_string().taint_cstr(String::L_URI),
+			CURLFORM_END);
+	} else {
+		return false;
+	}
+	return true;
+}
+
 static void curl_form(HashStringValue *value_hash, Request& r){ 
 	struct curl_httppost *f_last=0;
 	for(HashStringValue::Iterator i(*value_hash); i; i.next() ){
 		const char *key = curl_transcode(String(i.key().cstr()), r);
-		if(const String* svalue = i.value()->get_string()){ 
-			// string
-			f_curl_formadd(&options().f_post, &f_last, 
-				CURLFORM_PTRNAME, key,
-				CURLFORM_PTRCONTENTS, curl_transcode(String(svalue->cstr()), r), 
-				CURLFORM_END);
+		if(curl_form_element(&f_last, key, i.value(), r)){
+			// string or file
 		} else if(Table* tvalue = i.value()->get_table()){
-			// table
+			// table: a row per value
 			for(size_t t = 0; t < tvalue->count(); t++) {
 				f_curl_formadd(&options().f_post, &f_last, 
 					CURLFORM_PTRNAME, key,
 					CURLFORM_PTRCONTENTS, curl_transcode(String(tvalue->get(t)->get(0)->cstr()), r), 
 					CURLFORM_END);
 			}
-		} else if(VFile* fvalue=dynamic_cast<VFile *>(i.value())){
-			// file
-			f_curl_formadd(&options().f_post, &f_last, 
-				CURLFORM_PTRNAME, key,
-				CURLFORM_BUFFER, curl_transcode(String(fvalue->fields().get("name")->as_string(), String::L_FILE_SPEC), r),
-				CURLFORM_BUFFERLENGTH, (long)fvalue->value_size(), 
-				CURLFORM_BUFFERPTR, fvalue->value_ptr(), 
-				CURLFORM_CONTENTTYPE, fvalue->fields().get("content-type")->as_string().taint_cstr(String::L_URI), 
-				CURLFORM_END);
+		} else if(HashStringValue* hvalue = i.value()->get_hash()){
+			// hash or array: multiple strings/files
+			for(HashStringValue::Iterator j(*hvalue); j; j.next() )
+				if(!curl_form_element(&f_last, key, j.value(), r))
+					throw Exception("curl", new String(j.key(), String::L_TAINTED), "is %s, multiple values of form field '%s' must be strings or files", j.value()->type(), key);
 		} else {
-			throw Exception("curl", new String(i.key(), String::L_TAINTED), "is %s, form option value can be string, table or file only", i.value()->type());
+			throw Exception("curl", new String(i.key(), String::L_TAINTED), "is %s, form field value can be string, table, file, hash or array", i.value()->type());
 		}
 	}
 }

@@ -14,7 +14,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.135 2026/04/25 13:38:46 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.136 2026/09/06 21:30:54 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -530,17 +530,31 @@ static void form_table_value2part(Table::element_type row, FormPart* part) {
 	form_string_value2part(part->info->key, *row->get(0), *part);
 }
 
-static void form_value2part(HashStringValue::key_type key, HashStringValue::value_type value, FormPart& part) {
-	if(const String* svalue=value->get_string())
+static bool form_element_value2part(HashStringValue::key_type key, HashStringValue::value_type value, FormPart& part) {
+	if(const String* svalue=value->get_string()){
 		form_string_value2part(key, *svalue, part);
-	else if(Table* tvalue=value->get_table()) {
+	} else if(VFile* vfile=dynamic_cast<VFile *>(value)){
+		form_file_value2part(key, *vfile, part);
+	} else {
+		return false;
+	}
+	return true;
+}
+
+static void form_value2part(HashStringValue::key_type key, HashStringValue::value_type value, FormPart& part) {
+	if(form_element_value2part(key, value, part)) {
+		// string or file
+	} else if(Table* tvalue=value->get_table()) {
 		Form_table_value2string_info info(key, *part.string);
 		part.info = &info;
 		tvalue->for_each(form_table_value2part, &part);
-	} else if(VFile* vfile=dynamic_cast<VFile *>(value)){
-		form_file_value2part(key, *vfile, part);
+	} else if(HashStringValue* hvalue=value->get_hash()){
+		// hash or array: several strings/files under the same field name
+		for(HashStringValue::Iterator j(*hvalue); j; j.next())
+			if(!form_element_value2part(key, j.value(), part))
+				throw Exception(PARSER_RUNTIME, new String(j.key(), String::L_TAINTED), "is %s, multiple values of " HTTP_FORM_NAME " field '%s' must be strings or files", j.value()->type(), key.cstr());
 	} else
-		throw Exception(PARSER_RUNTIME, new String(key, String::L_TAINTED), "is %s, " HTTP_FORM_NAME " option value can be string, table or file only", value->type());
+		throw Exception(PARSER_RUNTIME, new String(key, String::L_TAINTED), "is %s, " HTTP_FORM_NAME " field value can be string, table, file, hash or array", value->type());
 }
 
 const char* pa_form2string_multipart(HashStringValue& form, Request& r, const char* boundary, size_t& post_size){
