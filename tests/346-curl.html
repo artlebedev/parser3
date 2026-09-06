@@ -10,7 +10,7 @@
 
 ^curl:session{
 	6. ^try-catch{ ^curl:options[ $.url[ftp://parser.ru/] ] }
-	7. ^try-catch{ ^curl:options[ $.httppost[ $.name[ $.hash[] ]] ] }
+	7. ^try-catch{ ^curl:options[ $.httppost[ $.name(true) ] ] }
 	8. ^try-catch{ ^curl:options[ $.httppost[string] ] }
 	8.1. ^try-catch{ ^curl:options[ $.httppost{code} ] }
 

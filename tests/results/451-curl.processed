@@ -1,0 +1,103 @@
+Content-Type: text/html
+Content-Length: 2832
+
+1. <h2>curl</h2>
+--------------------------boundary-value
+Content-Disposition: form-data; name="f1_str"
+
+plain field
+--------------------------boundary-value
+Content-Disposition: form-data; name="f2_doc"; filename="a.txt"
+Content-Type: application/octet-stream
+
+aaa file A
+--------------------------boundary-value
+Content-Disposition: form-data; name="f3_tbl"
+
+row-1
+--------------------------boundary-value
+Content-Disposition: form-data; name="f3_tbl"
+
+row-2
+--------------------------boundary-value
+Content-Disposition: form-data; name="f4_files"; filename="a.txt"
+Content-Type: application/octet-stream
+
+aaa file A
+--------------------------boundary-value
+Content-Disposition: form-data; name="f4_files"; filename="b.txt"
+Content-Type: application/octet-stream
+
+bbb file B
+--------------------------boundary-value
+Content-Disposition: form-data; name="f5_pair"
+
+one
+--------------------------boundary-value
+Content-Disposition: form-data; name="f5_pair"
+
+two
+--------------------------boundary-value
+Content-Disposition: form-data; name="f6_mixed"; filename="b.txt"
+Content-Type: application/octet-stream
+
+bbb file B
+--------------------------boundary-value
+Content-Disposition: form-data; name="f6_mixed"
+
+mixed string
+--------------------------boundary-value--
+
+<hr />
+2. <h2>file</h2>
+------------boundary-value
+Content-Disposition: form-data; name="f1_str"
+
+plain field
+------------boundary-value
+Content-Disposition: form-data; name="f2_doc"; filename="a.txt"
+Content-Type: application/octet-stream
+
+aaa file A
+------------boundary-value
+Content-Disposition: form-data; name="f3_tbl"
+
+row-1
+------------boundary-value
+Content-Disposition: form-data; name="f3_tbl"
+
+row-2
+------------boundary-value
+Content-Disposition: form-data; name="f4_files"; filename="a.txt"
+Content-Type: application/octet-stream
+
+aaa file A
+------------boundary-value
+Content-Disposition: form-data; name="f4_files"; filename="b.txt"
+Content-Type: application/octet-stream
+
+bbb file B
+------------boundary-value
+Content-Disposition: form-data; name="f5_pair"
+
+one
+------------boundary-value
+Content-Disposition: form-data; name="f5_pair"
+
+two
+------------boundary-value
+Content-Disposition: form-data; name="f6_mixed"; filename="b.txt"
+Content-Type: application/octet-stream
+
+bbb file B
+------------boundary-value
+Content-Disposition: form-data; name="f6_mixed"
+
+mixed string
+------------boundary-value--
+<hr />
+3. exceptions:
+3a: curl / bad element: Exception: is table, multiple values of form field 'field' must be strings or files
+3b: curl / unsupported: Exception: is bool, form field value can be string, table, file, hash or array
+3a: file / bad element: Exception: is table, multiple values of form field 'field' must be strings or files
+3b: file / unsupported: Exception: is bool, form field value can be string, table, file, hash or array

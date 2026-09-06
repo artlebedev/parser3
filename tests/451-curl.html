@@ -1,0 +1,54 @@
+@main[]
+$file_a[^file::create[text;a.txt;aaa file A]]
+$file_b[^file::create[text;b.txt;bbb file B]]
+
+$hForm[
+	$.f1_str[plain field]
+	$.f2_doc[$file_a]
+	$.f3_tbl[^table::create{col
+row-1
+row-2}]
+	$.f4_files[$file_a;$file_b]
+	$.f5_pair[one;two]
+	$.f6_mixed[
+		$.m_file[$file_b]
+		$.m_str[mixed string]
+	]
+]
+
+1. ^do[curl;$hForm]
+2. ^do[file;$hForm]
+
+3. exceptions:
+^errcases[curl]
+^errcases[file]
+
+@do[sLoader;hForm]
+<h2>$sLoader</h2>
+^body[^run[$sLoader;$hForm]]
+<hr />
+
+@run[sLoader;hForm]
+^if($sLoader eq 'curl'){
+	$f[^curl:load[
+		$.url[http://www.parser.ru/_/tests/223.pl]
+		$.timeout(4)
+		$.httppost[$hForm]
+	]]
+}{
+	$f[^file::load[text;http://www.parser.ru/_/tests/223.pl;
+		$.timeout(4)
+		$.method[POST]
+		$.enctype[multipart/form-data]
+		$.form[$hForm]
+	]]
+}
+$result[^taint[as-is][$f.text]]
+
+@body[s]
+$s[^s.match[POST:(.*)<EOF>][]{$result[^taint[as-is][$match.1]]}]
+$result[^result.match[(-{10,})-*[0-9a-zA-Z]+(--)?][g]{${match.1}boundary-value$match.2}]
+
+@errcases[sLoader]
+3a: $sLoader / bad element: ^try-catch-comment{ ^run[$sLoader;$.field[ $.k[^table::create{x}] ]] }
+3b: $sLoader / unsupported: ^try-catch-comment{ ^run[$sLoader;$.bool(1==1)] }
