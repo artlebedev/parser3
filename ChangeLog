@@ -1,3 +1,13 @@
+2026-09-07  moko
+
+	* tests/: 346-curl.html, 451-curl.html, results/346-curl.processed,
+	  results/451-curl.processed: test for curl and file::load accept a
+	  hash or array as a form field value (related to feature #1296)
+
+	* src/: classes/curl.C, main/pa_http.C: curl and file::load accept
+	  a hash or array as a form field value (implements multiple files
+	  per field support, feature #1296)
+
 2026-07-19  moko
 
 	* src/classes/curl.C: win32 compatibility (related to feature
