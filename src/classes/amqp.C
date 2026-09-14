@@ -23,7 +23,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.13 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.14 2026/09/14 22:56:51 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -330,7 +330,7 @@ static void _release(Request& r, MethodParams&) {
 
 static void _ack(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	double tag=params.as_double(0, "delivery tag must be number", r);
+	pa_wint tag=params.as_wint(0, "delivery tag must be number", r);
 	int ret = amqp_basic_ack(self.connection(), self.channel(), (uint64_t)tag, 0);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "ack failed");
@@ -338,7 +338,7 @@ static void _ack(Request& r, MethodParams& params) {
 
 static void _nack(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	const String &tag_s=params.as_string(0, "delivery tag must not be code");
+	pa_wint tag=params.as_wint(0, "delivery tag must be number", r);
 	bool requeue=false;
 	if(params.count()>1){
 		if(HashStringValue* options=params.as_hash(1)){
@@ -350,7 +350,7 @@ static void _nack(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	int ret = amqp_basic_nack(self.connection(), self.channel(), pa_atoul(tag_s.cstr()), 0, requeue);
+	int ret = amqp_basic_nack(self.connection(), self.channel(), (uint64_t)tag, 0, requeue);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "nack failed");
 }
@@ -376,7 +376,7 @@ static void _qos(Request& r, MethodParams& params) {
 
 static void _reject(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	const String &tag_s=params.as_string(0, "delivery tag must not be code");
+	pa_wint tag=params.as_wint(0, "delivery tag must be number", r);
 	bool requeue=true; // by default return to queue
 	if(params.count()>1){
 		if(HashStringValue* options = params.as_hash(1)){
@@ -388,7 +388,7 @@ static void _reject(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	int ret = amqp_basic_reject(self.connection(), self.channel(), pa_atoul(tag_s.cstr()), requeue);
+	int ret = amqp_basic_reject(self.connection(), self.channel(), (uint64_t)tag, requeue);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "reject failed");
 }
@@ -585,12 +585,22 @@ static VHash *amqp_message_hash(amqp_envelope_t &envelope) {
 	return result;
 }
 
+// timeout<0 - wait forever (NULL), timeout==0 - don't wait (poll), timeout>0 - wait up to timeout seconds
+static struct timeval* amqp_wait_tv(struct timeval& tv, int timeout){
+	if(timeout<0)
+		return NULL;
+	tv.tv_sec=timeout;
+	tv.tv_usec=0;
+	return &tv;
+}
+
 static void _consume(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	const char* queue_c=0;
 	const char* consumer_tag_c=0;
-	bool no_ack=true, exclusive=false;
-	int count=1;
+	bool no_ack=false, exclusive=false;
+	int count=1; bool count_specified=false;
+	int timeout=0; bool timeout_specified=false;
 	Junction* callback=0;
 
 	if(HashStringValue* options=params.as_hash(0)){
@@ -609,25 +619,40 @@ static void _consume(Request& r, MethodParams& params) {
 				exclusive=r.process(*value).as_bool();
 			} else if(key=="count"){
 				count=r.process(*value).as_int();
+				count_specified=true;
+			} else if(key=="timeout"){
+				timeout=r.process(*value).as_int();
+				timeout_specified=true;
 			} else
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 	}
 
 	if(!queue_c) throw Exception("amqp", 0, "queue must be specified");
+	if(count==0) throw Exception("amqp", 0, "count must not be zero");
+
+	// listen mode (callback): count/timeout unlimited by default - runs until stop_consume/timeout/error
+	// pull mode (no callback): count(1)/timeout(0) by default - returns whatever is ready right now
+	if(!count_specified)
+		count = callback ? -1 : 1;
+	if(!timeout_specified)
+		timeout = callback ? -1 : 0;
 
 	amqp_basic_consume_ok_t *ok = amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
 		consumer_tag_c ? amqp_cstring_bytes(consumer_tag_c) : amqp_empty_bytes,
 		0 /*no_local*/, no_ack, exclusive, amqp_empty_table);
 	check(amqp_get_rpc_reply(self.connection()));
 
+	struct timeval tv;
+
 	if(callback){
 		self.fstop=false;
-		while(!self.fstop){
+		for(int received=0; !self.fstop && (count<0 || received<count); received++){
 			amqp_envelope_t envelope;
 			memset(&envelope, 0, sizeof(envelope));
 			amqp_maybe_release_buffers(self.connection());
-			amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, NULL, 0);
+			// timeout is the max idle gap between messages, re-armed on every wait
+			amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, amqp_wait_tv(tv, timeout), 0);
 			if(res.reply_type == AMQP_RESPONSE_NORMAL){
 				VHash *vh=amqp_message_hash(envelope);
 				Value *params_cb[]={vh};
@@ -637,25 +662,29 @@ static void _consume(Request& r, MethodParams& params) {
 				});
 				amqp_destroy_envelope(&envelope);
 			} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
-				continue;
+				break; // idle too long - stop cleanly
 			} else {
-				break;
+				check(res); // real error - throw
 			}
 		}
 	} else {
 		VArray& result=*new VArray();
 		ArrayValue& result_array=result.array();
 
-		for(int i=0; i<count; i++){
+		for(int received=0; count<0 || received<count; received++){
 			amqp_envelope_t envelope;
 			memset(&envelope, 0, sizeof(envelope));
 			amqp_maybe_release_buffers(self.connection());
-			amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, NULL, 0);
+			// timeout applies only to the first message of the batch;
+			// the rest is drained with a non-blocking poll until nothing more is ready
+			amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, amqp_wait_tv(tv, received==0 ? timeout : 0), 0);
 			if(res.reply_type == AMQP_RESPONSE_NORMAL){
 				result_array+=amqp_message_hash(envelope);
 				amqp_destroy_envelope(&envelope);
+			} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
+				break; // nothing (more) ready - return what we have
 			} else {
-				check(res);
+				check(res); // real error - throw
 			}
 		}
 		r.write(result);
