@@ -8,7 +8,7 @@
 #ifndef PA_INT_H
 #define PA_INT_H
 
-#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.6 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_INT_H "$Id: pa_int.h,v 1.7 2026/09/15 20:48:14 moko Exp $"
 
 // includes
 
@@ -94,5 +94,9 @@ unsigned int pa_atoui(const char *str, int base=10, const String* problem_source
 uint64_t pa_atoul(const char *str, int base=10, const String* problem_source=0);
 
 const char* format_double(double value, const char *fmt);
+
+// comparing doubles with exact == is unreliable - compare by ULP-distance instead.
+#define ULP_EQ_DEFAULT_DIST 3
+bool ulp_eq_double(double a, double b, uint64_t max_ulp=ULP_EQ_DEFAULT_DIST);
 
 #endif

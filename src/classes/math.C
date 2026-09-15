@@ -10,6 +10,7 @@
 
 #include "pa_vmethod_frame.h"
 #include "pa_common.h"
+#include "pa_int.h"
 #include "pa_base64.h"
 #include "pa_vint.h"
 #include "pa_vmath.h"
@@ -23,7 +24,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.112 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.113 2026/09/15 20:48:14 moko Exp $";
 
 // defines
 
@@ -111,25 +112,13 @@ static void math2(Request& r, MethodParams& params, math2_func_ptr func) {
 MATH2(pow)
 MATH2(atan2)
 
-static inline uint64_t ulp_key_double(double x) {
-	union { double d; uint64_t u; } v; v.d = x;
-	return (v.u & (1ull << 63)) ? (~v.u + 1ull) : (v.u | (1ull << 63));
-}
-
-static inline uint64_t ulp_distance_double(double a, double b) {
-	if (a == b) return 0;
-	uint64_t ka = ulp_key_double(a);
-	uint64_t kb = ulp_key_double(b);
-	return (ka > kb) ? (ka - kb) : (kb - ka);
-}
-
 static void _eq(Request& r, MethodParams& params) {
 	double a=params.as_double(0, "parameter must be expression", r);
 	double b=params.as_double(1, "parameter must be expression", r);
-	uint64_t max_ulp=3;
+	uint64_t max_ulp=ULP_EQ_DEFAULT_DIST;
 	if(params.count() == 3)
 		max_ulp=params.as_int(2, "max distance must be integer", r);
-	r.write(VBool::get(ulp_distance_double(a,b)<=max_ulp));
+	r.write(VBool::get(ulp_eq_double(a, b, max_ulp)));
 }
 
 inline bool is_salt_body_char(unsigned char c) {

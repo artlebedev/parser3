@@ -8,11 +8,13 @@
 #include "pa_vmethod_frame.h"
 
 #include "pa_request.h"
+#include "pa_int.h"
 #include "pa_vstring.h"
 #include "pa_vhash.h"
 #include "pa_varray.h"
 #include "pa_vbool.h"
 #include "pa_vvoid.h"
+#include "pa_vdouble.h"
 #include "pa_vamqp.h"
 #include "pa_os.h"
 #include "pa_globals.h"
@@ -26,7 +28,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.17 2026/09/15 19:54:26 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.18 2026/09/15 20:48:14 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -269,8 +271,15 @@ static amqp_table_t amqp_build_arguments_table(Request& r, HashStringValue* argu
 			entries[i].value.kind = AMQP_FIELD_KIND_BOOLEAN;
 			entries[i].value.value.boolean = value.as_bool();
 		} else {
-			entries[i].value.kind = AMQP_FIELD_KIND_I64;
-			entries[i].value.value.i64 = (int64_t)value.as_wint();
+			double d = value.as_double();
+			double rounded = round(d);
+			if(ulp_eq_double(d, rounded)){
+				entries[i].value.kind = AMQP_FIELD_KIND_I64;
+				entries[i].value.value.i64 = (int64_t)rounded;
+			} else {
+				entries[i].value.kind = AMQP_FIELD_KIND_F64;
+				entries[i].value.value.f64 = d;
+			}
 		}
 		i++;
 	}
@@ -403,6 +412,10 @@ static void _publish(Request& r, MethodParams& params) {
 					const char* v=value->as_string().cstr();
 					props.app_id=amqp_cstring_bytes(v);
 					props._flags|=AMQP_BASIC_APP_ID_FLAG;
+				} else if(key=="cluster_id"){
+					const char* v=value->as_string().cstr();
+					props.cluster_id=amqp_cstring_bytes(v);
+					props._flags|=AMQP_BASIC_CLUSTER_ID_FLAG;
 				} else if(key=="headers"){
 					props.headers=amqp_build_arguments_table(r, value->get_hash());
 					props._flags|=AMQP_BASIC_HEADERS_FLAG;
@@ -773,6 +786,21 @@ static amqp_rpc_reply_t amqp_consume_message_checked(amqp_connection_state_t con
 	}
 }
 
+// Auto-object used for cancelling the consumer when the enclosing scope exits. A cancel failure here must
+// never mask whatever error is already propagating, so its result is discarded rather than check()ed.
+class Temp_amqp_consumer {
+public:
+	Temp_amqp_consumer(VAmqp& aself, const char* aconsumer_tag): self(aself), consumer_tag(aconsumer_tag) {}
+	~Temp_amqp_consumer() {
+		if(!consumer_tag || self.fstate != VAmqp::ALIVE) return;
+		amqp_basic_cancel(self.fconnection, self.fchannel, amqp_cstring_bytes(consumer_tag));
+		amqp_get_rpc_reply(self.fconnection);
+	}
+private:
+	VAmqp& self;
+	const char* consumer_tag;
+};
+
 static void _consume(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	const char* queue_c=0;
@@ -824,6 +852,7 @@ static void _consume(Request& r, MethodParams& params) {
 
 	// amqp_maybe_release_buffers() recycles ok->consumer_tag
 	const char* consumer_tag_copy = ok ? pa_strdup((const char*)ok->consumer_tag.bytes, ok->consumer_tag.len) : 0;
+	Temp_amqp_consumer cancel_consumer(self, consumer_tag_copy);
 
 	struct timeval tv;
 
@@ -870,11 +899,6 @@ static void _consume(Request& r, MethodParams& params) {
 			}
 		}
 		r.write(result);
-	}
-
-	if(ok){
-		amqp_basic_cancel(self.connection(), self.channel(), amqp_cstring_bytes(consumer_tag_copy));
-		check(self, amqp_get_rpc_reply(self.connection()));
 	}
 }
 

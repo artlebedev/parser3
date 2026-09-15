@@ -10,7 +10,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.9 2026/04/25 13:38:46 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.10 2026/09/15 20:48:14 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){
@@ -363,5 +363,21 @@ const char* format_double(double value, const char* fmt) {
 	}
 
 	return pa_strdup(local_buf, (size_t)size);
+}
+
+static uint64_t ulp_key_double(double x) {
+	union { double d; uint64_t u; } v; v.d = x;
+	return (v.u & (1ull << 63)) ? (~v.u + 1ull) : (v.u | (1ull << 63));
+}
+
+static uint64_t ulp_distance_double(double a, double b) {
+	if(a == b) return 0;
+	uint64_t ka = ulp_key_double(a);
+	uint64_t kb = ulp_key_double(b);
+	return (ka > kb) ? (ka - kb) : (kb - ka);
+}
+
+bool ulp_eq_double(double a, double b, uint64_t max_ulp) {
+	return ulp_distance_double(a, b) <= max_ulp;
 }
 
