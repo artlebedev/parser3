@@ -12,6 +12,7 @@
 #include "pa_vhash.h"
 #include "pa_varray.h"
 #include "pa_vbool.h"
+#include "pa_vvoid.h"
 #include "pa_vamqp.h"
 #include "pa_os.h"
 #include "pa_globals.h"
@@ -25,7 +26,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.16 2026/09/15 17:53:05 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.17 2026/09/15 19:54:26 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -247,6 +248,90 @@ static void _create(Request& r, MethodParams& params) {
 #define AMQP_STRING(s,l) new String(String::C(pa_strdup((const char*)(s), (l)), (l)))
 #define AMQP_VSTRING(s,l) new VString(*AMQP_STRING(s,l))
 
+// broker-defined arguments/headers (x-message-ttl, x-dead-letter-exchange, ...)
+// Type is taken from how the value was assigned: [] -> string, () -> number, (true|false) -> bool
+static amqp_table_t amqp_build_arguments_table(Request& r, HashStringValue* arguments) {
+	amqp_table_t table = amqp_empty_table;
+	size_t count = arguments ? arguments->count() : 0;
+	if(!count)
+		return table;
+
+	amqp_table_entry_t* entries = (amqp_table_entry_t*)pa_malloc(count * sizeof(amqp_table_entry_t));
+	size_t i = 0;
+	for(HashStringValue::Iterator it(*arguments); it; it.next()){
+		entries[i].key = amqp_cstring_bytes(it.key().cstr());
+
+		Value& value = r.process(*it.value());
+		if(value.is_string() || value.is_void()){
+			entries[i].value.kind = AMQP_FIELD_KIND_UTF8;
+			entries[i].value.value.bytes = amqp_cstring_bytes(value.as_string().cstr());
+		} else if(value.is_bool()){
+			entries[i].value.kind = AMQP_FIELD_KIND_BOOLEAN;
+			entries[i].value.value.boolean = value.as_bool();
+		} else {
+			entries[i].value.kind = AMQP_FIELD_KIND_I64;
+			entries[i].value.value.i64 = (int64_t)value.as_wint();
+		}
+		i++;
+	}
+
+	table.num_entries = (int)count;
+	table.entries = entries;
+	return table;
+}
+
+// reverse of amqp_build_arguments_table - decodes a broker-provided field table (e.g. message headers) back into a hash.
+static VHash* amqp_table_to_hash(amqp_table_t& table);
+
+static Value* amqp_field_to_value(amqp_field_value_t& f) {
+	switch(f.kind){
+		case AMQP_FIELD_KIND_UTF8:
+		case AMQP_FIELD_KIND_BYTES:
+			return AMQP_VSTRING(f.value.bytes.bytes, f.value.bytes.len);
+		case AMQP_FIELD_KIND_BOOLEAN:
+			return &VBool::get(f.value.boolean);
+		case AMQP_FIELD_KIND_I8: return new VInt((pa_wint)f.value.i8);
+		case AMQP_FIELD_KIND_U8: return new VInt((pa_wint)f.value.u8);
+		case AMQP_FIELD_KIND_I16: return new VInt((pa_wint)f.value.i16);
+		case AMQP_FIELD_KIND_U16: return new VInt((pa_wint)f.value.u16);
+		case AMQP_FIELD_KIND_I32: return new VInt((pa_wint)f.value.i32);
+		case AMQP_FIELD_KIND_U32: return new VInt((pa_wint)f.value.u32);
+		case AMQP_FIELD_KIND_I64: return new VInt((pa_wint)f.value.i64);
+		case AMQP_FIELD_KIND_U64: return new VInt((pa_wint)f.value.u64);
+		case AMQP_FIELD_KIND_TIMESTAMP: return new VInt((pa_wint)f.value.u64);
+		case AMQP_FIELD_KIND_F32: return new VDouble((double)f.value.f32);
+		case AMQP_FIELD_KIND_F64: return new VDouble(f.value.f64);
+		case AMQP_FIELD_KIND_DECIMAL: {
+			double divisor=1;
+			for(uint8_t i=0; i<f.value.decimal.decimals; i++) divisor*=10;
+			return new VDouble(f.value.decimal.value/divisor);
+		}
+		case AMQP_FIELD_KIND_TABLE:
+			return amqp_table_to_hash(f.value.table);
+		case AMQP_FIELD_KIND_ARRAY: {
+			VArray* result=new VArray();
+			ArrayValue& av=result->array();
+			for(int i=0; i<f.value.array.num_entries; i++)
+				av+=amqp_field_to_value(f.value.array.entries[i]);
+			return result;
+		}
+		case AMQP_FIELD_KIND_VOID:
+			return VVoid::get();
+		default:
+			return VString::empty();
+	}
+}
+
+static VHash* amqp_table_to_hash(amqp_table_t& table) {
+	VHash* result=new VHash;
+	HashStringValue* h=result->get_hash();
+	for(int i=0; i<table.num_entries; i++){
+		amqp_table_entry_t& e=table.entries[i];
+		h->put(*AMQP_STRING(e.key.bytes, e.key.len), amqp_field_to_value(e.value));
+	}
+	return result;
+}
+
 static void _publish(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	const String &msg=params.as_string(0, "msg must be string");
@@ -319,23 +404,9 @@ static void _publish(Request& r, MethodParams& params) {
 					props.app_id=amqp_cstring_bytes(v);
 					props._flags|=AMQP_BASIC_APP_ID_FLAG;
 				} else if(key=="headers"){
-/*					if(HashStringValue* hh=pval->get_hash()){
-						size_t count=hh->count();
-						amqp_table_entry_t* entries=count ? new amqp_table_entry_t[count] : 0;
-						size_t idx=0;
-						for(HashStringValue::Iterator hi(*hh); hi; hi.next()){
-							String::Body hkey=hi.key();
-							const char* hv=hi.value()->as_string().cstr();
-							entries[idx].key=amqp_cstring_bytes(hkey.cstr());
-							entries[idx].value.kind=AMQP_FIELD_KIND_UTF8;
-							entries[idx].value.value.bytes=amqp_cstring_bytes(hv);
-							idx++;
-						}
-						props.headers.num_entries=(int)count;
-						props.headers.entries=entries;
-						props._flags|=AMQP_BASIC_HEADERS_FLAG;
-					}
-*/				} else
+					props.headers=amqp_build_arguments_table(r, value->get_hash());
+					props._flags|=AMQP_BASIC_HEADERS_FLAG;
+				} else
 					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 			}
 		}
@@ -351,11 +422,6 @@ static void _publish(Request& r, MethodParams& params) {
 	int ret = amqp_basic_publish(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), mandatory, 0, &props, body);
 
 	status_check(self, ret, "publish ");
-
-	// free temporary headers entries if allocated
-	if(props._flags & AMQP_BASIC_HEADERS_FLAG){
-//		delete [] props.headers.entries;
-	}
 }
 
 static void _release(Request& r, MethodParams&) {
@@ -443,6 +509,7 @@ static void _declare(Request& r, MethodParams& params) {
 	const char* queue_c = 0;
 	const char* type_c = "direct";
 	bool passive=false, durable=false, auto_delete=false, internal=false, exclusive=false;
+	amqp_table_t arguments=amqp_empty_table;
 	if(HashStringValue* options=params.as_hash(0)){
 		for(HashStringValue::Iterator i(*options); i; i.next()){
 			String::Body key=i.key();
@@ -463,6 +530,8 @@ static void _declare(Request& r, MethodParams& params) {
 				internal=r.process(*value).as_bool();
 			} else if(key=="exclusive"){
 				exclusive=r.process(*value).as_bool();
+			} else if(key=="arguments"){
+				arguments=amqp_build_arguments_table(r, value->get_hash());
 			} else
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
@@ -471,12 +540,12 @@ static void _declare(Request& r, MethodParams& params) {
 		throw Exception("amqp", 0, "exchange or queue must be specified");
 
 	if(exchange_c){
-		amqp_exchange_declare(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(type_c), passive, durable, auto_delete, internal, amqp_empty_table);
+		amqp_exchange_declare(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(type_c), passive, durable, auto_delete, internal, arguments);
 		check(self, amqp_get_rpc_reply(self.connection()));
 	}
 
 	if(queue_c){
-		amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), *queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, exclusive, auto_delete, amqp_empty_table);
+		amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), *queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, exclusive, auto_delete, arguments);
 		check(self, amqp_get_rpc_reply(self.connection()));
 		if(!*queue_c && ok){
 			r.write(*AMQP_STRING(ok->queue.bytes, ok->queue.len));
@@ -626,6 +695,41 @@ static VHash *amqp_message_hash(amqp_envelope_t &envelope) {
 	h->put("delivery_tag", new VInt(envelope.delivery_tag));
 	h->put("consumer_tag", AMQP_VSTRING(envelope.consumer_tag.bytes, envelope.consumer_tag.len));
 	h->put("exchange", AMQP_VSTRING(envelope.exchange.bytes, envelope.exchange.len));
+	h->put("routing_key", AMQP_VSTRING(envelope.routing_key.bytes, envelope.routing_key.len));
+	h->put("redelivered", &VBool::get(envelope.redelivered));
+
+	// properties are only put when the publisher actually set them (per the wire's own _flags bitmask) -
+	// same handful of allocations as the fields above, just conditional on what's actually present
+	amqp_basic_properties_t& props=envelope.message.properties;
+	if(props._flags & AMQP_BASIC_CONTENT_TYPE_FLAG)
+		h->put("content_type", AMQP_VSTRING(props.content_type.bytes, props.content_type.len));
+	if(props._flags & AMQP_BASIC_CONTENT_ENCODING_FLAG)
+		h->put("content_encoding", AMQP_VSTRING(props.content_encoding.bytes, props.content_encoding.len));
+	if(props._flags & AMQP_BASIC_HEADERS_FLAG)
+		h->put("headers", amqp_table_to_hash(props.headers));
+	if(props._flags & AMQP_BASIC_DELIVERY_MODE_FLAG)
+		h->put("delivery_mode", new VInt(props.delivery_mode));
+	if(props._flags & AMQP_BASIC_PRIORITY_FLAG)
+		h->put("priority", new VInt(props.priority));
+	if(props._flags & AMQP_BASIC_CORRELATION_ID_FLAG)
+		h->put("correlation_id", AMQP_VSTRING(props.correlation_id.bytes, props.correlation_id.len));
+	if(props._flags & AMQP_BASIC_REPLY_TO_FLAG)
+		h->put("reply_to", AMQP_VSTRING(props.reply_to.bytes, props.reply_to.len));
+	if(props._flags & AMQP_BASIC_EXPIRATION_FLAG)
+		h->put("expiration", AMQP_VSTRING(props.expiration.bytes, props.expiration.len));
+	if(props._flags & AMQP_BASIC_MESSAGE_ID_FLAG)
+		h->put("message_id", AMQP_VSTRING(props.message_id.bytes, props.message_id.len));
+	if(props._flags & AMQP_BASIC_TIMESTAMP_FLAG)
+		h->put("timestamp", new VInt((pa_wint)props.timestamp));
+	if(props._flags & AMQP_BASIC_TYPE_FLAG)
+		h->put("type", AMQP_VSTRING(props.type.bytes, props.type.len));
+	if(props._flags & AMQP_BASIC_USER_ID_FLAG)
+		h->put("user_id", AMQP_VSTRING(props.user_id.bytes, props.user_id.len));
+	if(props._flags & AMQP_BASIC_APP_ID_FLAG)
+		h->put("app_id", AMQP_VSTRING(props.app_id.bytes, props.app_id.len));
+	if(props._flags & AMQP_BASIC_CLUSTER_ID_FLAG)
+		h->put("cluster_id", AMQP_VSTRING(props.cluster_id.bytes, props.cluster_id.len));
+
 	return result;
 }
 
@@ -638,39 +742,42 @@ static struct timeval* amqp_wait_tv(struct timeval& tv, int timeout){
 	return &tv;
 }
 
-// amqp_consume_message() returns AMQP_STATUS_UNEXPECTED_STATE when it read a frame other than a deliver
-// while polling - typically the broker notifying a channel/connection close after a protocol violation
-// Per its own documented contract, read that pending frame to find out which, so check() can classify
-// it correctly (cheap channel repair vs full reconnect) instead of always assuming the worse.
-static amqp_rpc_reply_t amqp_resolve_unexpected_state(amqp_connection_state_t conn) {
-	amqp_rpc_reply_t result;
-	memset(&result, 0, sizeof(result));
+// amqp_consume_message() returns AMQP_STATUS_UNEXPECTED_STATE when it read a frame other than a deliver while polling.
+// Per its own documented contract, read that pending frame to find out what it actually was:
+//  - a basic.return for an earlier mandatory publish that found no route: benign, doesn't close anything;
+//    drain the returned message (header+body, still pending right behind it) and retry - the real
+//    message (if any) is still coming
+//  - anything else: a genuine channel/connection close (typically after a protocol violation) - build a
+//    reply so check() can classify it correctly (cheap channel repair vs full reconnect)
+static amqp_rpc_reply_t amqp_consume_message_checked(amqp_connection_state_t conn, int channel, amqp_envelope_t* envelope, struct timeval* tv) {
+	for(;;) {
+		amqp_rpc_reply_t res = amqp_consume_message(conn, envelope, tv, 0);
+		if(res.reply_type != AMQP_RESPONSE_LIBRARY_EXCEPTION || res.library_error != AMQP_STATUS_UNEXPECTED_STATE)
+			return res;
 
-	amqp_frame_t frame;
-	if(amqp_simple_wait_frame(conn, &frame) != AMQP_STATUS_OK || frame.frame_type != AMQP_FRAME_METHOD) {
-		result.reply_type = AMQP_RESPONSE_LIBRARY_EXCEPTION;
-		result.library_error = AMQP_STATUS_UNEXPECTED_STATE;
-		return result;
+		amqp_frame_t frame;
+		if(amqp_simple_wait_frame(conn, &frame) != AMQP_STATUS_OK || frame.frame_type != AMQP_FRAME_METHOD)
+			return res; // give up, let the original UNEXPECTED_STATE be treated as fatal
+
+		if(frame.payload.method.id == AMQP_BASIC_RETURN_METHOD) {
+			amqp_message_t message;
+			if(amqp_read_message(conn, channel, &message, 0).reply_type == AMQP_RESPONSE_NORMAL)
+				amqp_destroy_message(&message);
+			continue;
+		}
+
+		res.reply_type = AMQP_RESPONSE_SERVER_EXCEPTION;
+		res.reply.id = frame.payload.method.id;
+		res.reply.decoded = frame.payload.method.decoded;
+		return res;
 	}
-
-	result.reply_type = AMQP_RESPONSE_SERVER_EXCEPTION;
-	result.reply.id = frame.payload.method.id;
-	result.reply.decoded = frame.payload.method.decoded;
-	return result;
-}
-
-static void amqp_check_consume_result(VAmqp& self, amqp_rpc_reply_t& res) {
-	if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_UNEXPECTED_STATE)
-		check(self, amqp_resolve_unexpected_state(self.connection()), "consume "); // read the real frame, classify properly
-	else
-		check(self, res, "consume "); // real error - throw
 }
 
 static void _consume(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	const char* queue_c=0;
 	const char* consumer_tag_c=0;
-	bool no_ack=false, exclusive=false;
+	bool ack=true, exclusive=false;
 	int count=1; bool count_specified=false;
 	int timeout=0; bool timeout_specified=false;
 	Junction* callback=0;
@@ -685,8 +792,8 @@ static void _consume(Request& r, MethodParams& params) {
 				queue_c=value->as_string().cstr();
 			} else if(key=="consumer_tag"){
 				consumer_tag_c=value->as_string().cstr();
-			} else if(key=="no_ack"){
-				no_ack=r.process(*value).as_bool();
+			} else if(key=="ack"){
+				ack=r.process(*value).as_bool();
 			} else if(key=="exclusive"){
 				exclusive=r.process(*value).as_bool();
 			} else if(key=="count"){
@@ -712,7 +819,7 @@ static void _consume(Request& r, MethodParams& params) {
 
 	amqp_basic_consume_ok_t *ok = amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
 		consumer_tag_c ? amqp_cstring_bytes(consumer_tag_c) : amqp_empty_bytes,
-		0 /*no_local*/, no_ack, exclusive, amqp_empty_table);
+		0 /*no_local*/, !ack, exclusive, amqp_empty_table);
 	check(self, amqp_get_rpc_reply(self.connection()));
 
 	// amqp_maybe_release_buffers() recycles ok->consumer_tag
@@ -727,7 +834,7 @@ static void _consume(Request& r, MethodParams& params) {
 			memset(&envelope, 0, sizeof(envelope));
 			amqp_maybe_release_buffers(self.connection());
 			// timeout is the max idle gap between messages, re-armed on every wait
-			amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, amqp_wait_tv(tv, timeout), 0);
+			amqp_rpc_reply_t res = amqp_consume_message_checked(self.connection(), self.channel(), &envelope, amqp_wait_tv(tv, timeout));
 			if(res.reply_type == AMQP_RESPONSE_NORMAL){
 				VHash *vh=amqp_message_hash(envelope);
 				Value *params_cb[]={vh};
@@ -739,7 +846,7 @@ static void _consume(Request& r, MethodParams& params) {
 			} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
 				break; // idle too long - stop cleanly
 			} else {
-				amqp_check_consume_result(self, res);
+				check(self, res, "consume ");
 			}
 		}
 	} else {
@@ -752,14 +859,14 @@ static void _consume(Request& r, MethodParams& params) {
 			amqp_maybe_release_buffers(self.connection());
 			// timeout applies only to the first message of the batch;
 			// the rest is drained with a non-blocking poll until nothing more is ready
-			amqp_rpc_reply_t res = amqp_consume_message(self.connection(), &envelope, amqp_wait_tv(tv, received==0 ? timeout : 0), 0);
+			amqp_rpc_reply_t res = amqp_consume_message_checked(self.connection(), self.channel(), &envelope, amqp_wait_tv(tv, received==0 ? timeout : 0));
 			if(res.reply_type == AMQP_RESPONSE_NORMAL){
 				result_array+=amqp_message_hash(envelope);
 				amqp_destroy_envelope(&envelope);
 			} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
 				break; // nothing (more) ready - return what we have
 			} else {
-				amqp_check_consume_result(self, res);
+				check(self, res, "consume ");
 			}
 		}
 		r.write(result);
