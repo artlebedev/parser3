@@ -13,6 +13,8 @@
 #include "pa_varray.h"
 #include "pa_vbool.h"
 #include "pa_vamqp.h"
+#include "pa_os.h"
+#include "pa_globals.h"
 
 #ifdef WITH_AMQP
 #include <amqp.h>
@@ -23,7 +25,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.15 2026/09/15 13:01:57 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.16 2026/09/15 17:53:05 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -36,9 +38,11 @@ DECLARE_CLASS_VAR(amqp, new MAmqp);
 
 #ifdef WITH_AMQP
 
-static void status_check(int ret, const char *detail=""){
+static void status_check(VAmqp& self, int ret, const char *detail=""){
 	if(ret == AMQP_STATUS_OK)
 		return;
+
+	self.fstate = VAmqp::CONNECTION_DEAD;
 
 	const char* error_str = amqp_error_string2(ret);
 	if(error_str) {
@@ -48,9 +52,11 @@ static void status_check(int ret, const char *detail=""){
 	}
 }
 
-static void check(amqp_rpc_reply_t rr, const char *detail=""){
+static void check(VAmqp& self, amqp_rpc_reply_t rr, const char *detail=""){
 	if(rr.reply_type == AMQP_RESPONSE_NORMAL)
 		return;
+
+	self.fstate = (rr.reply_type == AMQP_RESPONSE_SERVER_EXCEPTION && rr.reply.id == AMQP_CHANNEL_CLOSE_METHOD) ? VAmqp::CHANNEL_DEAD : VAmqp::CONNECTION_DEAD;
 
 	// Extract error message from reply
 	const char* error_msg = 0;
@@ -70,23 +76,17 @@ static void check(amqp_rpc_reply_t rr, const char *detail=""){
 			}
 		}
 	}
-	
+
 	if(error_msg) {
 		throw Exception("amqp", 0, "%sfailed: %.*s", detail, (int)error_len, error_msg);
 	} else if(rr.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION) {
-		status_check(rr.library_error, detail);
+		status_check(self, rr.library_error, detail);
 	}
 
 	throw Exception("amqp", 0, "%sfailed", detail);
 }
 
-#endif // WITH_AMQP
-
-
-static void _create(Request& r, MethodParams& params) {
-VAmqp& self=GET_SELF(r, VAmqp);
-
-#ifdef WITH_AMQP
+static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	const char* host_c = "localhost";
 	int port = 5672;
 	const char* user_c = "guest";
@@ -99,58 +99,59 @@ VAmqp& self=GET_SELF(r, VAmqp);
 	const char* tls_key = 0;
 	bool tls_specified = false;
 	bool tls_verify = true;
+	int reconnect_interval_sec = 0;
 
-	if(params.count()>0){
-		if(HashStringValue* options=params.as_hash(0)){
-			for(HashStringValue::Iterator i(*options); i; i.next()){
-				String::Body key=i.key();
-				Value* value=i.value();
-				if(key=="host"){
-					host_c=value->as_string().cstr();
-				} else if(key=="port"){
-					port=r.process(*value).as_int();
-				} else if(key=="user"){
-					user_c=value->as_string().cstr();
-				} else if(key=="password"){
-					pass_c=value->as_string().cstr();
-				} else if(key=="vhost"){
-					vhost_c=value->as_string().cstr();
-				} else if(key=="locale"){
-					locale_c=value->as_string().cstr();
-				} else if(key=="heartbeat"){
-					heartbeat=r.process(*value).as_int();
-				} else if(key=="tls"){
-					tls_specified = true;
-					if(HashStringValue* tls_options=value->get_hash()){
-						for(HashStringValue::Iterator t(*tls_options); t; t.next()){
-							String::Body tkey=t.key();
-							Value* tval=t.value();
-							if(tkey=="ca"){
-								tls_ca=tval->as_string().cstr();
-							} else if(tkey=="cert"){
-								tls_cert=tval->as_string().cstr();
-							} else if(tkey=="key"){
-								tls_key=tval->as_string().cstr();
-							} else if(tkey=="verify"){
-								tls_verify=r.process(*tval).as_bool();
-							} else
-								throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-						}
+	if(options){
+		for(HashStringValue::Iterator i(*options); i; i.next()){
+			String::Body key=i.key();
+			Value* value=i.value();
+			if(key=="host"){
+				host_c=value->as_string().cstr();
+			} else if(key=="port"){
+				port=r.process(*value).as_int();
+			} else if(key=="user"){
+				user_c=value->as_string().cstr();
+			} else if(key=="password"){
+				pass_c=value->as_string().cstr();
+			} else if(key=="vhost"){
+				vhost_c=value->as_string().cstr();
+			} else if(key=="locale"){
+				locale_c=value->as_string().cstr();
+			} else if(key=="heartbeat"){
+				heartbeat=r.process(*value).as_int();
+			} else if(key=="auto_reconnect"){
+				reconnect_interval_sec=r.process(*value).as_int();
+			} else if(key=="tls"){
+				tls_specified = true;
+				if(HashStringValue* tls_options=value->get_hash()){
+					for(HashStringValue::Iterator t(*tls_options); t; t.next()){
+						String::Body tkey=t.key();
+						Value* tval=t.value();
+						if(tkey=="ca"){
+							tls_ca=tval->as_string().cstr();
+						} else if(tkey=="cert"){
+							tls_cert=tval->as_string().cstr();
+						} else if(tkey=="key"){
+							tls_key=tval->as_string().cstr();
+						} else if(tkey=="verify"){
+							tls_verify=r.process(*tval).as_bool();
+						} else
+							throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 					}
-				} else
-					throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
-			}
+				}
+			} else
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 	}
 
 	amqp_connection_state_t conn = amqp_new_connection();
 	amqp_socket_t* socket = 0;
-	
+
 	if(tls_specified) {
 		socket = amqp_ssl_socket_new(conn);
 		if(!socket)
 			throw Exception("amqp", 0, "failed to create SSL socket");
-		
+
 		// Set CA certificate if provided
 		if(tls_ca)
 			if(amqp_ssl_socket_set_cacert(socket, tls_ca))
@@ -173,13 +174,13 @@ VAmqp& self=GET_SELF(r, VAmqp);
 		if(!socket)
 			throw Exception("amqp", 0, "failed to create TCP socket");
 	}
-	
-	status_check(amqp_socket_open(socket, host_c, port), tls_specified ? "open SSL socket " : "open TCP socket ");
+
+	status_check(self, amqp_socket_open(socket, host_c, port), tls_specified ? "open SSL socket " : "open TCP socket ");
 
 	amqp_rpc_reply_t rlogin = amqp_login(conn, vhost_c, 0, 131072, heartbeat, AMQP_SASL_METHOD_PLAIN, user_c, pass_c);
 	if(rlogin.reply_type != AMQP_RESPONSE_NORMAL){
 		amqp_destroy_connection(conn);
-		check(rlogin, "login ");
+		check(self, rlogin, "login ");
 	}
 
 	int channel = 1;
@@ -188,11 +189,53 @@ VAmqp& self=GET_SELF(r, VAmqp);
 	if(ropen.reply_type != AMQP_RESPONSE_NORMAL){
 		amqp_connection_close(conn, AMQP_REPLY_SUCCESS);
 		amqp_destroy_connection(conn);
-		check(ropen, "open channel ");
+		check(self, ropen, "open channel ");
 	}
+
+	if(self.fconnection)
+		amqp_destroy_connection(self.fconnection);
 
 	self.fconnection = conn;
 	self.fchannel = channel;
+	self.fstate = VAmqp::ALIVE;
+	self.freconnect_interval = reconnect_interval_sec;
+}
+
+// repairs a channel-level error cheaply: reopen on the same connection
+static void amqp_repair_channel(VAmqp& self) {
+	amqp_channel_close_ok_t close_ok;
+	amqp_send_method(self.fconnection, self.fchannel, AMQP_CHANNEL_CLOSE_OK_METHOD, &close_ok);
+	amqp_channel_open(self.fconnection, self.fchannel);
+	check(self, amqp_get_rpc_reply(self.fconnection), "channel repair ");
+	self.fstate = VAmqp::ALIVE;
+}
+
+void VAmqp::ensure_connected() {
+	if(fstate == ALIVE)
+		return;
+
+	if(fstate == CHANNEL_DEAD){
+		amqp_repair_channel(*this);
+		return;
+	}
+
+	// CONNECTION_DEAD
+	if(freconnect_interval <= 0)
+		throw Exception("amqp", 0, "connection is dead (auto_reconnect is not enabled)");
+
+	pa_sleep(freconnect_interval, 0);
+
+	amqp_connect(*this, pa_thread_request(), fcreate_options);
+}
+
+#endif // WITH_AMQP
+
+static void _create(Request& r, MethodParams& params) {
+	VAmqp& self=GET_SELF(r, VAmqp);
+
+#ifdef WITH_AMQP
+	self.fcreate_options = params.count()>0 ? params.as_hash(0) : 0;
+	amqp_connect(self, r, self.fcreate_options);
 #else
 	(void)params; (void)self;
 	throw Exception("amqp", 0, "compiled without amqp support");
@@ -307,8 +350,7 @@ static void _publish(Request& r, MethodParams& params) {
 
 	int ret = amqp_basic_publish(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), mandatory, 0, &props, body);
 
-	if(ret!=AMQP_STATUS_OK)
-		throw Exception("amqp", 0, "publish failed");
+	status_check(self, ret, "publish ");
 
 	// free temporary headers entries if allocated
 	if(props._flags & AMQP_BASIC_HEADERS_FLAG){
@@ -325,6 +367,7 @@ static void _release(Request& r, MethodParams&) {
 		amqp_destroy_connection(conn);
 		self.fconnection=0;
 		self.fchannel=0;
+		self.fstate=VAmqp::CONNECTION_DEAD;
 	}
 }
 
@@ -337,8 +380,7 @@ static uint64_t as_delivery_tag(MethodParams& params, int index=0) {
 static void _ack(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
 	int ret = amqp_basic_ack(self.connection(), self.channel(), as_delivery_tag(params), 0);
-	if(ret!=AMQP_STATUS_OK)
-		throw Exception("amqp", 0, "ack failed");
+	status_check(self, ret, "ack ");
 }
 
 static void _nack(Request& r, MethodParams& params) {
@@ -356,8 +398,7 @@ static void _nack(Request& r, MethodParams& params) {
 		}
 	}
 	int ret = amqp_basic_nack(self.connection(), self.channel(), tag, 0, requeue);
-	if(ret!=AMQP_STATUS_OK)
-		throw Exception("amqp", 0, "nack failed");
+	status_check(self, ret, "nack ");
 }
 
 static void _qos(Request& r, MethodParams& params) {
@@ -374,9 +415,8 @@ static void _qos(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	amqp_basic_qos_ok_t *ret = amqp_basic_qos(self.connection(), self.channel(), 0, prefetch_count, 0);
-	if(!ret)
-		throw Exception("amqp", 0, "qos failed");
+	amqp_basic_qos(self.connection(), self.channel(), 0, prefetch_count, 0);
+	check(self, amqp_get_rpc_reply(self.connection()), "qos ");
 }
 
 static void _reject(Request& r, MethodParams& params) {
@@ -394,8 +434,7 @@ static void _reject(Request& r, MethodParams& params) {
 		}
 	}
 	int ret = amqp_basic_reject(self.connection(), self.channel(), tag, requeue);
-	if(ret!=AMQP_STATUS_OK)
-		throw Exception("amqp", 0, "reject failed");
+	status_check(self, ret, "reject ");
 }
 
 static void _declare(Request& r, MethodParams& params) {
@@ -433,12 +472,12 @@ static void _declare(Request& r, MethodParams& params) {
 
 	if(exchange_c){
 		amqp_exchange_declare(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(type_c), passive, durable, auto_delete, internal, amqp_empty_table);
-		check(amqp_get_rpc_reply(self.connection()));
+		check(self, amqp_get_rpc_reply(self.connection()));
 	}
 
 	if(queue_c){
 		amqp_queue_declare_ok_t *ok = amqp_queue_declare(self.connection(), self.channel(), *queue_c ? amqp_cstring_bytes(queue_c) : amqp_empty_bytes, passive, durable, exclusive, auto_delete, amqp_empty_table);
-		check(amqp_get_rpc_reply(self.connection()));
+		check(self, amqp_get_rpc_reply(self.connection()));
 		if(!*queue_c && ok){
 			r.write(*AMQP_STRING(ok->queue.bytes, ok->queue.len));
 		}
@@ -471,12 +510,12 @@ static void _delete(Request& r, MethodParams& params) {
 
 	if(exchange_c){
 		amqp_exchange_delete(self.connection(), self.channel(), amqp_cstring_bytes(exchange_c), if_unused);
-		check(amqp_get_rpc_reply(self.connection()));
+		check(self, amqp_get_rpc_reply(self.connection()));
 	}
 
 	if(queue_c){
 		amqp_queue_delete(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), if_unused, if_empty);
-		check(amqp_get_rpc_reply(self.connection()));
+		check(self, amqp_get_rpc_reply(self.connection()));
 	}
 }
 
@@ -501,7 +540,7 @@ static void _bind(Request& r, MethodParams& params) {
 	}
 	if(!exchange_c || !queue_c) throw Exception("amqp", 0, "exchange and queue are required");
 	amqp_queue_bind(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), amqp_empty_table);
-	check(amqp_get_rpc_reply(self.connection()));
+	check(self, amqp_get_rpc_reply(self.connection()));
 }
 
 static void _unbind(Request& r, MethodParams& params) {
@@ -525,7 +564,7 @@ static void _unbind(Request& r, MethodParams& params) {
 	}
 	if(!exchange_c || !queue_c) throw Exception("amqp", 0, "exchange and queue are required");
 	amqp_queue_unbind(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), amqp_cstring_bytes(exchange_c), amqp_cstring_bytes(routing_key_c), amqp_empty_table);
-	check(amqp_get_rpc_reply(self.connection()));
+	check(self, amqp_get_rpc_reply(self.connection()));
 }
 
 static void _purge(Request& r, MethodParams& params) {
@@ -545,7 +584,7 @@ static void _purge(Request& r, MethodParams& params) {
 		throw Exception("amqp", 0, "queue must be specified");
 
 	amqp_queue_purge_ok_t *ok = amqp_queue_purge(self.connection(), self.channel(), amqp_cstring_bytes(queue_c));
-	check(amqp_get_rpc_reply(self.connection()));
+	check(self, amqp_get_rpc_reply(self.connection()));
 	r.write(*new VInt(ok ? ok->message_count : 0));
 }
 
@@ -569,7 +608,7 @@ static void _info(Request& r, MethodParams& params) {
 		throw Exception("amqp", 0, "queue must be specified");
 
 	amqp_queue_declare_ok_t* ok = amqp_queue_declare(self.connection(), self.channel(), amqp_cstring_bytes(queue_c), /*passive*/ 1, 0, 0, 0, amqp_empty_table);
-	check(amqp_get_rpc_reply(self.connection()));
+	check(self, amqp_get_rpc_reply(self.connection()));
 
 	Value& result=*new VHash;
 	if(ok){
@@ -597,6 +636,34 @@ static struct timeval* amqp_wait_tv(struct timeval& tv, int timeout){
 	tv.tv_sec=timeout;
 	tv.tv_usec=0;
 	return &tv;
+}
+
+// amqp_consume_message() returns AMQP_STATUS_UNEXPECTED_STATE when it read a frame other than a deliver
+// while polling - typically the broker notifying a channel/connection close after a protocol violation
+// Per its own documented contract, read that pending frame to find out which, so check() can classify
+// it correctly (cheap channel repair vs full reconnect) instead of always assuming the worse.
+static amqp_rpc_reply_t amqp_resolve_unexpected_state(amqp_connection_state_t conn) {
+	amqp_rpc_reply_t result;
+	memset(&result, 0, sizeof(result));
+
+	amqp_frame_t frame;
+	if(amqp_simple_wait_frame(conn, &frame) != AMQP_STATUS_OK || frame.frame_type != AMQP_FRAME_METHOD) {
+		result.reply_type = AMQP_RESPONSE_LIBRARY_EXCEPTION;
+		result.library_error = AMQP_STATUS_UNEXPECTED_STATE;
+		return result;
+	}
+
+	result.reply_type = AMQP_RESPONSE_SERVER_EXCEPTION;
+	result.reply.id = frame.payload.method.id;
+	result.reply.decoded = frame.payload.method.decoded;
+	return result;
+}
+
+static void amqp_check_consume_result(VAmqp& self, amqp_rpc_reply_t& res) {
+	if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_UNEXPECTED_STATE)
+		check(self, amqp_resolve_unexpected_state(self.connection()), "consume "); // read the real frame, classify properly
+	else
+		check(self, res, "consume "); // real error - throw
 }
 
 static void _consume(Request& r, MethodParams& params) {
@@ -646,7 +713,7 @@ static void _consume(Request& r, MethodParams& params) {
 	amqp_basic_consume_ok_t *ok = amqp_basic_consume(self.connection(), self.channel(), amqp_cstring_bytes(queue_c),
 		consumer_tag_c ? amqp_cstring_bytes(consumer_tag_c) : amqp_empty_bytes,
 		0 /*no_local*/, no_ack, exclusive, amqp_empty_table);
-	check(amqp_get_rpc_reply(self.connection()));
+	check(self, amqp_get_rpc_reply(self.connection()));
 
 	// amqp_maybe_release_buffers() recycles ok->consumer_tag
 	const char* consumer_tag_copy = ok ? pa_strdup((const char*)ok->consumer_tag.bytes, ok->consumer_tag.len) : 0;
@@ -672,7 +739,7 @@ static void _consume(Request& r, MethodParams& params) {
 			} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
 				break; // idle too long - stop cleanly
 			} else {
-				check(res); // real error - throw
+				amqp_check_consume_result(self, res);
 			}
 		}
 	} else {
@@ -692,7 +759,7 @@ static void _consume(Request& r, MethodParams& params) {
 			} else if(res.reply_type == AMQP_RESPONSE_LIBRARY_EXCEPTION && res.library_error == AMQP_STATUS_TIMEOUT) {
 				break; // nothing (more) ready - return what we have
 			} else {
-				check(res); // real error - throw
+				amqp_check_consume_result(self, res);
 			}
 		}
 		r.write(result);
@@ -700,7 +767,7 @@ static void _consume(Request& r, MethodParams& params) {
 
 	if(ok){
 		amqp_basic_cancel(self.connection(), self.channel(), amqp_cstring_bytes(consumer_tag_copy));
-		check(amqp_get_rpc_reply(self.connection()));
+		check(self, amqp_get_rpc_reply(self.connection()));
 	}
 }
 

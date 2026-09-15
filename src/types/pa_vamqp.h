@@ -8,10 +8,11 @@
 #ifndef PA_VAMQP_H
 #define PA_VAMQP_H
 
-#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.2 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.3 2026/09/15 17:53:05 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
+#include "pa_common.h"
 
 #ifdef WITH_AMQP
 #include <amqp.h>
@@ -31,22 +32,35 @@ public:
 
 #ifdef WITH_AMQP
 public: // usage
-	VAmqp(): fconnection(0), fchannel(0) {}
+
+	// ALIVE: usable right now
+	// CHANNEL_DEAD: last operation got a channel-level error - reopening the channel (same connection) is required
+	// CONNECTION_DEAD: last operation got a connection-level error - a full reconnect is required
+	enum ConnState { ALIVE, CHANNEL_DEAD, CONNECTION_DEAD };
+
+	VAmqp(): fconnection(0), fchannel(0), fstate(CONNECTION_DEAD), fcreate_options(0), freconnect_interval(0) {}
 	~VAmqp() {}
 
 	amqp_connection_state_t fconnection;
 	int fchannel;
 	bool fstop;
+	ConnState fstate;
+	HashStringValue* fcreate_options;
+	int freconnect_interval; // 0 = auto-reconnect disabled, N>0 = enabled, sleeps N sec before each attempt
+
+	void ensure_connected();
 
 	amqp_connection_state_t connection() {
 		if(!fconnection)
 			throw Exception(PARSER_RUNTIME, 0, "using uninitialized amqp object");
+		ensure_connected();
 		return fconnection;
 	}
 
 	int channel() {
 		if(!fchannel)
 			throw Exception(PARSER_RUNTIME, 0, "using uninitialized amqp object channel");
+		ensure_connected();
 		return fchannel;
 	}
 
