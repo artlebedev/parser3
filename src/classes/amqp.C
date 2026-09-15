@@ -23,7 +23,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.14 2026/09/14 22:56:51 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.15 2026/09/15 13:01:57 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -328,17 +328,22 @@ static void _release(Request& r, MethodParams&) {
 	}
 }
 
+// to allow both [] and () call syntax
+static uint64_t as_delivery_tag(MethodParams& params, int index=0) {
+	const String &tag_s=params.as_string(index, "delivery tag must not be code");
+	return pa_atoul(tag_s.cstr());
+}
+
 static void _ack(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	pa_wint tag=params.as_wint(0, "delivery tag must be number", r);
-	int ret = amqp_basic_ack(self.connection(), self.channel(), (uint64_t)tag, 0);
+	int ret = amqp_basic_ack(self.connection(), self.channel(), as_delivery_tag(params), 0);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "ack failed");
 }
 
 static void _nack(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	pa_wint tag=params.as_wint(0, "delivery tag must be number", r);
+	uint64_t tag=as_delivery_tag(params);
 	bool requeue=false;
 	if(params.count()>1){
 		if(HashStringValue* options=params.as_hash(1)){
@@ -350,7 +355,7 @@ static void _nack(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	int ret = amqp_basic_nack(self.connection(), self.channel(), (uint64_t)tag, 0, requeue);
+	int ret = amqp_basic_nack(self.connection(), self.channel(), tag, 0, requeue);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "nack failed");
 }
@@ -376,7 +381,7 @@ static void _qos(Request& r, MethodParams& params) {
 
 static void _reject(Request& r, MethodParams& params) {
 	VAmqp& self=GET_SELF(r, VAmqp);
-	pa_wint tag=params.as_wint(0, "delivery tag must be number", r);
+	uint64_t tag=as_delivery_tag(params);
 	bool requeue=true; // by default return to queue
 	if(params.count()>1){
 		if(HashStringValue* options = params.as_hash(1)){
@@ -388,7 +393,7 @@ static void _reject(Request& r, MethodParams& params) {
 			}
 		}
 	}
-	int ret = amqp_basic_reject(self.connection(), self.channel(), (uint64_t)tag, requeue);
+	int ret = amqp_basic_reject(self.connection(), self.channel(), tag, requeue);
 	if(ret!=AMQP_STATUS_OK)
 		throw Exception("amqp", 0, "reject failed");
 }
@@ -643,6 +648,9 @@ static void _consume(Request& r, MethodParams& params) {
 		0 /*no_local*/, no_ack, exclusive, amqp_empty_table);
 	check(amqp_get_rpc_reply(self.connection()));
 
+	// amqp_maybe_release_buffers() recycles ok->consumer_tag
+	const char* consumer_tag_copy = ok ? pa_strdup((const char*)ok->consumer_tag.bytes, ok->consumer_tag.len) : 0;
+
 	struct timeval tv;
 
 	if(callback){
@@ -691,7 +699,7 @@ static void _consume(Request& r, MethodParams& params) {
 	}
 
 	if(ok){
-		amqp_basic_cancel(self.connection(), self.channel(), ok->consumer_tag);
+		amqp_basic_cancel(self.connection(), self.channel(), amqp_cstring_bytes(consumer_tag_copy));
 		check(amqp_get_rpc_reply(self.connection()));
 	}
 }
