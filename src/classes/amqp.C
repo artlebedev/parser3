@@ -28,7 +28,7 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.18 2026/09/15 20:48:14 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.19 2026/09/15 21:22:19 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -204,13 +204,22 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	self.freconnect_interval = reconnect_interval_sec;
 }
 
-// repairs a channel-level error cheaply: reopen on the same connection
+// repairs a channel-level error cheaply: reopen on the same connection. Only valid when the server has
+// already sent (or is about to send) channel.close - we're completing that handshake with close-ok, not
+// initiating our own.
 static void amqp_repair_channel(VAmqp& self) {
 	amqp_channel_close_ok_t close_ok;
 	amqp_send_method(self.fconnection, self.fchannel, AMQP_CHANNEL_CLOSE_OK_METHOD, &close_ok);
 	amqp_channel_open(self.fconnection, self.fchannel);
 	check(self, amqp_get_rpc_reply(self.fconnection), "channel repair ");
 	self.fstate = VAmqp::ALIVE;
+}
+
+// voluntarily closes and reopens an otherwise-healthy channel
+static void amqp_reset_channel(VAmqp& self) {
+	amqp_channel_close(self.fconnection, self.fchannel, AMQP_REPLY_SUCCESS);
+	amqp_channel_open(self.fconnection, self.fchannel);
+	amqp_get_rpc_reply(self.fconnection);
 }
 
 void VAmqp::ensure_connected() {
@@ -790,15 +799,26 @@ static amqp_rpc_reply_t amqp_consume_message_checked(amqp_connection_state_t con
 // never mask whatever error is already propagating, so its result is discarded rather than check()ed.
 class Temp_amqp_consumer {
 public:
-	Temp_amqp_consumer(VAmqp& aself, const char* aconsumer_tag): self(aself), consumer_tag(aconsumer_tag) {}
+	Temp_amqp_consumer(VAmqp& aself, const char* aconsumer_tag, bool adrain): self(aself), consumer_tag(aconsumer_tag), drain(adrain) {}
 	~Temp_amqp_consumer() {
 		if(!consumer_tag || self.fstate != VAmqp::ALIVE) return;
 		amqp_basic_cancel(self.fconnection, self.fchannel, amqp_cstring_bytes(consumer_tag));
 		amqp_get_rpc_reply(self.fconnection);
+		if(drain){
+			// The broker may have already sent a deliver frame for this (now cancelled) consumer before it even saw our cancel,
+			// so it can still be sitting in the library's own buffer. Its delivery tag belongs to the pre-reset channel and
+			// won't exist anymore afterward, so drain anything already in flight  - otherwise it would surface later, misattributed.
+			amqp_envelope_t envelope;
+			struct timeval no_wait = {0,0};
+			while(amqp_consume_message(self.fconnection, &envelope, &no_wait, 0).reply_type == AMQP_RESPONSE_NORMAL)
+				amqp_destroy_envelope(&envelope);
+			amqp_reset_channel(self);
+		}
 	}
 private:
 	VAmqp& self;
 	const char* consumer_tag;
+	bool drain;
 };
 
 static void _consume(Request& r, MethodParams& params) {
@@ -852,7 +872,7 @@ static void _consume(Request& r, MethodParams& params) {
 
 	// amqp_maybe_release_buffers() recycles ok->consumer_tag
 	const char* consumer_tag_copy = ok ? pa_strdup((const char*)ok->consumer_tag.bytes, ok->consumer_tag.len) : 0;
-	Temp_amqp_consumer cancel_consumer(self, consumer_tag_copy);
+	Temp_amqp_consumer cancel_consumer(self, consumer_tag_copy, ack && callback);
 
 	struct timeval tv;
 
