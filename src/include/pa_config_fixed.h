@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.96 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.97 2026/09/18 17:10:15 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -85,7 +85,7 @@ typedef __int64 int64_t;
 // otherwise functions in libpcre will be declared as __declspec(dllimport)
 #define PCRE_STATIC
 
-//xml-abled parser
+// xml-abled parser
 #define XML
 
 #define XML_STATIC
@@ -94,5 +94,8 @@ typedef __int64 int64_t;
 #ifdef XML_STATIC
 #define LIBXML_STATIC
 #endif
+
+// AMQP support requires librabbitmq; install it using "vcpkg install librabbitmq[ssl]:x64-windows"
+//#define WITH_AMQP
 
 #endif

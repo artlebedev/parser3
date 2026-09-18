@@ -28,7 +28,11 @@
 #include <string.h>
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.19 2026/09/15 21:22:19 moko Exp $" IDENT_PA_VAMQP_H;
+#ifdef _MSC_VER
+#pragma comment(lib, "rabbitmq.4.lib")
+#endif
+
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.20 2026/09/18 17:10:15 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
