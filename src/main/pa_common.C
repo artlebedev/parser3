@@ -23,7 +23,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.344 2026/09/18 20:08:37 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.345 2026/09/18 20:24:32 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // some maybe-undefined constants
 
@@ -708,13 +708,8 @@ char *pa_strcat(const char *a, const char *b, const char *c) {
 }
 
 const char *pa_filename(const char *path){
-	if(!path)
-		return NULL;
-	for(const char *c = path + strlen(path) - 1; c >= path; c--) {
-		if(*c == '/' || *c == '\\')
-			return c+1;
-        }
-        return path;
+	const char *slash=strrpbrk(path, "/\\");
+	return slash ? slash+1 : path;
 }
 
 size_t stdout_write(const void *buf, size_t size) {
@@ -1143,4 +1138,3 @@ int pa_snprintf(char* b, size_t s, const char* f, ...) {
 	va_end(l); 
 	return r;
 }
-
