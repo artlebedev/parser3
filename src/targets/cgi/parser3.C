@@ -5,13 +5,14 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.368 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.369 2026/09/18 20:08:37 moko Exp $";
 
 #include "pa_config_includes.h"
 
 #include "pa_sapi.h"
 #include "classes.h"
 #include "pa_common.h"
+#include "pa_dir.h"
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pa_threads.h"
@@ -65,15 +66,6 @@ static char** argv_extra = NULL;
 static THREAD_LOCAL Request_info *request_info_4log = NULL; // global for correct log() reporting
 static const char* filespec_4log = NULL; // null only if system-wide auto.p used
 
-template <typename T> static T *dir_pos(T *fname){
-	T *result=NULL;
-	while (fname=strpbrk(fname, "/\\")){
-		result=fname;
-		fname++;
-	}
-	return result;
-}
-
 const char *parser3_log_filespec() { // $status:log-filename
 	const char* slog=log_filespec;
 
@@ -85,7 +77,7 @@ const char *parser3_log_filespec() { // $status:log-filename
 		static char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
-		if(char* log_dir_pos=dir_pos(log_spec)){
+		if(char* log_dir_pos=strrpbrk(log_spec, "/\\")){
 			strcpy(log_dir_pos, "/parser3.log");
 		} else {
 			// no path, just filename
@@ -204,11 +196,7 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 
 static const char* full_disk_path(const char* file_name = "") {
 	char* result;
-	if(file_name[0]=='/'
-#ifdef WIN32
-		|| file_name[0] && file_name[1]==':'
-#endif
-	){
+	if(file_name[0]=='/' || is_os_absolute_path(file_name)){
 		result=pa_strdup(file_name);
 	} else {
 		char cwd[MAX_STRING];
@@ -247,7 +235,7 @@ static const char* locate_config(const char* config_filespec_option, const char*
 	if(!filespec_4log)
 		filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
 	if(!filespec_4log){
-			const char* exec_dir_pos = dir_pos(executable_path);
+			const char* exec_dir_pos = strrpbrk(executable_path, "/\\");
 #ifdef SYSTEM_CONFIG_FILE
 			if(exec_dir_pos){
 #endif

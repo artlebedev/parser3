@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.34 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.35 2026/09/18 20:08:37 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -79,5 +79,15 @@ void findclose(struct ffblk *_ffblk);
 		findclose(&ffblk); \
 	} \
 }
+
+class String;
+
+#ifdef WIN32
+bool is_os_absolute_path(const String& path);
+bool is_os_absolute_path(const char* path);
+#else
+inline bool is_os_absolute_path(const String&) { return false; }
+inline bool is_os_absolute_path(const char*) { return false; }
+#endif
 
 #endif

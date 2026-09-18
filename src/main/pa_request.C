@@ -7,6 +7,7 @@
 
 #include "pa_sapi.h"
 #include "pa_common.h"
+#include "pa_dir.h"
 #include "pa_os.h"
 #include "pa_request.h"
 #include "pa_wwrapper.h"
@@ -35,7 +36,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.440 2026/05/24 14:16:27 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.441 2026/09/18 20:08:37 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -721,18 +722,14 @@ const String& Request::relative(const char* apath, const String& relative_name) 
 }
 
 const String& Request::full_disk_path(const String& relative_name) {
+	if(is_os_absolute_path(relative_name))
+		return relative_name;
 	if(relative_name.first_char()=='/') {
 		String& result=*new String(pa_strdup(request_info.document_root));
 		result << relative_name;
 		return result;
 	}
-	if(relative_name.starts_with("http://") || relative_name.starts_with("parser://")
-#ifdef WIN32
-		|| relative_name.pos(":")==1  // DRIVE:
-		|| relative_name.starts_with("\\\\") // UNC1
-		|| relative_name.starts_with("//") // UNC2
-#endif
-		)
+	if(relative_name.starts_with("http://") || relative_name.starts_with("parser://"))
 		return relative_name;
 
 	return relative(request_info.path_translated ? request_info.path_translated : request_info.document_root, relative_name);

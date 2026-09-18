@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.198 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.199 2026/09/18 20:08:37 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -223,9 +223,21 @@ ssize_t file_block_read(const int f, void* buffer, const size_t size);
 void fix_line_breaks(char *str,	size_t& length /* < may change! used to speedup next actions */);
 
 char *getrow(char **row_ref,char delim='\n');
+
+// Return the last occurrence of any character in chars or NULL if absent
+const char *strrpbrk(const char *string, const char *chars);
+inline char *strrpbrk(char *string, const char *chars) {
+	return (char*)strrpbrk((const char*)string, chars);
+}
+
+// Split at the first occurrence of delimiter; return the suffix or NULL if absent
 char *lsplit(char *string, char delim);
-char *lsplit(char **string_ref,char delim);
+// Return the prefix; advance *string_ref to the suffix or set it to NULL if delimiter is absent
+char *lsplit(char **string_ref, char delim);
+
+// Split at the last occurrence of delimiter(s); return the suffix or NULL if absent
 char *rsplit(char *string, char delim);
+char *rsplit(char *string, const char *delims);
 
 char* unescape_chars(const char* cp, int len, Charset* client_charset=0, bool js=false/*true==decode \uXXXX and don't convert '+' to space*/);
 
@@ -306,4 +318,3 @@ enum Table2hash_value_type { C_HASH, C_STRING, C_TABLE, C_CODE };
 #endif
 
 #endif
-

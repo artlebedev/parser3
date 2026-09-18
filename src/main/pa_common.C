@@ -23,7 +23,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.343 2026/04/25 13:38:46 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.344 2026/09/18 20:08:37 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // some maybe-undefined constants
 
@@ -511,8 +511,8 @@ bool dir_exists(const String& file_spec) {
 
 const String* file_exist(const String& path, const String& name) {
 	String& result=*new String(path);
-	if(path.last_char() != '/')
-		result << "/"; 
+	if(path.last_char() != '/' && path.last_char() != '\\')
+		result << "/";
 	result << name;
 	return file_exist(result)?&result:0;
 }
@@ -631,9 +631,20 @@ char* getrow(char* *row_ref, char delim) {
 	return result;
 }
 
+const char* strrpbrk(const char* string, const char* chars) {
+	if(string) {
+		const char* pos=string+strlen(string);
+		while(pos!=string) {
+			if(strchr(chars, *--pos))
+				return pos;
+		}
+	}
+	return NULL;
+}
+
 char* lsplit(char* string, char delim) {
 	if(string) {
-		char* v=strchr(string, delim); 
+		char* v=strchr(string, delim);
 		if(v) {
 			*v=0;
 			return v+1;
@@ -644,18 +655,26 @@ char* lsplit(char* string, char delim) {
 
 char* lsplit(char* *string_ref, char delim) {
 	char* result=*string_ref;
-	char* next=lsplit(*string_ref, delim); 
+	char* next=lsplit(*string_ref, delim);
 	*string_ref=next;
 	return result;
 }
 
 char* rsplit(char* string, char delim) {
 	if(string) {
-		char* v=strrchr(string, delim); 
+		char* v=strrchr(string, delim);
 		if(v) {
 			*v=0;
 			return v+1;
 		}
+	}
+	return NULL;
+}
+
+char* rsplit(char* string, const char* delims) {
+	if(char* v=strrpbrk(string, delims)) {
+		*v=0;
+		return v+1;
 	}
 	return NULL;
 }

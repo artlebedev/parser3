@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.136 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.137 2026/09/18 20:08:37 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -349,7 +349,7 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	// beside by binary
 	static char beside_binary_path[MAX_STRING];
 	pa_strncpy(beside_binary_path, argv0, MAX_STRING); // filespec of my binary
-	if(!(rsplit(beside_binary_path, '/') || rsplit(beside_binary_path, '\\'))) { // strip filename
+	if(!rsplit(beside_binary_path, "/\\")) { // strip filename
 		// no path, just filename
 		beside_binary_path[0]='.'; beside_binary_path[1]=0;
 	}

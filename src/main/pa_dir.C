@@ -10,7 +10,19 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.34 2026/04/25 13:38:46 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.35 2026/09/18 20:08:37 moko Exp $" IDENT_PA_DIR_H;
+
+#ifdef WIN32
+bool is_os_absolute_path(const String& path) {
+	return is_os_absolute_path(path.cstr());
+}
+
+bool is_os_absolute_path(const char* path) {
+	return path[0] && path[0]!=':' && path[1]==':' // DRIVE: (including drive-relative paths, for compatibility)
+		|| path[0]=='\\' && path[1]=='\\' // UNC
+		|| path[0]=='/' && path[1]=='/';
+}
+#endif
 
 #ifdef _MSC_VER
 

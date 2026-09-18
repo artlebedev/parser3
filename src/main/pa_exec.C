@@ -13,7 +13,7 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.105 2026/04/25 13:38:46 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.106 2026/09/18 20:08:37 moko Exp $" IDENT_PA_EXEC_H;
 
 #ifdef _MSC_VER
 
@@ -81,7 +81,7 @@ static DWORD CreateHiddenConsoleProcess(LPCTSTR szCmdLine,
 	char dir[MAX_STRING];
 	pa_strncpy(dir, szScriptFileSpec, MAX_STRING);
 	lsplit(dir,' '); // trim arguments
-	rsplit(dir,'/'); rsplit(dir,'\\'); // trim filename
+	rsplit(dir,"/\\"); // trim filename
 	
 	// Create a child process (suspended)
 	fCreated=CreateProcess(NULL,
