@@ -77,7 +77,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.194 2026/09/19 22:45:10 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.195 2026/09/19 22:49:56 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -98,11 +98,6 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.194 2026/09/19 2
 #define YYMALLOC pa_malloc
 #define YYFREE pa_free
 
-// Windows headers define IN
-#ifdef IN
-#undef IN
-#endif
-
 // includes
 
 #include "compile_tools.h"
@@ -112,6 +107,11 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.tab.C,v 1.194 2026/09/19 2
 #include "pa_vdouble.h"
 #include "pa_globals.h"
 #include "pa_vmethod_frame.h"
+
+// Windows headers define IN
+#ifdef IN
+#undef IN
+#endif
 
 // defines
 

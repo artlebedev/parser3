@@ -247,6 +247,10 @@ inline size_t min(size_t a, size_t b){ return a<b ? a : b; }
 #endif
 
 #ifdef _MSC_VER
+
+// must be the very first Windows include: to prevent windows.h auto-include the legacy winsock.h
+#include <winsock2.h>
+
 // VS 2003
 #pragma warning(disable:4355)  // using this in calls to parent constructors
 #pragma warning(disable:4291)  // no matching operator delete found; memory will not be freed if initialization throws an exception

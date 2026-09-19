@@ -10,11 +10,10 @@
 #include "pa_vtable.h"
 
 #ifdef _MSC_VER
-#include "winsock2.h"
-#include "ws2tcpip.h"
+#include <ws2tcpip.h>
 #endif
 
-volatile const char * IDENT_INET_C="$Id: inet.C,v 1.22 2026/07/19 14:25:42 moko Exp $";
+volatile const char * IDENT_INET_C="$Id: inet.C,v 1.23 2026/09/19 22:45:10 moko Exp $";
 
 class MInet: public Methoded {
 public:
