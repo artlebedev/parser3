@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.304 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.305 2026/09/19 22:35:27 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -38,6 +38,11 @@ volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.304 2026/04/25 13:38
 #include "pa_vdouble.h"
 #include "pa_globals.h"
 #include "pa_vmethod_frame.h"
+
+// Windows headers define IN
+#ifdef IN
+#undef IN
+#endif
 
 // defines
 
