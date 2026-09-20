@@ -29,13 +29,9 @@
 #include <amqp_ssl_socket.h>
 #endif
 
-#ifdef _MSC_VER
-#pragma comment(lib, "rabbitmq.4.lib")
 #endif
 
-#endif
-
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.23 2026/09/20 11:38:43 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.24 2026/09/20 16:00:58 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class

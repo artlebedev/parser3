@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.219 2026/04/25 13:38:46 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.220 2026/09/20 16:00:58 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -357,10 +357,12 @@ void pa_dlinit() {
 #pragma comment(lib, PREFIX "pcre/" PLATFORM_64 CONFIGURATION "/pcre.lib")
 
 #ifndef PA_DEBUG_DISABLE_GC
-
 #pragma comment(lib, PREFIX "gc/" PLATFORM_64 CONFIGURATION "/gc.lib")
-
 #endif // PA_DEBUG_DISABLE_GC
+
+#ifdef WITH_AMQP
+#pragma comment(lib, PREFIX "rabbitmq/" PLATFORM_64 CONFIGURATION "/librabbitmq.4.lib")
+#endif
 
 
 #ifdef XML
