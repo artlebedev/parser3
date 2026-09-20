@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.98 2026/09/20 11:22:08 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.99 2026/09/20 17:44:53 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -99,7 +99,8 @@ typedef __int64 int64_t;
 #define LIBXML_STATIC
 #endif
 
-// AMQP support requires librabbitmq; install it using "vcpkg install librabbitmq[ssl]:x64-windows"
+// Prebuilt librabbitmq has no TLS support; install a TLS-enabled version
+// using "vcpkg install librabbitmq[ssl]:x64-windows" and replace the library files in win32\rabbitmq
 //#define WITH_AMQP
 
 // Avoid dependency on OpenSSL DLLs when TLS is not required
