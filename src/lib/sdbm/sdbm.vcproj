@@ -21,7 +21,6 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="pa-include;..\..\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
