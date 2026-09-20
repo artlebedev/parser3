@@ -21,7 +21,7 @@
 #include "libxml/xpath.h"
 #include "libxml/xpathInternals.h"
 
-volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.103 2026/04/25 13:38:46 moko Exp $" IDENT_XNODE_H;
+volatile const char * IDENT_XNODE_C="$Id: xnode.C,v 1.104 2026/09/20 00:27:40 moko Exp $" IDENT_XNODE_H;
 
 // classes
 
@@ -931,21 +931,21 @@ MXnode::MXnode(const char* aname): Methoded(aname?aname:"xnode") {
 
 	// consts
 
-#define CONST(name) consts.put(#name, new VInt(XML_##name))
-#define CONST2(name, value) consts.put(#name, new VInt(value))
+#define PA_CONST(name) consts.put(#name, new VInt(XML_##name))
+#define PA_CONST2(name, value) consts.put(#name, new VInt(value))
 
-	CONST(ELEMENT_NODE);
-	CONST(ATTRIBUTE_NODE);
-	CONST(TEXT_NODE);
-	CONST(CDATA_SECTION_NODE);
-	CONST2(ENTITY_REFERENCE_NODE, XML_ENTITY_REF_NODE);
-	CONST(ENTITY_NODE);
-	CONST2(PROCESSING_INSTRUCTION_NODE, XML_PI_NODE);
-	CONST(COMMENT_NODE);
-	CONST(DOCUMENT_NODE);
-	CONST(DOCUMENT_TYPE_NODE);
-	CONST2(DOCUMENT_FRAGMENT_NODE, XML_DOCUMENT_FRAG_NODE);
-	CONST(NOTATION_NODE);
+	PA_CONST(ELEMENT_NODE);
+	PA_CONST(ATTRIBUTE_NODE);
+	PA_CONST(TEXT_NODE);
+	PA_CONST(CDATA_SECTION_NODE);
+	PA_CONST2(ENTITY_REFERENCE_NODE, XML_ENTITY_REF_NODE);
+	PA_CONST(ENTITY_NODE);
+	PA_CONST2(PROCESSING_INSTRUCTION_NODE, XML_PI_NODE);
+	PA_CONST(COMMENT_NODE);
+	PA_CONST(DOCUMENT_NODE);
+	PA_CONST(DOCUMENT_TYPE_NODE);
+	PA_CONST2(DOCUMENT_FRAGMENT_NODE, XML_DOCUMENT_FRAG_NODE);
+	PA_CONST(NOTATION_NODE);
 }
 
 #endif

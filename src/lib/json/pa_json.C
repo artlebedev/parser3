@@ -358,8 +358,8 @@ static const uint8_t hextable[] = {
 
 /* high surrogate range from d800 to dbff */
 /* low surrogate range dc00 to dfff */
-#define IS_HIGH_SURROGATE(uc) (((uc) & 0xfc00) == 0xd800)
-#define IS_LOW_SURROGATE(uc)  (((uc) & 0xfc00) == 0xdc00)
+#define PA_IS_HIGH_SURROGATE(uc) (((uc) & 0xfc00) == 0xd800)
+#define PA_IS_LOW_SURROGATE(uc)  (((uc) & 0xfc00) == 0xdc00)
 
 /* transform an unicode [0-9A-Fa-f]{4} sequence into a proper value */
 static int decode_unicode_char(json_parser *parser)
@@ -380,7 +380,7 @@ static int decode_unicode_char(json_parser *parser)
 	}
 
 	if (parser->unicode_multi) {
-		if (!IS_LOW_SURROGATE(uval))
+		if (!PA_IS_LOW_SURROGATE(uval))
 			return JSON_ERROR_UNICODE_MISSING_LOW_SURROGATE;
 
 		uval = 0x10000 + ((parser->unicode_multi & 0x3ff) << 10) + (uval & 0x3ff);
@@ -392,9 +392,9 @@ static int decode_unicode_char(json_parser *parser)
 		return 0;
 	}
 
-	if (IS_LOW_SURROGATE(uval))
+	if (PA_IS_LOW_SURROGATE(uval))
 		return JSON_ERROR_UNICODE_UNEXPECTED_LOW_SURROGATE;
-	if (IS_HIGH_SURROGATE(uval)) {
+	if (PA_IS_HIGH_SURROGATE(uval)) {
 		parser->unicode_multi = (uint16_t)uval;
 		return 0;
 	}
