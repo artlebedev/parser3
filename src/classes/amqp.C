@@ -20,12 +20,14 @@
 #include "pa_globals.h"
 
 #ifdef WITH_AMQP
+
 #include <amqp.h>
 #include <amqp_tcp_socket.h>
-#include <amqp_ssl_socket.h>
 #include <amqp_framing.h>
-#include <stdlib.h>
-#include <string.h>
+
+#ifndef WITHOUT_AMQP_SSL
+#include <amqp_ssl_socket.h>
+#endif
 
 #ifdef _MSC_VER
 #pragma comment(lib, "rabbitmq.4.lib")
@@ -33,7 +35,7 @@
 
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.21 2026/09/19 22:45:10 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.22 2026/09/20 11:22:08 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -101,13 +103,15 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	const char* pass_c = "guest";
 	const char* vhost_c = "/";
 	const char* locale_c = "en_US";
-	int heartbeat = 30; // seconds
+	int heartbeat_sec = 30;
+	int reconnect_interval_sec = 0;
+	bool tls_specified = false;
+#ifndef WITHOUT_AMQP_SSL
 	const char* tls_ca = 0;
 	const char* tls_cert = 0;
 	const char* tls_key = 0;
-	bool tls_specified = false;
 	bool tls_verify = true;
-	int reconnect_interval_sec = 0;
+#endif
 
 	if(options){
 		for(HashStringValue::Iterator i(*options); i; i.next()){
@@ -126,10 +130,11 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 			} else if(key=="locale"){
 				locale_c=value->as_string().cstr();
 			} else if(key=="heartbeat"){
-				heartbeat=r.process(*value).as_int();
+				heartbeat_sec=r.process(*value).as_int();
 			} else if(key=="auto_reconnect"){
 				reconnect_interval_sec=r.process(*value).as_int();
 			} else if(key=="tls"){
+#ifndef WITHOUT_AMQP_SSL
 				tls_specified = true;
 				if(HashStringValue* tls_options=value->get_hash()){
 					for(HashStringValue::Iterator t(*tls_options); t; t.next()){
@@ -147,6 +152,9 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 							throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 					}
 				}
+#else
+				throw Exception("amqp", 0, "AMQP SSL support is disabled");
+#endif
 			} else
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
@@ -155,6 +163,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	amqp_connection_state_t conn = amqp_new_connection();
 	amqp_socket_t* socket = 0;
 
+#ifndef WITHOUT_AMQP_SSL
 	if(tls_specified) {
 		socket = amqp_ssl_socket_new(conn);
 		if(!socket)
@@ -177,7 +186,9 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 		amqp_ssl_socket_set_verify_peer(socket, tls_verify && tls_ca);
 		// If verify=true, enable hostname verification
 		amqp_ssl_socket_set_verify_hostname(socket, tls_verify);
-	} else {
+	} else
+#endif
+	{
 		socket = amqp_tcp_socket_new(conn);
 		if(!socket)
 			throw Exception("amqp", 0, "failed to create TCP socket");
@@ -185,7 +196,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 
 	status_check(self, amqp_socket_open(socket, host_c, port), tls_specified ? "open SSL socket " : "open TCP socket ");
 
-	amqp_rpc_reply_t rlogin = amqp_login(conn, vhost_c, 0, 131072, heartbeat, AMQP_SASL_METHOD_PLAIN, user_c, pass_c);
+	amqp_rpc_reply_t rlogin = amqp_login(conn, vhost_c, 0, 131072, heartbeat_sec, AMQP_SASL_METHOD_PLAIN, user_c, pass_c);
 	if(rlogin.reply_type != AMQP_RESPONSE_NORMAL){
 		amqp_destroy_connection(conn);
 		check(self, rlogin, "login ");

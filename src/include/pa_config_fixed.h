@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.97 2026/09/18 17:10:15 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.98 2026/09/20 11:22:08 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -49,7 +49,11 @@
 //types
 
 #ifndef ssize_t
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#else
 typedef int ssize_t;
+#endif
 #endif
 
 #ifndef uint8_t
@@ -97,5 +101,8 @@ typedef __int64 int64_t;
 
 // AMQP support requires librabbitmq; install it using "vcpkg install librabbitmq[ssl]:x64-windows"
 //#define WITH_AMQP
+
+// Avoid dependency on OpenSSL DLLs when TLS is not required
+//#define WITHOUT_AMQP_SSL
 
 #endif
