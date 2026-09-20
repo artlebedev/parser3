@@ -35,7 +35,7 @@
 
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.22 2026/09/20 11:22:08 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.23 2026/09/20 11:38:43 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -202,7 +202,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 		check(self, rlogin, "login ");
 	}
 
-	int channel = 1;
+	amqp_channel_t channel = 1;
 	amqp_channel_open(conn, channel);
 	amqp_rpc_reply_t ropen = amqp_get_rpc_reply(conn);
 	if(ropen.reply_type != AMQP_RESPONSE_NORMAL){
@@ -787,7 +787,7 @@ static struct timeval* amqp_wait_tv(struct timeval& tv, int timeout){
 //    message (if any) is still coming
 //  - anything else: a genuine channel/connection close (typically after a protocol violation) - build a
 //    reply so check() can classify it correctly (cheap channel repair vs full reconnect)
-static amqp_rpc_reply_t amqp_consume_message_checked(amqp_connection_state_t conn, int channel, amqp_envelope_t* envelope, struct timeval* tv) {
+static amqp_rpc_reply_t amqp_consume_message_checked(amqp_connection_state_t conn, amqp_channel_t channel, amqp_envelope_t* envelope, struct timeval* tv) {
 	for(;;) {
 		amqp_rpc_reply_t res = amqp_consume_message(conn, envelope, tv, 0);
 		if(res.reply_type != AMQP_RESPONSE_LIBRARY_EXCEPTION || res.library_error != AMQP_STATUS_UNEXPECTED_STATE)

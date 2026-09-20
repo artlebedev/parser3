@@ -8,7 +8,7 @@
 #ifndef PA_VAMQP_H
 #define PA_VAMQP_H
 
-#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.3 2026/09/15 17:53:05 moko Exp $"
+#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.4 2026/09/20 11:38:43 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -42,7 +42,7 @@ public: // usage
 	~VAmqp() {}
 
 	amqp_connection_state_t fconnection;
-	int fchannel;
+	amqp_channel_t fchannel;
 	bool fstop;
 	ConnState fstate;
 	HashStringValue* fcreate_options;
@@ -57,7 +57,7 @@ public: // usage
 		return fconnection;
 	}
 
-	int channel() {
+	amqp_channel_t channel() {
 		if(!fchannel)
 			throw Exception(PARSER_RUNTIME, 0, "using uninitialized amqp object channel");
 		ensure_connected();
