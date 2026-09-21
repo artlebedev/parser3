@@ -1,3 +1,75 @@
+2026-09-20  moko
+
+	* src/include/pa_config_fixed.h: Windows: librabbitmq TLS support
+	  how-to added (related to feature #1288)
+
+	* src/: classes/amqp.C, classes/classes.vcproj, main/pa_globals.C,
+	  types/types.vcproj: precompiled rabbitmq added to win32
+
+	* src/: classes/amqp.C, types/pa_vamqp.h: warnings war (related to
+	  feature #1288)
+
+	* src/: classes/amqp.C, include/pa_config_fixed.h: WITHOUT_AMQP_SSL
+	  feature added to avoid dependency on OpenSSL DLLs when TLS is not
+	  required (related to feature #1288)
+
+	* src/lib/ltdl/ltdl.vcproj: vs2026 warning war
+
+	* src/lib/sdbm/sdbm.vcproj: vs 2026 warning war
+
+	* src/: classes/xnode.C, lib/json/pa_json.C: vs 2026 warning war
+
+	* src/include/pa_config_includes.h: vs warning war
+
+	* src/main/compile.tab.C: vs2026 compilation fixes
+
+	* src/: classes/amqp.C, classes/curl.C, classes/inet.C,
+	  include/pa_config_includes.h, main/compile.tab.C: vs2026
+	  compilation fixes
+
+	* src/main/compile.y: vs2026 build fixes
+
+2026-09-18  moko
+
+	* src/main/pa_common.C: strrpbrk used once more
+
+	* src/main/pa_dir.C: new code moved to the end
+
+	* src/: include/pa_common.h, include/pa_dir.h, main/pa_common.C,
+	  main/pa_dir.C, main/pa_exec.C, main/pa_request.C,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C: strrpbrk,
+	  rsplit for delims, is_os_absolute_path added and used (related to
+	  feature #941)
+
+	* src/: classes/amqp.C, include/pa_config_fixed.h: Add AMQP support
+	  for Windows builds (related to feature #1288)
+
+2026-09-16  moko
+
+	* src/classes/amqp.C: Bugfix: leftover unacked messages got stuck
+	  after a listen-mode consume[] (related to feature #1288)
+	  ----------------------------------------------------------------
+
+2026-09-15  moko
+
+	* src/: classes/amqp.C, classes/math.C, include/pa_int.h,
+	  main/pa_int.C: Temp_amqp_consumer added for exceptions handling,
+	  ulp_distance used and moved to pa_int (related to feature #1288)
+
+	* src/classes/amqp.C: headers/arguments now processed in both
+	  directions, no_ack -> ack as default changed (related to feature
+	  #1288)
+
+	* src/: classes/amqp.C, types/pa_vamqp.h: error handling and
+	  $.auto_reconnect(N) option implemented (related to feature #1288)
+
+	* src/classes/amqp.C: allow both [] and () delivery tag (related to
+	  feature #1288)
+
+	* src/classes/amqp.C: _consume - pull and listen more more clearly
+	  separated; both have timeout(N) count(N) options (related to
+	  feature #1288)
+
 2026-09-07  moko
 
 	* tests/: 346-curl.html, 451-curl.html, results/346-curl.processed,
