@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.89 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.90 2026/09/24 02:23:26 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -129,21 +129,21 @@ class VHashReference: public VHashBase {
 public: // value
 
 	/// VHash: count
-	override int as_int() const { return fhash->count(); }
-	override double as_double() const { return fhash->count(); }
-	override bool is_defined() const { return fhash->count()!=0; }
-	override bool as_bool() const { return fhash->count()!=0; }
-	override Value& as_expr_result() { return *new VInt(fhash->count()); }
+	override int as_int() const { return hash().count(); }
+	override double as_double() const { return hash().count(); }
+	override bool is_defined() const { return hash().count()!=0; }
+	override bool as_bool() const { return hash().count()!=0; }
+	override Value& as_expr_result() { return *new VInt(hash().count()); }
 
 	/// VHash: fhash
-	override HashStringValue *get_hash() { return fhash; }
-	override HashStringValue* get_fields() { return fhash; }
-	override HashStringValue* get_fields_reference() { return fhash; }
+	override HashStringValue *get_hash() { return &hash(); }
+	override HashStringValue* get_fields() { return &hash(); }
+	override HashStringValue* get_fields_reference() { return &hash(); }
 
 	/// VHash: (key)=value
 	override Value* get_element(const String& aname) { 
 		// $element first
-		if(Value* result=fhash->get(aname))
+		if(Value* result=hash().get(aname))
 			return result;
 
 		// $fields -- pseudo field to make 'hash' more like 'table'
@@ -166,7 +166,7 @@ public: // value
 			return result;
 
 		// $element
-		if(Value* result=fhash->get(aname))
+		if(Value* result=hash().get(aname))
 			return result;
 
 		return 0;
@@ -175,7 +175,7 @@ public: // value
 	
 	/// VHash: (key)=value
 	override const VJunction* put_element(const String& aname, Value* avalue) {
-		fhash->put(aname, avalue);
+		hash().put(aname, avalue);
 		return 0;
 	}
 
@@ -184,12 +184,15 @@ public: // usage
 	VHashReference(HashStringValue& source): fhash(&source) {}
 
 	override HashStringValue& hash() { return *fhash; }
+	HashStringValue& hash() const { return const_cast<VHashReference*>(this)->hash(); }
+
 	override void set_default(Value*) { }
 	override Value* get_default() { return 0; }
-	override void add(Value* avalue) { fhash->put(String::Body::uitoa(fhash->count()), avalue); }
+	override void add(Value* avalue) { hash().put(String::Body::uitoa(hash().count()), avalue); }
 
-private:
+protected:
 
+	VHashReference(): fhash(0) {}
 	HashStringValue *fhash;
 };
 
