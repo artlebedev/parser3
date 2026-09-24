@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.280 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.281 2026/09/24 02:40:10 moko Exp $";
 
 // defines
 
@@ -550,18 +550,18 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 	} catch(const Exception& e) {
 		Request_context_saver throw_context(r); // remembering exception stack trace
 
-		Request::Exception_details details=r.get_details(e);
+		VException& details=*new VException(r, e);
 
 		try_context.restore(); // restoring try-context for code after try and catch-code
 
 		{
-			Temp_value_element temp(r, *catch_code->get_junction()->method_frame, exception_var_name, &details.vhash);
+			Temp_value_element temp(r, *catch_code->get_junction()->method_frame, exception_var_name, &details);
 			Temp_skip temp_skip(r);
 			result.processed_code=r.process(*catch_code);
 		}
 		
 		// retriving $exception.handled
-		Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
+		Value* vhandled=details.handled();
 
 		bool bhandled=false;
 		if(vhandled) {
@@ -647,7 +647,7 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 		} else
 			throw Exception(PARSER_RUNTIME,
 				result.exception_should_be_handled,
-				"$" EXCEPTION_VAR_NAME "." EXCEPTION_HANDLED_PART_NAME " value must be "
+				"$" EXCEPTION_VAR_NAME ".handled value must be "
 				"either boolean or string '" CACHE_EXCEPTION_HANDLED_CACHE_NAME "'");
 	} else
 		info.processed_code=&((Value &)result.processed_code).as_string();
@@ -859,13 +859,13 @@ static void _throw_operator(Request&, MethodParams& params) {
 	if(params.count()==1 && !params[0].is_string()) {
 		if(HashStringValue *hash=params[0].get_hash()) {
 			const char* type=0;
-			if(Value* value=hash->get(exception_type_part_name))
+			if(Value* value=hash->get(Symbols::TYPE_SYMBOL))
 				type=value->as_string().cstr();
 			const String* source=0;
-			if(Value* value=hash->get(exception_source_part_name))
+			if(Value* value=hash->get(Symbols::SOURCE_SYMBOL))
 				source=&value->as_string();
 			const char* comment=0;
-			if(Value* value=hash->get(exception_comment_part_name))
+			if(Value* value=hash->get(Symbols::COMMENT_SYMBOL))
 				comment=value->as_string().cstr();
 
 			throw Exception(type, source, "%s", comment); // to avoid MAX_STRING limit

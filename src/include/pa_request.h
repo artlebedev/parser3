@@ -8,31 +8,22 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.272 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.273 2026/09/24 02:40:10 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
 #include "pa_wcontext.h"
 #include "pa_value.h"
+#include "pa_vhash.h"
 #include "pa_stack.h"
 #include "pa_request_info.h"
 #include "pa_request_charsets.h"
 #include "pa_sapi.h"
 
-// defines for externs
-
-#define EXCEPTION_HANDLED_PART_NAME "handled"
-
-
 // externs
 
 extern const String main_method_name;
 extern const String auto_method_name;
-
-extern const String::Body exception_type_part_name;
-extern const String::Body exception_source_part_name;
-extern const String::Body exception_comment_part_name;
-extern const String::Body exception_handled_part_name;
 
 // defines for statics
 
@@ -54,6 +45,7 @@ class VResponse;
 class VCookie;
 class VStateless_class;
 class VConsole;
+class VException;
 
 extern int pa_loop_limit;
 extern int pa_array_limit;
@@ -70,6 +62,7 @@ class Request: public PA_Object {
 	friend class Temp_recursion;
 	friend class Request_context_saver;
 	friend class Exception_trace;
+	friend class VException;
 
 public:
 	class Trace {
@@ -182,14 +175,7 @@ private:
 public:
 	uint register_file(String::Body file_spec);
 
-	struct Exception_details {
-		const Operation::Origin origin;
-		const String* problem_source;
-		VHash& vhash;
-		Exception_details(const Operation::Origin aorigin, const String* aproblem_source, VHash& avhash): origin(aorigin), problem_source(aproblem_source), vhash(avhash) {}
-	};
-	Exception_details get_details(const Exception& e);
-	const char* get_exception_cstr(const Exception& e, Exception_details& details);
+	const char* get_exception_cstr(const Exception& e, VException& details);
 
 	/// @see Stack::wipe_unused
 	void wipe_unused_execution_stack() {
@@ -431,6 +417,24 @@ private: // connection manipulation
 private:
 
 	void output_result(VFile* body_file, bool header_only, bool as_attachment);
+};
+
+/// Hash-compatible exception; hash is built on demand.
+class VException: public VHashReference {
+	Exception fexception;
+	String::Body ffile;
+	Value* fhandled;
+public:
+	Operation::Origin origin;
+	const String* problem_source;
+
+	VException(Request& r, const Exception& e);
+
+	override HashStringValue& hash();
+	override Value* get_element(const String& name);
+	override const VJunction* put_element(const String& name, Value* value);
+
+	Value* handled();
 };
 
 /// Auto-object used to save request context across ^try body

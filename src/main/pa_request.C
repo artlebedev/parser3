@@ -36,7 +36,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.441 2026/09/18 20:08:37 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.442 2026/09/24 02:40:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -58,10 +58,6 @@ const size_t FILE_SIZE_LIMIT=512*1024*1024;
 #define USE_METHOD_NAME "use"
 #define AUTOUSE_METHOD_NAME "autouse"
 
-#define EXCEPTION_TYPE_PART_NAME "type"
-#define EXCEPTION_SOURCE_PART_NAME "source"
-#define EXCEPTION_COMMENT_PART_NAME "comment"
-
 #define ORIGIN_KEY "origin"
 
 // globals
@@ -70,11 +66,6 @@ const String main_method_name(MAIN_METHOD_NAME);
 const String auto_method_name(AUTO_METHOD_NAME);
 static const String use_method_name(USE_METHOD_NAME);
 static const String autouse_method_name(AUTOUSE_METHOD_NAME);
-
-const String::Body exception_type_part_name(EXCEPTION_TYPE_PART_NAME);
-const String::Body exception_source_part_name(EXCEPTION_SOURCE_PART_NAME);
-const String::Body exception_comment_part_name(EXCEPTION_COMMENT_PART_NAME);
-const String::Body exception_handled_part_name(EXCEPTION_HANDLED_PART_NAME);
 
 static const String origin_key(ORIGIN_KEY);
 
@@ -393,7 +384,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	methoded_array().configure_admin(*this);
 }
 
-const char* Request::get_exception_cstr(const Exception& e, Request::Exception_details& details) {
+const char* Request::get_exception_cstr(const Exception& e, VException& details) {
 
 #define PA_URI_FORMAT "%s: "
 #define PA_COMMENT_TYPE_FORMAT "%s [%s]"
@@ -527,7 +518,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 	} catch(const Exception& e) { // request handling problem
 
 		// we're returning not result, but error explanation
-		Request::Exception_details details=get_details(e);
+		VException& details=*new VException(*this, e);
 		const char* exception_cstr=get_exception_cstr(e, details);
 
 		// reset language to default
@@ -547,7 +538,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 				Table& stack_trace=exception_trace.table(*this);
 				exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled would not be mislead by old stack contents (see extract_origin)
 
-				Value *params[]={&details.vhash, new VTable(&stack_trace)};
+				Value *params[]={&details, new VTable(&stack_trace)};
 				METHOD_FRAME_ACTION(*method, 0 /*no caller*/, main_class, {
 					frame.store_params(params, 2);
 					call(frame);
@@ -556,12 +547,12 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			}
 
 			// conditionally log it
-			Value* vhandled=details.vhash.hash().get(exception_handled_part_name);
+			Value* vhandled=details.handled();
 			if(!vhandled || !vhandled->as_bool()) {
 				SAPI::log(sapi_info, "%s", exception_cstr);
 			}
 		} catch(const Exception& e) { // exception in @unhandled_exception
-			Request::Exception_details details=get_details(e);
+			VException& details=*new VException(*this, e);
 			// logging both initial and new exceptions
 			SAPI::log(sapi_info, "%s", exception_cstr);
 			SAPI::log(sapi_info, "Exception in @unhandled_exception at %s", get_exception_cstr(e, details));
@@ -1025,13 +1016,13 @@ const String& Request::transcode(const xmlChar* s) {
 }
 #endif
 
-Request::Exception_details Request::get_details(const Exception& e) {
-	const String* problem_source=e.problem_source();
-	VHash& vhash=*new VHash;  HashStringValue& hash=vhash.hash();
-	Operation::Origin origin={0, 0, 0};
+VException::VException(Request& r, const Exception& e):
+	fexception(e), fhandled(&VBool::get(false)),
+	origin(Operation::Origin::create(0, 0, 0)), problem_source(e.problem_source()) {
+	Request::Exception_trace& exception_trace=r.exception_trace;
 
 	if(!exception_trace.is_empty()) {
-		Trace bottom=exception_trace.bottom_value();
+		Request::Trace bottom=exception_trace.bottom_value();
 		origin=bottom.origin();
 		if(!problem_source) { // we don't know who trigged the bug
 			problem_source=bottom.name(); // we usually know source of next-from-throw-point exception did that
@@ -1042,30 +1033,65 @@ Request::Exception_details Request::get_details(const Exception& e) {
 			// stack top contains not us, leaving intact to help ^throw
 		}
 	}
+	if(origin.file_no)
+		ffile=r.file_list[origin.file_no];
+}
 
-	// $.type
-	if(const char* type=e.type(true))
-		hash.put(exception_type_part_name, new VString(*new String(type)));
+Value* VException::handled() {
+	return fhash ? fhash->get(Symbols::HANDLED_SYMBOL) : fhandled;
+}
 
-	// $.source
-	if(problem_source)
-		hash.put(exception_source_part_name, new VString(*problem_source));
-
-	// $.file $.lineno $.colno
-	if(origin.file_no){
-		HASH_PUT_CSTR(hash, "file", new VString(file_list[origin.file_no]));
-		HASH_PUT_CSTR(hash, "lineno", new VInt(1+origin.line));
-		HASH_PUT_CSTR(hash, "colno", new VInt(1+origin.col));
+Value* VException::get_element(const String& name) {
+	if(!fhash) {
+		if(SYMBOLS_EQ(name,HANDLED_SYMBOL))
+			return fhandled;
+		if(SYMBOLS_EQ(name,TYPE_SYMBOL))
+			return fexception.type(true) ? new VString(*new String(fexception.type())) : 0;
+		if(SYMBOLS_EQ(name,SOURCE_SYMBOL))
+			return problem_source ? new VString(*problem_source) : 0;
+		if(SYMBOLS_EQ(name,COMMENT_SYMBOL))
+			return fexception.comment(true) ? new VString(fexception.comment()) : 0;
+		if(SYMBOLS_EQ(name,FILE_SYMBOL))
+			return origin.file_no ? new VString(ffile) : 0;
+		if(SYMBOLS_EQ(name,LINENO_SYMBOL))
+			return origin.file_no ? new VInt(1+origin.line) : 0;
+		if(SYMBOLS_EQ(name,COLNO_SYMBOL))
+			return origin.file_no ? new VInt(1+origin.col) : 0;
+		if(SYMBOLS_EQ(name,FIELDS_SYMBOL))
+			return this;
 	}
+	// Computed field names need not be interned: use ordinary hash lookup.
+	return VHashReference::get_element(name);
+}
 
-	// $.comment
-	if(const char* comment=e.comment(true))
-		hash.put(exception_comment_part_name, new VString(comment));
+const VJunction* VException::put_element(const String& name, Value* value) {
+	if(!fhash && SYMBOLS_EQ(name,HANDLED_SYMBOL)) {
+		fhandled=value;
+		return 0;
+	}
+	return VHashReference::put_element(name, value);
+}
 
-	// $.handled(0)
-	hash.put(exception_handled_part_name, &VBool::get(false));
+HashStringValue& VException::hash() {
+	if(fhash)
+		return *fhash;
+	HashStringValue& result=*new HashStringValue;
 
-	return Request::Exception_details(origin, problem_source, vhash);
+	if(const char* type=fexception.type(true))
+		result.put(Symbols::TYPE_SYMBOL, new VString(*new String(type)));
+	if(problem_source)
+		result.put(Symbols::SOURCE_SYMBOL, new VString(*problem_source));
+	if(origin.file_no) {
+		result.put(Symbols::FILE_SYMBOL, new VString(ffile));
+		result.put(Symbols::LINENO_SYMBOL, new VInt(1+origin.line));
+		result.put(Symbols::COLNO_SYMBOL, new VInt(1+origin.col));
+	}
+	if(const char* comment=fexception.comment(true))
+		result.put(Symbols::COMMENT_SYMBOL, new VString(comment));
+	result.put(Symbols::HANDLED_SYMBOL, fhandled);
+
+	fhash=&result;
+	return result;
 }
 
 Temp_value_element::Temp_value_element(Request& arequest, Value& awhere, const String& aname, Value* awhat) :
