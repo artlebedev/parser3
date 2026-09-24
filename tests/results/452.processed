@@ -1,0 +1,57 @@
+Content-Type: text/html
+Content-Length: 865
+
+{
+"changed":{
+"type":"changed.type",
+"file":"changed.p",
+"lineno":123,
+"colno":45,
+"comment":"after copy",
+"handled":true,
+"extra":"extra value"
+},
+"copy":{
+"type":"changed.type",
+"source":"changed.source",
+"file":"changed.p",
+"lineno":123,
+"colno":45,
+"comment":"changed comment",
+"handled":true,
+"extra":"extra value"
+},
+"reference":{
+"type":"original.type",
+"source":"fail",
+"comment":"via reference",
+"handled":true
+},
+"reset":{
+"type":"original.type",
+"source":"fail",
+"comment":"original comment",
+"handled":true
+},
+"delete":{
+"type":"original.type",
+"source":"fail",
+"comment":"original comment",
+"handled":true
+},
+"rethrow":{
+"type":"rethrow.type",
+"source":"rethrow.source",
+"comment":"rethrow comment",
+"handled":true
+},
+"cleared":{
+"handled":true
+},
+"unhandled":{
+"type":"original.type",
+"source":"fail",
+"comment":"top level comment",
+"handled":true
+}
+}

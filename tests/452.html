@@ -1,0 +1,86 @@
+@main[]
+$report[^hash::create[]]
+
+# Materialization preserves handled; aliases see changes, copies do not.
+^try{^fail[]}{
+	$exception.handled(true)
+	$alias[$exception]
+	$exception.type[changed.type]
+	$exception.source[changed.source]
+	$exception.comment[changed comment]
+	$exception.file[changed.p]
+	$exception.lineno(123)
+	$exception.colno(45)
+	$exception.extra[extra value]
+	$copy[^hash::create[$exception]]
+	$alias.comment[after copy]
+	^exception.delete[source]
+	$report.changed[$exception]
+	$report.copy[$copy]
+}
+
+# A fields reference must change the handled value checked by try.
+^try{^fail[]}{
+	$reference[^reflection:fields_reference[$exception]]
+	$reference.handled(true)
+	$reference.comment[via reference]
+	$report.reference[^summary[$exception]]
+}
+
+# Resetting or removing handled propagates the original C++ exception.
+^propagate[reset]
+^propagate[delete]
+
+# Explicit throw reads the changed diagnostic fields.
+^try{
+	^try{^fail[]}{
+		$exception.type[rethrow.type]
+		$exception.source[rethrow.source]
+		$exception.comment[rethrow comment]
+		$exception.handled(true)
+		^throw[$exception]
+	}
+}{
+	$exception.handled(true)
+	$report.rethrow[^summary[$exception]]
+}
+
+# Clearing the hash and setting handled again must still handle the error.
+^try{^fail[]}{
+	^exception.delete[]
+	$exception.handled(true)
+	$report.cleared[$exception]
+}
+
+# Check mutation in unhandled_exception as well.
+^fail[]
+
+@fail[]
+^throw[original.type;fail;original comment]
+
+@propagate[mode]
+^try{
+	^try{^fail[]}{
+		$exception.handled(true)
+		$exception.type[ignored.type]
+		$exception.comment[ignored comment]
+		^if($mode eq 'reset'){
+			$exception.handled(false)
+		}{
+			^exception.delete[handled]
+		}
+	}
+	$report.unexpected[exception was swallowed]
+}{
+	$exception.handled(true)
+	$report.$mode[^summary[$exception]]
+}
+
+@summary[error]
+$result[$.type[$error.type] $.source[$error.source] $.comment[$error.comment] $.handled($error.handled)]
+
+@unhandled_exception[exception;stack]
+$exception.comment[top level comment]
+$exception.handled(true)
+$report.unhandled[^summary[$exception]]
+^json:string[$report]
