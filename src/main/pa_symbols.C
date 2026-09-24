@@ -7,7 +7,7 @@
 #include "pa_symbols.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.14 2026/04/25 13:38:46 moko Exp $" IDENT_PA_SYMBOLS_H;
+volatile const char * IDENT_PA_SYMBOLS_C="$Id: pa_symbols.C,v 1.15 2026/09/24 02:28:33 moko Exp $" IDENT_PA_SYMBOLS_H;
 
 const String Symbols::SELF_SYMBOL("self");
 const String Symbols::CALLER_SYMBOL("caller");
@@ -34,6 +34,14 @@ const String Symbols::TABLES_SYMBOL("tables");
 const String Symbols::FILES_SYMBOL("files");
 const String Symbols::IMAP_SYMBOL("imap");
 const String Symbols::ELEMENTS_SYMBOL("elements");
+
+const String Symbols::TYPE_SYMBOL("type");
+const String Symbols::SOURCE_SYMBOL("source");
+const String Symbols::COMMENT_SYMBOL("comment");
+const String Symbols::FILE_SYMBOL("file");
+const String Symbols::LINENO_SYMBOL("lineno");
+const String Symbols::COLNO_SYMBOL("colno");
+const String Symbols::HANDLED_SYMBOL("handled");
 
 #ifdef SYMBOLS_CACHING
 
@@ -80,6 +88,14 @@ void Symbols::init(){
 	symbols->set(FILES_SYMBOL);
 	symbols->set(IMAP_SYMBOL);
 	symbols->set(ELEMENTS_SYMBOL);
+
+	symbols->set(TYPE_SYMBOL);
+	symbols->set(SOURCE_SYMBOL);
+	symbols->set(COMMENT_SYMBOL);
+	symbols->set(FILE_SYMBOL);
+	symbols->set(LINENO_SYMBOL);
+	symbols->set(COLNO_SYMBOL);
+	symbols->set(HANDLED_SYMBOL);
 }
 
 #endif // SYMBOLS_CACHING
