@@ -1,5 +1,6 @@
 #!/bin/sh
 
+TZ=Europe/Moscow \
 SERVER_SOFTWARE=make_test \
 PATH_TRANSLATED=$2 \
 PATH_INFO=/tests/$2 \
