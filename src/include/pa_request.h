@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.273 2026/09/24 02:40:10 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.274 2026/09/25 12:55:42 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -118,6 +118,7 @@ private:
 		size_t bottom_index() { return fbottom; }
 		void set_bottom_index(size_t abottom) { fbottom=abottom; }
 		element_type bottom_value() { return get(bottom_index()); }
+		void set_range(size_t bottom, size_t top) { fbottom=bottom; fsize=top; }
 
 		void clear() {
 			fsize=fbottom=0;
@@ -127,7 +128,7 @@ private:
 			return fsize==fbottom;
 		}
 
-		Table &table(Request &r);
+		Table &table(Request &r, const String* problem_source);
 	};
 
 	///@{ core data
@@ -149,9 +150,9 @@ private:
 	/// execution stack
 	Stack<StackItem> stack;
 
+public:
 	/// exception stack trace
 	Exception_trace exception_trace;
-public:
 
 	bool allow_class_replace;
 
@@ -441,9 +442,6 @@ public:
 class Request_context_saver {
 	Request& fr;
 
-	/// exception stack trace
-	size_t exception_trace_top;
-	size_t exception_trace_bottom;
 	/// execution stack
 	size_t stack;
 	uint anti_endless_execute_recursion;
@@ -459,8 +457,6 @@ class Request_context_saver {
 public:
 	Request_context_saver(Request& ar) :
 		fr(ar),
-		exception_trace_top(ar.exception_trace.top_index()),
-		exception_trace_bottom(ar.exception_trace.bottom_index()),
 		stack(ar.stack.top_index()),
 		anti_endless_execute_recursion(ar.anti_endless_execute_recursion),
 		method_frame(ar.method_frame),
@@ -469,8 +465,6 @@ public:
 		flang(ar.flang),
 		fconnection(ar.fconnection) {}
 	void restore() {
-		fr.exception_trace.set_top_index(exception_trace_top);
-		fr.exception_trace.set_bottom_index(exception_trace_bottom);
 		fr.stack.set_top_index(stack);
 		fr.anti_endless_execute_recursion=anti_endless_execute_recursion;
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;

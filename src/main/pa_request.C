@@ -36,7 +36,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.442 2026/09/24 02:40:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.443 2026/09/25 12:55:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -422,7 +422,7 @@ const char* Request::get_exception_cstr(const Exception& e, VException& details)
 	return result;
 }
 
-Table &Request::Exception_trace::table(Request &r){
+Table &Request::Exception_trace::table(Request &r, const String* problem_source){
 	// $stack[^table::create{name	file	lineno	colno}]
 	Table::columns_type stack_trace_columns(new ArrayString);
 	*stack_trace_columns+=new String("name");
@@ -432,7 +432,7 @@ Table &Request::Exception_trace::table(Request &r){
 	Table& stack_trace=*new Table(stack_trace_columns);
 
 	if(!is_empty()/*signed!*/)
-		for(size_t i=bottom_index(); i<top_index(); i++) {
+		for(size_t i=bottom_index()+(bottom_value().name()==problem_source); i<top_index(); i++) {
 			Trace trace=get(i);
 			Table::element_type row(new ArrayString);
 
@@ -535,7 +535,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 			if(const Method *method=main_class.get_method(*new String(UNHANDLED_EXCEPTION_METHOD_NAME))) {
 				// preparing parameters to @unhandled_exception[exception;stack]
 
-				Table& stack_trace=exception_trace.table(*this);
+				Table& stack_trace=exception_trace.table(*this, details.problem_source);
 				exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled would not be mislead by old stack contents (see extract_origin)
 
 				Value *params[]={&details, new VTable(&stack_trace)};
@@ -1024,14 +1024,8 @@ VException::VException(Request& r, const Exception& e):
 	if(!exception_trace.is_empty()) {
 		Request::Trace bottom=exception_trace.bottom_value();
 		origin=bottom.origin();
-		if(!problem_source) { // we don't know who trigged the bug
+		if(!problem_source) // we don't know who trigged the bug
 			problem_source=bottom.name(); // we usually know source of next-from-throw-point exception did that
-			exception_trace.set_bottom_index(exception_trace.bottom_index()+1);
-		} else if (bottom.name()==problem_source) { // it is that same guy?
-			exception_trace.set_bottom_index(exception_trace.bottom_index()+1); // throw away that trace
-		} else {
-			// stack top contains not us, leaving intact to help ^throw
-		}
 	}
 	if(origin.file_no)
 		ffile=r.file_list[origin.file_no];

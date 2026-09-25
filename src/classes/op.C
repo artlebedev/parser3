@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.281 2026/09/24 02:40:10 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.282 2026/09/25 12:55:42 moko Exp $";
 
 // defines
 
@@ -537,7 +537,6 @@ template<class I>
 static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I info, Value* catch_code, bool could_be_handled_by_caller=false) {
 	Try_catch_result result;
 
-	// minor bug: context not restored if only finally code is present, see #1062
 	if(!catch_code) {
 		result.processed_code=body_code(r, info);
 		return result;
@@ -545,38 +544,48 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 
 	// taking snapshot of try-context
 	Request_context_saver try_context(r);
+	size_t trace_start=r.exception_trace.top_index();
+
 	try {
 		result.processed_code=body_code(r, info);
 	} catch(const Exception& e) {
-		Request_context_saver throw_context(r); // remembering exception stack trace
+		size_t trace_bottom=r.exception_trace.bottom_index();
+		size_t trace_top=r.exception_trace.top_index();
 
 		VException& details=*new VException(r, e);
 
-		try_context.restore(); // restoring try-context for code after try and catch-code
+		try_context.restore(); // restoring try-context for catch code
 
-		{
-			Temp_value_element temp(r, *catch_code->get_junction()->method_frame, exception_var_name, &details);
-			Temp_skip temp_skip(r);
-			result.processed_code=r.process(*catch_code);
-		}
-		
-		// retriving $exception.handled
-		Value* vhandled=details.handled();
+		r.exception_trace.set_bottom_index(trace_top); // keep the original trace occupied; errors in catch start after it
 
 		bool bhandled=false;
-		if(vhandled) {
-			if(vhandled->is_string()) { // not simple $exception.handled(1/0)?
-				if(bhandled=could_be_handled_by_caller) { // and we can possibly handle it
-					result.exception_should_be_handled=vhandled->get_string(); // considering 'recovered' and let the caller recover
-				}
-			} else
-				bhandled=vhandled->as_bool();
+		try {
+			{
+				Temp_value_element temp(r, *catch_code->get_junction()->method_frame, exception_var_name, &details);
+				Temp_skip temp_skip(r);
+				result.processed_code=r.process(*catch_code);
+			}
+
+			Value* vhandled=details.handled();
+			if(vhandled) {
+				if(vhandled->is_string()) { // not simple $exception.handled(1/0)?
+					if(bhandled=could_be_handled_by_caller) { // and we can possibly handle it
+						result.exception_should_be_handled=vhandled->get_string(); // considering 'recovered' and let the caller recover
+					}
+				} else
+					bhandled=vhandled->as_bool();
+			}
+		} catch(...) {
+			// restore execution for finally, but keep new error trace.
+			try_context.restore();
+			rethrow;
 		}
 
 		if(!bhandled){
-			throw_context.restore(); // restoring exception stack trace creared by try_context.restore()
+			r.exception_trace.set_range(trace_bottom, trace_top);
 			rethrow;
 		}
+		r.exception_trace.set_range(trace_start, trace_start);
 	}
 
 	return result;
@@ -833,8 +842,12 @@ static void _try_operator(Request& r, MethodParams& params) {
 	} catch(...){
 		// process finally code but ignore the result
 		if(finally_code){
+			size_t trace_bottom=r.exception_trace.bottom_index();
+			size_t trace_top=r.exception_trace.top_index();
+			r.exception_trace.set_bottom_index(trace_top);
 			Temp_skip temp(r);
 			/* Value &finally_result= */ r.process(*finally_code);
+			r.exception_trace.set_range(trace_bottom, trace_top);
 		}
 		rethrow;
 	}
