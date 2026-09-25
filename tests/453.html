@@ -1,0 +1,26 @@
+# A handled nested error must not overwrite the original trace (bug #1082)
+@main[]
+$report[^hash::create[]]
+^try{^outer[]}{
+	$report.first[$exception.source]
+	^clear_stack[]
+}
+
+@outer[]
+^missing_outer[]
+
+@clear_stack[]
+^try{^inner[]}{
+	$report.inner[$exception.source]
+	$exception.handled(true)
+}
+
+@inner[]
+^missing_inner[]
+
+@unhandled_exception[exception;stack]
+$exception.handled(true)
+$report.last[$exception.source]
+$report.line($exception.lineno)
+$report.stack[^stack.menu{$stack.name}[,]]
+^json:string[$report]

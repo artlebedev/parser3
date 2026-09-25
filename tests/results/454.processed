@@ -1,0 +1,8 @@
+Content-Type: text/html
+Content-Length: 59
+
+{
+"source":"missing_inner",
+"line":9,
+"stack":"inner,try"
+}

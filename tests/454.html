@@ -1,0 +1,13 @@
+# A replacement error in finally must not inherit the original trace (related to bug #1082)
+@main[]
+^try{^outer[]}{}{^inner[]}
+
+@outer[]
+^missing_outer[]
+
+@inner[]
+^missing_inner[]
+
+@unhandled_exception[exception;stack]
+$exception.handled(true)
+^json:string[$.source[$exception.source] $.line($exception.lineno) $.stack[^stack.menu{$stack.name}[,]]]

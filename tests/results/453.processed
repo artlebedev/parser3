@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 108
+
+{
+"first":"missing_outer",
+"inner":"missing_inner",
+"last":"missing_outer",
+"line":10,
+"stack":"outer,try"
+}
