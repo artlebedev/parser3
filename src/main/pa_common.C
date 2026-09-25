@@ -23,7 +23,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.345 2026/09/18 20:24:32 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.346 2026/09/25 13:53:43 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // some maybe-undefined constants
 
@@ -359,17 +359,31 @@ bool file_write_action_under_lock(const String& file_spec, const char* action_na
 struct File_write_action_info {
 	const char* str;
 	size_t length;
-}; 
+};
 #endif
 
+// a single write() must stay below INT_MAX as windows _write() reports written bytes as int
+#define FILE_WRITE_CHUNK_SIZE (256*0x100000)
+
+static const char* bytes_left(size_t rest) {
+	return rest ? pa_strcat(", ", pa_uitoa(rest), " bytes left") : "";
+}
+
 static void file_write_action(int f, void *context) {
-	File_write_action_info& info=*static_cast<File_write_action_info *>(context); 
-	if(info.length) {
-		ssize_t written=write(f, info.str, info.length); 
+	File_write_action_info& info=*static_cast<File_write_action_info *>(context);
+
+	const char* data=info.str;
+	size_t left=info.length;
+
+	while(left) {
+		size_t portion=min(left, (size_t)FILE_WRITE_CHUNK_SIZE);
+		ssize_t written=write(f, data, portion);
 		if(written<0)
-			throw Exception("file.write", 0, "write failed: %s (%d)",  strerror(errno), errno); 
-		if((size_t)written!=info.length)
-			throw Exception("file.write", 0, "write failed: %u of %u bytes written", written, info.length);
+			throw Exception("file.write", 0, "error writing %s bytes: %s (%d)%s", pa_uitoa(portion), strerror(errno), errno, bytes_left(left-portion));
+		if(written==0)
+			throw Exception("file.write", 0, "error writing %s bytes: zero bytes written%s", pa_uitoa(portion), bytes_left(left-portion));
+		data+=written;
+		left-=written;
 	}
 }
 
