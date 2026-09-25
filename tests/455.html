@@ -1,0 +1,85 @@
+# ^reflection:stack[$exception]: lazy snapshots within catch lifetime (feature #1145)
+@main[]
+^core[]
+
+@core[]
+$report[^hash::create[]]
+^try{^bug[]}{
+	$exception.handled(true)
+	$saved[$exception]
+	$report.caught[^cleanE[$exception]]
+	$report.caught_stack[^stack[$exception]]
+
+	^try{^inner(10)}{
+		$exception.handled(true)
+		$inner_saved[^cleanE[$exception]]
+		$report.inner_stack[^stack[$exception]]
+		$report.caught_in_inner[$saved]
+		$report.caught_in_inner_stack[^stack[$saved]]
+	}
+
+	$report.caught_after[^cleanE[$exception]]
+	$report.caught_after[^stack[$exception]]
+
+	$report.inner_expired[^expired[$inner_saved]]
+
+	$report.current_stack[^cleanS[^reflection:stack[]]]
+}{
+	$report.finally_expired[^expired[$saved]]
+}
+
+$report.outside_expired[^expired[$saved]]
+
+^try{
+	^try{^bug[]}{
+		$replaced[$exception]
+		^replacement[]
+	}
+}{
+	$exception.handled(true)
+	$report.replaced_expired[^expired[$replaced]]
+	$report.replacement[^stack[$exception]]
+}
+
+^try{^bug[]}{
+	$propagated[$exception]
+	$report.propagating[^stack[$exception]]
+}
+
+@cleanE[result]
+$result.file[file]
+
+@cleanS[result]
+^result.foreach[;v]{
+    $v.self[]
+    $v.file[file]
+}
+
+@clean[result]
+^result.menu{$result.file[file]}
+
+@stack[e]
+$result[^clean[^reflection:stack[$e]]]
+
+@bug[]
+^if(1){ ^missing_bug[] }
+
+@inner[n]
+^if($n>0){^inner($n-1)}{^missing_inner[]}
+
+@replacement[]
+^missing_replacement[]
+
+@expired[error]
+^try{^reflection:stack[$error]}{
+	$exception.handled(true)
+	$result[$exception.comment]
+}
+
+@unhandled_exception[exception;stack]
+$exception.handled(true)
+
+$report.top_expired[^expired[$exception]]
+$report.propagated_expired[^expired[$propagated]]
+
+^json:string[$report; $.indent(true) ]

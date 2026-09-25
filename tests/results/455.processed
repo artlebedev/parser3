@@ -1,0 +1,87 @@
+Content-Type: text/html
+Content-Length: 2894
+
+{
+	"caught":{
+		"type":"parser.runtime",
+		"source":"missing_bug",
+		"file":"file",
+		"lineno":65,
+		"colno":10,
+		"comment":"undefined method",
+		"handled":true
+	},
+	"caught_stack":[
+		{"name":"if","file":"file","lineno":"65","colno":"2"},
+		{"name":"bug","file":"file","lineno":"7","colno":"7"}
+	],
+	"inner_stack":[
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"68","colno":"12"},
+		{"name":"if","file":"file","lineno":"68","colno":"2"},
+		{"name":"inner","file":"file","lineno":"13","colno":"15"}
+	],
+	"caught_in_inner":{
+		"type":"parser.runtime",
+		"source":"missing_bug",
+		"file":"file",
+		"lineno":65,
+		"colno":10,
+		"comment":"undefined method",
+		"handled":true
+	},
+	"caught_in_inner_stack":[
+		{"name":"if","file":"file","lineno":"65","colno":"2"},
+		{"name":"bug","file":"file","lineno":"7","colno":"7"}
+	],
+	"caught_after":[
+		{"name":"if","file":"file","lineno":"65","colno":"2"},
+		{"name":"bug","file":"file","lineno":"7","colno":"7"}
+	],
+	"inner_expired":"exception stack used outside of context",
+	"current_stack":{
+		"1":{
+			"self":"",
+			"name":"core",
+			"file":"file",
+			"line":5
+		},
+		"2":{
+			"self":"",
+			"name":"main",
+			"file":"file",
+			"line":2
+		}
+	},
+	"finally_expired":"exception stack used outside of context",
+	"outside_expired":"exception stack used outside of context",
+	"replaced_expired":"exception stack used outside of context",
+	"replacement":[
+		{"name":"replacement","file":"file","lineno":"36","colno":"18"},
+		{"name":"try","file":"file","lineno":"34","colno":"10"}
+	],
+	"propagating":[
+		{"name":"if","file":"file","lineno":"65","colno":"2"},
+		{"name":"bug","file":"file","lineno":"44","colno":"7"}
+	],
+	"top_expired":"exception stack used outside of context",
+	"propagated_expired":"exception stack used outside of context"
+}
