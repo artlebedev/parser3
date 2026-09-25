@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.274 2026/09/25 12:55:42 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.275 2026/09/25 17:03:52 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -128,7 +128,10 @@ private:
 			return fsize==fbottom;
 		}
 
-		Table &table(Request &r, const String* problem_source);
+		Table &table(Request &r, const String* problem_source) {
+			return table(r, problem_source, bottom_index(), top_index());
+		}
+		Table &table(Request &r, const String* problem_source, size_t bottom, size_t top);
 	};
 
 	///@{ core data
@@ -425,6 +428,7 @@ class VException: public VHashReference {
 	Exception fexception;
 	String::Body ffile;
 	Value* fhandled;
+	size_t ftrace_bottom, ftrace_top;
 public:
 	Operation::Origin origin;
 	const String* problem_source;
@@ -436,6 +440,8 @@ public:
 	override const VJunction* put_element(const String& name, Value* value);
 
 	Value* handled();
+	Table& stack(Request& r);
+	void expire_trace() { ftrace_top=size_t(-1); }
 };
 
 /// Auto-object used to save request context across ^try body

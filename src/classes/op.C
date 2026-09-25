@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.282 2026/09/25 12:55:42 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.283 2026/09/25 17:03:52 moko Exp $";
 
 // defines
 
@@ -578,9 +578,11 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 		} catch(...) {
 			// restore execution for finally, but keep new error trace.
 			try_context.restore();
+			details.expire_trace();
 			rethrow;
 		}
 
+		details.expire_trace();
 		if(!bhandled){
 			r.exception_trace.set_range(trace_bottom, trace_top);
 			rethrow;

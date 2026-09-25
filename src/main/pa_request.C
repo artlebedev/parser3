@@ -36,7 +36,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.443 2026/09/25 12:55:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.444 2026/09/25 17:03:52 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -422,7 +422,7 @@ const char* Request::get_exception_cstr(const Exception& e, VException& details)
 	return result;
 }
 
-Table &Request::Exception_trace::table(Request &r, const String* problem_source){
+Table &Request::Exception_trace::table(Request &r, const String* problem_source, size_t bottom, size_t top){
 	// $stack[^table::create{name	file	lineno	colno}]
 	Table::columns_type stack_trace_columns(new ArrayString);
 	*stack_trace_columns+=new String("name");
@@ -431,8 +431,8 @@ Table &Request::Exception_trace::table(Request &r, const String* problem_source)
 	*stack_trace_columns+=new String("colno");
 	Table& stack_trace=*new Table(stack_trace_columns);
 
-	if(!is_empty()/*signed!*/)
-		for(size_t i=bottom_index()+(bottom_value().name()==problem_source); i<top_index(); i++) {
+	if(bottom<top)
+		for(size_t i=bottom+(get(bottom).name()==problem_source); i<top; i++) {
 			Trace trace=get(i);
 			Table::element_type row(new ArrayString);
 
@@ -536,6 +536,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 				// preparing parameters to @unhandled_exception[exception;stack]
 
 				Table& stack_trace=exception_trace.table(*this, details.problem_source);
+				details.expire_trace();
 				exception_trace.clear(); // forget all about previous life, in case there would be error inside of this method, error handled would not be mislead by old stack contents (see extract_origin)
 
 				Value *params[]={&details, new VTable(&stack_trace)};
@@ -1018,6 +1019,7 @@ const String& Request::transcode(const xmlChar* s) {
 
 VException::VException(Request& r, const Exception& e):
 	fexception(e), fhandled(&VBool::get(false)),
+	ftrace_bottom(r.exception_trace.bottom_index()), ftrace_top(r.exception_trace.top_index()),
 	origin(Operation::Origin::create(0, 0, 0)), problem_source(e.problem_source()) {
 	Request::Exception_trace& exception_trace=r.exception_trace;
 
@@ -1033,6 +1035,12 @@ VException::VException(Request& r, const Exception& e):
 
 Value* VException::handled() {
 	return fhash ? fhash->get(Symbols::HANDLED_SYMBOL) : fhandled;
+}
+
+Table& VException::stack(Request& r) {
+	if(ftrace_top==size_t(-1))
+		throw Exception(PARSER_RUNTIME, 0, "exception stack used outside of context");
+	return r.exception_trace.table(r, problem_source, ftrace_bottom, ftrace_top);
 }
 
 Value* VException::get_element(const String& name) {

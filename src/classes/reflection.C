@@ -10,8 +10,9 @@
 #include "pa_vbool.h"
 #include "pa_varray.h"
 #include "pa_vobject.h"
+#include "pa_vtable.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.104 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.105 2026/09/25 17:03:52 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -606,6 +607,12 @@ static void collect_local(const String::Body& key, Value* value, LocalsInfo* inf
 }
 
 static void _stack(Request& r, MethodParams& params) {
+	if(params.count())
+		if(VException* exception=dynamic_cast<VException*>(&params[0])) {
+			r.write(*new VTable(&exception->stack(r)));
+			return;
+		}
+
 	bool show_args=false;
 	bool show_locals=false;
 
