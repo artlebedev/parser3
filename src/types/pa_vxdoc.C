@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.57 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VXDOC_H;
+volatile const char * IDENT_PA_VXDOC_C="$Id: pa_vxdoc.C,v 1.58 2026/09/26 19:06:55 moko Exp $" IDENT_PA_VXDOC_H;
 
 // defines
 
@@ -56,7 +56,7 @@ Value* VXdoc::get_element(const String& aname) {
 	// up
 	try {
 		return VXnode::get_element(aname);
-	} catch(Exception) { 
+	} catch(const Exception&) {
 		// ignore bad node elements, they can be valid here...
 
 		// fields

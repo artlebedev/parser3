@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.284 2026/09/26 17:41:10 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.285 2026/09/26 19:06:55 moko Exp $";
 
 // defines
 
@@ -557,6 +557,7 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 		VException& details=*new VException(r, e);
 
 		try_context.restore(); // restoring try-context for catch code
+		r.recursion_limit_try_restore(); // here to allow "endless" recursion in catch
 
 		r.exception_trace.set_bottom_index(trace_top); // keep the original trace occupied; errors in catch start after it
 
@@ -578,8 +579,8 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 					bhandled=vhandled->as_bool();
 			}
 		} catch(...) {
-			// restore execution for finally, but keep new error trace.
-			try_context.restore();
+			try_context.restore(); // restore execution for finally, but keep new error trace.
+			r.recursion_limit_try_restore(); // here to allow "endless" recursion in finally
 			details.expire_trace();
 			rethrow;
 		}
@@ -589,6 +590,7 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 			r.exception_trace.set_range(trace_bottom, trace_top);
 			rethrow;
 		}
+
 		r.exception_trace.set_range(trace_start, trace_start);
 	}
 

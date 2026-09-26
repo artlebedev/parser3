@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.276 2026/09/26 17:41:10 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.277 2026/09/26 19:06:55 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -251,6 +251,12 @@ public:
 		anti_endless_execute_recursion--;
 	}
 
+	/// take the recovery reserve back if recursion limit is far enough
+	void recursion_limit_try_restore() {
+		if(execute_recursion_limit>pa_execute_recursion_limit && anti_endless_execute_recursion<pa_execute_recursion_limit/2)
+			execute_recursion_limit=pa_execute_recursion_limit;
+	}
+
 	///
 	void use_file_directly(const String& file_spec, bool fail_on_file_absence=true, bool with_auto_p=false);
 
@@ -450,7 +456,7 @@ class Request_context_saver {
 
 	/// execution stack
 	size_t stack;
-	uint anti_endless_execute_recursion;
+	int anti_endless_execute_recursion;
 	/// contexts
 	VMethodFrame* method_frame;
 	Value* rcontext;
