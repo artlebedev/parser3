@@ -1,11 +1,16 @@
 Content-Type: text/html
-Content-Length: 152
+Content-Length: 208
 
 {
-	"caught":1,
-	"finally":1,
-	"after":false,
+	"caught":5,
+	"finally":5,
 	"calls_1":996,
-	"final_calls":1096,
-	"error":"call canceled - endless recursion recovery limit exceeded"
+	"calls_2":996,
+	"calls_3":996,
+	"calls_4":996,
+	"calls_5":996,
+	"after":true,
+	"caught_in_catch":true,
+	"caught_in_finally":true,
+	"catch_error_propagated":true
 }
