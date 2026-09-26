@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.430 2026/04/25 13:38:46 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.431 2026/09/26 21:34:36 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -246,6 +246,7 @@ void debug_dump(SAPI_Info& sapi_info, int level, ArrayOperation& ops) {
 // Request
 
 void Request::execute(ArrayOperation& ops) {
+	SINGLE_METHOD_FRAME_STORAGE; // one frame at a time, see SINGLE_METHOD_FRAME
 	Stack<StackItem>& stack=this->stack; // helps a lot on MSVC: 'esi'
 
 	const String* debug_name=0;  Operation::Origin debug_origin={0, 0, 0};
@@ -790,7 +791,7 @@ void Request::execute(ArrayOperation& ops) {
 
 				Value *result;
 				{
-					EXPRESSION_FRAME_ACTION(*junction->method, method_frame, junction->self, {
+					SINGLE_EXPRESSION_FRAME_ACTION(*junction->method, method_frame, junction->self, {
 						METHOD_PARAMS_ACTION(call(frame));
 						result=&frame.result();
 						// desctructor deletes junctions in stack params here
@@ -840,13 +841,13 @@ void Request::execute(ArrayOperation& ops) {
 						method.native_code(*this, method_params); // execute it
 					}
 				} else if(method.call_optimization==Method::CO_WITHOUT_WCONTEXT){
-					METHOD_FRAME_ACTION(method, method_frame, junction->self, {
+					SINGLE_METHOD_FRAME_ACTION(method, method_frame, junction->self, {
 						METHOD_PARAMS_ACTION(call_write(frame))
 					});
 				} else 
 #endif // OPTIMIZE_CALL
 				{
-					METHOD_FRAME_ACTION(method, method_frame, junction->self, {
+					SINGLE_METHOD_FRAME_ACTION(method, method_frame, junction->self, {
 						METHOD_PARAMS_ACTION(call(frame));
 						write(frame.result());
 					});
@@ -885,7 +886,7 @@ void Request::execute(ArrayOperation& ops) {
 				Value *result;
 				{
 					Value& object=construct(vclass, *constructor_junction->method);
-					CONSTRUCTOR_FRAME_ACTION(*constructor_junction->method, method_frame, object, {
+					SINGLE_CONSTRUCTOR_FRAME_ACTION(*constructor_junction->method, method_frame, object, {
 						METHOD_PARAMS_ACTION(call(frame));
 						object.enable_default_setter();
 						result=&frame.result();

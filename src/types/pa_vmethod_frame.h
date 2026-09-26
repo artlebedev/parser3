@@ -8,7 +8,7 @@
 #ifndef PA_VMETHOD_FRAME_H
 #define PA_VMETHOD_FRAME_H
 
-#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.148 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VMETHOD_FRAME_H "$Id: pa_vmethod_frame.h,v 1.149 2026/09/26 21:34:36 moko Exp $"
 
 #include "pa_symbols.h"
 #include "pa_wcontext.h"
@@ -504,5 +504,81 @@ public:
 			action;									\
 		}										\
 	}
+
+
+// execute() has 8 parser frame variants and the compiler reserves stack room for all of them.
+// METHOD_FRAME is now ~300 bytes due to inlined args/locals hash.
+// SINGLE_METHOD_FRAME makes execute() construct them all in one shared storage.
+
+//#define WITHOUT_SINGLE_METHOD_FRAME
+
+#ifdef WITHOUT_SINGLE_METHOD_FRAME
+
+#define SINGLE_METHOD_FRAME_STORAGE ((void)0)
+#define SINGLE_METHOD_FRAME_ACTION METHOD_FRAME_ACTION
+#define SINGLE_EXPRESSION_FRAME_ACTION EXPRESSION_FRAME_ACTION
+#define SINGLE_CONSTRUCTOR_FRAME_ACTION CONSTRUCTOR_FRAME_ACTION
+
+#else
+
+/// storage for one method frame of any kind: parser frame is the largest of them
+union Method_frame_storage {
+	char frame[sizeof(VParserMethodFrame)];
+	long double align_number;
+	void* align_pointer;
+};
+
+/// Auto-object used for constructing a method frame in the storage shared by the whole function
+template<typename Frame> class Temp_method_frame {
+	Frame& fframe;
+	Temp_method_frame(const Temp_method_frame&);
+	Temp_method_frame& operator=(const Temp_method_frame&);
+public:
+	Temp_method_frame(Method_frame_storage& storage, const Method& method, VMethodFrame* caller, Value& self):
+		fframe(*::new(static_cast<void*>(&storage)) Frame(method, caller, self)) {
+		// catch a frame outgrowing the storage at compilation
+		typedef char Frame_fits_storage[sizeof(Frame)<=sizeof(Method_frame_storage) ? 1 : -1];
+		(void)sizeof(Frame_fits_storage);
+	}
+	~Temp_method_frame() { fframe.~Frame(); }
+	Frame& get() { return fframe; }
+};
+
+#define SINGLE_METHOD_FRAME_STORAGE Method_frame_storage frame_storage
+
+#define TEMP_METHOD_FRAME_ACTION(Frame, method, caller, self, action) {				\
+		Temp_method_frame<Frame> temp_frame(frame_storage, method, caller, self);	\
+		Frame& frame=temp_frame.get();							\
+		action;										\
+	}
+
+#define SINGLE_METHOD_FRAME_ACTION(method, caller, self, action)				\
+	if((method).native_code){								\
+		TEMP_METHOD_FRAME_ACTION(VNativeMethodFrame, method, caller, self, action)	\
+	} else if((method).all_vars_local){							\
+		TEMP_METHOD_FRAME_ACTION(VLocalParserMethodFrame, method, caller, self, action)	\
+	} else {										\
+		TEMP_METHOD_FRAME_ACTION(VParserMethodFrame, method, caller, self, action)	\
+	}
+
+#define SINGLE_EXPRESSION_FRAME_ACTION(method, caller, self, action)				\
+	if((method).native_code){								\
+		TEMP_METHOD_FRAME_ACTION(VExpressionFrame<VNativeMethodFrame>, method, caller, self, action) \
+	} else if((method).all_vars_local){							\
+		TEMP_METHOD_FRAME_ACTION(VLocalParserMethodFrame, method, caller, self, action)	\
+	} else {										\
+		TEMP_METHOD_FRAME_ACTION(VParserMethodFrame, method, caller, self, action)	\
+	}
+
+#define SINGLE_CONSTRUCTOR_FRAME_ACTION(method, caller, self, action)				\
+	if((method).native_code){								\
+		TEMP_METHOD_FRAME_ACTION(VConstructorFrame<VNativeMethodFrame>, method, caller, self, action) \
+	} else if((method).all_vars_local){							\
+		TEMP_METHOD_FRAME_ACTION(VConstructorFrame<VLocalParserMethodFrame>, method, caller, self, action) \
+	} else {										\
+		TEMP_METHOD_FRAME_ACTION(VConstructorFrame<VParserMethodFrame>, method, caller, self, action) \
+	}
+
+#endif
 
 #endif
