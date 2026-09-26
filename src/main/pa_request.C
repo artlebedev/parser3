@@ -36,7 +36,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.444 2026/09/25 17:03:52 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.445 2026/09/26 17:41:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -48,6 +48,7 @@ const char* DEFAULT_CONTENT_TYPE="text/html";
 const uint LOOP_LIMIT=100000;
 const uint ARRAY_LIMIT=1000000;
 const uint EXECUTE_RECURSION_LIMIT=1000;
+const uint EXECUTE_RECURSION_RESERVE=100;
 const uint HTTPD_TIMEOUT=4;
 const size_t FILE_SIZE_LIMIT=512*1024*1024;
 
@@ -130,9 +131,18 @@ const String content_disposition_filename_name_asterisk("filename*");
 VStateless_class& VClassMAIN_create();
 
 //
+void Request::recursion_limit_reached() {
+	if(execute_recursion_limit>pa_execute_recursion_limit)
+		throw Recursion_limit_exception();
+
+	execute_recursion_limit+=EXECUTE_RECURSION_RESERVE;
+	throw Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion detected");
+}
+
 Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Language adefault_lang):
 	// private
 	anti_endless_execute_recursion(0),
+	execute_recursion_limit(pa_execute_recursion_limit),
 
 	// public
 	allow_class_replace(false),
@@ -343,8 +353,10 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	pa_execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
 	CONF_OPTION(limits, recursion_limit_name, {
 		pa_execute_recursion_limit=option->as_int();
-		if(pa_execute_recursion_limit==0) pa_execute_recursion_limit=INT_MAX;
+		if(pa_execute_recursion_limit<=0) pa_execute_recursion_limit=INT_MAX;
+		pa_execute_recursion_limit=min(pa_execute_recursion_limit, INT_MAX-EXECUTE_RECURSION_RESERVE);
 	}, "LIMITS.%s must be int");
+	execute_recursion_limit=pa_execute_recursion_limit;
 
 	pa_file_size_limit=FILE_SIZE_LIMIT;
 	CONF_OPTION(limits, file_size_limit_name, {
@@ -516,6 +528,9 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 		// can throw exceptions while handling $response:download[]
 		output_result(body_value->as_vfile(flang, &charsets), header_only, as_attachment);
 	} catch(const Exception& e) { // request handling problem
+
+		// OK, as native execution stack has unwound
+		anti_endless_execute_recursion=0;
 
 		// we're returning not result, but error explanation
 		VException& details=*new VException(*this, e);

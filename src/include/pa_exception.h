@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.76 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.77 2026/09/26 17:41:10 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -96,6 +96,12 @@ protected:
 	const String* fproblem_source;
 	const char* fcomment;
 
+};
+
+// recovery recursion reserve is exhausted: bypass catch/finally handlers
+class Recursion_limit_exception: public Exception {
+public:
+	Recursion_limit_exception(): Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion recovery limit exceeded") {}
 };
 
 #endif
