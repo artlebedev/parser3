@@ -1,0 +1,30 @@
+# Recursion in finally must terminate instead of repeatedly resetting the counter (feature #1298)
+@main[]
+$report[$.caught(0) $.finally(0) $.outer_catch(false) $.outer_finally(false) $.after(false)]
+^try{^recurse[]}{
+ $report.outer_catch(true)
+ $exception.handled(true)
+}{
+ $report.outer_finally(true)
+}
+$report.after(true)
+^json:string[$report; $.indent(true)]
+
+@recurse[]
+^try{^recurse[]}{
+ $report.caught($report.caught+1)
+ $report.first_error[$exception.comment]
+ ^throw[;before fix: this resets recursion limit for finally code]
+}{
+ $report.finally($report.finally+1)
+ ^recurse[]
+}
+
+@check_free_stack[n]
+^if($n>0){^check_free_stack($n-1)}{$report.check_free_stack(true)}
+
+@unhandled_exception[exception;stack]
+$exception.handled(true)
+$report.error[$exception.comment]
+^check_free_stack[50]
+^json:string[$report; $.indent(true)]

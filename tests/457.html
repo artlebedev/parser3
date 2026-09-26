@@ -1,0 +1,25 @@
+# The request gets one recovery reserve (feature #1298)
+@main[][i]
+$report[ $.caught(0) $.finally(0) $.after(false) ]
+^for[i](1;10){
+    $calls(0)
+    ^try{^recurse[]}{
+        $report.caught($report.caught+1)
+        $report.calls_$i($calls)
+        $exception.handled(true)
+    }{
+        $report.finally($report.finally+1)
+    }
+}
+$report.after(true)
+^json:string[$report; $.indent(true)]
+
+@recurse[]
+$calls($calls+1)
+^recurse[]
+
+@unhandled_exception[exception;stack]
+$exception.handled(true)
+$report.final_calls($calls)
+$report.error[$exception.comment]
+^json:string[$report; $.indent(true)]

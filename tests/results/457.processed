@@ -1,0 +1,11 @@
+Content-Type: text/html
+Content-Length: 152
+
+{
+	"caught":1,
+	"finally":1,
+	"after":false,
+	"calls_1":996,
+	"final_calls":1096,
+	"error":"call canceled - endless recursion recovery limit exceeded"
+}

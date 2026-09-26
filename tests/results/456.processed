@@ -1,0 +1,13 @@
+Content-Type: text/html
+Content-Length: 248
+
+{
+	"caught":1,
+	"finally":1,
+	"outer_catch":false,
+	"outer_finally":false,
+	"after":false,
+	"first_error":"call canceled - endless recursion detected",
+	"error":"call canceled - endless recursion recovery limit exceeded",
+	"check_free_stack":true
+}
