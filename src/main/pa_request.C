@@ -36,7 +36,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.445 2026/09/26 17:41:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.446 2026/09/27 01:00:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -45,11 +45,11 @@ volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.445 2026/09/26 1
 /// content type of response when no $MAIN:defaults.content-type defined
 const char* DEFAULT_CONTENT_TYPE="text/html";
 
-const uint LOOP_LIMIT=100000;
-const uint ARRAY_LIMIT=1000000;
-const uint EXECUTE_RECURSION_LIMIT=1000;
-const uint EXECUTE_RECURSION_RESERVE=100;
-const uint HTTPD_TIMEOUT=4;
+const int LOOP_LIMIT=100000;
+const int ARRAY_LIMIT=1000000;
+const int EXECUTE_RECURSION_LIMIT=1000;
+const int EXECUTE_RECURSION_RESERVE=100;
+const int HTTPD_TIMEOUT=4;
 const size_t FILE_SIZE_LIMIT=512*1024*1024;
 
 // defines for globals
