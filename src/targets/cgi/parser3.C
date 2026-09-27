@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.370 2026/09/27 17:13:40 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.371 2026/09/27 19:40:38 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -581,7 +581,7 @@ static void call_real_parser_handler__supress_system_exception(bool cgi) {
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception("system", 0, "0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception("system", 0, "0x%08X at %p", er->ExceptionCode, er->ExceptionAddress);
 			else
 				throw Exception("system", 0, "<no exception record>");
 		else

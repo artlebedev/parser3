@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.44 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.45 2026/09/27 19:40:38 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -239,7 +239,7 @@ static void call_real_parser_handler__supress_system_exception(SAPI_Info& SAPI_i
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
-				throw Exception("system", 0, "0x%08X at 0x%08X", er->ExceptionCode,  er->ExceptionAddress);
+				throw Exception("system", 0, "0x%08X at %p", er->ExceptionCode, er->ExceptionAddress);
 			else
 				throw Exception("system", 0, "<no exception record>");
 		else
