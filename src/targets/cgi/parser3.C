@@ -5,14 +5,13 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.369 2026/09/18 20:08:37 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.370 2026/09/27 17:13:40 moko Exp $";
 
 #include "pa_config_includes.h"
 
 #include "pa_sapi.h"
 #include "classes.h"
 #include "pa_common.h"
-#include "pa_dir.h"
 #include "pa_request.h"
 #include "pa_version.h"
 #include "pa_threads.h"

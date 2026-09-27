@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.35 2026/09/18 20:08:37 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.36 2026/09/27 17:13:40 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -35,7 +35,7 @@ struct ffblk {
 	time_t a_timestamp();
 };
 
-#else
+#else // _MSC_VER
 
 #define MAXPATH 1000 /*NAME_MAX*/
 
@@ -60,7 +60,7 @@ struct ffblk {
 	time_t a_timestamp();
 };
 
-#endif
+#endif // _MSC_VER
 
 bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib);
 bool findnext(struct ffblk *_ffblk);
@@ -80,14 +80,5 @@ void findclose(struct ffblk *_ffblk);
 	} \
 }
 
-class String;
-
-#ifdef WIN32
-bool is_os_absolute_path(const String& path);
-bool is_os_absolute_path(const char* path);
-#else
-inline bool is_os_absolute_path(const String&) { return false; }
-inline bool is_os_absolute_path(const char*) { return false; }
-#endif
 
 #endif

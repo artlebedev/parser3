@@ -7,12 +7,13 @@
 
 #include "pa_globals.h"
 #include "pa_common.h"
+#include "pa_file.h"
 #include "pa_vtable.h"
 #include "pa_vstring.h"
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.78 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.79 2026/09/27 17:13:40 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 

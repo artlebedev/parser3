@@ -10,7 +10,7 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.36 2026/09/18 20:11:22 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.37 2026/09/27 17:13:40 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -139,16 +139,3 @@ time_t ffblk::a_timestamp() {
 }
 
 #endif
-
-#ifdef WIN32
-bool is_os_absolute_path(const String& path) {
-	return is_os_absolute_path(path.cstr());
-}
-
-bool is_os_absolute_path(const char* path) {
-	return path[0] && path[0]!=':' && path[1]==':' // DRIVE: (including drive-relative paths, for compatibility)
-		|| path[0]=='\\' && path[1]=='\\' // UNC
-		|| path[0]=='/' && path[1]=='/';
-}
-#endif
-

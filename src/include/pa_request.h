@@ -8,10 +8,11 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.277 2026/09/26 19:06:55 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.278 2026/09/27 17:13:40 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
+#include "pa_file.h"
 #include "pa_wcontext.h"
 #include "pa_value.h"
 #include "pa_vhash.h"

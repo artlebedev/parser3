@@ -8,13 +8,14 @@
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-#define IDENT_PA_EXEC_H "$Id: pa_exec.h,v 1.27 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_EXEC_H "$Id: pa_exec.h,v 1.28 2026/09/27 17:13:40 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
 #include "pa_array.h"
 #include "pa_value.h"
 #include "pa_charset.h"
+#include "pa_file.h"
 
 struct PA_exec_result {
 	int status; ///< exit code

@@ -7,7 +7,6 @@
 
 #include "pa_sapi.h"
 #include "pa_common.h"
-#include "pa_dir.h"
 #include "pa_os.h"
 #include "pa_request.h"
 #include "pa_wwrapper.h"
@@ -36,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.446 2026/09/27 01:00:10 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.447 2026/09/27 17:13:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 

@@ -197,7 +197,13 @@
 			RelativePath=".\pa_common.C">
 		</File>
 		<File
+			RelativePath=".\pa_file.C">
+		</File>
+		<File
 			RelativePath="..\include\pa_common.h">
+		</File>
+		<File
+			RelativePath="..\include\pa_file.h">
 		</File>
 		<File
 			RelativePath=".\pa_base64.C">
