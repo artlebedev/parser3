@@ -8,7 +8,8 @@
 #either via explicit resolve entries or via the 'parser' resolve mode
 
 $ip[^inet:name2ip[www.parser.ru]]
-$status:limit-nproc(1)
+
+^try-catch{ $status:limit-nproc(1) }
 
 1.2. parser resolve exception:
   ^try-catch{ ^curl:load[ $.url[https://no-such-domain] $.resolve[parser] ] }
