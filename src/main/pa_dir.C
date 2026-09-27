@@ -5,12 +5,13 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-#include "pa_common.h"
 #include "pa_dir.h"
+#include "pa_common.h"
+#include "pa_file.h"
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.37 2026/09/27 17:13:40 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.38 2026/09/27 17:21:42 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
