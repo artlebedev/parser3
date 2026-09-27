@@ -1,6 +1,7 @@
-## Makefile.am -- Process this file with automake to produce Makefile.in
+## ltdl.mk -- includable Makefile snippet
 ##
-##   Copyright (C) 2003, 2004, 2005, 2007 Free Software Foundation, Inc.
+##   Copyright (C) 2003-2005, 2007, 2011-2019, 2021-2024 Free Software
+##   Foundation, Inc.
 ##   Written by Gary V. Vaughan, 2003
 ##
 ##   NOTE: The canonical source of this file is maintained with the
@@ -22,10 +23,7 @@
 ## GNU Lesser General Public License for more details.
 ##
 ## You should have received a copy of the GNU LesserGeneral Public
-## License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-## copy can be downloaded from http://www.gnu.org/licenses/lgpl.html,
-## or obtained by writing to the Free Software Foundation, Inc.,
-## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+## License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 #####
 
 ACLOCAL_AMFLAGS = -I m4
@@ -37,7 +35,7 @@ include_HEADERS =
 noinst_LTLIBRARIES =
 lib_LTLIBRARIES =
 EXTRA_LTLIBRARIES =
-EXTRA_DIST = config_fixed.h ltdl.vcproj
+EXTRA_DIST =
 CLEANFILES =
 MOSTLYCLEANFILES =
 
@@ -45,9 +43,9 @@ MOSTLYCLEANFILES =
 # (not as a sub-package!) using 'nostdinc':
 AM_CPPFLAGS	       += -DLT_CONFIG_H='<$(LT_CONFIG_H)>' \
 			  -DLTDL -I. -I$(srcdir) -Ilibltdl \
-			  -I$(srcdir)/libltdl -I$(srcdir)/libltdl
+			  -I$(srcdir)/libltdl
 AM_LDFLAGS	       += -no-undefined
-LTDL_VERSION_INFO	= -version-info 10:0:3
+LTDL_VERSION_INFO	= -version-info 10:3:3
 
 noinst_LTLIBRARIES	+= $(LT_DLLOADERS)
 
@@ -71,7 +69,7 @@ libltdl_la_SOURCES = libltdl/lt__alloc.h \
 			  libltdl/lt__strl.h \
 			  libltdl/lt_dlloader.h \
 			  libltdl/lt_error.h \
-	                  libltdl/lt_system.h \
+			  libltdl/lt_system.h \
 			  libltdl/slist.h \
 			  loaders/preopen.c \
 			  lt__alloc.c \
@@ -108,7 +106,7 @@ EXTRA_LTLIBRARIES	       += dlopen.la \
 
 dlopen_la_SOURCES	= loaders/dlopen.c
 dlopen_la_LDFLAGS	= -module -avoid-version
-dlopen_la_LIBADD 	= $(LIBADD_DLOPEN)
+dlopen_la_LIBADD	= $(LIBADD_DLOPEN)
 
 dld_link_la_SOURCES	= loaders/dld_link.c
 dld_link_la_LDFLAGS	= -module -avoid-version
@@ -137,28 +135,24 @@ CLEANFILES		       += libltdl.la \
 CLEANFILES	       += $(LIBOBJS) $(LTLIBOBJS)
 
 EXTRA_DIST	       += COPYING.LIB \
-			  configure.ac \
-			  Makefile.am \
-			  aclocal.m4 \
-			  Makefile.in \
-			  configure \
-			  config-h.in \
 			  README
 
 ## --------------------------- ##
 ## Gnulib Makefile.am snippets ##
 ## --------------------------- ##
 
-BUILT_SOURCES	+= $(ARGZ_H)
-EXTRA_DIST	+= argz_.h \
-		   argz.c
+if LTARGZH_EXISTS
+BUILT_SOURCES	+= libltdl/$(LT_ARGZ_H)
+endif
+EXTRA_DIST	+= libltdl/lt__argz_.h \
+		   lt__argz.c
 
 # We need the following in order to create an <argz.h> when the system
 # doesn't have one that works with the given compiler.
-all-local $(lib_OBJECTS): $(ARGZ_H)
-argz.h: argz_.h
-	$(mkinstalldirs) . 
-	cp $(srcdir)/argz_.h $@-t
-	mv $@-t $@
-MOSTLYCLEANFILES += argz.h \
-		    argz.h-t
+all-local $(lib_OBJECTS): $(LT_ARGZ_H)
+libltdl/lt__argz.h: libltdl/lt__argz_.h
+	$(AM_V_at)$(mkinstalldirs) . libltdl
+	$(AM_V_GEN)cp $(srcdir)/libltdl/lt__argz_.h $@-t
+	$(AM_V_at)mv $@-t $@
+MOSTLYCLEANFILES += libltdl/lt__argz.h \
+		    libltdl/lt__argz.h-t

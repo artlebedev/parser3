@@ -1,6 +1,7 @@
 /* lt__dirent.h -- internal directory entry scanning interface
 
-   Copyright (C) 2001, 2004, 2006 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2004, 2006, 2011-2019, 2021-2024 Free Software
+   Foundation, Inc.
    Written by Bob Friesenhahn, 2001
 
    NOTE: The canonical source of this file is maintained with the
@@ -22,16 +23,13 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-copy can be downloaded from http://www.gnu.org/licenses/lgpl.html,
-or obtained by writing to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#if !defined(LT__DIRENT_H)
+#if !defined LT__DIRENT_H
 #define LT__DIRENT_H 1
 
-#if defined(LT_CONFIG_H)
+#if defined LT_CONFIG_H
 #  include LT_CONFIG_H
 #else
 #  include <config.h>
@@ -80,8 +78,8 @@ LT_SCOPE void		closedir	(DIR *entry);
 
 LT_END_C_DECLS
 
-#else /* !defined(__WINDOWS__)*/
+#else /* !defined __WINDOWS__*/
 ERROR - cannot find dirent
-#endif /*!defined(__WINDOWS__)*/
+#endif /*!defined __WINDOWS__*/
 
-#endif /*!defined(LT__DIRENT_H)*/
+#endif /*!defined LT__DIRENT_H*/

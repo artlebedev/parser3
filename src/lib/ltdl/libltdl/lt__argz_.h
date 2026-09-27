@@ -1,6 +1,7 @@
 /* lt__argz.h -- internal argz interface for non-glibc systems
 
-   Copyright (C) 2004, 2007, 2008 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2007-2008, 2011-2019, 2021-2024 Free Software
+   Foundation, Inc.
    Written by Gary V. Vaughan, 2004
 
    NOTE: The canonical source of this file is maintained with the
@@ -22,13 +23,10 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-copy can be downloaded from http://www.gnu.org/licenses/lgpl.html,
-or obtained by writing to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#if !defined(LT__ARGZ_H)
+#if !defined LT__ARGZ_H
 #define LT__ARGZ_H 1
 
 #include <stdlib.h>
@@ -36,14 +34,14 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #include <errno.h>
 #include <sys/types.h>
 
-#if defined(LTDL)
+#if defined LTDL
 #  include "lt__glibc.h"
 #  include "lt_system.h"
 #else
 #  define LT_SCOPE
 #endif
 
-#if defined(__cplusplus)
+#if defined __cplusplus
 extern "C" {
 #endif
 
@@ -57,12 +55,12 @@ LT_SCOPE char *	 argz_next	(char *argz, size_t argz_len,
 				 const char *entry);
 LT_SCOPE void	 argz_stringify	(char *argz, size_t argz_len, int sep);
 
-#if defined(__cplusplus)
+#if defined __cplusplus
 }
 #endif
 
-#if !defined(LTDL)
+#if !defined LTDL
 #  undef LT_SCOPE
 #endif
 
-#endif /*!defined(LT__ARGZ_H)*/
+#endif /*!defined LT__ARGZ_H*/

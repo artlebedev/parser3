@@ -12,28 +12,28 @@
 /* FreeBSD4.X target platform */
 #undef FREEBSD4
 
-/* Define to 1 if you have the `argz_add' function. */
+/* Define to 1 if you have the 'argz_add' function. */
 #undef HAVE_ARGZ_ADD
 
-/* Define to 1 if you have the `argz_append' function. */
+/* Define to 1 if you have the 'argz_append' function. */
 #undef HAVE_ARGZ_APPEND
 
-/* Define to 1 if you have the `argz_count' function. */
+/* Define to 1 if you have the 'argz_count' function. */
 #undef HAVE_ARGZ_COUNT
 
-/* Define to 1 if you have the `argz_create_sep' function. */
+/* Define to 1 if you have the 'argz_create_sep' function. */
 #undef HAVE_ARGZ_CREATE_SEP
 
 /* Define to 1 if you have the <argz.h> header file. */
 #undef HAVE_ARGZ_H
 
-/* Define to 1 if you have the `argz_insert' function. */
+/* Define to 1 if you have the 'argz_insert' function. */
 #undef HAVE_ARGZ_INSERT
 
-/* Define to 1 if you have the `argz_next' function. */
+/* Define to 1 if you have the 'argz_next' function. */
 #undef HAVE_ARGZ_NEXT
 
-/* Define to 1 if you have the `argz_stringify' function. */
+/* Define to 1 if you have the 'argz_stringify' function. */
 #undef HAVE_ARGZ_STRINGIFY
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
@@ -42,16 +42,16 @@
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
 
-/* Define to 1 if you have the `closedir' function. */
+/* Define to 1 if you have the 'closedir' function. */
 #undef HAVE_CLOSEDIR
 
-/* Define to 1 if you have the `crypt' function. */
+/* Define to 1 if you have the 'crypt' function. */
 #undef HAVE_CRYPT
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
-/* Define to 1 if you have the declaration of `cygwin_conv_path', and to 0 if
+/* Define to 1 if you have the declaration of 'cygwin_conv_path', and to 0 if
    you don't. */
 #undef HAVE_DECL_CYGWIN_CONV_PATH
 
@@ -64,7 +64,7 @@
 /* Define to 1 if you have the <dld.h> header file. */
 #undef HAVE_DLD_H
 
-/* Define to 1 if you have the `dlerror' function. */
+/* Define to 1 if you have the 'dlerror' function. */
 #undef HAVE_DLERROR
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
@@ -79,31 +79,31 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
-/* Define to 1 if the system has the type `error_t'. */
+/* Define to 1 if the system has the type 'error_t'. */
 #undef HAVE_ERROR_T
 
-/* Define to 1 if you have the `fchmod' function. */
+/* Define to 1 if you have the 'fchmod' function. */
 #undef HAVE_FCHMOD
 
-/* Define to 1 if you have the `fcntl' function. */
+/* Define to 1 if you have the 'fcntl' function. */
 #undef HAVE_FCNTL
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
-/* Define to 1 if you have the `flock' function. */
+/* Define to 1 if you have the 'flock' function. */
 #undef HAVE_FLOCK
 
-/* Define to 1 if you have the `ftruncate' function. */
+/* Define to 1 if you have the 'ftruncate' function. */
 #undef HAVE_FTRUNCATE
 
-/* Define to 1 if you have the `getrusage' function. */
+/* Define to 1 if you have the 'getrusage' function. */
 #undef HAVE_GETRUSAGE
 
 /* Define if you have gettid() */
 #undef HAVE_GETTID
 
-/* Define to 1 if you have the `gettimeofday' function. */
+/* Define to 1 if you have the 'gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -116,7 +116,7 @@
    function. */
 #undef HAVE_ISFINITE
 
-/* Define to 1 if you have the `crypt' library (-lcrypt). */
+/* Define to 1 if you have the 'crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
 
 /* Define if you have the libdl library or equivalent. */
@@ -125,22 +125,22 @@
 /* Define if libdlloader will be built on this platform */
 #undef HAVE_LIBDLLOADER
 
-/* Define to 1 if you have the `m' library (-lm). */
+/* Define to 1 if you have the 'm' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define to 1 if you have the `nsl' library (-lnsl). */
+/* Define to 1 if you have the 'nsl' library (-lnsl). */
 #undef HAVE_LIBNSL
 
-/* Define to 1 if you have the `socket' library (-lsocket). */
+/* Define to 1 if you have the 'socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET
 
-/* Define to 1 if you have the `xnet' library (-lxnet). */
+/* Define to 1 if you have the 'xnet' library (-lxnet). */
 #undef HAVE_LIBXNET
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
-/* Define to 1 if you have the `lockf' function. */
+/* Define to 1 if you have the 'lockf' function. */
 #undef HAVE_LOCKF
 
 /* Define this if a modern libltdl is already installed */
@@ -155,7 +155,7 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+/* Define to 1 if you have the <ndir.h> header file, and it defines 'DIR'. */
 #undef HAVE_NDIR_H
 
 /* Define to 1 if you have the <netdb.h> header file. */
@@ -164,7 +164,7 @@
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 
-/* Define to 1 if you have the `opendir' function. */
+/* Define to 1 if you have the 'opendir' function. */
 #undef HAVE_OPENDIR
 
 /* PCRE2 is available */
@@ -179,10 +179,10 @@
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
-/* Define to 1 if you have the `qsort' function. */
+/* Define to 1 if you have the 'qsort' function. */
 #undef HAVE_QSORT
 
-/* Define to 1 if you have the `readdir' function. */
+/* Define to 1 if you have the 'readdir' function. */
 #undef HAVE_READDIR
 
 /* Define to 1 if you have the `round' (maybe built-in) math function
@@ -195,7 +195,7 @@
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD
 
-/* Define to 1 if you have the `siglongjmp' function. */
+/* Define to 1 if you have the 'siglongjmp' function. */
 #undef HAVE_SIGLONGJMP
 
 /* Define to 1 if you have the `sign' (maybe built-in) math function function.
@@ -205,7 +205,7 @@
 /* Define to 1 if you have the <signal.h> header file. */
 #undef HAVE_SIGNAL_H
 
-/* Define to 1 if you have the `sigsetjmp' function. */
+/* Define to 1 if you have the 'sigsetjmp' function. */
 #undef HAVE_SIGSETJMP
 
 /* Define to 1 if you have the <stdarg.h> header file. */
@@ -229,19 +229,19 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
-/* Define to 1 if you have the `strlcat' function. */
+/* Define to 1 if you have the 'strlcat' function. */
 #undef HAVE_STRLCAT
 
-/* Define to 1 if you have the `strlcpy' function. */
+/* Define to 1 if you have the 'strlcpy' function. */
 #undef HAVE_STRLCPY
 
-/* Define to 1 if `d_type' is a member of `struct dirent'. */
+/* Define to 1 if 'd_type' is a member of 'struct dirent'. */
 #undef HAVE_STRUCT_DIRENT_D_TYPE
 
-/* Define to 1 if you have the `syslog' function. */
+/* Define to 1 if you have the 'syslog' function. */
 #undef HAVE_SYSLOG
 
-/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_SYS_DIR_H
 
@@ -254,7 +254,7 @@
 /* Define to 1 if you have the <sys/locking.h> header file. */
 #undef HAVE_SYS_LOCKING_H
 
-/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines 'DIR'.
    */
 #undef HAVE_SYS_NDIR_H
 
@@ -301,7 +301,7 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if you have the `unsetenv' function. */
+/* Define to 1 if you have the 'unsetenv' function. */
 #undef HAVE_UNSETENV
 
 /* This value is set to 1 to indicate that the system argz facility works */
@@ -326,12 +326,14 @@
    module search path. */
 #undef LT_MODULE_PATH_VAR
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* Define to the shared library suffix, say, ".dylib". */
 #undef LT_SHARED_EXT
+
+/* Define to the shared archive member specification, say "(shr.o)". */
+#undef LT_SHARED_LIB_MEMBER
 
 /* assertions disabled */
 #undef NDEBUG
@@ -387,7 +389,9 @@
 /* one can throw from dynamic library */
 #undef PA_WITH_SJLJ_EXCEPTIONS
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C89 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* system-wide auto.p */
@@ -420,16 +424,14 @@
 /* xml-abled parser */
 #undef XML
 
-/* Enable large inode numbers on Mac OS X 10.5.  */
-#ifndef _DARWIN_USE_64_BIT_INODE
-# define _DARWIN_USE_64_BIT_INODE 1
-#endif
-
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
 
-/* Define for large files, on AIX-style hosts. */
+/* Define to 1 on platforms where this makes off_t a 64-bit type. */
 #undef _LARGE_FILES
+
+/* Number of bits in time_t, on hosts where this is settable. */
+#undef _TIME_BITS
 
 /* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
@@ -446,20 +448,23 @@
    #define below would cause a syntax error. */
 #undef _UINT8_T
 
+/* Define to 1 on platforms where this makes time_t a 64-bit type. */
+#undef __MINGW_USE_VC2005_COMPAT
+
 /* Define so that glibc/gnulib argp.h does not typedef error_t. */
 #undef __error_t_defined
 
-/* Define to a type to use for `error_t' if it is not otherwise available. */
+/* Define to a type to use for 'error_t' if it is not otherwise available. */
 #undef error_t
 
 /* Define to the type of a signed integer type of width exactly 64 bits if
    such a type exists and the standard includes do not define it. */
 #undef int64_t
 
-/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* Define as 'unsigned int' if <stddef.h> doesn't define. */
 #undef size_t
 
-/* Define to `int' if <sys/types.h> does not define. */
+/* Define as 'int' if <sys/types.h> doesn't define. */
 #undef ssize_t
 
 /* Define to the type of an unsigned integer type of width exactly 16 bits if

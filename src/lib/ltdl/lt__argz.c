@@ -1,6 +1,7 @@
-/* argz.c -- argz implementation for non-glibc systems
+/* lt__argz.c -- argz implementation for non-glibc systems
 
-   Copyright (C) 2004, 2006, 2007, 2008 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2006-2008, 2011-2019, 2021-2024 Free Software
+   Foundation, Inc.
    Written by Gary V. Vaughan, 2004
 
    NOTE: The canonical source of this file is maintained with the
@@ -22,26 +23,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-copy can be downloaded from  http://www.gnu.org/licenses/lgpl.html,
-or obtained by writing to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#if defined(LTDL) && defined LT_CONFIG_H
+#if defined LTDL && defined LT_CONFIG_H
 #  include LT_CONFIG_H
 #else
 #  include <config.h>
 #endif
 
-#ifdef HAVE_WORKING_ARGZ
-#include <argz.h>
-#else
-#include <argz_.h>
-#endif
+#include <lt__argz.h>
 
 #include <assert.h>
-#include <stddef.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <errno.h>
@@ -160,7 +153,7 @@ argz_insert (char **pargz, size_t *pargz_len, char *before, const char *entry)
       return ENOMEM;
 
     /* Make BEFORE point to the equivalent offset in ARGZ that it
-       used to have in *PARGZ incase realloc() moved the block.  */
+       used to have in *PARGZ in case realloc() moved the block.  */
     before = argz + offset;
 
     /* Move the ARGZ entries starting at BEFORE up into the new
@@ -227,4 +220,3 @@ argz_stringify (char *argz, size_t argz_len, int sep)
 	}
     }
 }
-

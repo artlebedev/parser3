@@ -1,7 +1,7 @@
 /* ltdl.h -- generic dlopen functions
 
-   Copyright (C) 1998-2000, 2004, 2005,
-                 2007, 2008 Free Software Foundation, Inc.
+   Copyright (C) 1998-2000, 2004-2005, 2007-2008, 2011-2019, 2021-2024
+   Free Software Foundation, Inc.
    Written by Thomas Tanner, 1998
 
    NOTE: The canonical source of this file is maintained with the
@@ -23,14 +23,11 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-copy can be downloaded from  http://www.gnu.org/licenses/lgpl.html,
-or obtained by writing to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
 /* Only include this header file once. */
-#if !defined(LTDL_H)
+#if !defined LTDL_H
 #define LTDL_H 1
 
 #include <libltdl/lt_system.h>
@@ -43,7 +40,6 @@ LT_BEGIN_C_DECLS
 /* LT_STRLEN can be used safely on NULL pointers.  */
 #define LT_STRLEN(s)	(((s) && (s)[0]) ? strlen (s) : 0)
 
-
 /* --- DYNAMIC MODULE LOADING API --- */
 
 
@@ -57,7 +53,7 @@ LT_SCOPE int	    lt_dlexit		(void);
 LT_SCOPE int	    lt_dladdsearchdir	 (const char *search_dir);
 LT_SCOPE int	    lt_dlinsertsearchdir (const char *before,
 						  const char *search_dir);
-LT_SCOPE int 	    lt_dlsetsearchpath	 (const char *search_path);
+LT_SCOPE int	    lt_dlsetsearchpath	 (const char *search_path);
 LT_SCOPE const char *lt_dlgetsearchpath	 (void);
 LT_SCOPE int	    lt_dlforeachfile	 (
 			const char *search_path,
@@ -110,7 +106,6 @@ extern LT_DLSYM_CONST lt_dlsymlist lt__PROGRAM__LTX_preloaded_symbols[];
 
 
 
-
 /* --- MODULE INFORMATION --- */
 
 
@@ -160,4 +155,4 @@ LT_SCOPE int	    lt_dlisresident	(lt_dlhandle handle);
 
 LT_END_C_DECLS
 
-#endif /*!defined(LTDL_H)*/
+#endif /*!defined LTDL_H*/

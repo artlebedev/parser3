@@ -1,6 +1,7 @@
 /* lt__glibc.h -- support for non glibc environments
 
-   Copyright (C) 2004, 2006, 2007 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2006-2007, 2011-2019, 2021-2024 Free Software
+   Foundation, Inc.
    Written by Gary V. Vaughan, 2004
 
    NOTE: The canonical source of this file is maintained with the
@@ -22,22 +23,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
-License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-copy can be downloaded from http://www.gnu.org/licenses/lgpl.html,
-or obtained by writing to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#if !defined(LT__GLIBC_H)
+#if !defined LT__GLIBC_H
 #define LT__GLIBC_H 1
 
-#if defined(LT_CONFIG_H)
+#if defined LT_CONFIG_H
 #  include LT_CONFIG_H
 #else
 #  include <config.h>
 #endif
 
-#if !defined(HAVE_ARGZ_H) || !defined(HAVE_WORKING_ARGZ)
+#if !defined HAVE_ARGZ_H || !defined HAVE_WORKING_ARGZ
 /* Redefine any glibc symbols we reimplement to import the
    implementations into our lt__ namespace so we don't ever
    clash with the system library if our clients use argz_*
@@ -52,21 +50,22 @@ or obtained by writing to the Free Software Foundation, Inc.,
 #  define argz_next		lt__argz_next
 #  undef  argz_stringify
 #  define argz_stringify	lt__argz_stringify
-#endif
+
+#  include <lt__argz.h>
+
+#else
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef HAVE_WORKING_ARGZ
 #include <argz.h>
-#else
-#include <argz_.h>
-#endif
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /*!defined HAVE_ARGZ_H || !defined HAVE_WORKING_ARGZ*/
 
 # define slist_concat	lt__slist_concat
 # define slist_cons	lt__slist_cons
@@ -84,4 +83,4 @@ extern "C" {
 
 #include <slist.h>
 
-#endif /*!defined(LT__GLIBC_H)*/
+#endif /*!defined LT__GLIBC_H*/

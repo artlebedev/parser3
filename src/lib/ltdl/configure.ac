@@ -1,6 +1,7 @@
 # Process this file with autoconf to create configure. -*- autoconf -*-
 #
-#    Copyright (C) 2004, 2005, 2007, 2008 Free Software Foundation, Inc.
+#    Copyright (C) 2004-2005, 2007-2008, 2011-2019, 2021-2024 Free
+#    Software Foundation, Inc.
 #    Written by Gary V. Vaughan, 2004
 #
 #    NOTE: The canonical source of this file is maintained with the
@@ -22,10 +23,7 @@
 # GNU Lesser General Public License for more details.
 #
 # You should have received a copy of the GNU LesserGeneral Public
-# License along with GNU Libltdl; see the file COPYING.LIB.  If not, a
-# copy can be downloaded from http://www.gnu.org/licenses/lgpl.html,
-# or obtained by writing to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# License along with GNU Libltdl.  If not, see <https://www.gnu.org/licenses/>.
 ####
 
 # This configure.ac is not used at all by the libtool bootstrap, but
@@ -40,11 +38,10 @@ AC_PREREQ(2.59)dnl We use AS_HELP_STRING
 ## ------------------------ ##
 ## Autoconf initialisation. ##
 ## ------------------------ ##
-AC_INIT([libltdl], [2.4.2], [bug-libtool@gnu.org])
+AC_INIT([libltdl], [2.4.3a], [bug-libtool@gnu.org])
 AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_CONFIG_SRCDIR([ltdl.c])
 AC_CONFIG_AUX_DIR([../../..])
-AC_CONFIG_MACRO_DIR([m4])
 LT_CONFIG_LTDL_DIR([.]) # I am me!
 
 
@@ -59,7 +56,7 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 ## ------------------------------- ##
 ## Libtool specific configuration. ##
 ## ------------------------------- ##
-pkgdatadir='${datadir}'"/${PACKAGE}"
+pkgdatadir='$datadir'"/$PACKAGE"
 
 
 ## ----------------------- ##
