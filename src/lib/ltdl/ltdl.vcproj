@@ -122,7 +122,7 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath=".\argz.c">
+				RelativePath=".\lt__argz.c">
 			</File>
 			<File
 				RelativePath=".\lt__alloc.c">
@@ -178,6 +178,9 @@
 			</File>
 			<File
 				RelativePath="ltdl.h">
+			</File>
+			<File
+				RelativePath=".\lt__argz.h">
 			</File>
 			<Filter
 				Name="libltdl"
