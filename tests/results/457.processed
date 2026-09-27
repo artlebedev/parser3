@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 208
+Content-Length: 271
 
 {
 	"caught":5,
@@ -12,5 +12,6 @@ Content-Length: 208
 	"after":true,
 	"caught_in_catch":true,
 	"caught_in_finally":true,
-	"catch_error_propagated":true
+	"catch_error_propagated":true,
+	"finally_error":"call canceled - endless recursion detected"
 }
