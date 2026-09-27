@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.1 2026/09/27 17:14:23 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.2 2026/09/27 17:37:51 moko Exp $" IDENT_PA_FILE_H;
 
 // some maybe-undefined constants
 
@@ -544,7 +544,7 @@ bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t&
 
 size_t check_file_size(uint64_t size, const String* file_spec){
 	if(size > (uint64_t)pa_file_size_limit)
-		throw Exception(PARSER_RUNTIME, file_spec, "content size of %.15g bytes exceeds the limit (%.15g bytes)", (double)size, (double)pa_file_size_limit);
+		throw Exception(PARSER_RUNTIME, file_spec, "content size of %s bytes exceeds the limit (%s bytes)", pa_uitoa(size), pa_uitoa(pa_file_size_limit));
 	return (size_t)size;
 }
 

@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.199 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.200 2026/09/27 17:37:51 moko Exp $";
 
 // defines
 
@@ -276,7 +276,7 @@ public:
 
 	override void seek(uint64_t value) {
 		if(pa_lseek(f, value, SEEK_SET)<0)
-			throw Exception(IMAGE_FORMAT, &file_name, "seek to %.15g failed: %s (%d)", (double)value, strerror(errno), errno);
+			throw Exception(IMAGE_FORMAT, &file_name, "seek to %s failed: %s (%d)", pa_uitoa(value), strerror(errno), errno);
 	}
 
 	override uint64_t tell() { return pa_lseek(f, 0, SEEK_CUR); }
@@ -306,7 +306,7 @@ public:
 
 	override void seek(uint64_t value) {
 		if(value>(uint64_t)size)
-			throw Exception(IMAGE_FORMAT, &file_name, "seek to %.15g failed: out of buffer (%.15g)", value, size);
+			throw Exception(IMAGE_FORMAT, &file_name, "seek to %s failed: out of buffer (%s)", pa_uitoa(value), pa_uitoa(size));
 		offset=(size_t)value;
 	}
 

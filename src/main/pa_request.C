@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.447 2026/09/27 17:13:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.448 2026/09/27 17:37:51 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -361,7 +361,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	CONF_OPTION(limits, file_size_limit_name, {
 		double limit=option->as_double();
 		if(limit >= (double)SSIZE_MAX)
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %.15g", file_size_limit_name.cstr(), (double)SSIZE_MAX);
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %s", file_size_limit_name.cstr(), pa_itoa(SSIZE_MAX));
 		pa_file_size_limit=(size_t)limit;
 		if(pa_file_size_limit==0)
 			pa_file_size_limit=SSIZE_MAX;
@@ -897,7 +897,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 			part_length = rg.end-rg.start+1;
 
 			char buf[MAX_STRING];
-			snprintf(buf, MAX_STRING, "bytes %.15g-%.15g/%.15g", (double)rg.start, (double)rg.end, (double)content_length);
+			snprintf(buf, MAX_STRING, "bytes %s-%s/%s", pa_uitoa(rg.start), pa_uitoa(rg.end), pa_uitoa(content_length));
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206");
 			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
 		} else {
