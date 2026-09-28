@@ -1,3 +1,152 @@
+2026-09-28  moko
+
+	* src/main/pa_file.C: whitespace
+
+	* src/main/pa_request.C, tests/458.html,
+	  tests/results/458.processed: comments and test for MSVC win64
+	  exception handling added
+
+	* src/targets/cgi/parser3.vcproj: StackReserveSize changed to 40Mb
+	  for MSVC, to allow full 3 levels of win64 Exception Handling
+
+	* tests/450-curl.html: windows support
+
+	* src/: main/pa_request.C, targets/cgi/parser3.vcproj:
+	  StackReserveSize changed to 32Mb for MSVC, stack usage
+	  calculations documented (inluding ~10Kb for win64 Exception
+	  Handling)
+
+2026-09-27  moko
+
+	* src/targets/: apache/mod_parser3_core.C, cgi/parser3.C,
+	  isapi/parser3isapi.C: fixed ExceptionAddress output for Windows
+	  x64
+
+	* src/lib/ltdl/ltdl.c: restored local libltdl patch "fixes for
+	  Win32 and broken FreeBSD (issue #45)" which was list during ltdl
+	  update
+
+	* src/lib/ltdl/: lt__argz.h, ltdl.vcproj: Windows build fix
+
+	* src/: classes/image.C, main/pa_file.C, main/pa_request.C: minor:
+	  %.15g + double replaced with %s + pa_(u)itoa.
+
+	* src/main/pa_dir.C: file related functions moved to pa_file
+	  (related to feature #941)
+
+	* src/main/pa_dir.C: file related functions moved to pa_file
+	  (related to feature #941)
+
+	* src/: include/Makefile.am, main/Makefile.am, include/pa_common.h,
+	  include/pa_dir.h, include/pa_exec.h, include/pa_request.h,
+	  main/main.vcproj, main/pa_charset.C, main/pa_common.C,
+	  main/pa_dir.C, main/pa_http.C, main/pa_request.C,
+	  targets/cgi/parser3.C, types/pa_vhashfile.C, include/pa_file.h,
+	  main/pa_file.C: file related functions moved to pa_file (related
+	  to feature #941)
+
+	* src/lib/ltdl/m4/argz.m4: no longer used
+
+	* aclocal.m4, compile, config.guess, config.sub, configure,
+	  depcomp, install-sh, ltmain.sh, missing,
+	  src/include/pa_config_auto.h.in, src/lib/ltdl/COPYING.LIB,
+	  src/lib/ltdl/Makefile.am, src/lib/ltdl/README,
+	  src/lib/ltdl/aclocal.m4, src/lib/ltdl/argz.c,
+	  src/lib/ltdl/argz_.h, src/lib/ltdl/config-h.in,
+	  src/lib/ltdl/configure, src/lib/ltdl/configure.ac,
+	  src/lib/ltdl/lt__alloc.c, src/lib/ltdl/lt__argz.c,
+	  src/lib/ltdl/lt__dirent.c, src/lib/ltdl/lt__strl.c,
+	  src/lib/ltdl/lt_dlloader.c, src/lib/ltdl/lt_error.c,
+	  src/lib/ltdl/ltdl.c, src/lib/ltdl/ltdl.h, src/lib/ltdl/slist.c,
+	  src/lib/ltdl/libltdl/lt__alloc.h,
+	  src/lib/ltdl/libltdl/lt__argz_.h,
+	  src/lib/ltdl/libltdl/lt__dirent.h,
+	  src/lib/ltdl/libltdl/lt__glibc.h,
+	  src/lib/ltdl/libltdl/lt__private.h,
+	  src/lib/ltdl/libltdl/lt__strl.h,
+	  src/lib/ltdl/libltdl/lt_dlloader.h,
+	  src/lib/ltdl/libltdl/lt_error.h,
+	  src/lib/ltdl/libltdl/lt_system.h, src/lib/ltdl/libltdl/slist.h,
+	  src/lib/ltdl/loaders/dld_link.c, src/lib/ltdl/loaders/dlopen.c,
+	  src/lib/ltdl/loaders/dyld.c, src/lib/ltdl/loaders/load_add_on.c,
+	  src/lib/ltdl/loaders/loadlibrary.c,
+	  src/lib/ltdl/loaders/preopen.c, src/lib/ltdl/loaders/shl_load.c,
+	  src/lib/ltdl/m4/libtool.m4, src/lib/ltdl/m4/ltargz.m4,
+	  src/lib/ltdl/m4/ltdl.m4, src/lib/ltdl/m4/ltoptions.m4,
+	  src/lib/ltdl/m4/ltsugar.m4, src/lib/ltdl/m4/ltversion.m4,
+	  src/lib/ltdl/m4/lt~obsolete.m4: autotools regenerated with
+	  autoconf 2.72 and automake 1.17, bundled libltdl updated to the
+	  one from libtool 2.5.4 (autoreconf -fi under Debian 13)
+
+	* tests/results/457.processed: test results updated after
+	  recursion_limit_try_restore added (related to feature #1298)
+
+	* src/main/pa_request.C: const uint changed to more correct int
+
+	* src/: main/execute.C, types/pa_vmethod_frame.h:
+	  SINGLE_METHOD_FRAME implemented to reduce execute() stack frame.
+	  Without it, compiler reserves stack frame for each ot 8 parser
+	  frame variants (related to feature #1293)
+
+2026-09-26  moko
+
+	* tests/: 457.html, results/457.processed: test and it's results
+	  updated after recursion_limit_try_restore added (related to
+	  feature #1298)
+
+	* src/: classes/op.C, include/pa_request.h, types/pa_vxdoc.C:
+	  recursion_limit_try_restore added to even more improve endless
+	  recursion handling (related to feature #1298)
+
+	* tests/: 456.html, 457.html, results/456.processed,
+	  results/457.processed: tests for EXECUTE_RECURSION_RESERVE added
+	  (related to feature #1298)
+
+	* src/: classes/op.C, include/pa_exception.h, include/pa_request.h,
+	  main/pa_request.C: to improve endless recursion handling
+	  EXECUTE_RECURSION_RESERVE was added and used (implements feature
+	  #1298)
+
+2026-09-25  moko
+
+	* tests/: 455.html, results/455.processed: test for
+	  ^reflection:stack[$exception] added (related to feature #1145)
+
+	* src/: classes/op.C, classes/reflection.C, include/pa_request.h,
+	  main/pa_request.C: ^reflection:stack[$exception] now supported
+	  within catch code (implements feature #1145)
+
+	* src/main/pa_common.C: writing big files using chunks to bypass
+	  Windows 2Gb limit (fixes bug #1297)
+
+	* tests/: 453.html, 454.html, results/453.processed,
+	  results/454.processed: tests for bug #1082 added: preserving the
+	  original stack trace after handling a nested exception in catch;
+	  reporting the correct stack trace for a new exception thrown from
+	  finally.
+
+	* tests/run_parser.sh: Moscow timezone is set by default (not
+	  required to be set on test server)
+
+	* src/: classes/op.C, include/pa_request.h, main/pa_request.C: work
+	  with exception_trace redesigned, Request_context_save no longer
+	  touches exception_trace (fixes bug #1082)
+
+2026-09-24  moko
+
+	* tests/: 452.html, results/452.processed: checks for exception is
+	  still hash compatible added (related to feature #1145)
+
+	* src/: classes/op.C, include/pa_request.h, main/pa_request.C:
+	  Exception_details is replaced with efficient VException, hash is
+	  created only on demand (related to feature #1145)
+
+	* src/: include/pa_symbols.h, main/pa_symbols.C: exceptions symbols
+	  added (related to feature #1145)
+
+	* src/types/pa_vhash.h: fhash-> hash() - a bit slower, but
+	  simplifies inherihance (related to feature #1145)
+
 2026-09-20  moko
 
 	* src/include/pa_config_fixed.h: Windows: librabbitmq TLS support
