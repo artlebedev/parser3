@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.48 2026/04/25 13:38:46 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.49 2026/09/28 02:52:42 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -88,8 +88,8 @@ static void *xmlFileOpenMonitor(const char* afilename) {
 			document_root=".";
 		afilename=pa_strcat(document_root, &afilename[16]);
 	} else {
-		if(!strstr(afilename, "http://")) {
-			if(strstr(afilename, "file://")) {
+		if(strncmp(afilename, "http://", 7)) {
+			if(!strncmp(afilename, "file://", 7)) {
 				afilename+=7 /*strlen("file://")*/;
 #ifdef WIN32
 				if(afilename[0]=='/' && afilename[1] && afilename[2]==':' && afilename[3]=='/') {

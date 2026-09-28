@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.451 2026/09/28 02:09:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.452 2026/09/28 02:52:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -727,6 +727,7 @@ void Request::use_buf(VStateless_class& aclass, const char* source, const String
 }
 
 const String& Request::relative(const char* apath, const String& relative_name) {
+	// apath is a URI or a path already normalized by the target, always slash separated
 	char *hpath=pa_strdup(apath);
 	String& result=*new String;
 	if(rsplit(hpath, '/')) // if something/splitted
