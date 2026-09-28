@@ -808,6 +808,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_ltdl_install
+with_assertions
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1469,6 +1470,7 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
+  --with-assertions       to enable assertions
 
 Some influential environment variables:
   CC          C compiler command
@@ -15078,6 +15080,27 @@ printf "%s\n" "#define LT_LIBPREFIX \"$lt_libprefix\"" >>confdefs.h
 name=ltdl
 eval "LTDLOPEN=\"$libname_spec\""
 
+
+
+
+## ----------- ##
+## Assertions. ##
+## ----------- ##
+# parser3 specific: disable assertions in a release build by default.
+# Has to be set here, as ltdl runs its own configure.
+# CPPFLAGS, not AC_DEFINE: slist.c includes <assert.h> without any config.h.
+
+# Check whether --with-assertions was given.
+if test ${with_assertions+y}
+then :
+  withval=$with_assertions; { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: enabling assertions" >&5
+printf "%s\n" "$as_me: WARNING: enabling assertions" >&2;}
+
+else case e in #(
+  e) CPPFLAGS="$CPPFLAGS -DNDEBUG"
+ ;;
+esac
+fi
 
 
 
