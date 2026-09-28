@@ -66,6 +66,19 @@ LT_INIT([dlopen win32-dll])
 _LTDL_SETUP
 
 
+## ----------- ##
+## Assertions. ##
+## ----------- ##
+# parser3 specific: disable assertions in a release build by default.
+# Has to be set here, as ltdl runs its own configure.
+# CPPFLAGS, not AC_DEFINE: slist.c includes <assert.h> without any config.h.
+AC_ARG_WITH(assertions, [  --with-assertions       to enable assertions],
+	AC_MSG_WARN(enabling assertions)
+,
+	CPPFLAGS="$CPPFLAGS -DNDEBUG"
+)
+
+
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
