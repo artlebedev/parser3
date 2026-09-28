@@ -1,0 +1,22 @@
+# Every ^nest level runs away in the try body, and the next one starts from its catch code,
+# that is inside a handler which has not returned yet. Nesting handlers does not raise the
+# recursion depth, but MSVC win64 keeps the unwound frames until the catch block returns, so
+# each nested runaway costs one more full stack budget, ~10MB with the default max_recursion(1000).
+# Four levels already overflow a 40MB stack there, while linux needs the same 900KB for any depth.
+# In summary, win64 EH is awful: it unwinds the C++ stack but not its own state, so the program dies
+# escaping a recursion that fit the stack with room to spare, and the crash points to the wrong place.
+@main[]
+$nested(0)
+^try{ ^nest(3) }{ $exception.handled(true) }
+nested $nested
+
+@nest[level]
+^if($level>0){
+	^try{ ^recurse[] }{
+		$nested($nested+1)
+		^nest($level-1)
+	}
+}
+
+@recurse[]
+^recurse[]

@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.449 2026/09/27 22:44:35 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.450 2026/09/28 00:17:45 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -47,8 +47,10 @@ const char* DEFAULT_CONTENT_TYPE="text/html";
 // One recursion level uses ~0.85KB of stack under linux/gcc, ~1KB under win32 and ~2KB under win64.
 // MSVC win64 exception handling requires an extra ~10KB !!! for each throw, and execute() catches and
 // rethrows on every level to provide a stack trace.
-// So 1000 levels need ~1MB under linux (default 8MB stack is enough) and ~2+10=12MB under win64,
-// thus the stack is set to 32MB in the MSVC project settings.
+// So 1000 levels need ~1MB under linux (default 8MB stack is enough) and ~2+10=12MB under win64.
+// Worse, win64 keeps the unwound frames until the catch block returns, so a handler running away
+// in its turn starts on top of them and needs one more such budget. The stack is set to 40MB in
+// the MSVC project settings to allow nested three runaways.
 const int EXECUTE_RECURSION_LIMIT=1000;
 const int EXECUTE_RECURSION_RESERVE=100;
 
