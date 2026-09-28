@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.450 2026/09/28 00:17:45 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.451 2026/09/28 02:09:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -736,13 +736,13 @@ const String& Request::relative(const char* apath, const String& relative_name) 
 }
 
 const String& Request::full_disk_path(const String& relative_name) {
-	if(is_os_absolute_path(relative_name))
-		return relative_name;
 	if(relative_name.first_char()=='/') {
 		String& result=*new String(pa_strdup(request_info.document_root));
 		result << relative_name;
 		return result;
 	}
+	if(is_os_absolute_path(relative_name))
+		return relative_name;
 	if(relative_name.starts_with("http://") || relative_name.starts_with("parser://"))
 		return relative_name;
 

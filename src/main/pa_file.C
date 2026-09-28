@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.3 2026/09/28 00:23:20 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.4 2026/09/28 02:09:17 moko Exp $" IDENT_PA_FILE_H;
 
 // some maybe-undefined constants
 
@@ -45,8 +45,7 @@ bool is_os_absolute_path(const String& path) {
 
 bool is_os_absolute_path(const char* path) {
 	return path[0] && path[0]!=':' && path[1]==':' // DRIVE: (including drive-relative paths, for compatibility)
-		|| path[0]=='\\' && path[1]=='\\' // UNC
-		|| path[0]=='/' && path[1]=='/';
+		|| path[0]=='\\' && path[1]=='\\';     // UNC, only '\\' is supported as '//' is a document root relative path
 }
 #endif
 
