@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.2 2026/09/27 17:37:51 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.3 2026/09/28 00:23:20 moko Exp $" IDENT_PA_FILE_H;
 
 // some maybe-undefined constants
 
@@ -117,11 +117,11 @@ int pa_get_valid_file_options_count(HashStringValue& options) {
 struct File_read_action_info {
 	char **data; size_t *data_size;
 	char* buf; uint64_t offset; size_t limit;
-}; 
+};
 #endif
 
 static void file_read_action(struct stat& finfo, int f, const String& file_spec, void *context) {
-	File_read_action_info& info = *static_cast<File_read_action_info *>(context); 
+	File_read_action_info& info = *static_cast<File_read_action_info *>(context);
 	size_t to_read_size = check_file_size(info.limit && info.limit < (size_t)finfo.st_size ? info.limit : (size_t)finfo.st_size, &file_spec);
 	if(to_read_size) {
 		if(info.offset)
@@ -148,7 +148,7 @@ File_read_result file_read_binary(const String& file_spec, bool fail_on_read_pro
 	return result;
 }
 
-File_read_result file_read(Request_charsets& charsets, const String& file_spec, 
+File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			bool as_text, HashStringValue *options,
 			bool fail_on_read_problem,
 			size_t offset = 0, size_t limit = 0, bool transcode_text_result = true) {
@@ -159,9 +159,9 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 	}
 
-	File_read_action_info info = {&result.str, &result.length, 0, offset, limit}; 
+	File_read_action_info info = {&result.str, &result.length, 0, offset, limit};
 
-	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem); 
+	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem);
 
 	if(as_text){
 		if(result.success){
@@ -187,7 +187,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 	return result;
 }
 
-File_read_result file_load(Request& r, const String& file_spec, 
+File_read_result file_load(Request& r, const String& file_spec,
 			bool as_text, HashStringValue *options,
 			bool fail_on_read_problem,
 			bool transcode_text_result) {
@@ -252,10 +252,10 @@ bool file_read_action_under_lock(const String& file_spec, const char* action_nam
 
 	// first open, next stat:
 	// directory update of NTFS hard links performed on open.
-	// ex: 
+	// ex:
 	//   a.html:^test[] and b.html hardlink to a.html
 	//   user inserts ! before ^test in a.html
-	//   directory entry of b.html in NTFS not updated at once, 
+	//   directory entry of b.html in NTFS not updated at once,
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
 	// later: it seems, even this does not help sometimes
@@ -272,15 +272,15 @@ bool file_read_action_under_lock(const String& file_spec, const char* action_nam
 
 			check_safe_mode(finfo, file_spec, fname);
 
-			action(finfo, f, file_spec, context); 
+			action(finfo, f, file_spec, context);
 		} catch(...) {
-			pa_unlock(f);close(f); 
+			pa_unlock(f);close(f);
 			if(fail_on_read_problem)
 				rethrow;
 			return false;
-		} 
+		}
 
-		pa_unlock(f);close(f); 
+		pa_unlock(f);close(f);
 		return true;
 	} else {
 		if(fail_on_read_problem)
@@ -382,8 +382,8 @@ void file_write(
 				Request_charsets& charsets,
 				const String& file_spec,
 				const char* data,
-				size_t size, 
-				bool as_text, 
+				size_t size,
+				bool as_text,
 				bool do_append,
 				Charset* asked_charset) {
 
@@ -427,7 +427,7 @@ bool entry_exists(const char* fname, struct stat *afinfo) {
 }
 
 bool entry_exists(const String& file_spec) {
-	return entry_exists(file_spec.taint_cstr(String::L_FILE_SPEC), 0); 
+	return entry_exists(file_spec.taint_cstr(String::L_FILE_SPEC), 0);
 }
 
 static bool entry_ifdir(char *fname, bool need_dir) {
@@ -476,7 +476,7 @@ static void rmdir(const String& file_spec, size_t pos_after) {
 }
 
 bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_dirs) {
-	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC);
 	if(pa_unlink(fname)!=0) {
 		if(fail_on_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
@@ -486,32 +486,32 @@ bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_
 	}
 
 	if(!keep_empty_dirs)
-		rmdir(file_spec, 1); 
+		rmdir(file_spec, 1);
 
 	return true;
 }
 
 void file_move(const String& old_spec, const String& new_spec, bool keep_empty_dirs) {
-	const char* old_spec_cstr=old_spec.taint_cstr(String::L_FILE_SPEC); 
-	const char* new_spec_cstr=new_spec.taint_cstr(String::L_FILE_SPEC); 
+	const char* old_spec_cstr=old_spec.taint_cstr(String::L_FILE_SPEC);
+	const char* new_spec_cstr=new_spec.taint_cstr(String::L_FILE_SPEC);
 	
-	create_dir_for_file(new_spec); 
+	create_dir_for_file(new_spec);
 
 	if(pa_rename(old_spec_cstr, new_spec_cstr)!=0)
 		throw Exception(errno==EACCES ? "file.access" : errno==ENOENT ? "file.missing" : 0,
 			&old_spec, "rename failed: %s (%d), actual filename '%s' to '%s'", strerror(errno), errno, old_spec_cstr, new_spec_cstr);
 
 	if(!keep_empty_dirs)
-		rmdir(old_spec, 1); 
+		rmdir(old_spec, 1);
 }
 
 
 bool file_exist(const String& file_spec) {
-	return entry_ifdir(file_spec, false); 
+	return entry_ifdir(file_spec, false);
 }
 
 bool dir_exists(const String& file_spec) {
-	return entry_ifdir(file_spec, true); 
+	return entry_ifdir(file_spec, true);
 }
 
 const String* file_exist(const String& path, const String& name) {
@@ -527,7 +527,7 @@ bool file_executable(const String& file_spec) {
 }
 
 bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t& rmtime, time_t& rctime, bool fail_on_read_problem) {
-	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC); 
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC);
 	struct stat finfo;
 	if(pa_stat(fname, &finfo)!=0) {
 		if(fail_on_read_problem)
@@ -548,7 +548,7 @@ size_t check_file_size(uint64_t size, const String* file_spec){
 	return (size_t)size;
 }
 
-/** 
+/**
 	String related functions
 */
 
