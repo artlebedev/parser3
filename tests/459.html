@@ -1,0 +1,105 @@
+# file:// disk paths, and schemes allowed per call site (feature #941)
+# No absolute path is reported: it is machine dependent, and outside windows ':' gets escaped on untaint.
+@main[][root;uri;dir;text]
+$root[$request:document-root]
+$uri[^file_uri[$root/tests/459.html]]
+$dir[^file_uri[$root/tests]]
+
+$report[^hash::create[]]
+
+# these do not depend on document-root
+$report.schemes[
+	$.[load parser://][ ^outcome{ $f[^file::load[text;parser://method]] $f.text }]
+	$.[load http:// is allowed][ ^allowed{ $f[^file::load[text;http://127.0.0.1:1/x]] }]
+	$.[table::load http:// is allowed][ ^allowed{ $t[^table::load[http://127.0.0.1:1/x]] }]
+	$.[table::load file://][ ^outcome{ $t[^table::load[nameless;$uri]] ^if(^t.count[]){loaded}{EMPTY} }]
+	$.[fullpath http://][ ^outcome{ ^file:fullpath[http://example.com/some/long/path.gif] }]
+	$.[a built uri keeps the scheme][ ^outcome{ ^file:fullpath[http://$root/path.gif] }]
+	$.[scheme only at the start][ ^outcome{ ^file:fullpath[x/file:///etc/passwd] }]
+	$.[other authority rejected][ ^outcome{ ^file:fullpath[file://evilhost/nonexistent] }]
+	$.[empty file:// rejected][ ^outcome{ ^file:fullpath[file://] }]
+	$.[use file://][ ^outcome{ ^use[^file_uri[$root/tests/366.p]] used }]
+	$.[use http://][ ^outcome{ ^use[http://127.0.0.1:1/x.p] }]
+	$.[windows-only file://C:/ form][ ^if(^root.left(1) eq '/'){ok}{ ^eq[ ^outcome{ ^file:fullpath[file://$root/tests/459.html] }; /tests/459.html ] }]
+]
+
+# where a uri is an error, and where it is just no file
+$report.throwing[
+	$.[save refuses a uri][ ^outcome{ $s[text] ^s.save[http://example.com/459.txt] }]
+	$.[save refuses an invalid file://][ ^outcome{ $s[text] ^s.save[file://evilhost/459.txt] }]
+	$.[delete refuses a uri][ ^outcome{ ^file:delete[http://example.com/459.txt] }]
+	$.[delete with exception(false) ignores a uri][ ^outcome{ ^file:delete[http://example.com/459.txt][ $.exception(false) ] silent }]
+	$.[delete with exception(false) ignores an invalid file://][ ^outcome{ ^file:delete[file://evilhost/459.txt][ $.exception(false) ] silent }]
+	$.[find never finds a uri][ ^outcome{ ^file:find[http://example.com/Makefile]{not found} }]
+	$.[find does not throw on an invalid file://][ ^outcome{ ^file:find[file://evilhost/Makefile]{not found} }]
+	$.[-f and -d do not throw on a uri or an invalid file://][ ^outcome{ ^if(-f 'http://example.com/x' || -d 'parser://x' || -f 'file://evilhost/x'){YES}{no} }]
+	$.[-f and -d accept file://][ ^outcome{ ^if(-f $uri && -d $dir){yes}{NO} }]
+]
+
+# the same checks against three flavours of document-root
+$report.[document-root][
+	$.plain[ ^cycle[$root;$root] ]
+	$.[with a trailing slash][ ^cycle[$root/;$root] ]
+	$.empty[ ^cycle[;$root] ]
+]
+
+# last, as it changes document-root too: /root must not match /rootbeer
+$request:document-root[$root/tes]
+$report.[segment boundary][
+	$.[disk path][ ^outcome{ ^file:fullpath[$uri] }]
+	$.[relative name][ ^outcome{ ^file:fullpath[x.gif] }]
+]
+
+# the document root is machine dependent
+$text[^print[$report]]
+^taint[as-is][^text.replace[$root;<root>]]
+
+
+@cycle[root;root0][web;prefix;uri;luri;found;deep]
+$request:document-root[$root]
+# with no root a disk path is its own web path, but only one starting with '/', not so under windows:
+# hence the comparisons below instead of just the result
+$web(def $root || ^root0.left(1) eq '/')
+$prefix[^if(def $root){}{$root0}]
+$uri[^file_uri[$root0/tests/459.html]]
+$luri[^file_uri[$root0/tests/459.html;localhost]]
+# test.p has no namesake up the tree, so a mangled path would not be found by climbing up by chance
+$found[^file_uri[$root0/tests/366_dir/test.p]]
+$deep[^file_uri[$root0/tests/366_dir/zz/test.p]]
+$result[
+	$.[file:// loads the same file][ ^outcome{ $a[^file::load[text;$uri]] ^if(^a.text.length[]){loaded}{EMPTY} }]
+	$.[fullpath of a relative name][ ^eq[ ^outcome{ ^file:fullpath[x.gif] }; ^if($web){$prefix/tests/x.gif}{Exception: is outside of ^$request:document-root []} ]]
+	$.[fullpath maps file:// to web space][ ^eq[ ^outcome{ ^file:fullpath[$uri] }; ^if($web){$prefix/tests/459.html}{Exception: is outside of ^$request:document-root []} ]]
+	$.[fullpath maps file://localhost/ to web space][ ^eq[ ^outcome{ ^file:fullpath[$luri] }; ^if($web){$prefix/tests/459.html}{Exception: is outside of ^$request:document-root []} ]]
+	$.[find maps file:// to web space][ ^eq[ ^file:find[$found]{NOT FOUND}; ^if($web){$prefix/tests/366_dir/test.p}{NOT FOUND} ]]
+	$.[find climbs up from a disk path][ ^eq[ ^file:find[$deep]{NOT FOUND}; ^if($web){$prefix/tests/366_dir/test.p}{NOT FOUND} ]]
+	$.[find climbs up from a web path][ ^file:find[/tests/zz/Makefile]{NOT FOUND}]
+	$.[find relative to the request uri][ ^file:find[Makefile]{NOT FOUND}]
+	$.[localhost authority allowed][ ^outcome{ ^file:fullpath[file://localhost/nonexistent-459] }]
+	$.[fullpath outside the root][ ^outcome{ ^file:fullpath[file:///nonexistent-459] }]
+	$.[find outside the root][ ^file:find[file:///nonexistent-459]{NOT FOUND}]
+]
+
+@print[h;indent][k;v]
+^h.foreach[k;v]{${indent}${k}:^if($v is 'hash'){^#0A^print[$v;$indent^#09]}{ ^v.trim[]^#0A}}
+
+@outcome[code]
+^try{
+	$result[$code]
+	$result[^result.trim[]]
+}{
+	$exception.handled(true)
+	$result[Exception: $exception.comment]
+}
+
+# a scheme is allowed when the attempt fails anyhow, but not as an unsupported one
+@allowed[code][r]
+$r[^outcome{$code}]
+$result[^if(^r.pos[unsupported path scheme]>=0){REJECTED}{allowed}]
+
+# a standard file uri: file:///C:/path or file://localhost/C:/path under windows
+@file_uri[path;host]
+$result[file://$host^if(^path.left(1) ne '/'){/}$path]
+
+@eq[got;want]
+$result[^if(^got.trim[] eq ^want.trim[]){ok}{WRONG [$got] want [$want]}]

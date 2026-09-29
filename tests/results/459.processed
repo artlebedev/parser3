@@ -1,0 +1,66 @@
+Content-Type: text/html
+Content-Length: 2902
+
+schemes:
+	load parser://: Exception: unsupported path scheme
+	load http:// is allowed: allowed
+	table::load http:// is allowed: allowed
+	table::load file://: loaded
+	fullpath http://: Exception: unsupported path scheme
+	a built uri keeps the scheme: Exception: unsupported path scheme
+	scheme only at the start: /tests/x/file:///etc/passwd
+	other authority rejected: Exception: must be file:///path or file://localhost/path
+	empty file:// rejected: Exception: must be file:///path or file://localhost/path
+	use file://: used
+	use http://: Exception: unsupported path scheme
+	windows-only file://C:/ form: ok
+throwing:
+	save refuses a uri: Exception: unsupported path scheme
+	save refuses an invalid file://: Exception: must be file:///path or file://localhost/path
+	delete refuses a uri: Exception: unsupported path scheme
+	delete with exception(false) ignores a uri: silent
+	delete with exception(false) ignores an invalid file://: silent
+	find never finds a uri: not found
+	find does not throw on an invalid file://: not found
+	-f and -d do not throw on a uri or an invalid file://: no
+	-f and -d accept file://: yes
+document-root:
+	plain:
+		file:// loads the same file: loaded
+		fullpath of a relative name: ok
+		fullpath maps file:// to web space: ok
+		fullpath maps file://localhost/ to web space: ok
+		find maps file:// to web space: ok
+		find climbs up from a disk path: ok
+		find climbs up from a web path: /tests/Makefile
+		find relative to the request uri: /tests/Makefile
+		localhost authority allowed: Exception: is outside of $request:document-root [<root>]
+		fullpath outside the root: Exception: is outside of $request:document-root [<root>]
+		find outside the root: NOT FOUND
+	with a trailing slash:
+		file:// loads the same file: loaded
+		fullpath of a relative name: ok
+		fullpath maps file:// to web space: ok
+		fullpath maps file://localhost/ to web space: ok
+		find maps file:// to web space: ok
+		find climbs up from a disk path: ok
+		find climbs up from a web path: /tests/Makefile
+		find relative to the request uri: /tests/Makefile
+		localhost authority allowed: Exception: is outside of $request:document-root [<root>/]
+		fullpath outside the root: Exception: is outside of $request:document-root [<root>/]
+		find outside the root: NOT FOUND
+	empty:
+		file:// loads the same file: loaded
+		fullpath of a relative name: ok
+		fullpath maps file:// to web space: ok
+		fullpath maps file://localhost/ to web space: ok
+		find maps file:// to web space: ok
+		find climbs up from a disk path: ok
+		find climbs up from a web path: NOT FOUND
+		find relative to the request uri: NOT FOUND
+		localhost authority allowed: /nonexistent-459
+		fullpath outside the root: /nonexistent-459
+		find outside the root: NOT FOUND
+segment boundary:
+	disk path: Exception: is outside of $request:document-root [<root>/tes]
+	relative name: Exception: is outside of $request:document-root [<root>/tes]
