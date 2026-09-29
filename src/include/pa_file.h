@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.1 2026/09/27 17:14:23 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.2 2026/09/29 02:56:52 moko Exp $"
 
 #include "pa_common.h"
 
@@ -48,6 +48,19 @@ bool is_os_absolute_path(const char* path);
 inline bool is_os_absolute_path(const String&) { return false; }
 inline bool is_os_absolute_path(const char*) { return false; }
 #endif
+
+/// recognized path scheme, also used as a bit mask of the schemes a caller allows
+enum { PA_SCHEME_NONE=0, PA_SCHEME_FILE=1, PA_SCHEME_HTTP=2, PA_SCHEME_PARSER=4 };
+enum { PA_ALLOW_HTTP=PA_SCHEME_HTTP, PA_ALLOW_ALL=PA_SCHEME_HTTP|PA_SCHEME_PARSER };
+
+/// scheme of a path: file://, http:// or parser://, PA_SCHEME_NONE otherwise
+uint path_scheme(const String& path);
+
+/// throws unless the scheme is allowed, file:// always is
+void check_path_scheme(uint scheme, const String& path, uint allowed);
+
+/// strips file://, 0 unless its authority is empty or localhost
+const String* file_uri_to_path(const String& uri);
 
 #define FILE_BUFFER_SIZE (128*0x400)
 

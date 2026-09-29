@@ -28,7 +28,7 @@
 #include "xnode.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.207 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_XDOC_C="$Id: xdoc.C,v 1.208 2026/09/29 02:56:52 moko Exp $";
 
 // defines
 
@@ -382,7 +382,7 @@ static void _create(Request& r, MethodParams& params) {
 	const char* URI_cstr;
 	if(params.count()>1) { // absolute(param)
 		const String& URI=params.as_string(0, "URI must be string");
-		URI_cstr=r.full_disk_path(URI).cstr();
+		URI_cstr=r.full_disk_path(URI, PA_ALLOW_ALL).cstr();
 	} else // default = disk path to requested document
 		URI_cstr=r.request_info.path_translated;
 	if(URI_cstr)
@@ -645,7 +645,7 @@ static void _transform(Request& r, MethodParams& params) {
 		result=&_transform(r, 0, vdoc, stylesheet, transform_params);
 	} else { // stylesheet (file name)
 		// extablish stylesheet connection
-		const String& stylesheet_filespec=r.full_disk_path(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"));
+		const String& stylesheet_filespec=r.full_disk_path(params.as_string(0, "stylesheet must be file name (string) or DOM document (xdoc)"), PA_ALLOW_ALL);
 		Stylesheet_connection_ptr connection(stylesheet_manager->get_connection(stylesheet_filespec));
 
 		// load and compile file to stylesheet [or get cached if any]

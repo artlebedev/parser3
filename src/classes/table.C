@@ -26,7 +26,7 @@
 #include "pa_array.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.383 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_TABLE_C="$Id: table.C,v 1.384 2026/09/29 02:56:52 moko Exp $";
 
 // class
 
@@ -417,7 +417,7 @@ static void _load(Request& r, MethodParams& params) {
 		control_chars.load(*options);
 
 	// loading text
-	char *data=file_load_text(r, r.full_disk_path(params.as_file_name(filename_param_index)), true, options);
+	char *data=file_load_text(r, r.full_disk_path(params.as_file_name(filename_param_index), PA_ALLOW_HTTP), true, options);
 
 	Skip_lines_action skip_lines_action = (control_chars.separator=='#' || control_chars.encloser=='#') ? skip_empty_lines : skip_empty_and_comment_lines;
 

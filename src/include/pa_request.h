@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.278 2026/09/27 17:13:40 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.279 2026/09/29 02:56:52 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -303,7 +303,10 @@ public:
 	/// returns relative to @a path  path to @a file 
 	const String& relative(const char* apath, const String& relative_name);
 
-	const String& full_disk_path(const String& relative_name);
+	/// disk path of a file name; a uri of another scheme is returned as is if allowed, otherwise throws
+	const String& full_disk_path(const String& relative_name, uint allowed=0);
+	/// full_disk_path of a real file on disk, which does not throw: 0 for a uri or a remote or invalid file:// one
+	const String* real_disk_path(const String& name);
 
 	/// returns the mime type of 'user_file_name'
 	const String& mime_type_of(const String* file_name);

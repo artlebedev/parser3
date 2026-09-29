@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.4 2026/09/28 02:09:17 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.5 2026/09/29 02:56:52 moko Exp $" IDENT_PA_FILE_H;
 
 // some maybe-undefined constants
 
@@ -48,6 +48,35 @@ bool is_os_absolute_path(const char* path) {
 		|| path[0]=='\\' && path[1]=='\\';     // UNC, only '\\' is supported as '//' is a document root relative path
 }
 #endif
+
+uint path_scheme(const String& path) {
+	if(path.starts_with("file://"))
+		return PA_SCHEME_FILE;
+	if(path.starts_with("http://"))
+		return PA_SCHEME_HTTP;
+	if(path.starts_with("parser://"))
+		return PA_SCHEME_PARSER;
+	return PA_SCHEME_NONE;
+}
+
+void check_path_scheme(uint scheme, const String& path, uint allowed) {
+	if(scheme!=PA_SCHEME_FILE && !(allowed&scheme))
+		throw Exception(PARSER_RUNTIME, &path, "unsupported path scheme");
+}
+
+const String* file_uri_to_path(const String& uri) {
+	const String* rest=&uri.mid(7 /* "file://" */, uri.length());
+	if(rest->starts_with("localhost/"))
+		rest=&rest->mid(9 /* "localhost", keeping the slash */, rest->length());
+	if(rest->first_char()=='/') {
+		// file:///C:/path and file://localhost/C:/path: the slash before a drive name is not a part of the path
+		const String& disk=rest->mid(1, rest->length());
+		return is_os_absolute_path(disk) ? &disk : rest;
+	}
+	if(is_os_absolute_path(*rest))
+		return rest; // file://C:/path, not a standard form but in use
+	return 0;
+}
 
 // externs
 

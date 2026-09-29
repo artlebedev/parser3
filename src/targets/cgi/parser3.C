@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.371 2026/09/27 19:40:38 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.372 2026/09/29 02:56:52 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -504,6 +504,7 @@ static void real_parser_handler(bool cgi) {
 			memcpy(document_root, filespec_to_process, prefix_len); document_root[prefix_len] = 0;
 			request_info.document_root = document_root;
 		}
+		request_info.document_root = MAYBE_BACK_SLASHES_TO_SLASHES(request_info.document_root);
 
 		request_info.uri = request_info.strip_absolute_uri(getenv("REQUEST_URI"));
 		if(request_info.uri) { // apache & others stuck to standards

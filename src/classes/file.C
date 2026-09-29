@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.299 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.300 2026/09/29 02:56:52 moko Exp $";
 
 // defines
 
@@ -179,7 +179,9 @@ static void _delete(Request& r, MethodParams& params) {
 		}
 
 	// unlink
-	file_delete(r.full_disk_path(file_name), fail_on_problem, keep_empty_dirs);
+	const String* path=fail_on_problem ? &r.full_disk_path(file_name) : r.real_disk_path(file_name);
+	if(path)
+		file_delete(*path, fail_on_problem, keep_empty_dirs);
 }
 
 static void _move(Request& r, MethodParams& params) {
@@ -261,7 +263,7 @@ static void _load_pass_param(
 
 static void _load(Request& r, MethodParams& params) {
 	bool as_text=VFile::is_text_mode(params.as_string(0, MODE_MUST_BE_STRING));
-	const String& lfile_name=r.full_disk_path(params.as_file_name(1));
+	const String& lfile_name=r.full_disk_path(params.as_file_name(1), PA_ALLOW_HTTP);
 
 	size_t param_index=params.count()-1;
 	Value* param_value=param_index>1?&params.as_no_junction(param_index, "file name or options must not be code"):0;
@@ -810,6 +812,32 @@ static size_t afterlastslash(const String& str, size_t right) {
 	return pos!=STRING_NOT_FOUND?pos+1:0;
 }
 
+// absolute web path or null when outside of document_root
+static const String* web_path(Request& r, const String& file_spec, bool fail_on_problem) {
+	if(file_spec.first_char()=='/') // already absolute
+		return &file_spec;
+
+	// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
+	const String* disk_path=fail_on_problem ? &r.full_disk_path(file_spec) : r.real_disk_path(file_spec);
+	if(!disk_path) // a uri or an invalid file:// one
+		return 0;
+
+	const char* document_root=r.request_info.document_root;
+	size_t document_root_length=strlen(document_root);
+
+	if(document_root_length>0) {
+		char last_char=document_root[document_root_length-1];
+		if(last_char == '/' || last_char == '\\')
+			--document_root_length;
+	}
+
+	const String& result=disk_path->mid(document_root_length, disk_path->length());
+
+	// a disk path may be anywhere, and a relative name too once the script changes document_root;
+	// first_char checks the segment boundary: /root must not match /rootbeer
+	return result.first_char()=='/' && !strncmp(disk_path->cstr(), document_root, document_root_length) ? &result : 0;
+}
+
 static void _find(Request& r, MethodParams& params) {
 	const String& file_name=params.as_string(0, FILE_NAME_MUST_BE_STRING);
 
@@ -818,33 +846,37 @@ static void _find(Request& r, MethodParams& params) {
 	const String* file_spec;
 	if(file_name.first_char()=='/')
 		file_spec=&file_name;
-	else 
+	else if(path_scheme(file_name) || is_os_absolute_path(file_name))
+		file_spec=web_path(r, file_name, false); // do not throw
+	else
 		file_spec=&r.relative(r.request_info.uri, file_name);
 
-	// easy way
-	if(file_exist(r.full_disk_path(*file_spec))) {
-		r.write(*file_spec);
-		return;
-	}
-
-	// monkey way
-	size_t last_slash=file_spec->strrpbrk("/\\");
-	const String& dirname=file_spec->mid(0, last_slash!=STRING_NOT_FOUND?last_slash:0);
-	const String& basename=file_spec->mid(last_slash!=STRING_NOT_FOUND?last_slash+1:0, file_spec->length());
-
-	size_t rpos=dirname.is_empty()?0:dirname.length()-1;
-	while((rpos=dirname.rskipchars("/\\", 0, rpos))!=STRING_NOT_FOUND){
-		size_t slash=dirname.strrpbrk("/\\", 0, rpos);
-		if(slash==STRING_NOT_FOUND)
-			break;
-		String test_name;
-		test_name << dirname.mid(0, slash+1);
-		test_name << basename;
-		if(file_exist(r.full_disk_path(test_name))) {
-			r.write(test_name);
+	if(file_spec) {
+		// easy way
+		if(file_exist(r.full_disk_path(*file_spec))) {
+			r.write(*file_spec);
 			return;
 		}
-		rpos=slash;
+
+		// monkey way
+		size_t last_slash=file_spec->strrpbrk("/\\");
+		const String& dirname=file_spec->mid(0, last_slash!=STRING_NOT_FOUND?last_slash:0);
+		const String& basename=file_spec->mid(last_slash!=STRING_NOT_FOUND?last_slash+1:0, file_spec->length());
+
+		size_t rpos=dirname.is_empty()?0:dirname.length()-1;
+		while((rpos=dirname.rskipchars("/\\", 0, rpos))!=STRING_NOT_FOUND){
+			size_t slash=dirname.strrpbrk("/\\", 0, rpos);
+			if(slash==STRING_NOT_FOUND)
+				break;
+			String test_name;
+			test_name << dirname.mid(0, slash+1);
+			test_name << basename;
+			if(file_exist(r.full_disk_path(test_name))) {
+				r.write(test_name);
+				return;
+			}
+			rpos=slash;
+		}
 	}
 
 	// no way, not found
@@ -934,22 +966,10 @@ static void _justext(Request& r, MethodParams& params) {
 
 static void _fullpath(Request& r, MethodParams& params) {
 	const String& file_spec=params.as_file_spec(0);
-	const String* result;
-	if(file_spec.first_char()=='/')
-		result=&file_spec;
-	else {
-		// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
-		const String& full_disk_path=r.full_disk_path(file_spec);
-		size_t document_root_length=strlen(r.request_info.document_root);
-
-		if(document_root_length>0) {
-			char last_char=r.request_info.document_root[document_root_length-1];
-			if(last_char == '/' || last_char == '\\')
-				--document_root_length;
-		}
-		result=&full_disk_path.mid(document_root_length,  full_disk_path.length());
-	}
-	r.write(*result);
+	if(const String* result=web_path(r, file_spec, true))
+		r.write(*result);
+	else
+		throw Exception(PARSER_RUNTIME, &file_spec, "is outside of $request:document-root [%s]", r.request_info.document_root);
 }
 
 static void _sql_string(Request& r, MethodParams&) {

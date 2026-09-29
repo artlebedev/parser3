@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.452 2026/09/28 02:52:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.453 2026/09/29 02:56:52 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -647,7 +647,7 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 
 	const String* filespec=0;
 
-	if(file_name.first_char()=='/') //absolute path? [no need to scan MAIN:CLASS_PATH]
+	if(file_name.first_char()=='/' || path_scheme(file_name) || is_os_absolute_path(file_name)) // path is not relative, no need to scan MAIN:CLASS_PATH
 		filespec=&full_disk_path(file_name);
 	else if(use_filespec){ // search in current dir first
 		size_t last_slash_pos=use_filespec->strrpbrk("/");
@@ -736,18 +736,32 @@ const String& Request::relative(const char* apath, const String& relative_name) 
 	return result;
 }
 
-const String& Request::full_disk_path(const String& relative_name) {
+const String& Request::full_disk_path(const String& relative_name, uint allowed) {
 	if(relative_name.first_char()=='/') {
 		String& result=*new String(pa_strdup(request_info.document_root));
 		result << relative_name;
 		return result;
 	}
+	if(uint scheme=path_scheme(relative_name)) {
+		check_path_scheme(scheme, relative_name, allowed);
+		if(scheme!=PA_SCHEME_FILE)
+			return relative_name; // an allowed uri is passed through
+		if(const String* path=file_uri_to_path(relative_name))
+			return *path;
+		throw Exception(PARSER_RUNTIME, &relative_name, "must be file:///path or file://localhost/path");
+	}
 	if(is_os_absolute_path(relative_name))
-		return relative_name;
-	if(relative_name.starts_with("http://") || relative_name.starts_with("parser://"))
 		return relative_name;
 
 	return relative(request_info.path_translated ? request_info.path_translated : request_info.document_root, relative_name);
+}
+
+const String* Request::real_disk_path(const String& name) {
+	switch(path_scheme(name)) {
+		case PA_SCHEME_NONE: return &full_disk_path(name);
+		case PA_SCHEME_FILE: return file_uri_to_path(name);
+		default: return 0; // not a disk path
+	}
 }
 
 #ifndef DOXYGEN

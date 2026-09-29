@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.431 2026/09/26 21:34:36 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.432 2026/09/29 02:56:52 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -943,14 +943,16 @@ void Request::execute(ArrayOperation& ops) {
 		case OP::OP_FEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=VBool::get(file_exist(full_disk_path(a.as_string())));
+				const String* path=real_disk_path(a.as_string());
+				Value& value=VBool::get(path && file_exist(*path));
 				stack.push(value);
 				break;
 			}
 		case OP::OP_DEXISTS:
 			{
 				Value& a=stack.pop().value();
-				Value& value=VBool::get(dir_exists(full_disk_path(a.as_string())));
+				const String* path=real_disk_path(a.as_string());
+				Value& value=VBool::get(path && dir_exists(*path));
 				stack.push(value);
 				break;
 			}
