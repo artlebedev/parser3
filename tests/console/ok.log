@@ -1,0 +1,53 @@
+
+=== 001 console
+fullpath of a relative name: /x.gif
+fullpath of a web path: /y.gif
+-f of a web path: yes
+last char of document-root, as given: /
+lib next to the config: found
+config name in @conf: <dir>/config.p
+log file: <dir>/parser3.log
+=== 001 console, the config given as ./config.p
+fullpath of a relative name: /x.gif
+fullpath of a web path: /y.gif
+-f of a web path: yes
+last char of document-root, as given: /
+lib next to the config: found
+config name in @conf: <dir>/./config.p
+log file: <dir>/./parser3.log
+=== 001 console, the config, log and file names with backslashes
+fullpath of a relative name: /x.gif
+fullpath of a web path: /y.gif
+-f of a web path: yes
+last char of document-root, as given: /
+lib next to the config: found
+config name in @conf: <dir>/config.p
+log file: <dir>/my.log
+=== 001 CGI without DOCUMENT_ROOT, as IIS and fcgiwrap call it
+Content-Type: text/html
+Content-Length: 227
+
+fullpath of a relative name: /x.gif
+fullpath of a web path: /y.gif
+-f of a web path: yes
+last char of document-root, as given: 1
+lib next to the config: found
+config name in @conf: <dir>/./config.p
+log file: <dir>/./parser3.log
+=== 001 CGI, DOCUMENT_ROOT, PATH_TRANSLATED and a relative CGI_PARSER_LOG with backslashes, the root with a trailing one
+Content-Type: text/html
+Content-Length: 224
+
+fullpath of a relative name: /x.gif
+fullpath of a web path: /y.gif
+-f of a web path: yes
+last char of document-root, as given: \
+lib next to the config: found
+config name in @conf: <dir>/./config.p
+log file: <dir>/log/my.log
+=== 002 the config which is the /auto.p too: same path, loaded once
+auto.p loaded as: <dir>/auto.p
+=== 002 the same config given as ./auto.p: loaded again as /auto.p [a known limitation]
+auto.p loaded as: <dir>/./auto.p <dir>/auto.p
+=== 002 the page given as ./page.html: auto.p is loaded again as /./auto.p [a known limitation]
+auto.p loaded as: <dir>/auto.p <dir>/./auto.p

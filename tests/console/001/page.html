@@ -1,0 +1,14 @@
+# '\' as a path separator (feature #1300) and the config lookup, called in several ways from run_tests.sh
+
+# the machine dependent directory of the test, shown as <dir>
+@dir[]
+$result[^request:document-root.trim[end;/\]]
+
+@main[]
+fullpath of a relative name: ^file:fullpath[x.gif]
+fullpath of a web path: ^file:fullpath[\y.gif]
+-f of a web path: ^if(-f '/page.html'){yes}{no}
+last char of document-root, as given: ^request:document-root.right(1)
+lib next to the config: ^lib[]
+config name in @conf: ^conf_filespec.replace[^dir[];<dir>]
+log file: ^status:log-filename.replace[^dir[];<dir>]
