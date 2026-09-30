@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.373 2026/09/30 16:44:20 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.374 2026/09/30 23:20:52 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -56,30 +56,26 @@ const char* parser3_mode = "cgi"; // $status:mode
 static const char* filespec_to_process = 0; // [file]
 static const char* httpd_host_port = 0; // -p option
 static const char* config_filespec = 0; // -f option or from env or next to the executable if exists
-static const char* log_filespec = 0; // -l option
+static const char* log_filespec = 0; // -l option or from env, full disk path
 static bool mail_received = false; // -m option? [asked to parse incoming message to $mail:received]
 static const char* parser3_filespec = 0; // argv[0]
 static char** argv_extra = NULL;
 
 // for error logging
 static THREAD_LOCAL Request_info *request_info_4log = NULL; // global for correct log() reporting
-static const char* filespec_4log = NULL; // null only if system-wide auto.p used
+static const char* filespec_4log = NULL; // null only if system-wide auto.p used; full disk path, parser3.log goes next to it
 
 const char *parser3_log_filespec() { // $status:log-filename
 	const char* slog=log_filespec;
 
-	if(!slog)
-		slog=getenv(PARSER_LOG_ENV_NAME);
-	if(!slog)
-		slog=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
 	if(!slog) {
 		static char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
-		if(char* log_dir_pos=strrpbrk(log_spec, "/\\")){
+		if(char* log_dir_pos=strrchr(log_spec, '/')){
 			strcpy(log_dir_pos, "/parser3.log");
 		} else {
-			// no path, just filename
+			// system-wide auto.p used: the current directory
 			strcpy(log_spec, "./parser3.log");
 		}
 		slog=log_spec;
@@ -194,10 +190,11 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 }
 
 static const char* full_disk_path(const char* file_name = "") {
-	if(file_name[0]=='/' || is_os_absolute_path(file_name))
-		return backslashes_to_slashes(file_name);
+	const char* path=backslashes_to_slashes(file_name);
+	if(path[0]=='/' || is_os_absolute_path(path)) // '/' includes the UNC path //server, as there are no web paths here; C: is left for is_os_absolute_path
+		return path;
 	char cwd[MAX_STRING];
-	return backslashes_to_slashes(pa_strcat(getcwd(cwd, MAX_STRING) ? cwd : "", "/", file_name));
+	return pa_strcat(backslashes_to_slashes(getcwd(cwd, MAX_STRING) ? cwd : ""), "/", path);
 }
 
 static void log_signal(const char* signal_name) {
@@ -231,13 +228,10 @@ static const char* locate_config(const char* config_filespec_option, const char*
 #ifdef SYSTEM_CONFIG_FILE
 			if(exec_dir_pos){
 #endif
-				// next to the executable
-				if(!exec_dir_pos || (exec_dir_pos==executable_path+1 && *executable_path=='.')){
-					// when just parser3 or ./parser3 full path should be used to avoid "parser already configured"
-					filespec_4log=full_disk_path(AUTO_FILE_NAME);
-				} else {
-					filespec_4log=pa_strcat(pa_strdup(executable_path, exec_dir_pos - executable_path), "/" AUTO_FILE_NAME);
-				}
+				// next to the executable; full path should be used to avoid "parser already configured"
+				filespec_4log=full_disk_path(!exec_dir_pos || (exec_dir_pos==executable_path+1 && *executable_path=='.')
+					? AUTO_FILE_NAME // parser3 or ./parser3
+					: pa_strcat(pa_strdup(executable_path, exec_dir_pos - executable_path), "/" AUTO_FILE_NAME));
 				if(entry_exists(filespec_4log))
 					return filespec_4log;
 #ifdef SYSTEM_CONFIG_FILE
@@ -249,7 +243,8 @@ static const char* locate_config(const char* config_filespec_option, const char*
 #endif
 			return NULL;
 	}
-	return filespec_4log;
+	// when -f auto.p full path should be used to avoid "parser already configured"
+	return filespec_4log=full_disk_path(filespec_4log);
 }
 
 #ifdef WIN32
@@ -686,6 +681,14 @@ int main(int argc, char *argv[]) {
 
 		argv_extra=carg;
 	}
+
+	// prepare full disk path log_filespec here, as logging must not allocate
+	if(!log_filespec)
+		log_filespec=getenv(PARSER_LOG_ENV_NAME);
+	if(!log_filespec)
+		log_filespec=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
+	if(log_filespec)
+		log_filespec=full_disk_path(log_filespec);
 
 #ifdef _MSC_VER
 	setmode(fileno(stdin), _O_BINARY);
