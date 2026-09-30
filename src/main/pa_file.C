@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.6 2026/09/30 16:44:20 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.7 2026/09/30 17:45:25 moko Exp $" IDENT_PA_FILE_H;
 
 // some maybe-undefined constants
 
@@ -75,6 +75,13 @@ const String* file_uri_to_path(const String& uri) {
 	}
 	if(is_os_absolute_path(*rest))
 		return rest; // file://C:/path, not a standard form but in use
+#ifdef WIN32
+	if(rest->pos('/')!=STRING_NOT_FOUND) { // file://server/share/path is the UNC path \\server\share\path
+		String& result=*new String("//");
+		result << *rest;
+		return &result;
+	}
+#endif
 	return 0;
 }
 

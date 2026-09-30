@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.454 2026/09/30 16:44:20 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.455 2026/09/30 17:45:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -753,7 +753,11 @@ const String& Request::full_disk_path(const String& relative_name, uint allowed)
 				return relative_name; // an allowed uri is passed through
 			if(const String* path=file_uri_to_path(relative_name))
 				return backslashes_to_slashes(*path);
+#ifdef WIN32
+			throw Exception(PARSER_RUNTIME, &relative_name, "must be file:///path, file://localhost/path or file://server/share/path");
+#else
 			throw Exception(PARSER_RUNTIME, &relative_name, "must be file:///path or file://localhost/path");
+#endif
 		}
 		// before '\' becomes '/', to avoid mixing the UNC path \\server with web path //server
 		if(is_os_absolute_path(relative_name))
