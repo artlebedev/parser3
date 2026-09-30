@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.21 2026/09/30 16:44:20 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.22 2026/09/30 17:42:38 moko Exp $"
 
 // include
 
@@ -19,8 +19,8 @@ class Request_info {
 public:
 	//@{ these filled by Request class user
 	const char* document_root;
-	const char* document_root_path; // normalized: '/' separated, without the trailing '/'
-	const char* path_translated;
+	const char* document_root_path; // '/'-normalized, without the trailing '/'
+	const char* path_translated;    // '/'-normalized disk path of the requested file
 	const char* method;
 	const char* query_string;
 	const char* uri;

@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.2 2026/09/29 02:56:52 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.3 2026/09/30 17:42:38 moko Exp $"
 
 #include "pa_common.h"
 
@@ -41,6 +41,7 @@ FILE *pa_fopen(const char *pathname, const char *mode);
 
 #endif
 
+/// the path should not be '/'-normalized yet, as \\server would become the web path //server
 #ifdef WIN32
 bool is_os_absolute_path(const String& path);
 bool is_os_absolute_path(const char* path);
@@ -53,13 +54,13 @@ inline bool is_os_absolute_path(const char*) { return false; }
 enum { PA_SCHEME_NONE=0, PA_SCHEME_FILE=1, PA_SCHEME_HTTP=2, PA_SCHEME_PARSER=4 };
 enum { PA_ALLOW_HTTP=PA_SCHEME_HTTP, PA_ALLOW_ALL=PA_SCHEME_HTTP|PA_SCHEME_PARSER };
 
-/// scheme of a path: file://, http:// or parser://, PA_SCHEME_NONE otherwise
+/// scheme of a not '/'-normalized path: file://, http:// or parser://, PA_SCHEME_NONE otherwise
 uint path_scheme(const String& path);
 
 /// throws unless the scheme is allowed, file:// always is
 void check_path_scheme(uint scheme, const String& path, uint allowed);
 
-/// strips file://, 0 unless its authority is empty or localhost
+/// resolved file:// or null; the result is not '/'-normalized
 const String* file_uri_to_path(const String& uri);
 
 #define FILE_BUFFER_SIZE (128*0x400)
