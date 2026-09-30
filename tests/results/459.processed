@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 2902
+Content-Length: 3532
 
 schemes:
 	load parser://: Exception: unsupported path scheme
@@ -9,7 +9,6 @@ schemes:
 	fullpath http://: Exception: unsupported path scheme
 	a built uri keeps the scheme: Exception: unsupported path scheme
 	scheme only at the start: /tests/x/file:///etc/passwd
-	other authority rejected: Exception: must be file:///path or file://localhost/path
 	empty file:// rejected: Exception: must be file:///path or file://localhost/path
 	use file://: used
 	use http://: Exception: unsupported path scheme
@@ -24,8 +23,26 @@ throwing:
 	find does not throw on an invalid file://: not found
 	-f and -d do not throw on a uri or an invalid file://: no
 	-f and -d accept file://: yes
+backslash:
+	save creates the directories: 459_tmp/b/c.txt
+	-f: yes
+	load: text
+	list: b
+	delete removes the directories: removed
+	fullpath of a relative name: /tests/a/x.gif
+	fullpath of a web path: /tests/459.html
+	a leading backslash is a web path: /tests/459.html
+	find relative to the request uri: /tests/366_dir/test.p
+	find climbs up: /tests/Makefile
+	-f file://: yes
+	find file://: /tests/366_dir/test.p
+	delete file://: deleted
+	use: used
+	dirname keeps the string: x\y
+	basename: z.txt
 document-root:
 	plain:
+		document-root is returned as given: <root>
 		file:// loads the same file: loaded
 		fullpath of a relative name: ok
 		fullpath maps file:// to web space: ok
@@ -38,6 +55,7 @@ document-root:
 		fullpath outside the root: Exception: is outside of $request:document-root [<root>]
 		find outside the root: NOT FOUND
 	with a trailing slash:
+		document-root is returned as given: <root>/
 		file:// loads the same file: loaded
 		fullpath of a relative name: ok
 		fullpath maps file:// to web space: ok
@@ -50,6 +68,7 @@ document-root:
 		fullpath outside the root: Exception: is outside of $request:document-root [<root>/]
 		find outside the root: NOT FOUND
 	empty:
+		document-root is returned as given: 
 		file:// loads the same file: loaded
 		fullpath of a relative name: ok
 		fullpath maps file:// to web space: ok
@@ -64,3 +83,7 @@ document-root:
 segment boundary:
 	disk path: Exception: is outside of $request:document-root [<root>/tes]
 	relative name: Exception: is outside of $request:document-root [<root>/tes]
+unc:
+	file://server/share: ok
+	file:////server/share: /x.gif
+	file:///\\server\share: ok

@@ -1,6 +1,6 @@
 # file:// disk paths, and schemes allowed per call site (feature #941)
 # No absolute path is reported: it is machine dependent, and outside windows ':' gets escaped on untaint.
-@main[][root;uri;dir;text]
+@main[][root;uri;dir;text;windows]
 $root[$request:document-root]
 $uri[^file_uri[$root/tests/459.html]]
 $dir[^file_uri[$root/tests]]
@@ -16,7 +16,6 @@ $report.schemes[
 	$.[fullpath http://][ ^outcome{ ^file:fullpath[http://example.com/some/long/path.gif] }]
 	$.[a built uri keeps the scheme][ ^outcome{ ^file:fullpath[http://$root/path.gif] }]
 	$.[scheme only at the start][ ^outcome{ ^file:fullpath[x/file:///etc/passwd] }]
-	$.[other authority rejected][ ^outcome{ ^file:fullpath[file://evilhost/nonexistent] }]
 	$.[empty file:// rejected][ ^outcome{ ^file:fullpath[file://] }]
 	$.[use file://][ ^outcome{ ^use[^file_uri[$root/tests/366.p]] used }]
 	$.[use http://][ ^outcome{ ^use[http://127.0.0.1:1/x.p] }]
@@ -24,34 +23,68 @@ $report.schemes[
 ]
 
 # where a uri is an error, and where it is just no file
+# file://evilhost is invalid everywhere; with a path it would be a UNC path under windows, see below
 $report.throwing[
 	$.[save refuses a uri][ ^outcome{ $s[text] ^s.save[http://example.com/459.txt] }]
-	$.[save refuses an invalid file://][ ^outcome{ $s[text] ^s.save[file://evilhost/459.txt] }]
+	$.[save refuses an invalid file://][ ^outcome{ $s[text] ^s.save[file://evilhost] }]
 	$.[delete refuses a uri][ ^outcome{ ^file:delete[http://example.com/459.txt] }]
 	$.[delete with exception(false) ignores a uri][ ^outcome{ ^file:delete[http://example.com/459.txt][ $.exception(false) ] silent }]
-	$.[delete with exception(false) ignores an invalid file://][ ^outcome{ ^file:delete[file://evilhost/459.txt][ $.exception(false) ] silent }]
+	$.[delete with exception(false) ignores an invalid file://][ ^outcome{ ^file:delete[file://evilhost][ $.exception(false) ] silent }]
 	$.[find never finds a uri][ ^outcome{ ^file:find[http://example.com/Makefile]{not found} }]
-	$.[find does not throw on an invalid file://][ ^outcome{ ^file:find[file://evilhost/Makefile]{not found} }]
-	$.[-f and -d do not throw on a uri or an invalid file://][ ^outcome{ ^if(-f 'http://example.com/x' || -d 'parser://x' || -f 'file://evilhost/x'){YES}{no} }]
+	$.[find does not throw on an invalid file://][ ^outcome{ ^file:find[file://evilhost]{not found} }]
+	$.[-f and -d do not throw on a uri or an invalid file://][ ^outcome{ ^if(-f 'http://example.com/x' || -d 'parser://x' || -f 'file://evilhost'){YES}{no} }]
 	$.[-f and -d accept file://][ ^outcome{ ^if(-f $uri && -d $dir){yes}{NO} }]
+]
+
+# '\' is a path separator on all platforms (feature #1300): paths are '/'-normalized, strings are kept as given
+$report.backslash[
+	$.[save creates the directories][ ^outcome{ $s[text] ^s.save[459_tmp\b\c.txt] ^if(-f '459_tmp/b/c.txt'){459_tmp/b/c.txt}{NO FILE} }]
+	$.[-f][ ^if(-f '459_tmp\b\c.txt'){yes}{NO}]
+	$.[load][ ^outcome{ $f[^file::load[text;459_tmp\b\c.txt]] $f.text }]
+	$.[list][ ^outcome{ $l[^file:list[459_tmp\]] ^l.menu{$l.name}[,] }]
+	$.[delete removes the directories][ ^outcome{ ^file:delete[459_tmp\b\c.txt] ^if(-d '459_tmp'){LEFT}{removed} }]
+	$.[fullpath of a relative name][ ^file:fullpath[a\x.gif]]
+	$.[fullpath of a web path][ ^file:fullpath[/tests\459.html]]
+	$.[a leading backslash is a web path][ ^file:fullpath[\tests\459.html]]
+	$.[find relative to the request uri][ ^file:find[366_dir\test.p]{NOT FOUND}]
+	$.[find climbs up][ ^file:find[\tests\zz\Makefile]{NOT FOUND}]
+	$.[-f file://][ ^if(-f ^file_uri[$root/tests\459.html]){yes}{NO}]
+	$.[find file://][ ^file:find[^file_uri[$root/tests/366_dir\test.p]]{NOT FOUND}]
+	$.[delete file://][ ^outcome{ $s[text] ^s.save[459_tmp\d.txt] ^file:delete[^file_uri[$root/tests/459_tmp\d.txt]] deleted }]
+	$.[use][ ^outcome{ ^use[366_dir\test-duplicate.p] used }]
+	$.[dirname keeps the string][ ^file:dirname[x\y\z.txt]]
+	$.[basename][ ^file:basename[x\y\z.txt]]
 ]
 
 # the same checks against three flavours of document-root
 $report.[document-root][
 	$.plain[ ^cycle[$root;$root] ]
 	$.[with a trailing slash][ ^cycle[$root/;$root] ]
+	^rem{ empty root = file system root: the web path /x is the disk path /x; a relative name is still resolved against the document }
 	$.empty[ ^cycle[;$root] ]
 ]
 
-# last, as it changes document-root too: /root must not match /rootbeer
+# the last ones, as they change document-root too
+
+# /root must not match /rootbeer
 $request:document-root[$root/tes]
 $report.[segment boundary][
 	$.[disk path][ ^outcome{ ^file:fullpath[$uri] }]
 	$.[relative name][ ^outcome{ ^file:fullpath[x.gif] }]
 ]
 
-# the document root is machine dependent
+# under windows file://server/share/path is the UNC path \\server\share\path, elsewhere the authority is refused
+$windows(^root.left(1) ne '/')
+$request:document-root[//server/share]
+$report.unc[
+	$.[file://server/share][ ^eq[ ^outcome{ ^file:fullpath[file://server/share/x.gif] }; ^if($windows){/x.gif}{Exception: must be file:///path or file://localhost/path} ]]
+	$.[file:////server/share][ ^outcome{ ^file:fullpath[file:////server/share/x.gif] }]
+	$.[file:///\\server\share][ ^eq[ ^outcome{ ^file:fullpath[file:///\\server\share\x.gif] }; ^if($windows){/x.gif}{Exception: is outside of ^$request:document-root [//server/share]} ]]
+]
+
+# the document root is machine dependent, and windows lists one more file uri form
 $text[^print[$report]]
+$text[^text.replace[, file://localhost/path or file://server/share/path; or file://localhost/path]]
 ^taint[as-is][^text.replace[$root;<root>]]
 
 
@@ -67,6 +100,7 @@ $luri[^file_uri[$root0/tests/459.html;localhost]]
 $found[^file_uri[$root0/tests/366_dir/test.p]]
 $deep[^file_uri[$root0/tests/366_dir/zz/test.p]]
 $result[
+	$.[document-root is returned as given][ $request:document-root ]
 	$.[file:// loads the same file][ ^outcome{ $a[^file::load[text;$uri]] ^if(^a.text.length[]){loaded}{EMPTY} }]
 	$.[fullpath of a relative name][ ^eq[ ^outcome{ ^file:fullpath[x.gif] }; ^if($web){$prefix/tests/x.gif}{Exception: is outside of ^$request:document-root []} ]]
 	$.[fullpath maps file:// to web space][ ^eq[ ^outcome{ ^file:fullpath[$uri] }; ^if($web){$prefix/tests/459.html}{Exception: is outside of ^$request:document-root []} ]]
