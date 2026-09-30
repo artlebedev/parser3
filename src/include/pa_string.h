@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.241 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.242 2026/09/30 01:10:30 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -483,6 +483,12 @@ public:
 
 			return CORD_chr(body, offset, c);
 		}
+		size_t strrchr(char c, size_t right) const {
+			if(right>=length()) // CORD_rchr does not check that [and ABORT's in that case]
+				return STRING_NOT_FOUND;
+
+			return CORD_rchr(body, right, c);
+		}
 
 		size_t strrpbrk(const char* chars, size_t left, size_t right) const;
 
@@ -662,6 +668,12 @@ public:
 	}
 	size_t strrpbrk(const char* chars, size_t left, size_t right) const {
 		return body.strrpbrk(chars, left, right);
+	}
+	size_t strrchr(char c) const {
+		return (length()) ? body.strrchr(c, length()-1) : STRING_NOT_FOUND;
+	}
+	size_t strrchr(char c, size_t right) const {
+		return body.strrchr(c, right);
 	}
 
 	size_t rskipchars(const char* chars, size_t left=0) const {
