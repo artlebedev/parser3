@@ -17,7 +17,7 @@
 #include "pa_idna.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.347 2026/09/27 17:13:40 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.348 2026/09/30 16:44:20 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // defines for globals
 
@@ -166,8 +166,8 @@ char* rsplit(char* string, const char* delims) {
 	return NULL;
 }
 
-void pa_strncpy(char *dst, const char *src, size_t n){
-	size_t left = n;
+void pa_strncpy(char *dst, const char *src, size_t dst_size){
+	size_t left = dst_size;
 
 	if (left != 0 && src) {
 		while (--left != 0) {
@@ -175,7 +175,7 @@ void pa_strncpy(char *dst, const char *src, size_t n){
 				return;
 		}
 	}
-	if (n != 0)
+	if (dst_size != 0)
 		*dst = '\0';
 }
 
@@ -309,14 +309,29 @@ char *search_stop(char*& current, char cstop_at) {
 	return result;
 }
 
-#ifdef WIN32
-void back_slashes_to_slashes(char* s) {
-	if(s)
-		for(; *s; s++)
-			if(*s=='\\')
-				*s='/'; 
+char* backslashes_to_slashes(const char* path) {
+	if(!path)
+		return 0;
+	char* result=pa_strdup(path);
+	for(char* s=result; *s; s++)
+		if(*s=='\\')
+			*s='/';
+	return result;
 }
-#endif
+
+const String& backslashes_to_slashes(const String& path) {
+	size_t pos=path.pos('\\');
+	if(pos==STRING_NOT_FOUND)
+		return path;
+	String& result=*new String;
+	size_t from=0;
+	do {
+		result << path.mid(from, pos) << "/";
+		from=pos+1;
+	} while((pos=path.pos('\\', from))!=STRING_NOT_FOUND);
+	result << path.mid(from, path.length());
+	return result;
+}
 
 size_t strpos(const char *str, const char *substr) {
 	const char *p = strstr(str, substr);

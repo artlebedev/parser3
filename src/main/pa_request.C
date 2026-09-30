@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.453 2026/09/29 02:56:52 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.454 2026/09/30 16:44:20 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -494,7 +494,7 @@ void Request::core(const char* config_filespec, bool header_only, const String &
 	try {
 		// loading config
 		if(config_filespec)
-			use_file_directly(*new String(config_filespec));
+			use_file_directly(*new String(backslashes_to_slashes(config_filespec)));
 
 		// filling mail received
 		mail.fill_received(*this);
@@ -608,7 +608,7 @@ void Request::use_file_directly(const String& file_spec, bool fail_on_file_absen
 		return;
 
 	if(with_auto_p) {
-		// loading auto.p files from document_root/.. 
+		// loading auto.p files from document_root/..
 		// to the one beside requested file.
 		// all assigned bases from upper dir
 		const char* target=file_spec.cstr();
@@ -617,12 +617,9 @@ void Request::use_file_directly(const String& file_spec, bool fail_on_file_absen
 		request_info.path_translated=target;
 
 		const char* after=target;
-		size_t drlen=strlen(request_info.document_root);
-		if(memcmp(after, request_info.document_root, drlen)==0) {
-			after+=drlen;
-			if(after[-1]=='/') 
-				--after;
-		}
+		size_t drlen=strlen(request_info.document_root_path);
+		if(memcmp(after, request_info.document_root_path, drlen)==0)
+			after+=drlen; // to start from document_root/auto.p
 
 		while(const char* before=strchr(after, '/')) {
 			String& sfile_spec=*new String;
@@ -641,16 +638,17 @@ void Request::use_file_directly(const String& file_spec, bool fail_on_file_absen
 }
 
 
-void Request::use_file(const String& file_name, const String* use_filespec/*absolute*/, bool with_auto_p) {
-	if(file_name.is_empty())
+void Request::use_file(const String& afile_name, const String* use_filespec/*absolute*/, bool with_auto_p) {
+	if(afile_name.is_empty())
 		throw Exception(PARSER_RUNTIME, 0, "usage failed - no filename was specified");
 
 	const String* filespec=0;
+	const String& file_name=backslashes_to_slashes(afile_name);
 
-	if(file_name.first_char()=='/' || path_scheme(file_name) || is_os_absolute_path(file_name)) // path is not relative, no need to scan MAIN:CLASS_PATH
-		filespec=&full_disk_path(file_name);
+	if(file_name.first_char()=='/' || path_scheme(afile_name) || is_os_absolute_path(afile_name)) // path is not relative, no need to scan MAIN:CLASS_PATH
+		filespec=&full_disk_path(afile_name);
 	else if(use_filespec){ // search in current dir first
-		size_t last_slash_pos=use_filespec->strrpbrk("/");
+		size_t last_slash_pos=use_filespec->strrchr('/');
 		if(last_slash_pos!=STRING_NOT_FOUND)
 			filespec=file_exist(use_filespec->mid(0, last_slash_pos), file_name); // found in current dir?
 	}
@@ -736,30 +734,48 @@ const String& Request::relative(const char* apath, const String& relative_name) 
 	return result;
 }
 
-const String& Request::full_disk_path(const String& relative_name, uint allowed) {
-	if(relative_name.first_char()=='/') {
-		String& result=*new String(pa_strdup(request_info.document_root));
-		result << relative_name;
-		return result;
+void Request_info::set_document_root(const char* adocument_root) {
+	document_root=adocument_root;
+	char* path=backslashes_to_slashes(adocument_root);
+	if(path) {
+		size_t length=strlen(path);
+		while(length && path[length-1]=='/')
+			path[--length]=0;
 	}
-	if(uint scheme=path_scheme(relative_name)) {
-		check_path_scheme(scheme, relative_name, allowed);
-		if(scheme!=PA_SCHEME_FILE)
-			return relative_name; // an allowed uri is passed through
-		if(const String* path=file_uri_to_path(relative_name))
-			return *path;
-		throw Exception(PARSER_RUNTIME, &relative_name, "must be file:///path or file://localhost/path");
-	}
-	if(is_os_absolute_path(relative_name))
-		return relative_name;
+	document_root_path=path;
+}
 
-	return relative(request_info.path_translated ? request_info.path_translated : request_info.document_root, relative_name);
+const String& Request::full_disk_path(const String& relative_name, uint allowed) {
+	if(relative_name.first_char()!='/') {
+		if(uint scheme=path_scheme(relative_name)) {
+			check_path_scheme(scheme, relative_name, allowed);
+			if(scheme!=PA_SCHEME_FILE)
+				return relative_name; // an allowed uri is passed through
+			if(const String* path=file_uri_to_path(relative_name))
+				return backslashes_to_slashes(*path);
+			throw Exception(PARSER_RUNTIME, &relative_name, "must be file:///path or file://localhost/path");
+		}
+		// before '\' becomes '/', to avoid mixing the UNC path \\server with web path //server
+		if(is_os_absolute_path(relative_name))
+			return backslashes_to_slashes(relative_name);
+	}
+
+	const String& path=backslashes_to_slashes(relative_name);
+	if(path.first_char()!='/')
+		return relative(request_info.path_translated ? request_info.path_translated : pa_strcat(request_info.document_root_path, "/"), path);
+
+	String& result=*new String(request_info.document_root_path);
+	result << path;
+	return result;
 }
 
 const String* Request::real_disk_path(const String& name) {
 	switch(path_scheme(name)) {
 		case PA_SCHEME_NONE: return &full_disk_path(name);
-		case PA_SCHEME_FILE: return file_uri_to_path(name);
+		case PA_SCHEME_FILE: {
+			const String* path=file_uri_to_path(name);
+			return path ? &backslashes_to_slashes(*path) : 0;
+		}
 		default: return 0; // not a disk path
 	}
 }

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.200 2026/09/27 17:13:40 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.201 2026/09/30 16:44:19 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -102,9 +102,10 @@ inline int pa_strncasecmp(const char* str, const char* substr, size_t count=0) {
 	return strncasecmp(str, substr, count ? count : strlen(substr));
 }
 
-#ifdef WIN32
-void back_slashes_to_slashes(char *s);
-#endif
+// copy of the path with '/' only
+char* backslashes_to_slashes(const char* path);
+// same, keeping the string languages
+const String& backslashes_to_slashes(const String& path);
 
 size_t strpos(const char *str, const char *substr);
 
@@ -113,7 +114,7 @@ size_t remove_crlf(char *start, char *end);
 inline bool pa_isalpha(unsigned char c) { return (((c>='A') && (c<='Z')) || ((c>='a') && (c<='z'))); }
 inline bool pa_isalnum(unsigned char c) { return (((c>='0') && (c<='9')) || pa_isalpha(c)); }
 
-void pa_strncpy(char *dst, const char *src, size_t n);
+void pa_strncpy(char *dst, const char *src, size_t dst_size);
 char *pa_strcat(const char *a, const char *b, const char *c = 0);
 
 const char* capitalize(const char* s);

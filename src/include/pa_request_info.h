@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_INFO_H
 #define PA_REQUEST_INFO_H
 
-#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.20 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_REQUEST_INFO_H "$Id: pa_request_info.h,v 1.21 2026/09/30 16:44:20 moko Exp $"
 
 // include
 
@@ -19,6 +19,7 @@ class Request_info {
 public:
 	//@{ these filled by Request class user
 	const char* document_root;
+	const char* document_root_path; // normalized: '/' separated, without the trailing '/'
 	const char* path_translated;
 	const char* method;
 	const char* query_string;
@@ -58,6 +59,8 @@ public:
 		for(; *auri && *auri != '/'; auri++);
 		return auri;
 	}
+
+	void set_document_root(const char* adocument_root);
 
 	Request_info() {
 		memset(this, 0, sizeof(*this)); // OK as Request_info is POD

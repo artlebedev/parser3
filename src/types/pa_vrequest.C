@@ -15,7 +15,7 @@
 #include "pa_vvoid.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.75 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VREQUEST_H;
+volatile const char * IDENT_PA_VREQUEST_C="$Id: pa_vrequest.C,v 1.76 2026/09/30 16:44:20 moko Exp $" IDENT_PA_VREQUEST_H;
 
 // defines
 
@@ -103,7 +103,7 @@ const VJunction* VRequest::put_element(const String& aname, Value* avalue) {
 
 	// $document-root
 	if(aname==DOCUMENT_ROOT_NAME) {
-		finfo.document_root=avalue->as_string().taint_cstr(String::L_FILE_SPEC);
+		finfo.set_document_root(avalue->as_string().taint_cstr(String::L_FILE_SPEC));
 		return 0;
 	} 
 

@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.300 2026/09/29 02:56:52 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.301 2026/09/30 16:44:19 moko Exp $";
 
 // defines
 
@@ -814,27 +814,21 @@ static size_t afterlastslash(const String& str, size_t right) {
 
 // absolute web path or null when outside of document_root
 static const String* web_path(Request& r, const String& file_spec, bool fail_on_problem) {
-	if(file_spec.first_char()=='/') // already absolute
-		return &file_spec;
+	if(file_spec.first_char()=='/') // already absolute, just changing backslashes
+		return &backslashes_to_slashes(file_spec);
 
 	// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 	const String* disk_path=fail_on_problem ? &r.full_disk_path(file_spec) : r.real_disk_path(file_spec);
 	if(!disk_path) // a uri or an invalid file:// one
 		return 0;
 
-	const char* document_root=r.request_info.document_root;
+	const char* document_root=r.request_info.document_root_path;
 	size_t document_root_length=strlen(document_root);
-
-	if(document_root_length>0) {
-		char last_char=document_root[document_root_length-1];
-		if(last_char == '/' || last_char == '\\')
-			--document_root_length;
-	}
 
 	const String& result=disk_path->mid(document_root_length, disk_path->length());
 
-	// a disk path may be anywhere, and a relative name too once the script changes document_root;
-	// first_char checks the segment boundary: /root must not match /rootbeer
+	// checking the result is inside document root;
+	// first checking the segment boundary: /root must not match /root-but-longer
 	return result.first_char()=='/' && !strncmp(disk_path->cstr(), document_root, document_root_length) ? &result : 0;
 }
 
@@ -844,12 +838,12 @@ static void _find(Request& r, MethodParams& params) {
 	Value* not_found_code=(params.count()==2)?&params.as_junction(1, "not-found param must be code"):0;
 
 	const String* file_spec;
-	if(file_name.first_char()=='/')
-		file_spec=&file_name;
-	else if(path_scheme(file_name) || is_os_absolute_path(file_name))
+	if(path_scheme(file_name) || is_os_absolute_path(file_name))
 		file_spec=web_path(r, file_name, false); // do not throw
-	else
-		file_spec=&r.relative(r.request_info.uri, file_name);
+	else {
+		const String& name=backslashes_to_slashes(file_name);
+		file_spec=name.first_char()=='/' ? &name : &r.relative(r.request_info.uri, name);
+	}
 
 	if(file_spec) {
 		// easy way
@@ -859,13 +853,13 @@ static void _find(Request& r, MethodParams& params) {
 		}
 
 		// monkey way
-		size_t last_slash=file_spec->strrpbrk("/\\");
+		size_t last_slash=file_spec->strrchr('/');
 		const String& dirname=file_spec->mid(0, last_slash!=STRING_NOT_FOUND?last_slash:0);
 		const String& basename=file_spec->mid(last_slash!=STRING_NOT_FOUND?last_slash+1:0, file_spec->length());
 
 		size_t rpos=dirname.is_empty()?0:dirname.length()-1;
-		while((rpos=dirname.rskipchars("/\\", 0, rpos))!=STRING_NOT_FOUND){
-			size_t slash=dirname.strrpbrk("/\\", 0, rpos);
+		while((rpos=dirname.rskipchars("/", 0, rpos))!=STRING_NOT_FOUND){
+			size_t slash=dirname.strrchr('/', rpos);
 			if(slash==STRING_NOT_FOUND)
 				break;
 			String test_name;

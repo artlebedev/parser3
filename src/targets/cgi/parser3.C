@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.372 2026/09/29 02:56:52 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.373 2026/09/30 16:44:20 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -194,17 +194,10 @@ size_t SAPI::send_body(SAPI_Info& info, const void *buf, size_t size) {
 }
 
 static const char* full_disk_path(const char* file_name = "") {
-	char* result;
-	if(file_name[0]=='/' || is_os_absolute_path(file_name)){
-		result=pa_strdup(file_name);
-	} else {
-		char cwd[MAX_STRING];
-		result=pa_strcat(getcwd(cwd, MAX_STRING) ? cwd : "", "/", file_name);
-	}
-#ifdef WIN32
-	back_slashes_to_slashes(result);
-#endif
-	return result;
+	if(file_name[0]=='/' || is_os_absolute_path(file_name))
+		return backslashes_to_slashes(file_name);
+	char cwd[MAX_STRING];
+	return backslashes_to_slashes(pa_strcat(getcwd(cwd, MAX_STRING) ? cwd : "", "/", file_name));
 }
 
 static void log_signal(const char* signal_name) {
@@ -234,7 +227,7 @@ static const char* locate_config(const char* config_filespec_option, const char*
 	if(!filespec_4log)
 		filespec_4log=getenv(REDIRECT_PREFIX PARSER_CONFIG_ENV_NAME);
 	if(!filespec_4log){
-			const char* exec_dir_pos = strrpbrk(executable_path, "/\\");
+			const char* exec_dir_pos = strrchr(executable_path, '/');
 #ifdef SYSTEM_CONFIG_FILE
 			if(exec_dir_pos){
 #endif
@@ -292,19 +285,11 @@ static const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 	return original;
 }
 
-static const char* maybe_back_slashes_to_slashes(const char* original){
-	char *result=pa_strdup(original);
-	back_slashes_to_slashes(result);
-	return result;
-}
-
 #define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) maybe_reconstruct_IIS_status_in_qs(s)
-#define MAYBE_BACK_SLASHES_TO_SLASHES(s) maybe_back_slashes_to_slashes(s)
 
 #else
 
 #define MAYBE_RECONSTRUCT_IIS_STATUS_IN_QS(s) s
-#define MAYBE_BACK_SLASHES_TO_SLASHES(s) s
 
 #endif
 
@@ -337,7 +322,7 @@ static void config_handler(SAPI_Info &info) {
 	Request_info request_info;
 	RequestInfoController ric(&request_info, &info);
 
-	request_info.document_root = full_disk_path();
+	request_info.set_document_root(full_disk_path());
 	request_info.uri = "";
 	request_info.argv = argv_extra;
 
@@ -358,7 +343,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 			return; // ignore "void" connections
 		info.populate_env();
 
-		request_info.document_root = full_disk_path();
+		request_info.set_document_root(full_disk_path());
 		request_info.path_translated = filespec_to_process;
 		request_info.method = connection.method();
 		request_info.query_string = connection.query();
@@ -493,18 +478,16 @@ static void real_parser_handler(bool cgi) {
 		if(!path_info)
 			SAPI::die("parser3: illegal CGI call (missing PATH_INFO)");
 		
-		request_info.document_root = getenv("DOCUMENT_ROOT");
-		if(!request_info.document_root) {
+		const char* document_root = getenv("DOCUMENT_ROOT");
+		if(!document_root) {
 			// IIS or fcgiwrap minimalistic setup
 			ssize_t prefix_len = strlen(filespec_to_process) - strlen(path_info);
 			if(prefix_len < 0 || strcmp(filespec_to_process + prefix_len, path_info) != 0)
 				SAPI::die("parser3: illegal CGI call (invalid PATH_INFO in reinventing DOCUMENT_ROOT)");
 
-			char* document_root = new(PointerFreeGC) char[prefix_len + 1/*0*/];
-			memcpy(document_root, filespec_to_process, prefix_len); document_root[prefix_len] = 0;
-			request_info.document_root = document_root;
+			document_root = pa_strdup(filespec_to_process, prefix_len);
 		}
-		request_info.document_root = MAYBE_BACK_SLASHES_TO_SLASHES(request_info.document_root);
+		request_info.set_document_root(document_root);
 
 		request_info.uri = request_info.strip_absolute_uri(getenv("REQUEST_URI"));
 		if(request_info.uri) { // apache & others stuck to standards
@@ -533,7 +516,7 @@ static void real_parser_handler(bool cgi) {
 			request_info.uri = request_info.query_string && *request_info.query_string ? pa_strcat(path_info, "?", request_info.query_string) : path_info;
 		}
 	} else{
-		request_info.document_root = full_disk_path();
+		request_info.set_document_root(full_disk_path());
 		request_info.uri = "";
 	}
 	
@@ -635,7 +618,7 @@ int main(int argc, char *argv[]) {
 
 	if(!argc || !argv[0])
 		usage();
-	parser3_filespec = MAYBE_BACK_SLASHES_TO_SLASHES(argv[0]);
+	parser3_filespec = backslashes_to_slashes(argv[0]);
 
 	umask(2);
 

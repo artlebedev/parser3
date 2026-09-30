@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.5 2026/09/29 02:56:52 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.6 2026/09/30 16:44:20 moko Exp $" IDENT_PA_FILE_H;
 
 // some maybe-undefined constants
 
@@ -322,7 +322,7 @@ void create_dir_for_file(const String& file_spec) {
 	const char *str=file_spec.taint_cstr(String::L_FILE_SPEC);
 	if(str[0]){
 		const char *pos=str+1;
-		while((pos=strpbrk(pos, "/\\")) && pos[1]) { // to avoid trailing /, see #1166
+		while((pos=strchr(pos, '/')) && pos[1]) { // to avoid trailing /, see #1166
 			pa_mkdir(pa_strdup(str,pos-str), 0775);
 			pos++;
 		}
@@ -438,7 +438,7 @@ static size_t get_dir(char* fname, size_t helper_length){
 	size_t pos=0;
 	for(pos=helper_length; pos; pos--){
 		char c=fname[pos-1];
-		if(c=='/' || c=='\\'){
+		if(c=='/'){
 			fname[pos-1]=0;
 			dir=true;
 		} else if(dir) break;
@@ -463,7 +463,7 @@ static bool entry_ifdir(char *fname, bool need_dir) {
 		size_t size=strlen(fname);
 		while(size) {
 			char c=fname[size-1];
-			if(c=='/' || c=='\\')
+			if(c=='/')
 				fname[--size]=0;
 			else
 				break;
@@ -544,7 +544,7 @@ bool dir_exists(const String& file_spec) {
 
 const String* file_exist(const String& path, const String& name) {
 	String& result=*new String(path);
-	if(path.last_char() != '/' && path.last_char() != '\\')
+	if(path.last_char() != '/')
 		result << "/";
 	result << name;
 	return file_exist(result)?&result:0;

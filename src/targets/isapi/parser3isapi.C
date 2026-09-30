@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.138 2026/09/27 19:40:38 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.139 2026/09/30 16:44:20 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -320,17 +320,13 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	// Request info
 	Request_info request_info;  memset(&request_info, 0, sizeof(request_info));
 
-	char *filespec_to_process=pa_strdup(lpECB->lpszPathTranslated);
-#ifdef WIN32
-	back_slashes_to_slashes(filespec_to_process);
-#endif
+	char *filespec_to_process=backslashes_to_slashes(lpECB->lpszPathTranslated);
 
 	if(const char* path_info=SAPI::Env::get(SAPI_info, "PATH_INFO")) {
 		// IIS
-		size_t len=strlen(filespec_to_process)-strlen(path_info);
-		char *buf=new(PointerFreeGC) char[len];
-		pa_strncpy(buf, filespec_to_process, len);
-		request_info.document_root=buf;
+		size_t filespec_len=strlen(filespec_to_process);
+		size_t path_info_len=strlen(path_info);
+		request_info.set_document_root(filespec_len>path_info_len ? pa_strdup(filespec_to_process, filespec_len-path_info_len) : "");
 	} else
 		throw Exception(PARSER_RUNTIME, 0, "ISAPI: no PATH_INFO defined (in reinventing DOCUMENT_ROOT)");
 
