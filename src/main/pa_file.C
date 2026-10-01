@@ -16,7 +16,10 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.7 2026/09/30 17:45:25 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.8 2026/10/01 11:48:37 moko Exp $" IDENT_PA_FILE_H;
+
+// a tainted path scheme (file://, http:// or parser://) would be accepted
+//#define IGNORE_FILE_PREFIX_LANGUAGES
 
 // some maybe-undefined constants
 
@@ -62,6 +65,10 @@ uint path_scheme(const String& path) {
 void check_path_scheme(uint scheme, const String& path, uint allowed) {
 	if(scheme!=PA_SCHEME_FILE && !(allowed&scheme))
 		throw Exception(PARSER_RUNTIME, &path, "unsupported path scheme");
+#ifndef IGNORE_FILE_PREFIX_LANGUAGES
+	if(!path.check_lang(String::L_AS_IS, 0, scheme==PA_SCHEME_PARSER ? 9 /* "parser://" */ : 7 /* "file://" or "http://" */))
+		throw Exception(PARSER_RUNTIME, &path, "tainted path scheme");
+#endif
 }
 
 const String* file_uri_to_path(const String& uri) {

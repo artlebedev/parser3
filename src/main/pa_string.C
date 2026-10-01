@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.285 2026/04/25 13:38:46 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.286 2026/10/01 11:48:37 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -617,6 +617,22 @@ String& String::change_case(Charset& source_charset, Change_case_kind kind) cons
 			*dest++=(char)c;
 		}
 	}
+	result.langs=langs;
+	result.body=String::Body(new_cstr);
+
+	return result;
+}
+
+String& String::change_char(char from, char to) const {
+	String& result=*new String();
+	if(is_empty())
+		return result;
+
+	char* new_cstr=cstrm();
+	for(char* c=new_cstr; *c; c++)
+		if(*c==from)
+			*c=to;
+
 	result.langs=langs;
 	result.body=String::Body(new_cstr);
 

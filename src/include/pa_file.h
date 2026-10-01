@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.3 2026/09/30 17:42:38 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.4 2026/10/01 11:48:37 moko Exp $"
 
 #include "pa_common.h"
 
@@ -57,7 +57,7 @@ enum { PA_ALLOW_HTTP=PA_SCHEME_HTTP, PA_ALLOW_ALL=PA_SCHEME_HTTP|PA_SCHEME_PARSE
 /// scheme of a not '/'-normalized path: file://, http:// or parser://, PA_SCHEME_NONE otherwise
 uint path_scheme(const String& path);
 
-/// throws unless the scheme is allowed, file:// always is
+/// throws unless the scheme is allowed, file:// always is, or if the scheme is tainted
 void check_path_scheme(uint scheme, const String& path, uint allowed);
 
 /// resolved file:// or null; the result is not '/'-normalized

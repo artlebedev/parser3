@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.242 2026/09/30 01:10:30 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.243 2026/10/01 11:48:37 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -662,6 +662,8 @@ public:
 	size_t pos(const Body substr, size_t this_offset, Language lang) const;
 	size_t pos(const String& substr, size_t this_offset, Language lang) const;
 	size_t pos(Charset& charset, const String& substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	/// true if the characters from offset to offset+length are of lang or a cleaner one
+	bool check_lang(Language lang, size_t offset, size_t length) const { return langs.check_lang(lang, offset, length); }
 
 	size_t strrpbrk(const char* chars, size_t left=0) const {
 		return (length()) ? body.strrpbrk(chars, left, length()-1) : STRING_NOT_FOUND;
@@ -690,7 +692,7 @@ public:
 
 	/**
 		@return table of found items, if any.
-		table format is defined and fixed[can be used by others]: 
+		table format is defined and fixed[can be used by others]:
 		@verbatim
 			prematch/match/postmatch/1/2/3/...
 		@endverbatim
@@ -701,7 +703,10 @@ public:
 		CC_UPPER,
 		CC_LOWER
 	};
+	/// keeps the chars languages
 	String& change_case(Charset& source_charset, Change_case_kind kind) const;
+	/// keeps the chars languages
+	String& change_char(char from, char to) const;
 
 	const String& replace(const Dictionary& dict) const;
 	const String& trim(Trim_kind kind=TRIM_BOTH, const char* chars=0, Charset* source_charset=0) const;

@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.201 2026/09/30 16:44:19 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.202 2026/10/01 11:48:37 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -104,7 +104,7 @@ inline int pa_strncasecmp(const char* str, const char* substr, size_t count=0) {
 
 // copy of the path with '/' only
 char* backslashes_to_slashes(const char* path);
-// same, keeping the string languages
+// same, keeping the original languages
 const String& backslashes_to_slashes(const String& path);
 
 size_t strpos(const char *str, const char *substr);

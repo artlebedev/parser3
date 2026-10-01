@@ -17,7 +17,7 @@
 #include "pa_idna.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.348 2026/09/30 16:44:20 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.349 2026/10/01 11:48:37 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // defines for globals
 
@@ -320,17 +320,7 @@ char* backslashes_to_slashes(const char* path) {
 }
 
 const String& backslashes_to_slashes(const String& path) {
-	size_t pos=path.pos('\\');
-	if(pos==STRING_NOT_FOUND)
-		return path;
-	String& result=*new String;
-	size_t from=0;
-	do {
-		result << path.mid(from, pos) << "/";
-		from=pos+1;
-	} while((pos=path.pos('\\', from))!=STRING_NOT_FOUND);
-	result << path.mid(from, path.length());
-	return result;
+	return path.pos('\\')==STRING_NOT_FOUND ? path : path.change_char('\\', '/');
 }
 
 size_t strpos(const char *str, const char *substr) {
