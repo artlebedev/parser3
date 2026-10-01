@@ -1,0 +1,38 @@
+Content-Type: text/html
+Content-Length: 1517
+
+tainted backslash:
+	save, the whole name tainted: 460_dir/a.txt
+	save, the directory tainted: 460_dir/b.txt
+	-f: yes
+	load: text
+	list: a.txt,b.txt
+	delete removes the directory: removed
+	the slash keeps the language of the backslash: json escapes it, as it does with any tainted one: /tests/<\/script>.gif
+	the name of a file is cut at the last separator: b.txt
+tainted path scheme:
+	file://: Exception: tainted path scheme
+	http://: Exception: tainted path scheme
+	partly tainted: Exception: tainted path scheme
+	tainted after the scheme: /tests/460.html
+	as-is: /tests/460.html
+tainted file:// without errors:
+	-f of an existing file: no
+	-d of an existing directory: no
+	find of an existing file: not found
+	delete with exception(false) leaves the file: kept
+the scheme stays tainted through string functions:
+	unescape: Exception: tainted path scheme
+	table cell: Exception: tainted path scheme
+	base64 decode: Exception: tainted path scheme
+	lower: Exception: tainted path scheme
+	replace: Exception: tainted path scheme
+	split and join: Exception: tainted path scheme
+	match: Exception: tainted path scheme
+	hash key always tainted: Exception: tainted path scheme
+document-root with a backslash:
+	the backslash is kept: <root>\tests
+	and is a separator: a relative name is inside the root: /x.gif vs /tests/x.gif before
+document-root with a char escaped in file names:
+	the char is replaced: <root>_7Ctests
+	a relative name is outside the root: Exception: is outside of $request:document-root [<root>_7Ctests]

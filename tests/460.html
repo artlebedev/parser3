@@ -1,0 +1,79 @@
+# tainting: '\' is a path separator, no longer escaped on all platforms; path schemes (file://) should not be tainted
+@main[][root;text]
+# the source tree root: run_parser.sh gives no DOCUMENT_ROOT, so it is PATH_TRANSLATED without PATH_INFO=/tests/460.html
+$root[$request:document-root]
+
+$report[^hash::create[]]
+$report.[tainted backslash][
+	$.[save, the whole name tainted][ ^outcome{ $s[text] ^s.save[^taint[460_dir\a.txt]] ^if(-f '460_dir/a.txt'){460_dir/a.txt}{NO FILE} }]
+	$.[save, the directory tainted][ ^outcome{ $s[text] ^s.save[^taint[460_dir]\b.txt] ^if(-f '460_dir/b.txt'){460_dir/b.txt}{NO FILE} }]
+	$.[-f][ ^if(-f ^taint[460_dir\a.txt]){yes}{NO}]
+	$.[load][ ^outcome{ $f[^file::load[text;^taint[460_dir\a.txt]]] $f.text }]
+	$.[list][ ^outcome{ $l[^file:list[^taint[460_dir]]] ^l.menu{$l.name}[,] }]
+	$.[delete removes the directory][ ^outcome{ ^file:delete[^taint[460_dir\a.txt]] ^file:delete[^taint[460_dir\b.txt]] ^if(-d '460_dir'){LEFT}{removed} }]
+	$.[the slash keeps the language of the backslash: json escapes it, as it does with any tainted one][ ^apply-taint[json][^file:fullpath[^taint[<\script>.gif]]]]
+	$.[the name of a file is cut at the last separator][ ^outcome{ $f[^file::create[text;^taint[C:\a\b.txt];x]] $f.name }]
+]
+
+# a path scheme should not be tainted
+$report.[tainted path scheme][
+	$.[file://][ ^outcome{ ^file:fullpath[^taint[file://$root/tests/460.html]] }]
+	$.[http://][ ^outcome{ $f[^file::load[text;^taint[http://127.0.0.1:1/x]]] }]
+	$.[partly tainted][ ^outcome{ ^file:fullpath[^taint[fi]le://$root/tests/460.html] }]
+	$.[tainted after the scheme][ ^outcome{ ^file:fullpath[file://^taint[$root/tests/460.html]] }]
+	$.[as-is][ ^outcome{ ^file:fullpath[^taint[as-is][file://$root/tests/460.html]] }]
+]
+
+# no errors from -f, -d, find and delete with exception(false): a tainted file:// names no file
+$report.[tainted file:// without errors][
+	$.[-f of an existing file][ ^if(-f ^taint[file://$root/tests/460.html]){YES}{no}]
+	$.[-d of an existing directory][ ^if(-d ^taint[file://$root/tests]){YES}{no}]
+	$.[find of an existing file][ ^file:find[^taint[file://$root/tests/460.html]]{not found}]
+	$.[delete with exception(false) leaves the file][ ^outcome{
+		$t[text] ^t.save[460_del.txt]
+		^file:delete[^taint[file://$root/tests/460_del.txt]][ $.exception(false) ]
+		^if(-f '460_del.txt'){kept}{DELETED} ^file:delete[460_del.txt][ $.exception(false) ]
+	}]
+]
+
+# string functions keep the taint, so a scheme does not get clean on the way
+$s[^taint[file:///test.gif]]
+$report.[the scheme stays tainted through string functions][
+	$.[unescape][ ^outcome{ ^file:fullpath[^string:unescape[uri;^taint[file%3A%2F%2F%2Fx.gif]]] }]
+	$.[table cell][ ^outcome{ $t[^table::create{p^#0A$s}] ^file:fullpath[$t.p] }]
+	$.[base64 decode][ ^outcome{ $b[^s.base64[]] ^file:fullpath[^string:base64[$b]] }]
+	$.[lower][ ^outcome{ $u[^taint[FILE:///x.gif]] ^file:fullpath[^u.lower[]] }]
+	$.[replace][ ^outcome{ ^file:fullpath[^s.replace[x;y]] }]
+	$.[split and join][ ^outcome{ $l[^s.split[:]] ^file:fullpath[^l.menu{$l.piece}[:]] }]
+	$.[match][ ^outcome{ ^file:fullpath[^s.match[^^(.*)^$][]{$match.1}] }]
+	$.[hash key always tainted][ ^outcome{ $h[ $.[file:///test.gif](1) ] ^file:fullpath[^h.foreach[k;]{$k}] }]
+]
+
+# last, document-root change (above tests by default): set from the code, it is escaped as file names are, which leave '\' alone
+$before[^file:fullpath[x.gif]]
+$request:document-root[^taint[$root\tests]]
+$report.[document-root with a backslash][
+	$.[the backslash is kept][ $request:document-root]
+	$.[and is a separator: a relative name is inside the root][ ^outcome{ ^file:fullpath[x.gif] } vs $before before ]
+]
+# '|' becomes _7C: a directory next to tests, 460.html is not inside it
+$request:document-root[^taint[$root|tests]]
+$report.[document-root with a char escaped in file names][
+	$.[the char is replaced][ $request:document-root]
+	$.[a relative name is outside the root][ ^outcome{ ^file:fullpath[x.gif] }]
+]
+
+$text[^print[$report]]
+^taint[as-is][^text.replace[$root;<root>]]
+
+@print[h;indent][k;v]
+^h.foreach[k;v]{${indent}${k}:^if($v is 'hash'){^#0A^print[$v;$indent^#09]}{ ^v.trim[]^#0A}}
+
+@outcome[code]
+^try{
+	$result[$code]
+	$result[^result.trim[]]
+}{
+	$exception.handled(true)
+	$result[Exception: $exception.comment]
+}
