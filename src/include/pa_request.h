@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.280 2026/09/30 17:42:38 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.281 2026/10/01 12:46:17 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -305,7 +305,7 @@ public:
 
 	/// '/'-normalized disk path of a file name; a uri of another scheme is returned as is if allowed, otherwise throws
 	const String& full_disk_path(const String& relative_name, uint allowed=0);
-	/// '/'-normalized full_disk_path of a real file on disk, which does not throw: 0 for a uri or a remote or invalid file:// one
+	/// '/'-normalized full_disk_path of a real file on disk, which does not throw: 0 for a uri or a remote, invalid or tainted file:// one
 	const String* real_disk_path(const String& name);
 
 	/// returns the mime type of 'user_file_name'

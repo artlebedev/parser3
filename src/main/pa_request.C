@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.455 2026/09/30 17:45:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.456 2026/10/01 12:46:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -777,7 +777,7 @@ const String* Request::real_disk_path(const String& name) {
 	switch(path_scheme(name)) {
 		case PA_SCHEME_NONE: return &full_disk_path(name);
 		case PA_SCHEME_FILE: {
-			const String* path=file_uri_to_path(name);
+			const String* path=clean_path_scheme(PA_SCHEME_FILE, name) ? file_uri_to_path(name) : 0;
 			return path ? &backslashes_to_slashes(*path) : 0;
 		}
 		default: return 0; // not a disk path
