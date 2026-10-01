@@ -55,12 +55,15 @@ $request:document-root[^taint[$root\tests]]
 $report.[document-root with a backslash][
 	$.[the backslash is kept][ $request:document-root]
 	$.[and is a separator: a relative name is inside the root][ ^outcome{ ^file:fullpath[x.gif] } vs $before before ]
+	$.[diskpath of a web path][ ^file:diskpath[/x.gif]]
+	$.[diskpath of file://][ ^file:diskpath[file://$root/tests/x.gif]]
 ]
 # '|' becomes _7C: a directory next to tests, 460.html is not inside it
 $request:document-root[^taint[$root|tests]]
 $report.[document-root with a char escaped in file names][
 	$.[the char is replaced][ $request:document-root]
 	$.[a relative name is outside the root][ ^outcome{ ^file:fullpath[x.gif] }]
+	$.[diskpath of a web path][ ^file:diskpath[/x.gif]]
 ]
 
 $text[^print[$report]]

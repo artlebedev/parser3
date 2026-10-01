@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.301 2026/09/30 16:44:19 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.302 2026/10/01 14:16:36 moko Exp $";
 
 // defines
 
@@ -966,6 +966,10 @@ static void _fullpath(Request& r, MethodParams& params) {
 		throw Exception(PARSER_RUNTIME, &file_spec, "is outside of $request:document-root [%s]", r.request_info.document_root);
 }
 
+static void _diskpath(Request& r, MethodParams& params) {
+	r.write(r.full_disk_path(params.as_file_spec(0)));
+}
+
 static void _sql_string(Request& r, MethodParams&) {
 	VFile& self=GET_SELF(r, VFile);
 
@@ -1293,6 +1297,8 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("justext", Method::CT_STATIC, _justext, 1, 1);
 	// /some/page.html: ^file:fullpath[a.gif] => /some/a.gif
 	add_native_method("fullpath", Method::CT_STATIC, _fullpath, 1, 1);
+	// /some/page.html: ^file:diskpath[a.gif] => /document/root/some/a.gif, file:// and C:\ resolved as well
+	add_native_method("diskpath", Method::CT_STATIC, _diskpath, 1, 1);
 
 	// ^file.sql-string[]
 	add_native_method("sql-string", Method::CT_DYNAMIC, _sql_string, 0, 0);

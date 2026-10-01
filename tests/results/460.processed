@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1517
+Content-Length: 1648
 
 tainted backslash:
 	save, the whole name tainted: 460_dir/a.txt
@@ -33,6 +33,9 @@ the scheme stays tainted through string functions:
 document-root with a backslash:
 	the backslash is kept: <root>\tests
 	and is a separator: a relative name is inside the root: /x.gif vs /tests/x.gif before
+	diskpath of a web path: <root>/tests/x.gif
+	diskpath of file://: <root>/tests/x.gif
 document-root with a char escaped in file names:
 	the char is replaced: <root>_7Ctests
 	a relative name is outside the root: Exception: is outside of $request:document-root [<root>_7Ctests]
+	diskpath of a web path: <root>_7Ctests/x.gif
