@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.180 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.181 2026/10/01 11:46:20 moko Exp $";
 
 
 #include "pa_string.h"
@@ -81,7 +81,7 @@ inline bool need_file_encode(unsigned char c){
 	return strchr(
 			"*?\"<>|"
 #ifndef WIN32
-			":\\"
+			":" // not allowed in windows file names; '\' is a path separator everywhere since #1300
 #endif
 			, c)!=0;
 }
