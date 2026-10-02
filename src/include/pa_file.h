@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.5 2026/10/01 12:46:17 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.6 2026/10/02 15:49:42 moko Exp $"
 
 #include "pa_common.h"
 
@@ -65,6 +65,9 @@ void check_path_scheme(uint scheme, const String& path, uint allowed);
 
 /// resolved file:// or null; the result is not '/'-normalized
 const String* file_uri_to_path(const String& uri);
+
+/// strncmp for disk paths, case insensitive under windows
+int path_cmp(const char* path, const char* dir, size_t length);
 
 #define FILE_BUFFER_SIZE (128*0x400)
 

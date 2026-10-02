@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.302 2026/10/01 14:16:36 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.303 2026/10/02 15:49:42 moko Exp $";
 
 // defines
 
@@ -829,7 +829,7 @@ static const String* web_path(Request& r, const String& file_spec, bool fail_on_
 
 	// checking the result is inside document root;
 	// first checking the segment boundary: /root must not match /root-but-longer
-	return result.first_char()=='/' && !strncmp(disk_path->cstr(), document_root, document_root_length) ? &result : 0;
+	return result.first_char()=='/' && !path_cmp(disk_path->cstr(), document_root, document_root_length) ? &result : 0;
 }
 
 static void _find(Request& r, MethodParams& params) {

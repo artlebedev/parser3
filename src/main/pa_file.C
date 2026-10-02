@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.9 2026/10/01 12:46:17 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.10 2026/10/02 15:49:42 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -75,6 +75,14 @@ void check_path_scheme(uint scheme, const String& path, uint allowed) {
 		throw Exception(PARSER_RUNTIME, &path, "unsupported path scheme");
 	if(!clean_path_scheme(scheme, path))
 		throw Exception(PARSER_RUNTIME, &path, "tainted path scheme");
+}
+
+int path_cmp(const char* path, const char* dir, size_t length) {
+#ifdef WIN32
+	return strncasecmp(path, dir, length); // mostly for the drive letter
+#else
+	return strncmp(path, dir, length);
+#endif
 }
 
 const String* file_uri_to_path(const String& uri) {

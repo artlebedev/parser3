@@ -35,7 +35,7 @@
 #include "pa_vdate.h"
 #include "pa_varray.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.456 2026/10/01 12:46:17 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.457 2026/10/02 15:49:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -618,7 +618,7 @@ void Request::use_file_directly(const String& file_spec, bool fail_on_file_absen
 
 		const char* after=target;
 		size_t drlen=strlen(request_info.document_root_path);
-		if(memcmp(after, request_info.document_root_path, drlen)==0)
+		if(path_cmp(after, request_info.document_root_path, drlen)==0)
 			after+=drlen; // to start from document_root/auto.p
 
 		while(const char* before=strchr(after, '/')) {
