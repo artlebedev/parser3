@@ -1,0 +1,14 @@
+Content-Type: text/html
+Content-Length: 454
+
+js:
+1. quotes: \x27single\x27 \x22double\x22
+2. script end and comment: \x3C/script\x3E\x3C!--x--\x3E
+3. an entity, decoded in an attribute: \x26#39;
+4. backslash, line feed, carriage return: a\\b\nc\rd
+5. line and paragraph separators: a\u2028b\u2029c
+6. cyrillic is kept: тест
+7. a broken utf-8 sequence does not hide a quote: escaped
+json:
+8. line and paragraph separators: a\u2028b\u2029c
+9. a broken utf-8 sequence does not hide a quote: escaped

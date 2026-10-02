@@ -1,0 +1,17 @@
+# tuned js and json tainting
+@main[]
+js:
+1. quotes: ^apply-taint[js][^taint['single' "double"]]
+2. script end and comment: ^apply-taint[js][^taint[</script><!--x-->]]
+3. an entity, decoded in an attribute: ^apply-taint[js][^taint[&#39^;]]
+4. backslash, line feed, carriage return: ^apply-taint[js][^taint[a\b^#0Ac^#0Dd]]
+5. line and paragraph separators: ^apply-taint[js][^taint[a^#E2^#80^#A8b^#E2^#80^#A9c]]
+6. cyrillic is kept: ^apply-taint[js][^taint[тест]]
+7. a broken utf-8 sequence does not hide a quote: ^raw_quote[^apply-taint[js][^taint[^#E2^#80"]]]
+
+@raw_quote[s]
+$result[^if(^s.pos["]>=0){RAW QUOTE}{escaped}]
+
+# json escapes a quote as \"
+@json_quote[s]
+$result[^if(^s.pos[\"]>=0){escaped}{RAW QUOTE}]
