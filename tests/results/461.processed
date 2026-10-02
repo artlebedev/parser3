@@ -1,0 +1,11 @@
+Content-Type: text/html
+Content-Length: 393
+
+1. missing, by default: rows 0
+2. missing, exception(false): rows 0
+3. missing, exception(true): exception file.missing
+4. missing, with a filter and exception(true): exception file.missing
+5. a file, exception(true): exception file.missing
+6. existing, exception(true): rows 3
+7. a uri, by default, no directory as with ^file:delete: rows 0
+8. a uri, exception(true): exception parser.runtime

@@ -1,0 +1,20 @@
+# when ^file:list fails: an empty table, or with $.exception(true) an error (feature #1084)
+# only the exception type is shown: the comment is platform and machine dependent
+@main[]
+1. missing, by default: ^rows{^file:list[404]}
+2. missing, exception(false): ^rows{^file:list[404][ $.exception(false) ]}
+3. missing, exception(true): ^rows{^file:list[404][ $.exception(true) ]}
+4. missing, with a filter and exception(true): ^rows{^file:list[404][ $.filter[\.p^$] $.exception(true) ]}
+5. a file, exception(true): ^rows{^file:list[461.html][ $.exception(true) ]}
+6. existing, exception(true): ^rows{^file:list[366_dir][ $.exception(true) ]}
+7. a uri, by default, no directory as with ^^file:delete: ^rows{^file:list[http://example.com/]}
+8. a uri, exception(true): ^rows{^file:list[http://example.com/][ $.exception(true) ]}
+
+@rows[code][t]
+^try{
+	$t[$code]
+	$result[rows ^t.count[]]
+}{
+	$exception.handled(true)
+	$result[exception $exception.type]
+}
