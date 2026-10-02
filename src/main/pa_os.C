@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.26 2026/04/25 13:38:46 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.27 2026/10/02 19:57:10 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -19,7 +19,6 @@ unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 #define PA_EX_LOCK 1
 #define PA_ULOCK 0
 #define FLOCK(operation) int status=pa_flock(fd, operation);
-#define ERRNO pa_errno()
 
 int pa_flock(int fd, int operation) {
     HANDLE hFile = (HANDLE)_get_osfhandle(fd);
@@ -30,17 +29,17 @@ int pa_flock(int fd, int operation) {
     OVERLAPPED overlapped = {0};
 
     if (operation == PA_ULOCK) {
-        return UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &overlapped) ? 0 : -1;
+        return pa_set_errno(UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &overlapped)) ? 0 : -1;
     } else {
         DWORD flags = LOCKFILE_FAIL_IMMEDIATELY;
         if (operation == PA_EX_LOCK) {
             flags |= LOCKFILE_EXCLUSIVE_LOCK;
         }
-        return LockFileEx(hFile, flags, 0, MAXDWORD, MAXDWORD, &overlapped) ? 0 : -1;
+        return pa_set_errno(LockFileEx(hFile, flags, 0, MAXDWORD, MAXDWORD, &overlapped)) ? 0 : -1;
     }
 }
 
-int pa_errno() {
+static int pa_errno() {
     switch(GetLastError()) {
         case ERROR_LOCK_VIOLATION: // real case: returning the same error as with _locking
             return EACCES;
@@ -50,13 +49,22 @@ int pa_errno() {
             return EBADF;
         case ERROR_NOT_LOCKED:
             return ENOLCK;
+        case ERROR_FILE_NOT_FOUND: // the same errors as with opendir
+        case ERROR_PATH_NOT_FOUND:
+            return ENOENT;
+        case ERROR_DIRECTORY:
+            return ENOTDIR;
     }
     return EACCES;
 }
 
-#else
+int pa_set_errno(int status) {
+    if (!status)
+        errno = pa_errno();
+    return status;
+}
 
-#define ERRNO errno
+#else
 
 #ifdef HAVE_FLOCK
 
@@ -97,7 +105,7 @@ int pa_lock(int fd, int attempts, int operation){
 		if(status==0)
 			return 0;
 		if(--attempts<=0)
-			return ERRNO;
+			return errno;
 		pa_sleep(PA_LOCK_WAIT_TIMEOUT_SECS, PA_LOCK_WAIT_TIMEOUT_USECS);
 	}
 };

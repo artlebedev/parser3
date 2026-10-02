@@ -8,7 +8,7 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.15 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.16 2026/10/02 19:57:10 moko Exp $"
 
 #define PA_LOCK_ATTEMPTS 20
 #define PA_LOCK_WAIT_TIMEOUT_SECS 0
@@ -27,5 +27,10 @@ int pa_unlock(int fd);
 
 /// yields to OS for secs secs and usecs microseconds (1E-6)
 int pa_sleep(unsigned long secs, unsigned long usecs);
+
+#ifdef _MSC_VER
+/// sets errno from GetLastError(), as CRT does, if the passed windows api call result is zero; returns it
+int pa_set_errno(int status);
+#endif
 
 #endif
