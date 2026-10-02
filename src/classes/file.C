@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.303 2026/10/02 15:49:42 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.304 2026/10/02 19:58:41 moko Exp $";
 
 // defines
 
@@ -707,6 +707,7 @@ static void _list(Request& r, MethodParams& params) {
 	Value& relative_path=params.as_no_junction(0, "path must not be code");
 
 	bool stat=false;
+	bool fail_on_problem=false;
 	VRegex* vregex=0;
 	VRegexCleaner vrcleaner;
 
@@ -722,6 +723,10 @@ static void _list(Request& r, MethodParams& params) {
 				}
 				if(Value* value=options->get("filter")) {
 					vfilter=value;
+					valid_options++;
+				}
+				if(Value* vexception=options->get(SUPPRESS_EXCEPTION_NAME)) {
+					fail_on_problem=r.process(*vexception).as_bool();
 					valid_options++;
 				}
 				if(valid_options!=options->count())
@@ -745,10 +750,16 @@ static void _list(Request& r, MethodParams& params) {
 		}
 	}
 
-	const char* absolute_path_cstr=r.full_disk_path(relative_path.as_string()).taint_cstr(String::L_FILE_SPEC);
-
 	Table::Action_options table_options;
 	Table& table=*new Table(file_list_table_template(), table_options);
+
+	// no exception for a uri or an invalid or tainted file://
+	const String* path=fail_on_problem ? &r.full_disk_path(relative_path.as_string()) : r.real_disk_path(relative_path.as_string());
+	if(!path) {
+		r.write(*new VTable(&table));
+		return;
+	}
+	const char* absolute_path_cstr=path->taint_cstr(String::L_FILE_SPEC);
 
 	const int ovector_size=(1/*match*/)*3;
 	int ovector[ovector_size];
@@ -769,6 +780,10 @@ static void _list(Request& r, MethodParams& params) {
 			}
 			table+=row;
 		}
+	,
+		if(fail_on_problem)
+			throw Exception(errno==EACCES ? "file.access" : (errno==ENOENT || errno==ENOTDIR) ? "file.missing" : 0,
+				path, "list failed: %s (%d), actual filename '%s'", strerror(errno), errno, absolute_path_cstr);
 	);
 
 	// write out result

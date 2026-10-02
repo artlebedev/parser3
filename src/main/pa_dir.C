@@ -8,10 +8,11 @@
 #include "pa_common.h"
 #include "pa_file.h"
 #include "pa_dir.h"
+#include "pa_os.h"
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.39 2026/09/27 17:27:56 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.40 2026/10/02 19:58:41 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -37,7 +38,7 @@ bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
 	const UTF16* utf16mask=pa_utf16_encode(mask, pa_thread_request().charsets.source());
 
 	_ffblk->handle=FindFirstFileW((const wchar_t *)utf16mask, &_ffblk->stat);
-	return _ffblk->handle==INVALID_HANDLE_VALUE;
+	return !pa_set_errno(_ffblk->handle!=INVALID_HANDLE_VALUE); // errno as opendir sets it
 }
 
 bool findnext(struct ffblk *_ffblk) {

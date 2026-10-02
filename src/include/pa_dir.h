@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.36 2026/09/27 17:13:40 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.37 2026/10/02 19:58:41 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -66,8 +66,8 @@ bool findfirst(const char* _pathname, struct ffblk *_ffblk, int _attrib);
 bool findnext(struct ffblk *_ffblk);
 void findclose(struct ffblk *_ffblk);
 
-/// main dir workhorse: calles win32/unix unified functions findfirst/next/close [skip . and ..]
-#define LOAD_DIR(dir,action) { \
+/// main dir workhorse: calls win32/unix unified functions findfirst/next/close [skip . and ..]
+#define LOAD_DIR(dir,action,failure) { \
 	ffblk ffblk; \
 	if(!findfirst(dir, &ffblk, 0)) { \
 		do { \
@@ -77,6 +77,8 @@ void findclose(struct ffblk *_ffblk);
 			} \
 		} while(!findnext(&ffblk)); \
 		findclose(&ffblk); \
+	} else { \
+		failure; \
 	} \
 }
 
