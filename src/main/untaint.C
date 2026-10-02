@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.181 2026/10/01 11:46:20 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.182 2026/10/02 22:49:09 moko Exp $";
 
 
 #include "pa_string.h"
@@ -74,6 +74,24 @@ extern "C" { // author forgot to do that
 #define to_char(c)  { CORD_ec_append(info->result, c); whitespace=false; }
 #define to_string(s)  { CORD_ec_append_cord(info->result, (CORD)(s)); whitespace=false; }
 #define _default CORD_ec_append(info->result, c)
+
+/// \u2028 and \u2029 (line/paragraph separators) and the next ones in utf-8 as \u20XX: they end a js string, see bug #1023;
+/// other bytes after 0xE2 are not taken here, so the loop escapes them as usual
+#define escape_u20XX { \
+	size_t index=CORD_pos_to_index(info->pos); \
+	unsigned char c2; \
+	if(info->charsets && info->charsets->source().isUTF8() && fragment_length>=2 \
+		&& (unsigned char)info->body->fetch(index+1)==0x80 \
+		&& (c2=(unsigned char)info->body->fetch(index+2))>=0xA8 && c2<=0xAF){ \
+		to_string("\\u20"); \
+		to_hex(c2-0x80); \
+		CORD_next(info->pos); \
+		CORD_next(info->pos); \
+		fragment_length-=2; \
+	} else { \
+		_default; \
+	} \
+}
 
 inline bool need_file_encode(unsigned char c){
 	// russian letters and space ENABLED
@@ -449,13 +467,18 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 		}
 		break;
 	case String::L_JS:
+		// quotes, < > & as \xXX: safe both inside <script> and in a quoted html attribute
 		escape_fragment(switch(c) {
 			case '\n': to_string("\\n");  break;
-			case '"': to_string("\\\"");  break;
-			case '\'': to_string("\\'");  break;
+			case '"': to_string("\\x22");  break;
+			case '\'': to_string("\\x27");  break;
+			case '<': to_string("\\x3C");  break;
+			case '>': to_string("\\x3E");  break;
+			case '&': to_string("\\x26");  break;
 			case '\\': to_string("\\\\");  break;
 			case '\xFF': to_string("\\\xFF");  break;
 			case '\r': to_string("\\r");  break;
+			case '\xE2': escape_u20XX; break;
 			default: _default; break;
 		});
 		break;
@@ -525,25 +548,7 @@ int cstr_to_string_body_block(String::Language to_lang, size_t fragment_length, 
 					case '\r': to_string("\\r");  break;
 					case '\b': to_string("\\b");  break;
 					case '\f': to_string("\\f");  break;
-					case 0xE2: // \u2028 and \u2029 (line/paragraph separators), check bug #1023
-						if(info->charsets && info->charsets->source().isUTF8() && fragment_length>=2){
-							CORD_next(info->pos);
-							char c1=CORD_pos_fetch(info->pos);
-							CORD_next(info->pos);
-							char c2=CORD_pos_fetch(info->pos);
-							if((unsigned char)c1 == 0x80 && ((unsigned char)c2 >= 0xA8 && (unsigned char)c2 <= 0xAF)){
-								to_string("\\u20");
-								to_hex(((unsigned char)c2-0x80));
-							} else {
-								CORD_ec_append(info->result, c);
-								CORD_ec_append(info->result, c1);
-								CORD_ec_append(info->result, c2);
-							}
-							fragment_length-=2;
-						} else {
-							_default;
-						}
-						break;
+					case 0xE2: escape_u20XX; break;
 					default: 
 						if((unsigned char)c < 0x20){
 							to_string("\\u00");
