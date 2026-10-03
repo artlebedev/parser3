@@ -27,7 +27,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.304 2026/10/02 19:58:41 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.305 2026/10/03 14:30:03 moko Exp $";
 
 // defines
 
@@ -783,7 +783,7 @@ static void _list(Request& r, MethodParams& params) {
 	,
 		if(fail_on_problem)
 			throw Exception(errno==EACCES ? "file.access" : (errno==ENOENT || errno==ENOTDIR) ? "file.missing" : 0,
-				path, "list failed: %s (%d), actual filename '%s'", strerror(errno), errno, absolute_path_cstr);
+				path, "list failed: %s (%d)%s", strerror(errno), errno, actual_filename(*path, absolute_path_cstr));
 	);
 
 	// write out result

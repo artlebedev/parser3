@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.6 2026/10/02 15:49:42 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.7 2026/10/03 14:30:03 moko Exp $"
 
 #include "pa_common.h"
 
@@ -68,6 +68,9 @@ const String* file_uri_to_path(const String& uri);
 
 /// strncmp for disk paths, case insensitive under windows
 int path_cmp(const char* path, const char* dir, size_t length);
+
+/// returns ", actual filename '...'" only if escaping changed the file name (exception source shows the original file)
+const char* actual_filename(const String& file_spec, const char* fname);
 
 #define FILE_BUFFER_SIZE (128*0x400)
 

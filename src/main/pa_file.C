@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.10 2026/10/02 15:49:42 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.11 2026/10/03 14:30:03 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -83,6 +83,10 @@ int path_cmp(const char* path, const char* dir, size_t length) {
 #else
 	return strncmp(path, dir, length);
 #endif
+}
+
+const char* actual_filename(const String& file_spec, const char* fname) {
+	return strcmp(file_spec.cstr(), fname) ? pa_strcat(", actual filename '", fname, "'") : "";
 }
 
 const String* file_uri_to_path(const String& uri) {
@@ -319,12 +323,12 @@ bool file_read_action_under_lock(const String& file_spec, const char* action_nam
 		try {
 			int pa_errno=pa_lock_shared_blocking(f);
 			if(pa_errno!=0)
-				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(pa_errno), pa_errno, fname);
+				throw Exception("file.lock", &file_spec, "shared lock failed: %s (%d)%s", strerror(pa_errno), pa_errno, actual_filename(file_spec, fname));
 
 			struct stat finfo;
 			if(pa_fstat(f, &finfo)!=0)
 				throw Exception("file.missing", // hardly possible: we just opened it OK
-					&file_spec, "stat failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
+					&file_spec, "stat failed: %s (%d)%s", strerror(errno), errno, actual_filename(file_spec, fname));
 
 			check_safe_mode(finfo, file_spec, fname);
 
@@ -341,7 +345,7 @@ bool file_read_action_under_lock(const String& file_spec, const char* action_nam
 	} else {
 		if(fail_on_read_problem)
 			throw Exception(errno==EACCES ? "file.access" : (errno==ENOENT || errno==ENOTDIR || errno==ENODEV) ? "file.missing" : 0,
-				&file_spec, "%s failed: %s (%d), actual filename '%s'", action_name, strerror(errno), errno, fname);
+				&file_spec, "%s failed: %s (%d)%s", action_name, strerror(errno), errno, actual_filename(file_spec, fname));
 		return false;
 	}
 }
@@ -368,7 +372,7 @@ bool file_write_action_under_lock(const String& file_spec, const char* action_na
 	if((f=pa_open(fname, O_CREAT | O_RDWR | (as_text ? _O_TEXT : _O_BINARY) | (do_append ? O_APPEND : PA_O_TRUNC), 0664))>=0) {
 		int pa_errno=do_block ? pa_lock_exclusive_blocking(f) : pa_lock_exclusive_nonblocking(f);
 		if(pa_errno!=0) {
-			Exception e("file.lock", &file_spec, "shared lock failed: %s (%d), actual filename '%s'", strerror(pa_errno), pa_errno, fname);
+			Exception e("file.lock", &file_spec, "exclusive lock failed: %s (%d)%s", strerror(pa_errno), pa_errno, actual_filename(file_spec, fname));
 			close(f);
 			if(fail_on_lock_problem)
 				throw e;
@@ -398,7 +402,7 @@ bool file_write_action_under_lock(const String& file_spec, const char* action_na
 		pa_unlock(f);close(f);
 		return true;
 	} else
-		throw Exception(errno==EACCES ? "file.access" : 0, &file_spec, "%s failed: %s (%d), actual filename '%s'", action_name, strerror(errno), errno, fname);
+		throw Exception(errno==EACCES ? "file.access" : 0, &file_spec, "%s failed: %s (%d)%s", action_name, strerror(errno), errno, actual_filename(file_spec, fname));
 	// here should be nothing, see rethrow above
 }
 
@@ -536,7 +540,7 @@ bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_
 	if(pa_unlink(fname)!=0) {
 		if(fail_on_problem)
 			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
-				&file_spec, "unlink failed: %s (%d), actual filename '%s'", strerror(errno), errno, fname);
+				&file_spec, "unlink failed: %s (%d)%s", strerror(errno), errno, actual_filename(file_spec, fname));
 		else
 			return false;
 	}
@@ -555,7 +559,7 @@ void file_move(const String& old_spec, const String& new_spec, bool keep_empty_d
 
 	if(pa_rename(old_spec_cstr, new_spec_cstr)!=0)
 		throw Exception(errno==EACCES ? "file.access" : errno==ENOENT ? "file.missing" : 0,
-			&old_spec, "rename failed: %s (%d), actual filename '%s' to '%s'", strerror(errno), errno, old_spec_cstr, new_spec_cstr);
+			&old_spec, "rename to '%s' failed: %s (%d)%s", new_spec_cstr, strerror(errno), errno, actual_filename(old_spec, old_spec_cstr));
 
 	if(!keep_empty_dirs)
 		rmdir(old_spec, 1);
@@ -587,7 +591,7 @@ bool file_stat(const String& file_spec, uint64_t& rsize, time_t& ratime, time_t&
 	struct stat finfo;
 	if(pa_stat(fname, &finfo)!=0) {
 		if(fail_on_read_problem)
-			throw Exception("file.missing", &file_spec, "getting file size failed: %s (%d), real filename '%s'", strerror(errno), errno, fname);
+			throw Exception("file.missing", &file_spec, "getting file size failed: %s (%d)%s", strerror(errno), errno, actual_filename(file_spec, fname));
 		else
 			return false;
 	}
