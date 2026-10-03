@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 454
+Content-Length: 340
 
 js:
 1. quotes: \x27single\x27 \x22double\x22
@@ -9,6 +9,3 @@ js:
 5. line and paragraph separators: a\u2028b\u2029c
 6. cyrillic is kept: тест
 7. a broken utf-8 sequence does not hide a quote: escaped
-json:
-8. line and paragraph separators: a\u2028b\u2029c
-9. a broken utf-8 sequence does not hide a quote: escaped

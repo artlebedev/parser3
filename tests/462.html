@@ -11,7 +11,3 @@ js:
 
 @raw_quote[s]
 $result[^if(^s.pos["]>=0){RAW QUOTE}{escaped}]
-
-# json escapes a quote as \"
-@json_quote[s]
-$result[^if(^s.pos[\"]>=0){escaped}{RAW QUOTE}]
