@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.306 2026/10/04 21:03:35 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.307 2026/10/05 17:50:18 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -153,6 +153,7 @@ all:
 	one_big_piece {
 	Method* method=new Method(Method::CT_ANY, 0, 0 /*min, max numbered_params_count*/, 0 /*param_names*/, 0 /*local_names*/, $1 /*parser_code*/, 0 /*native_code*/, PC.cclass->is_vars_local());
 	PC.cclass->set_method(PC.alias_method(main_method_name), method);
+	RECORD(MAIN, &PC.alias_method(main_method_name), method);
 }
 |	methods;
 
@@ -176,13 +177,16 @@ control_method: '@' STRING '\n'
 			VStateless_class* cclass=new VClass(name.cstr(), PC.request.get_used_filespec(PC.file_no));
 			PC.cclass_new=cclass;
 			PC.append=false;
+			RECORD(CLASS, &name);
 		} else {
 			YYERROR1("@" CLASS_NAME " must contain only one line with class name (contains more than one)");
 		}
 	} else if(command==USE_CONTROL_METHOD_NAME) {
 		CLASS_ADD;
 		for(size_t i=0; i<strings_code->count(); i+=OPERATIONS_PER_OPVALUE){
-			PC.request.use_file(LA2S(*strings_code, i)->trim(String::TRIM_END), PC.request.get_used_filespec(PC.file_no), strings_code->get(i+1).origin);
+			const String& file_name=LA2S(*strings_code, i)->trim(String::TRIM_END);
+			PC.request.use_file(file_name, PC.request.get_used_filespec(PC.file_no), strings_code->get(i+1).origin);
+			RECORD_USE(&file_name, strings_code->get(i+1).origin);
 		}
 	} else if(command==BASE_NAME) {
 		if(PC.append)
@@ -197,6 +201,7 @@ control_method: '@' STRING '\n'
 				if(PC.cclass==base_class)
 					YYERROR1("@" CLASS_NAME " equals @" BASE_NAME);
 				PC.cclass->get_class()->set_base(base_class);
+				RECORD(BASE, &base_name);
 			} else {
 				YYERROR3("'", base_name.cstr(), "': undefined class in @" BASE_NAME);
 			}
@@ -227,6 +232,7 @@ control_method: '@' STRING '\n'
 			} else {
 				YYERROR3("'", option.cstr(), "' invalid option. valid options are 'partial', 'locals', 'static' and 'dynamic'");
 			}
+			RECORD(OPTION, &option);
 		}
 	} else {
 		YYERROR3("'", command.cstr(), "' invalid special name. valid names are '" CLASS_NAME "', '" USE_CONTROL_METHOD_NAME "', '" BASE_NAME "' and '" OPTIONS_CONTROL_METHOD_NAME "'.");
@@ -282,6 +288,7 @@ code_method: '@' STRING bracketed_maybe_strings maybe_bracketed_strings maybe_co
 		// register in class
 		const String& name=*LA2S(*$2);
 		PC.cclass->set_method(PC.alias_method(name), method);
+		RECORD(METHOD, &PC.alias_method(name), method);
 };
 
 maybe_bracketed_strings: empty | bracketed_maybe_strings;

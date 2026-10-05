@@ -34,8 +34,9 @@
 #include "pa_vconsole.h"
 #include "pa_vdate.h"
 #include "pa_varray.h"
+#include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.457 2026/10/02 15:49:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.458 2026/10/05 17:50:18 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -111,6 +112,9 @@ static const String lock_wait_timeout_name("lock_wait_timeout");
 static const String httpd_name("HTTPD");
 static const String httpd_timeout_name("timeout");
 static const String httpd_mode_name("mode");
+#ifdef CODE_CACHE
+static const String httpd_code_cache_name("code-cache");
+#endif
 
 static const String conf_method_name("conf");
 static const String post_process_method_name("postprocess");
@@ -186,6 +190,9 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	// file_no=0 => unknown
 	file_list+=String::Body("UNKNOWN");
 	file_list+=String::Body("-body of process-"); // pseudo_file_no__process
+#ifdef CODE_CACHE
+	Code_cache_manager::add_files(file_list);
+#endif
 
 	// maybe expire old caches
 	cache_managers->maybe_expire();
@@ -397,6 +404,12 @@ void Request::configure_admin(VStateless_class& conf_class) {
 				throw Exception(PARSER_RUNTIME, 0, "$MAIN:HTTPD:mode must be string");
 			HTTPD_Server::set_mode(option->as_string());
 		}
+
+#ifdef CODE_CACHE
+	CONF_OPTION(httpd, httpd_code_cache_name, {
+		Code_cache_manager::set_enabled(option->as_bool());
+	}, "HTTPD.%s must be bool");
+#endif
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them
@@ -633,8 +646,18 @@ void Request::use_file_directly(const String& file_spec, bool fail_on_file_absen
 		}
 	}
 
+	Code_cache* code=0;
+#ifdef CODE_CACHE
+	if(Code_cache* cached=Code_cache_manager::get(file_spec)) {
+		use_buf(main_class, 0, 0, cached->file_no, 0, cached);
+		return;
+	}
+	// to record the compilation; only while the httpd config runs
+	code=Code_cache_manager::create(file_spec);
+#endif
+
 	if(const char* source=file_read_text(charsets, file_spec, true))
-		use_buf(main_class, source, 0, register_file(file_spec));
+		use_buf(main_class, source, 0, register_file(file_spec), 0, code);
 }
 
 
@@ -698,14 +721,18 @@ void Request::use_file(const String& file_name, const String* use_filespec/*abso
 	}
 }
 
-void Request::use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset) {
+void Request::use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset, Code_cache* code) {
 	// temporary zero @conf to avoid it second execution
 	Temp_method temp_method_conf(aclass, conf_method_name, 0);
 	// temporary zero @auto to avoid it second execution
 	Temp_method temp_method_auto(aclass, auto_method_name, 0);
 
 	// compile loaded classes
-	ArrayClass& cclasses=compile(&aclass, source, main_alias, file_no, line_no_offset);
+	ArrayClass& cclasses=
+#ifdef CODE_CACHE
+		!source ? code->replay(*this, aclass) :
+#endif
+		compile(&aclass, source, main_alias, file_no, line_no_offset, code);
 
 	VString* vfilespec=
 		new VString(file_list[file_no]);

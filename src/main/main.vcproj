@@ -194,6 +194,12 @@
 			RelativePath="..\include\pa_charsets.h">
 		</File>
 		<File
+			RelativePath=".\pa_code_cache.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_code_cache.h">
+		</File>
+		<File
 			RelativePath=".\pa_common.C">
 		</File>
 		<File

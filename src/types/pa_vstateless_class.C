@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.70 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.71 2026/10/05 17:50:18 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 bool VStateless_class::gall_vars_local=false;
 
@@ -41,7 +41,7 @@ void VStateless_class::real_set_method(const String& aname, Method* amethod) {
 	Symbols::instance().add(aname);
 #endif
 	fmethods.put(aname, amethod);
-	if(amethod)
+	if(amethod && amethod->name!=&aname) // to avoid needless shared method modification when replaying the cached code
 		amethod->name=&aname;
 }
 

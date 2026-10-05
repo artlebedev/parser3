@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.281 2026/10/01 12:46:17 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.282 2026/10/05 17:50:18 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -54,6 +54,8 @@ extern int pa_execute_recursion_limit;
 extern int pa_httpd_timeout;
 extern size_t pa_file_size_limit;
 
+class Code_cache;
+
 /// Main workhorse.
 class Request: public PA_Object {
 	friend class Temp_lang;
@@ -64,6 +66,7 @@ class Request: public PA_Object {
 	friend class Request_context_saver;
 	friend class Exception_trace;
 	friend class VException;
+	friend class Code_cache_manager;
 
 public:
 	class Trace {
@@ -267,8 +270,8 @@ public:
 	/// for @USE only, calls ^use (which may be user-defined)
 	void use_file(const String& file_name, const String* use_filespec, Operation::Origin origin);
 
-	/// compiles a @a source buffer
-	void use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset=0);
+	/// compiles a @a source buffer, recording it into @a code if given, or replays the cached @a code
+	void use_buf(VStateless_class& aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset=0, Code_cache* code=0);
 
 	/// processes any code-junction there may be inside of @a value
 	Value& process_getter(Junction& junction); // execute.C
@@ -399,7 +402,7 @@ private:
 
 private: // compile.C
 
-	ArrayClass& compile(VStateless_class* aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset);
+	ArrayClass& compile(VStateless_class* aclass, const char* source, const String* main_alias, uint file_no, int line_no_offset, Code_cache* code);
 
 private: // execute.C
 

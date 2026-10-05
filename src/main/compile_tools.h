@@ -8,12 +8,13 @@
 #ifndef COMPILE_TOOLS
 #define COMPILE_TOOLS
 
-#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.123 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_COMPILE_TOOLS_H "$Id: compile_tools.h,v 1.124 2026/10/05 17:50:18 moko Exp $"
 
 #include "pa_opcode.h"
 #include "pa_types.h"
 #include "pa_vstring.h"
 #include "pa_request.h"
+#include "pa_code_cache.h"
 
 /// used to track source column number
 #define TAB_SIZE 8
@@ -89,6 +90,9 @@ public:
 	
 	/// output: filled input 'methods' and 'error' if any
 	const char *error;
+#ifdef CODE_CACHE
+	Code_cache* code_cache;
+#endif
 
 	Parse_control(Request& arequest, 
 		VStateless_class* aclass,
@@ -117,7 +121,11 @@ public:
 		explicit_result(false),
 		append(false),
 		array(false),
-		error("") {
+		error("")
+#ifdef CODE_CACHE
+		, code_cache(0)
+#endif
+	{
 
 		*cclasses+=aclass;
 	}
@@ -404,6 +412,15 @@ inline bool maybe_optimize_construct(ArrayOperation& opcodes, ArrayOperation& va
 	}
 	return false;
 }
+#endif
+
+// saving what compiling does to the classes for Code_cache::replay
+#ifdef CODE_CACHE
+#	define RECORD(...) if(PC.code_cache) PC.code_cache->add(Code_cache::__VA_ARGS__)
+#	define RECORD_USE(name, origin) if(PC.code_cache) PC.code_cache->add_use(name, origin)
+#else
+#	define RECORD(...)
+#	define RECORD_USE(name, origin)
 #endif
 
 Method::Call_type GetMethodCallType(Parse_control& pc, ArrayOperation& literal_string_array);

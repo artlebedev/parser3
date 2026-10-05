@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.374 2026/09/30 23:20:52 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.375 2026/10/05 17:50:18 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -17,6 +17,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.374 2026/09/30 23:20:5
 #include "pa_threads.h"
 #include "pa_vconsole.h"
 #include "pa_sapi_info.h"
+#include "pa_code_cache.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -326,7 +327,13 @@ static void config_handler(SAPI_Info &info) {
 	// only once
 	config_filespec = locate_config(config_filespec, parser3_filespec);
 	// process main auto.p only
+#ifdef CODE_CACHE
+	Code_cache_manager::start();
+#endif
 	r.core(config_filespec, false, String::Empty);
+#ifdef CODE_CACHE
+	Code_cache_manager::finish(r);
+#endif
 }
 
 static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connection) {
