@@ -1,4 +1,118 @@
+2026-10-05  moko
+
+	* src/main/compile.tab.C: updated with Bison 3.8.2 from Debian 13
+
+	* src/main/compile.y: define parse.error verbose used for newer
+	  Bison
+
+2026-10-03  moko
+
+	* tests/: 436.html, 462.html, results/436.processed,
+	  results/462.processed: ", actual filename" tested (related to
+	  feature #1299)
+
+	* src/: classes/file.C, include/pa_file.h, main/pa_exec.C,
+	  main/pa_file.C: avoid the duplicated <name> ", actual filename
+	  <name>" when untainting did not change the original <name>
+	  (related to feature #1299)
+
+	* tests/results/293.processed: test result updated after js
+	  tainting tuning (related to feature #1301)
+
+	* tests/: 462.html, results/462.processed: test for tuned json
+	  tainting added (related to feature #1301)
+
+	* src/main/untaint.C: json tainting tuned (implements feature
+	  #1301)
+
+2026-10-02  moko
+
+	* tests/: 461.html, results/461.processed: test for ^file:list[
+	  $.exception(true) ] feature added (related to feature #1084)
+
+	* src/: classes/file.C, include/pa_dir.h, main/pa_dir.C:
+	  ^file:list[no-such-directory] throws exception if
+	  $.exception(true) is passed (implements feature #1084)
+
+	* src/: include/pa_os.h, main/pa_os.C: pa_set_errno added which
+	  sets errno as CRT functions for unix compatibility (related to
+	  feature #1084)
+
+	* src/: classes/file.C, include/pa_file.h, main/pa_file.C,
+	  main/pa_request.C: path_cmp added with strncasecmp under Windows
+	  (related to feature #1300)
+
+2026-10-01  moko
+
+	* src/classes/file.C, tests/460.html, tests/results/460.processed:
+	  ^file:diskpath[] added, returns full disk for web or relative
+	  path; file:// and C:\ resolved as well, tests updated
+	  (implemented feature #58)
+
+	* tests/: 460.html, results/460.processed: tests for filenames
+	  tainting and that path scheme should not be tainted (related to
+	  feature #1299)
+
+	* src/: include/pa_file.h, include/pa_request.h, main/pa_file.C,
+	  main/pa_request.C: tainting check in file:// added for -f and
+	  similar as well (related to feature #1299)
+
+	* src/: include/pa_common.h, include/pa_file.h,
+	  include/pa_string.h, main/pa_common.C, main/pa_file.C,
+	  main/pa_string.C: file:// and others schemes should not be from
+	  external sources aka tainted (related to feature #1299)
+
+	* src/main/untaint.C: '\' is a path separator everywhere, tainting
+	  updated (related to feature #1300)
+
+	* src/targets/cgi/parser3.C: '\' as a path separator for config and
+	  log options (related to feature #1300)
+
+2026-09-30  moko
+
+	* tests/: 459.html, results/459.processed: tests added for '\' is a
+	  path separator on all platforms (related to feature #1300)
+
+	* src/main/: pa_file.C, pa_request.C: file://server/share/path
+	  support under windows added (related to feature #1299)
+
+	* src/include/: pa_file.h, pa_request.h, pa_request_info.h:
+	  '/'-normalization documented (related to feature #1300)
+
+	* src/: classes/file.C, include/pa_common.h,
+	  include/pa_request_info.h, main/pa_common.C, main/pa_file.C,
+	  main/pa_request.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_vrequest.C: '\' was a path separator on Linux for file
+	  path functions only, now for file operations as well; file names
+	  are '/' separated internally, document root is also kept without
+	  the trailing '/' (implements feature #1300)
+
+	* src/include/pa_string.h: strrchr added
+
+2026-09-29  moko
+
+	* tests/: 459.html, results/459.processed: tests for file functions
+	  prefix checks added; file:// prefix tests (related to feature
+	  #1299)
+
+	* src/: classes/file.C, classes/table.C, classes/xdoc.C,
+	  include/pa_file.h, include/pa_request.h, main/execute.C,
+	  main/pa_file.C, main/pa_request.C, targets/cgi/parser3.C: all
+	  file functions now check prefix, http:// and parser:// is
+	  accepted only where allowed; file:// prefix added to specify OS
+	  disk path (implements feature #1299)
+
 2026-09-28  moko
+
+	* src/lib/ltdl/: configure.ac, ltdl.vcproj: ltdl: assertions now
+	  disabled in a release build, NDEBUG added to MSVC release build
+
+	* src/main/: pa_request.C, pa_xml_io.C: http:// and file:// must be
+	  tested as prefixes, last rsplit(hpath, '/') documented as OK.
+
+	* src/main/: pa_file.C, pa_request.C: regression: / should be
+	  checked first (related to feature #941)
 
 	* src/main/pa_file.C: whitespace
 
