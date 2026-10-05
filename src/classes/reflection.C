@@ -12,7 +12,7 @@
 #include "pa_vobject.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.105 2026/09/25 17:03:52 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.106 2026/10/05 19:47:29 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -404,6 +404,14 @@ static void _filename(Request& r, MethodParams& params) {
 	}
 }
 
+static void _used(Request& r, MethodParams&) {
+	VArray& result=*new VArray;
+	ArrayValue& files=result.array();
+	for(uint file_no=pseudo_file_no__process+1; const String* file_spec=r.get_used_filespec(file_no); file_no++)
+		files+=new VString(*file_spec);
+	r.write(result);
+}
+
 static void _dynamical(Request& r, MethodParams& params) {
 	if(params.count()){
 		r.write(VBool::get(params[0].get_class() != &params[0]));
@@ -745,6 +753,9 @@ MReflection::MReflection(): Methoded("reflection") {
 
 	// ^reflection:filename[object or class or method]
 	add_native_method("filename", Method::CT_STATIC, _filename, 1, 1);
+
+	// ^reflection:used[]
+	add_native_method("used", Method::CT_STATIC, _used, 0, 0);
 
 	// ^reflection:fields[object or class]
 	add_native_method("fields", Method::CT_STATIC, _fields, 1, 1);
