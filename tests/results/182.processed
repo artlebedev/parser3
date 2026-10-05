@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 325
+Content-Length: 495
 
 ^a:a1[]: a1<br />
 ^a:a2[]: a2<br />
@@ -20,3 +20,11 @@ b
 a
 c
 yes
+used files: /tests/results/auto.p
+/tests/182.html
+/tests/182_dir/a1.p
+/tests/182_dir/a2.p
+/tests/182_dir/a3.p
+/tests/182_dir/a4.p
+/tests/182_dir/a5.p
+/tests/182_dir/a7.p
