@@ -1,0 +1,90 @@
+=== sequental, code cache on
+fields are fresh in each request:
+1 2
+1 2
+an error in the cached code:
+test: failed in cached.p (cached.p:11)
+^use of a cached file:
+hello from cached.p
+a cached partial class extended by the file named in ^process[...][$.file[...]] of the config:
+extra from extend.p
+a file compiled into a cached class takes its options:
+locals kept
+a cached class already defined:
+parser.compile: Late_defined - class is already defined (tests.p:23)
+a cached partial class extending one not marked as partial:
+parser.compile: can&apos;t append methods to &apos;Late_partial&apos; - the class wasn&apos;t marked as partial (tests.p:26)
+a cached class with the undefined base:
+parser.compile: &apos;Late_base&apos;: undefined class in @BASE (tests.p:29)
+a cached file changed after the start:
+before
+after
+a cached file unreadable after the start:
+hello from cached.p
+=== parallel, code cache on
+fields are fresh in each request:
+1 2
+1 2
+an error in the cached code:
+test: failed in cached.p (cached.p:11)
+^use of a cached file:
+hello from cached.p
+a cached partial class extended by the file named in ^process[...][$.file[...]] of the config:
+extra from extend.p
+a file compiled into a cached class takes its options:
+locals kept
+a cached class already defined:
+parser.compile: Late_defined - class is already defined (tests.p:23)
+a cached partial class extending one not marked as partial:
+parser.compile: can&apos;t append methods to &apos;Late_partial&apos; - the class wasn&apos;t marked as partial (tests.p:26)
+a cached class with the undefined base:
+parser.compile: &apos;Late_base&apos;: undefined class in @BASE (tests.p:29)
+a cached file changed after the start:
+before
+after
+a cached file unreadable after the start:
+hello from cached.p
+=== threaded, code cache on
+fields are fresh in each request:
+1 2
+1 2
+an error in the cached code:
+test: failed in cached.p (cached.p:11)
+^use of a cached file:
+hello from cached.p
+a cached partial class extended by the file named in ^process[...][$.file[...]] of the config:
+extra from extend.p
+a file compiled into a cached class takes its options:
+locals kept
+a cached class already defined:
+parser.compile: Late_defined - class is already defined (tests.p:23)
+a cached partial class extending one not marked as partial:
+parser.compile: can&apos;t append methods to &apos;Late_partial&apos; - the class wasn&apos;t marked as partial (tests.p:26)
+a cached class with the undefined base:
+parser.compile: &apos;Late_base&apos;: undefined class in @BASE (tests.p:29)
+a cached file changed after the start:
+before
+after
+a cached file unreadable after the start:
+hello from cached.p
+=== sequental, code cache off
+fields are fresh in each request:
+1 2
+1 2
+an error in the cached code:
+test: failed in cached.p (cached.p:11)
+^use of a cached file:
+hello from cached.p
+a cached partial class extended by the file named in ^process[...][$.file[...]] of the config:
+extra from extend.p
+a file compiled into a cached class takes its options:
+locals kept
+a cached class already defined:
+parser.compile: Late_defined - class is already defined (late.p:4)
+a cached partial class extending one not marked as partial:
+parser.compile: can&apos;t append methods to &apos;Late_partial&apos; - the class wasn&apos;t marked as partial (late.p:13)
+a cached class with the undefined base:
+parser.compile: &apos;Late_base&apos;: undefined class in @BASE (late.p:23)
+a cached file changed after the start:
+before
+after
