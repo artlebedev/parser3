@@ -193,6 +193,9 @@
 			RelativePath=".\op.C">
 		</File>
 		<File
+			RelativePath=".\redis.C">
+		</File>
+		<File
 			RelativePath=".\reflection.C">
 		</File>
 		<File

@@ -8,7 +8,7 @@
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.39 2026/04/25 13:38:46 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.40 2026/10/06 23:34:31 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 
@@ -53,6 +53,7 @@ Methoded_array::Methoded_array() {
 	ADD_CLASS_VAR(math)
 	ADD_CLASS_VAR(memcached)
 	ADD_CLASS_VAR(amqp)
+	ADD_CLASS_VAR(redis)
 	ADD_CLASS_VAR(memory)
 	ADD_CLASS_VAR(reflection)
 	ADD_CLASS_VAR(regex)
