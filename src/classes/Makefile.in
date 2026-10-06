@@ -113,7 +113,7 @@ LTLIBRARIES = $(noinst_LTLIBRARIES)
 libclasses_la_LIBADD =
 am__objects_1 = amqp.lo array.lo bool.lo curl.lo date.lo double.lo \
 	file.lo form.lo hash.lo hashfile.lo image.lo inet.lo int.lo \
-	json.lo mail.lo math.lo memcached.lo memory.lo op.lo \
+	json.lo mail.lo math.lo memcached.lo memory.lo op.lo redis.lo \
 	reflection.lo regex.lo response.lo string.lo table.lo void.lo \
 	xnode.lo xdoc.lo
 am_libclasses_la_OBJECTS = $(am__objects_1) classes.lo
@@ -146,11 +146,11 @@ am__depfiles_remade = ./$(DEPDIR)/amqp.Plo ./$(DEPDIR)/array.Plo \
 	./$(DEPDIR)/inet.Plo ./$(DEPDIR)/int.Plo ./$(DEPDIR)/json.Plo \
 	./$(DEPDIR)/mail.Plo ./$(DEPDIR)/math.Plo \
 	./$(DEPDIR)/memcached.Plo ./$(DEPDIR)/memory.Plo \
-	./$(DEPDIR)/op.Plo ./$(DEPDIR)/reflection.Plo \
-	./$(DEPDIR)/regex.Plo ./$(DEPDIR)/response.Plo \
-	./$(DEPDIR)/string.Plo ./$(DEPDIR)/table.Plo \
-	./$(DEPDIR)/void.Plo ./$(DEPDIR)/xdoc.Plo \
-	./$(DEPDIR)/xnode.Plo
+	./$(DEPDIR)/op.Plo ./$(DEPDIR)/redis.Plo \
+	./$(DEPDIR)/reflection.Plo ./$(DEPDIR)/regex.Plo \
+	./$(DEPDIR)/response.Plo ./$(DEPDIR)/string.Plo \
+	./$(DEPDIR)/table.Plo ./$(DEPDIR)/void.Plo \
+	./$(DEPDIR)/xdoc.Plo ./$(DEPDIR)/xnode.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -287,6 +287,8 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PCRE_INCLUDES = @PCRE_INCLUDES@
 PCRE_LIBS = @PCRE_LIBS@
 RANLIB = @RANLIB@
+REDIS_INCLUDES = @REDIS_INCLUDES@
+REDIS_LIBS = @REDIS_LIBS@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -357,8 +359,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I../types -I../sql -I../lib/gd -I../lib/sdbm/pa-include -Igd $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@ @AMQP_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json -I../lib/memcached -I../lib/curl
-CLASSES_SOURCE_FILES = amqp.C array.C bool.C curl.C date.C double.C file.C form.C hash.C hashfile.C image.C inet.C int.C json.C mail.C math.C memcached.C memory.C op.C reflection.C regex.C response.C string.C table.C void.C xnode.C xdoc.C
+AM_CPPFLAGS = -I../types -I../sql -I../lib/gd -I../lib/sdbm/pa-include -Igd $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@ @AMQP_INCLUDES@ @REDIS_INCLUDES@ -I../lib/md5 -I../lib/smtp -I../lib/json -I../lib/memcached -I../lib/curl
+CLASSES_SOURCE_FILES = amqp.C array.C bool.C curl.C date.C double.C file.C form.C hash.C hashfile.C image.C inet.C int.C json.C mail.C math.C memcached.C memory.C op.C redis.C reflection.C regex.C response.C string.C table.C void.C xnode.C xdoc.C
 noinst_HEADERS = classes.h xnode.h
 noinst_LTLIBRARIES = libclasses.la
 libclasses_la_SOURCES = $(CLASSES_SOURCE_FILES) classes.C
@@ -435,6 +437,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memcached.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memory.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/op.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/redis.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reflection.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/regex.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/response.Plo@am__quote@ # am--include-marker
@@ -621,6 +624,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/memcached.Plo
 	-rm -f ./$(DEPDIR)/memory.Plo
 	-rm -f ./$(DEPDIR)/op.Plo
+	-rm -f ./$(DEPDIR)/redis.Plo
 	-rm -f ./$(DEPDIR)/reflection.Plo
 	-rm -f ./$(DEPDIR)/regex.Plo
 	-rm -f ./$(DEPDIR)/response.Plo
@@ -694,6 +698,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/memcached.Plo
 	-rm -f ./$(DEPDIR)/memory.Plo
 	-rm -f ./$(DEPDIR)/op.Plo
+	-rm -f ./$(DEPDIR)/redis.Plo
 	-rm -f ./$(DEPDIR)/reflection.Plo
 	-rm -f ./$(DEPDIR)/regex.Plo
 	-rm -f ./$(DEPDIR)/response.Plo

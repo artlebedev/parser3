@@ -712,6 +712,8 @@ COMPILE_APACHE_MODULE_TRUE
 APACHE_CFLAGS
 APACHE_INC
 APACHE
+REDIS_LIBS
+REDIS_INCLUDES
 AMQP_LIBS
 AMQP_INCLUDES
 MIME_LIBS
@@ -846,6 +848,7 @@ with_pcre
 with_xml
 with_mailreceive
 with_amqp
+with_redis
 with_sendmail
 with_apache
 enable_pic
@@ -1552,6 +1555,8 @@ Optional Packages:
                           Gnome MIME library is installed
   --with-amqp=DIR         DIR is the directory where
                           RabbitMQ C library (librabbitmq) is installed
+  --with-redis=DIR        DIR is the directory where
+                          Redis C library (hiredis) is installed
   \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"
                           (makes parser ignore user-defined sendmail commands)
@@ -6705,6 +6710,75 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
     LIBS=$SAVE_LIBS
 
 printf "%s\n" "#define WITH_AMQP /**/" >>confdefs.h
+
+
+fi
+
+
+
+
+
+
+
+# Check whether --with-redis was given.
+if test ${with_redis+y}
+then :
+  withval=$with_redis;
+    REDIS=$withval
+
+    if test -z "$REDIS" -o "$REDIS" = "yes"; then
+        REDIS_INCLUDES=""
+        REDIS_LIBS="-lhiredis"
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: --with-redis value was not specified, hoping linker would find it" >&5
+printf "%s\n" "$as_me: WARNING: --with-redis value was not specified, hoping linker would find it" >&2;}
+    else
+        REDIS_INCLUDES="-I$REDIS/include"
+        if test -f $REDIS/lib/libhiredis.la; then
+            REDIS_LIBS="$REDIS/lib/libhiredis.la"
+        else
+            REDIS_LIBS="-L$REDIS/lib -lhiredis"
+        fi
+    fi
+
+    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for hiredis" >&5
+printf %s "checking for hiredis... " >&6; }
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS $REDIS_LIBS $REDIS_INCLUDES"
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+ #include <hiredis/hiredis.h>
+int
+main (void)
+{
+ redisContext *c = redisConnect("", 0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+
+else case e in #(
+  e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+        if test -z "$REDIS"; then
+            as_fn_error $? "please specify path to hiredis: --with-redis=DIR" "$LINENO" 5
+        else
+            as_fn_error $? "$REDIS does not seem to be valid hiredis installation directory" "$LINENO" 5
+        fi
+
+   ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+
+    LIBS=$SAVE_LIBS
+
+printf "%s\n" "#define WITH_REDIS /**/" >>confdefs.h
 
 
 fi
