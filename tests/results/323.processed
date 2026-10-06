@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 955
+Content-Length: 979
 
 MAIN methoded MAIN ()
 amqp methoded amqp ()
@@ -23,6 +23,7 @@ mail methoded mail ()
 math methoded math ()
 memcached methoded memcached ()
 memory methoded memory ()
+redis methoded redis ()
 reflection methoded reflection ()
 regex methoded regex ()
 request request ()

@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 10843
+Content-Length: 11080
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -140,6 +140,12 @@ Comment: obj method not found
 Exception type: parser.runtime,
 Source: bad,
 Comment: obj method not found
+Class redis methoded ^redis:bad[] Exception type: parser.runtime,
+Source: bad,
+Comment: redis method not found
+Exception type: parser.runtime,
+Source: bad,
+Comment: redis method not found
 Class reflection methoded ^reflection:bad[] Exception type: parser.runtime,
 Source: bad,
 Comment: reflection method not found
@@ -279,6 +285,9 @@ $memory:bad no exception
 no exception
 Class obj
 $obj:bad no exception
+no exception
+Class redis
+$redis:bad no exception
 no exception
 Class reflection
 $reflection:bad no exception
