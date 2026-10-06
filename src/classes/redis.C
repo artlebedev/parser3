@@ -5,20 +5,15 @@
 	Authors: Konstantin Morshnev <moko@design.ru>
 */
 
-#include "pa_vmethod_frame.h"
+#include "pa_common.h"
+#include "pa_vredis.h"
 #include "pa_request.h"
-#include "pa_vstring.h"
-#include "pa_vhash.h"
+#include "pa_vmethod_frame.h"
 #include "pa_varray.h"
 #include "pa_vbool.h"
-#include "pa_vvoid.h"
-#include "pa_vint.h"
-#include "pa_vdouble.h"
 #include "pa_vfile.h"
-#include "pa_vredis.h"
-#include "pa_os.h"
 
-volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.1 2026/10/06 23:34:31 moko Exp $" IDENT_PA_VREDIS_H;
+volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.2 2026/10/06 23:54:23 moko Exp $" IDENT_PA_VREDIS_H;
 
 // defines
 
