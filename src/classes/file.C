@@ -5,8 +5,6 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-#include "pa_config_includes.h"
-
 #include "classes.h"
 #include "pa_vmethod_frame.h"
 #include "pa_base64.h"
@@ -27,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.305 2026/10/03 14:30:03 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.306 2026/10/06 23:57:02 moko Exp $";
 
 // defines
 

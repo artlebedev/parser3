@@ -5,19 +5,15 @@
 	Authors: Konstantin Morshnev <moko@design.ru>
 */
 
+
+#include "classes.h"
 #include "pa_vmethod_frame.h"
 
+#include "pa_vamqp.h"
 #include "pa_request.h"
-#include "pa_int.h"
-#include "pa_vstring.h"
-#include "pa_vhash.h"
 #include "pa_varray.h"
 #include "pa_vbool.h"
-#include "pa_vvoid.h"
-#include "pa_vdouble.h"
-#include "pa_vamqp.h"
 #include "pa_os.h"
-#include "pa_globals.h"
 
 #ifdef WITH_AMQP
 
@@ -31,7 +27,7 @@
 
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.24 2026/09/20 16:00:58 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.25 2026/10/06 23:57:02 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
