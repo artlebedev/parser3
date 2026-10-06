@@ -382,6 +382,45 @@ AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
 AC_SUBST(AMQP_INCLUDES)
 AC_SUBST(AMQP_LIBS)
 
+
+dnl Redis library argument
+AC_ARG_WITH(redis,[  --with-redis=DIR        DIR is the directory where
+                          Redis C library (hiredis) is installed],[
+    REDIS=$withval
+
+    if test -z "$REDIS" -o "$REDIS" = "yes"; then
+        REDIS_INCLUDES=""
+        REDIS_LIBS="-lhiredis"
+        AC_MSG_WARN([--with-redis value was not specified, hoping linker would find it])
+    else
+        REDIS_INCLUDES="-I$REDIS/include"
+        if test -f $REDIS/lib/libhiredis.la; then
+            REDIS_LIBS="$REDIS/lib/libhiredis.la"
+        else
+            REDIS_LIBS="-L$REDIS/lib -lhiredis"
+        fi
+    fi
+
+    AC_MSG_CHECKING(for hiredis)
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS $REDIS_LIBS $REDIS_INCLUDES"
+    PA_TRY_LINK([ #include <hiredis/hiredis.h> ],[ redisContext *c = redisConnect("", 0); ],
+        AC_MSG_RESULT(yes)
+    ,
+        AC_MSG_RESULT(no)
+        if test -z "$REDIS"; then
+            AC_MSG_ERROR(please specify path to hiredis: --with-redis=DIR)
+        else
+            AC_MSG_ERROR($REDIS does not seem to be valid hiredis installation directory)
+        fi
+    )
+    LIBS=$SAVE_LIBS
+    AC_DEFINE(WITH_REDIS,,has redis)
+])
+
+AC_SUBST(REDIS_INCLUDES)
+AC_SUBST(REDIS_LIBS)
+
 dnl Sendmail argument
 AC_ARG_WITH(sendmail,[  \"--with-sendmail=COMMAND\" forces this command to send mail.
                           example: \"--with-sendmail=/usr/sbin/sendmail -t\"
