@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.59 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.60 2026/10/06 15:47:08 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -91,7 +91,7 @@ Value* VTable::get_element4call(const String& aname) {
 		if(index>=0) // column aname|number valid
 		{
 			const String* string=ftable->item(index); // there is such column
-			return new string ? VString(*string) : VString::empty();
+			return string ? new VString(*string) : VString::empty();
 		}
 	}
 
