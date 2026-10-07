@@ -14,13 +14,13 @@
 #include "pa_vbool.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.4 2026/10/07 12:07:48 moko Exp $" IDENT_PA_VREDIS_H;
+volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.5 2026/10/07 15:56:17 moko Exp $" IDENT_PA_VREDIS_H;
 
 // defines
 
 #define DEFAULT_TIMEOUT 2 // seconds
-// ^r.file-get[key], ^r.file-call[GET;key]: the strings of the reply are files
-#define FILE_PREFIX "file-"
+// ^r.f-get[key], ^r.f-call[GET;key]: the strings of the reply are files
+#define FILE_PREFIX "f-"
 
 class MRedis: public Methoded {
 public: // VStateless_class
@@ -236,12 +236,10 @@ static void redis_command(Request& r, MethodParams& params, const String& comman
 	r.write(*reply_value(*reply, as_file, command));
 }
 
-// ^r.call[command;arguments...]
 static void _call(Request& r, MethodParams& params) {
 	redis_command(r, params, params.as_string(0, "command must be string"), 1, false);
 }
 
-// ^r.file-call[command;arguments...]: the strings of the reply are files
 static void _file_call(Request& r, MethodParams& params) {
 	redis_command(r, params, params.as_string(0, "command must be string"), 1, true);
 }
@@ -274,7 +272,7 @@ MRedis::MRedis(): Methoded("redis") {
 	// ^r.call[command;arguments...]
 	add_native_method("call", Method::CT_DYNAMIC, _call, 1, MAX_REDIS_COMMAND_PARAMS);
 
-	// ^r.file-call[command;arguments...]
+	// ^r.f-call[command;arguments...]
 	add_native_method(FILE_PREFIX "call", Method::CT_DYNAMIC, _file_call, 1, MAX_REDIS_COMMAND_PARAMS);
 
 	// ^r.release[]
