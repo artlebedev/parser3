@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 1311
+Content-Length: 1309
 
 1. Type: pcre.execute,
 Source: .,
@@ -8,7 +8,7 @@ Comment: UTF-8 validation failed during pcre_exec (***).
 Source: .,
 Comment: UTF-8 validation failed during pcre_exec (***).
 3. Type: pcre.execute,
-Source: ) - here,
+Source: - here,
 Comment: regular expression syntax error - ***
 4. Type: pcre.execute,
 Source: bug is ( - here,
