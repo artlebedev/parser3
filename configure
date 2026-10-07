@@ -6157,6 +6157,363 @@ printf "%s\n" "$dll_extension" >&6; }
 
 
 
+case "$host" in
+  *-freebsd4*)
+
+printf "%s\n" "#define FREEBSD4 /**/" >>confdefs.h
+
+  ;;
+  *-freebsd1*)
+
+printf "%s\n" "#define FREEBSD1X /**/" >>confdefs.h
+
+  ;;
+  *-sunos5.6* | *-solaris2.6*)
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lxnet" >&5
+printf %s "checking for main in -lxnet... " >&6; }
+if test ${ac_cv_lib_xnet_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lxnet  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_xnet_main=yes
+else case e in #(
+  e) ac_cv_lib_xnet_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xnet_main" >&5
+printf "%s\n" "$ac_cv_lib_xnet_main" >&6; }
+if test "x$ac_cv_lib_xnet_main" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBXNET 1" >>confdefs.h
+
+  LIBS="-lxnet $LIBS"
+
+fi
+
+  ;;
+  *-sunos5* | *-solaris2*)
+	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
+printf %s "checking for main in -lsocket... " >&6; }
+if test ${ac_cv_lib_socket_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsocket  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_socket_main=yes
+else case e in #(
+  e) ac_cv_lib_socket_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_main" >&5
+printf "%s\n" "$ac_cv_lib_socket_main" >&6; }
+if test "x$ac_cv_lib_socket_main" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBSOCKET 1" >>confdefs.h
+
+  LIBS="-lsocket $LIBS"
+
+fi
+
+	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lnsl" >&5
+printf %s "checking for main in -lnsl... " >&6; }
+if test ${ac_cv_lib_nsl_main+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnsl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main (void)
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_nsl_main=yes
+else case e in #(
+  e) ac_cv_lib_nsl_main=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_main" >&5
+printf "%s\n" "$ac_cv_lib_nsl_main" >&6; }
+if test "x$ac_cv_lib_nsl_main" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBNSL 1" >>confdefs.h
+
+  LIBS="-lnsl $LIBS"
+
+fi
+
+  ;;
+  *-nec-sysv4*)
+	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
+printf %s "checking for gethostbyname in -lnsl... " >&6; }
+if test ${ac_cv_lib_nsl_gethostbyname+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnsl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gethostbyname (void);
+int
+main (void)
+{
+return gethostbyname ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_nsl_gethostbyname=yes
+else case e in #(
+  e) ac_cv_lib_nsl_gethostbyname=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_gethostbyname" >&5
+printf "%s\n" "$ac_cv_lib_nsl_gethostbyname" >&6; }
+if test "x$ac_cv_lib_nsl_gethostbyname" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBNSL 1" >>confdefs.h
+
+  LIBS="-lnsl $LIBS"
+
+fi
+
+	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
+printf %s "checking for socket in -lsocket... " >&6; }
+if test ${ac_cv_lib_socket_socket+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsocket  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char socket (void);
+int
+main (void)
+{
+return socket ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_socket_socket=yes
+else case e in #(
+  e) ac_cv_lib_socket_socket=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
+printf "%s\n" "$ac_cv_lib_socket_socket" >&6; }
+if test "x$ac_cv_lib_socket_socket" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBSOCKET 1" >>confdefs.h
+
+  LIBS="-lsocket $LIBS"
+
+fi
+
+  ;;
+  *-cygwin*)
+
+printf "%s\n" "#define WIN32 /**/" >>confdefs.h
+
+  ;;
+esac
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for sin in -lm" >&5
+printf %s "checking for sin in -lm... " >&6; }
+if test ${ac_cv_lib_m_sin+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lm  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char sin (void);
+int
+main (void)
+{
+return sin ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_m_sin=yes
+else case e in #(
+  e) ac_cv_lib_m_sin=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_sin" >&5
+printf "%s\n" "$ac_cv_lib_m_sin" >&6; }
+if test "x$ac_cv_lib_m_sin" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBM 1" >>confdefs.h
+
+  LIBS="-lm $LIBS"
+
+fi
+
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for crypt in -lcrypt" >&5
+printf %s "checking for crypt in -lcrypt... " >&6; }
+if test ${ac_cv_lib_crypt_crypt+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) ac_check_lib_save_LIBS=$LIBS
+LIBS="-lcrypt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.
+   The 'extern "C"' is for builds by C++ compilers;
+   although this is not generally supported in C code supporting it here
+   has little cost and some practical benefit (sr 110532).  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char crypt (void);
+int
+main (void)
+{
+return crypt ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_crypt_crypt=yes
+else case e in #(
+  e) ac_cv_lib_crypt_crypt=no ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS ;;
+esac
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_crypt_crypt" >&5
+printf "%s\n" "$ac_cv_lib_crypt_crypt" >&6; }
+if test "x$ac_cv_lib_crypt_crypt" = xyes
+then :
+  printf "%s\n" "#define HAVE_LIBCRYPT 1" >>confdefs.h
+
+  LIBS="-lcrypt $LIBS"
+
+fi
+
+
+
 
 # Check whether --with-build-warnings was given.
 if test ${with_build_warnings+y}
@@ -6326,7 +6683,6 @@ if test -z "$GC_OK"; then
 printf %s "checking for libgc... " >&6; }
 	SAVE_LIBS=$LIBS
 	LIBS="$LIBS $GC_LIBS"
-
 
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6703,7 +7059,7 @@ printf "%s\n" "$as_me: WARNING: --with-amqp value was not specified, hoping link
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for librabbitmq" >&5
 printf %s "checking for librabbitmq... " >&6; }
     SAVE_LIBS=$LIBS
-    LIBS="$LIBS $AMQP_LIBS $AMQP_INCLUDES"
+    LIBS="$AMQP_LIBS $AMQP_INCLUDES $LIBS"
 
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -6788,7 +7144,7 @@ printf "%s\n" "$as_me: WARNING: --with-redis value was not specified, hoping lin
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for hiredis" >&5
 printf %s "checking for hiredis... " >&6; }
     SAVE_LIBS=$LIBS
-    LIBS="$LIBS $REDIS_LIBS $REDIS_INCLUDES"
+    LIBS="$REDIS_LIBS $REDIS_INCLUDES $LIBS"
 
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -22159,362 +22515,6 @@ ac_fn_c_check_header_compile "$LINENO" "netdb.h" "ac_cv_header_netdb_h" "$ac_inc
 if test "x$ac_cv_header_netdb_h" = xyes
 then :
   printf "%s\n" "#define HAVE_NETDB_H 1" >>confdefs.h
-
-fi
-
-
-
-case "$host" in
-  *-freebsd4*)
-
-printf "%s\n" "#define FREEBSD4 /**/" >>confdefs.h
-
-  ;;
-  *-freebsd1*)
-
-printf "%s\n" "#define FREEBSD1X /**/" >>confdefs.h
-
-  ;;
-  *-sunos5.6* | *-solaris2.6*)
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lxnet" >&5
-printf %s "checking for main in -lxnet... " >&6; }
-if test ${ac_cv_lib_xnet_main+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lxnet  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main (void)
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_xnet_main=yes
-else case e in #(
-  e) ac_cv_lib_xnet_main=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_xnet_main" >&5
-printf "%s\n" "$ac_cv_lib_xnet_main" >&6; }
-if test "x$ac_cv_lib_xnet_main" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBXNET 1" >>confdefs.h
-
-  LIBS="-lxnet $LIBS"
-
-fi
-
-  ;;
-  *-sunos5* | *-solaris2*)
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lsocket" >&5
-printf %s "checking for main in -lsocket... " >&6; }
-if test ${ac_cv_lib_socket_main+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main (void)
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_socket_main=yes
-else case e in #(
-  e) ac_cv_lib_socket_main=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_main" >&5
-printf "%s\n" "$ac_cv_lib_socket_main" >&6; }
-if test "x$ac_cv_lib_socket_main" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBSOCKET 1" >>confdefs.h
-
-  LIBS="-lsocket $LIBS"
-
-fi
-
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lnsl" >&5
-printf %s "checking for main in -lnsl... " >&6; }
-if test ${ac_cv_lib_nsl_main+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main (void)
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_nsl_main=yes
-else case e in #(
-  e) ac_cv_lib_nsl_main=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_main" >&5
-printf "%s\n" "$ac_cv_lib_nsl_main" >&6; }
-if test "x$ac_cv_lib_nsl_main" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBNSL 1" >>confdefs.h
-
-  LIBS="-lnsl $LIBS"
-
-fi
-
-  ;;
-  *-nec-sysv4*)
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for gethostbyname in -lnsl" >&5
-printf %s "checking for gethostbyname in -lnsl... " >&6; }
-if test ${ac_cv_lib_nsl_gethostbyname+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char gethostbyname (void);
-int
-main (void)
-{
-return gethostbyname ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_nsl_gethostbyname=yes
-else case e in #(
-  e) ac_cv_lib_nsl_gethostbyname=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_gethostbyname" >&5
-printf "%s\n" "$ac_cv_lib_nsl_gethostbyname" >&6; }
-if test "x$ac_cv_lib_nsl_gethostbyname" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBNSL 1" >>confdefs.h
-
-  LIBS="-lnsl $LIBS"
-
-fi
-
-	  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
-printf %s "checking for socket in -lsocket... " >&6; }
-if test ${ac_cv_lib_socket_socket+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char socket (void);
-int
-main (void)
-{
-return socket ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_socket_socket=yes
-else case e in #(
-  e) ac_cv_lib_socket_socket=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
-printf "%s\n" "$ac_cv_lib_socket_socket" >&6; }
-if test "x$ac_cv_lib_socket_socket" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBSOCKET 1" >>confdefs.h
-
-  LIBS="-lsocket $LIBS"
-
-fi
-
-  ;;
-  *-cygwin*)
-
-printf "%s\n" "#define WIN32 /**/" >>confdefs.h
-
-  ;;
-esac
-
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for sin in -lm" >&5
-printf %s "checking for sin in -lm... " >&6; }
-if test ${ac_cv_lib_m_sin+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lm  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char sin (void);
-int
-main (void)
-{
-return sin ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_m_sin=yes
-else case e in #(
-  e) ac_cv_lib_m_sin=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_sin" >&5
-printf "%s\n" "$ac_cv_lib_m_sin" >&6; }
-if test "x$ac_cv_lib_m_sin" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBM 1" >>confdefs.h
-
-  LIBS="-lm $LIBS"
-
-fi
-
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for crypt in -lcrypt" >&5
-printf %s "checking for crypt in -lcrypt... " >&6; }
-if test ${ac_cv_lib_crypt_crypt+y}
-then :
-  printf %s "(cached) " >&6
-else case e in #(
-  e) ac_check_lib_save_LIBS=$LIBS
-LIBS="-lcrypt  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.
-   The 'extern "C"' is for builds by C++ compilers;
-   although this is not generally supported in C code supporting it here
-   has little cost and some practical benefit (sr 110532).  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char crypt (void);
-int
-main (void)
-{
-return crypt ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"
-then :
-  ac_cv_lib_crypt_crypt=yes
-else case e in #(
-  e) ac_cv_lib_crypt_crypt=no ;;
-esac
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS ;;
-esac
-fi
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_crypt_crypt" >&5
-printf "%s\n" "$ac_cv_lib_crypt_crypt" >&6; }
-if test "x$ac_cv_lib_crypt_crypt" = xyes
-then :
-  printf "%s\n" "#define HAVE_LIBCRYPT 1" >>confdefs.h
-
-  LIBS="-lcrypt $LIBS"
 
 fi
 
