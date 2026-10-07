@@ -59,6 +59,34 @@ AC_MSG_RESULT($dll_extension)
 AC_SUBST(dll_extension)
 
 
+dnl Checks for libraries
+case "$host" in
+  *-freebsd4*)
+	  AC_DEFINE(FREEBSD4,,FreeBSD4.X target platform)
+  ;;
+  *-freebsd1*)
+	  AC_DEFINE(FREEBSD1X,,FreeBSD1X.X target platform)
+  ;;
+  *-sunos5.6* | *-solaris2.6*)
+	  AC_CHECK_LIB(xnet, main)
+  ;;
+  *-sunos5* | *-solaris2*)
+	  AC_CHECK_LIB(socket, main)
+	  AC_CHECK_LIB(nsl, main)
+  ;;
+  *-nec-sysv4*)
+	  AC_CHECK_LIB(nsl, gethostbyname)
+	  AC_CHECK_LIB(socket, socket)
+  ;;
+  *-cygwin*)
+	  AC_DEFINE(WIN32,,Windows32 target platform)
+  ;;
+esac
+
+AC_CHECK_LIB(m, sin)
+AC_CHECK_LIB(crypt, crypt)
+
+
 dnl Misc arguments
 AC_ARG_WITH(build-warnings, [  --with-build-warnings   to enable build-time compiler warnings if gcc is used],
 	AC_MSG_WARN(enabling compiler warnings)
@@ -364,7 +392,7 @@ AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
 
     AC_MSG_CHECKING(for librabbitmq)
     SAVE_LIBS=$LIBS
-    LIBS="$LIBS $AMQP_LIBS $AMQP_INCLUDES"
+    LIBS="$AMQP_LIBS $AMQP_INCLUDES $LIBS"
     PA_TRY_LINK([ #include <amqp.h> ],[ amqp_connection_state_t c = 0; ],
         AC_MSG_RESULT(yes)
     ,
@@ -409,7 +437,7 @@ AC_ARG_WITH(redis,[  --with-redis=DIR        DIR is the directory where
 
     AC_MSG_CHECKING(for hiredis)
     SAVE_LIBS=$LIBS
-    LIBS="$LIBS $REDIS_LIBS $REDIS_INCLUDES"
+    LIBS="$REDIS_LIBS $REDIS_INCLUDES $LIBS"
     PA_TRY_LINK([ #include <hiredis/hiredis.h> ],[ redisContext *c = redisConnect("", 0); ],
         AC_MSG_RESULT(yes)
     ,
@@ -496,34 +524,6 @@ AC_CHECK_HEADERS(stdio.h sys/types.h sys/stat.h stdlib.h stddef.h memory.h strin
 AC_CHECK_HEADERS(time.h sys/time.h assert.h limits.h ctype.h math.h process.h stdarg.h setjmp.h signal.h pthread.h)
 AC_CHECK_HEADERS(errno.h dirent.h fcntl.h io.h sys/file.h sys/locking.h sys/select.h sys/resource.h sys/wait.h)
 AC_CHECK_HEADERS(sys/socket.h netinet/in.h arpa/inet.h netdb.h)
-
-
-dnl Checks for libraries
-case "$host" in
-  *-freebsd4*)
-	  AC_DEFINE(FREEBSD4,,FreeBSD4.X target platform)
-  ;;
-  *-freebsd1*)
-	  AC_DEFINE(FREEBSD1X,,FreeBSD1X.X target platform)
-  ;;
-  *-sunos5.6* | *-solaris2.6*)
-	  AC_CHECK_LIB(xnet, main)
-  ;;
-  *-sunos5* | *-solaris2*)
-	  AC_CHECK_LIB(socket, main)
-	  AC_CHECK_LIB(nsl, main)
-  ;;
-  *-nec-sysv4*)
-	  AC_CHECK_LIB(nsl, gethostbyname)
-	  AC_CHECK_LIB(socket, socket)
-  ;;
-  *-cygwin*)
-	  AC_DEFINE(WIN32,,Windows32 target platform)
-  ;;
-esac
-
-AC_CHECK_LIB(m, sin)
-AC_CHECK_LIB(crypt, crypt)
 
 
 dnl Checks for functions
