@@ -14,11 +14,13 @@
 #include "pa_vbool.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.3 2026/10/06 23:57:02 moko Exp $" IDENT_PA_VREDIS_H;
+volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.4 2026/10/07 12:07:48 moko Exp $" IDENT_PA_VREDIS_H;
 
 // defines
 
 #define DEFAULT_TIMEOUT 2 // seconds
+// ^r.file-get[key], ^r.file-call[GET;key]: the strings of the reply are files
+#define FILE_PREFIX "file-"
 
 class MRedis: public Methoded {
 public: // VStateless_class
@@ -135,14 +137,14 @@ static void _release(Request& r, MethodParams&) {
 	}
 }
 
-static Value* reply_value(redisReply& reply, bool binary, const String& command) {
+static Value* reply_value(redisReply& reply, bool as_file, const String& command) {
 	switch(reply.type) {
 		case REDIS_REPLY_STRING:
 		case REDIS_REPLY_STATUS:
 		case REDIS_REPLY_VERB:
 		case REDIS_REPLY_BIGNUM: {
 			char* data=pa_strdup(reply.str, reply.len);
-			if(binary) {
+			if(as_file) {
 				VFile& file=*new VFile;
 				file.set_binary(true/*tainted*/, data, reply.len);
 				return &file;
@@ -166,13 +168,13 @@ static Value* reply_value(redisReply& reply, bool binary, const String& command)
 			VArray& result=*new VArray(reply.elements);
 			ArrayValue& array=result.array();
 			for(size_t i=0; i<reply.elements; i++)
-				array+=reply_value(*reply.element[i], binary, command);
+				array+=reply_value(*reply.element[i], as_file, command);
 			return &result;
 		}
 		case REDIS_REPLY_MAP: {
 			VHash& result=*new VHash;
 			for(size_t i=0; i+1<reply.elements; i+=2)
-				result.hash().put(reply_value(*reply.element[i], false, command)->as_string(), reply_value(*reply.element[i+1], binary, command));
+				result.hash().put(reply_value(*reply.element[i], false, command)->as_string(), reply_value(*reply.element[i+1], as_file, command));
 			return &result;
 		}
 		case REDIS_REPLY_ERROR:
@@ -202,7 +204,7 @@ static void add_argument(Array<const char*>& argv, Array<size_t>& lengths, Value
 }
 
 // arguments start at params[first]: strings, numbers, files, not nested arrays and hashes as key value pairs
-static void redis_command(Request& r, MethodParams& params, const String& command, size_t first, bool binary) {
+static void redis_command(Request& r, MethodParams& params, const String& command, size_t first, bool as_file) {
 	VRedis& self=GET_SELF(r, VRedis);
 
 	Array<const char*> argv;
@@ -231,7 +233,7 @@ static void redis_command(Request& r, MethodParams& params, const String& comman
 	redisReply* reply=self.command((int)argv.count(), argv.ptr(0), lengths.ptr(0));
 	Temp_redis_reply temp_reply(reply);
 
-	r.write(*reply_value(*reply, binary, command));
+	r.write(*reply_value(*reply, as_file, command));
 }
 
 // ^r.call[command;arguments...]
@@ -239,14 +241,21 @@ static void _call(Request& r, MethodParams& params) {
 	redis_command(r, params, params.as_string(0, "command must be string"), 1, false);
 }
 
-// ^r.call_binary[command;arguments...]: the strings of the reply are files
-static void _call_binary(Request& r, MethodParams& params) {
+// ^r.file-call[command;arguments...]: the strings of the reply are files
+static void _file_call(Request& r, MethodParams& params) {
 	redis_command(r, params, params.as_string(0, "command must be string"), 1, true);
 }
 
 // ^r.command_name[arguments...]: the command is the name of the method called, see VRedis::get_element4call
 void redis_command_method(Request& r, MethodParams& params) {
-	redis_command(r, params, *r.get_method_frame()->method.name, 0, false);
+	const String& name=*r.get_method_frame()->method.name;
+	if(name.starts_with(FILE_PREFIX)) {
+		size_t prefix_length=strlen(FILE_PREFIX);
+		if(name.length()==prefix_length)
+			throw Exception(PARSER_RUNTIME, &name, "command name expected after " FILE_PREFIX);
+		redis_command(r, params, name.mid(prefix_length, name.length()), 0, true);
+	} else
+		redis_command(r, params, name, 0, false);
 }
 
 #else
@@ -265,8 +274,8 @@ MRedis::MRedis(): Methoded("redis") {
 	// ^r.call[command;arguments...]
 	add_native_method("call", Method::CT_DYNAMIC, _call, 1, MAX_REDIS_COMMAND_PARAMS);
 
-	// ^r.call_binary[command;arguments...]
-	add_native_method("call_binary", Method::CT_DYNAMIC, _call_binary, 1, MAX_REDIS_COMMAND_PARAMS);
+	// ^r.file-call[command;arguments...]
+	add_native_method(FILE_PREFIX "call", Method::CT_DYNAMIC, _file_call, 1, MAX_REDIS_COMMAND_PARAMS);
 
 	// ^r.release[]
 	add_native_method("release", Method::CT_DYNAMIC, _release, 0, 0);
