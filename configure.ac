@@ -400,8 +400,8 @@ AC_ARG_WITH(redis,[  --with-redis=DIR        DIR is the directory where
         AC_MSG_WARN([--with-redis value was not specified, hoping linker would find it])
     else
         REDIS_INCLUDES="-I$REDIS/include"
-        if test -f $REDIS/lib/libhiredis.la; then
-            REDIS_LIBS="$REDIS/lib/libhiredis.la"
+        if test -f $REDIS/lib/libhiredis.a; then
+            REDIS_LIBS="$REDIS/lib/libhiredis.a"
         else
             REDIS_LIBS="-L$REDIS/lib -lhiredis"
         fi
