@@ -9,7 +9,7 @@ $report.[tainted backslash][
 	$.[save, the directory tainted][ ^outcome{ $s[text] ^s.save[^taint[460_dir]\b.txt] ^if(-f '460_dir/b.txt'){460_dir/b.txt}{NO FILE} }]
 	$.[-f][ ^if(-f ^taint[460_dir\a.txt]){yes}{NO}]
 	$.[load][ ^outcome{ $f[^file::load[text;^taint[460_dir\a.txt]]] $f.text }]
-	$.[list][ ^outcome{ $l[^file:list[^taint[460_dir]]] ^l.menu{$l.name}[,] }]
+	$.[list][ ^outcome{ $l[^file:list[^taint[460_dir]]] ^l.sort{$l.name} ^l.menu{$l.name}[,] }]
 	$.[delete removes the directory][ ^outcome{ ^file:delete[^taint[460_dir\a.txt]] ^file:delete[^taint[460_dir\b.txt]] ^if(-d '460_dir'){LEFT}{removed} }]
 	$.[the slash keeps the language of the backslash: json escapes it, as it does with any tainted one][ ^apply-taint[json][^file:fullpath[^taint[<\script>.gif]]]]
 	$.[the name of a file is cut at the last separator][ ^outcome{ $f[^file::create[text;^taint[C:\a\b.txt];x]] $f.name }]
