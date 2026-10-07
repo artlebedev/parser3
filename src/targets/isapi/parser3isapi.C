@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.139 2026/09/30 16:44:20 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.140 2026/10/07 19:37:27 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -286,7 +286,7 @@ static void parser_done() {
 /// ISAPI //
 BOOL WINAPI GetExtensionVersion(HSE_VERSION_INFO *pVer) {
 	pVer->dwExtensionVersion = HSE_VERSION;
-	pa_strncpy(pVer->lpszExtensionDesc, "Parser " PARSER_VERSION, HSE_MAX_EXT_DLL_NAME_LEN);
+	pa_strncpy(pVer->lpszExtensionDesc, "Parser " PARSER_VERSION_WITH_FEATURES, HSE_MAX_EXT_DLL_NAME_LEN);
 	return parser_init();
 }
 // dwFlags & HSE_TERM_MUST_UNLOAD means we can't return false

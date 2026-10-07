@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.375 2026/10/05 17:50:18 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.376 2026/10/07 19:37:27 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -462,7 +462,7 @@ static void real_parser_handler(bool cgi) {
 	const char* request_method=getenv("REQUEST_METHOD");
 
 	if(!filespec_to_process){
-		SAPI::send_error(*sapi_info, "Parser/" PARSER_VERSION);
+		SAPI::send_error(*sapi_info, "Parser/" PARSER_VERSION_WITH_FEATURES);
 		exit(1);
 	}
 
@@ -602,7 +602,7 @@ static void usage(const char* message=NULL) {
 		"    -l log_file     Use this log file (/path/to/parser3.log)\n"
 		"    -p [host:]port  Start web server on this port\n"
 		"    -h              Display usage information (this message)\n",
-		PARSER_VERSION,
+		PARSER_VERSION_WITH_FEATURES,
 		parser3_filespec ? parser3_filespec : "parser3" );
 	exit(EINVAL);
 }
