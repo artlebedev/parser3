@@ -376,6 +376,12 @@ AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
         fi
     )
     LIBS=$SAVE_LIBS
+
+    SAVE_CPPFLAGS=$CPPFLAGS
+    CPPFLAGS="$CPPFLAGS $AMQP_INCLUDES"
+    AC_CHECK_HEADER([amqp_ssl_socket.h],,[AC_DEFINE([WITHOUT_AMQP_SSL],,[librabbitmq without SSL support])])
+    CPPFLAGS=$SAVE_CPPFLAGS
+
     AC_DEFINE(WITH_AMQP,,has amqp)
 ])
 
