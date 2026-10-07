@@ -403,6 +403,9 @@
 /* Windows32 target platform */
 #undef WIN32
 
+/* librabbitmq without SSL support */
+#undef WITHOUT_AMQP_SSL
+
 /* has amqp */
 #undef WITH_AMQP
 
