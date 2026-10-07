@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.45 2026/10/07 17:10:16 moko Exp $
+# $Id: buildall,v 1.46 2026/10/07 22:03:35 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -259,8 +259,7 @@ glib_ldflags=""
 gmime_cflags=""
 gmime_ldflags="-L$project_dir/gmime/lib/"
 
-os=`uname`
-if test "$os" = "FreeBSD"; then
+if test "$(uname)" = "FreeBSD"; then
     gmime_cflags="CFLAGS=-I/usr/local/include CXXFLAGS=-I/usr/local/include"
     glib_ldflags="LDFLAGS=-L/usr/local/lib"
     gmime_ldflags="$gmime_ldflags -L/usr/local/lib"
@@ -323,7 +322,9 @@ if test "$build_redis" = "yes" -a ! -f "$project_dir/lib/redis/lib/libhiredis.a"
     lib="hiredis-1.4.1"
     prepare_gz $lib.tar.gz https://github.com/redis/hiredis/archive/refs/tags/ v1.4.1.tar.gz
     echo "Building $lib..."
-    make PREFIX="$project_dir/lib/redis" install
+    gnu_make=make
+    test "$(uname)" = "FreeBSD" && gnu_make="gmake CC=cc"
+    $gnu_make PREFIX="$project_dir/lib/redis" install
     cleanup
 fi
 
