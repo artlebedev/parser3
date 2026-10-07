@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.44 2026/10/06 23:38:05 moko Exp $
+# $Id: buildall,v 1.45 2026/10/07 17:10:16 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -16,7 +16,7 @@ build_stripped=""
 direct_download=""
 
 options="--with-included-ltdl"
-options="$options --with-gc=$project_dir/gc/lib"
+options="$options --with-gc=$project_dir/lib/gc/lib"
 #options="$options --disable-stringstream"
 
 printf "Building statically linked parser3"
@@ -44,9 +44,19 @@ for PARAM in "$@"; do
 	    printf ", with mail receiving"
 	    options="$options --with-mailreceive"
 	    ;;
+	"--with-amqp")
+	    printf ", with amqp"
+	    options="$options --with-amqp=$project_dir/lib/amqp"
+	    build_amqp="yes"
+	    ;;
 	"--with-system-amqp")
 	    printf ", with amqp"
 	    options="$options --with-amqp"
+	    ;;
+	"--with-redis")
+	    printf ", with redis"
+	    options="$options --with-redis=$project_dir/lib/redis"
+	    build_redis="yes"
 	    ;;
 	"--with-system-redis")
 	    printf ", with redis"
@@ -75,15 +85,10 @@ if test "$build_xml" = "yes"; then
     options="$options --with-xml=$project_dir/gnome"
 fi
 
-bits=`getconf LONG_BIT`
-if test "$bits" = "64" -o "$build_apache" = "yes"; then
-    cflags="$cflags --with-pic"
-else
-    cflags="$cflags --without-pic"
-fi
+cflags="$cflags --with-pic"
 
 if test ! "$build_apache" = "yes"; then
-    cflags="$cflags --disable-shared"
+    cflags="$cflags --disable-shared" # .so is needed only for parser3 Apache module, not bundled libs
 fi
 
 download=`which fetch 2>/dev/null`
@@ -101,7 +106,10 @@ prepare () {
     if test ! -f "$1"; then
 	if test "$direct_download" = "yes"; then
 	    echo "Downloading $lib from $2..."
-	    $download $2$1
+	    $download $2$3
+	    if test "$3" != "$1"; then
+		mv "$3" "$1"
+	    fi
 	else
 	    echo "Downloading $lib (master at $2)..."
 	    $download https://www.parser.ru/off-line/download/libs/$1
@@ -113,13 +121,13 @@ prepare () {
 }
 
 prepare_gz () {
-    prepare $1 $2
+    prepare $1 $2 ${3:-$1}
     gunzip -c $1 | tar xf - >/dev/null
     cd $lib
 }
 
 prepare_xz () {
-    prepare $1 $2
+    prepare $1 $2 ${3:-$1}
     xzcat $1 | tar xf - >/dev/null
     cd $lib
 }
@@ -134,18 +142,18 @@ cleanup () {
 echo
 mkdir src >/dev/null 2>&1
 
-if test ! -f "$project_dir/gc/lib/libgc.a"; then
-    lib="libatomic_ops-7.6.2"
-    prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
+if test ! -f "$project_dir/lib/gc/lib/libgc.a"; then
+    lib="libatomic_ops-7.10.0"
+    prepare_gz ${lib}.tar.gz https://github.com/bdwgc/libatomic_ops/releases/download/v7.10.0/
 
-    lib="gc-8.0.4"
-    prepare_gz ${lib}.tar.gz http://www.hboehm.info/gc/gc_source/
+    lib="gc-8.2.12"
+    prepare_gz ${lib}.tar.gz https://github.com/bdwgc/bdwgc/releases/download/v8.2.12/
 
-    mv ../libatomic_ops-7.6.2 libatomic_ops
+    mv ../libatomic_ops-7.10.0 libatomic_ops
 
     echo "Configuring $lib..."
     CPPFLAGS="-DUSE_MMAP -DDONT_ADD_BYTE_AT_END" \
-    ./configure --prefix=$project_dir/gc \
+    ./configure --prefix=$project_dir/lib/gc \
 	--disable-shared \
 	--disable-parallel-mark \
 	--silent $cflags
@@ -156,13 +164,13 @@ fi
 
 if test "$build_pcre2" = "yes"; then
 
-options="$options --with-pcre=$project_dir/pcre2"
+options="$options --with-pcre=$project_dir/lib/pcre2"
 
-if test ! -f "$project_dir/pcre2/lib/libpcre2-8.a"; then
-    lib="pcre2-10.44"
-    prepare_gz $lib.tar.gz https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.44/
+if test ! -f "$project_dir/lib/pcre2/lib/libpcre2-8.a"; then
+    lib="pcre2-10.49"
+    prepare_gz $lib.tar.gz https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.49/
     echo "Configuring $lib..."
-    ./configure --prefix="$project_dir/pcre2" \
+    ./configure --prefix="$project_dir/lib/pcre2" \
 	--enable-jit \
 	--with-match-limit-depth=10000 \
 	--disable-shared \
@@ -174,13 +182,13 @@ fi
 
 else
 
-options="$options --with-pcre=$project_dir/pcre"
+options="$options --with-pcre=$project_dir/lib/pcre"
 
-if test ! -f "$project_dir/pcre/lib/libpcre.a"; then
+if test ! -f "$project_dir/lib/pcre/lib/libpcre.a"; then
     lib="pcre-8.45"
     prepare_gz $lib.tar.gz https://sourceforge.net/projects/pcre/files/pcre/8.45/
     echo "Configuring $lib..."
-    ./configure --prefix="$project_dir/pcre" \
+    ./configure --prefix="$project_dir/lib/pcre" \
 	--with-match-limit-recursion=10000 \
 	--enable-utf8 \
 	--enable-unicode-properties \
@@ -292,6 +300,31 @@ if test ! -f "$project_dir/gmime/lib/libgmime-2.4.a"; then
     cleanup
 fi
 
+fi
+
+
+if test "$build_amqp" = "yes" -a ! -f "$project_dir/lib/amqp/lib/librabbitmq.a"; then
+    lib="rabbitmq-c-0.17.0"
+    prepare_gz $lib.tar.gz https://github.com/alanxz/rabbitmq-c/archive/refs/tags/ v0.17.0.tar.gz
+    echo "Configuring $lib..."
+    cmake -S . -B build \
+	-DCMAKE_INSTALL_PREFIX="$project_dir/lib/amqp" \
+	-DCMAKE_INSTALL_LIBDIR=lib \
+	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+	-DBUILD_SHARED_LIBS=OFF \
+	-DBUILD_TESTING=OFF \
+	-DENABLE_SSL_SUPPORT=OFF
+    echo "Building $lib..."
+    cmake --build build --target install
+    cleanup
+fi
+
+if test "$build_redis" = "yes" -a ! -f "$project_dir/lib/redis/lib/libhiredis.a"; then
+    lib="hiredis-1.4.1"
+    prepare_gz $lib.tar.gz https://github.com/redis/hiredis/archive/refs/tags/ v1.4.1.tar.gz
+    echo "Building $lib..."
+    make PREFIX="$project_dir/lib/redis" install
+    cleanup
 fi
 
 cd $parser3_dir
