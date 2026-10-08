@@ -7100,11 +7100,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
 if test "x$ac_cv_header_amqp_ssl_socket_h" = xyes
 then :
 
-else case e in #(
-  e)
-printf "%s\n" "#define WITHOUT_AMQP_SSL /**/" >>confdefs.h
- ;;
-esac
+printf "%s\n" "#define WITH_AMQP_SSL /**/" >>confdefs.h
+
 fi
 
     CPPFLAGS=$SAVE_CPPFLAGS
@@ -7132,6 +7129,19 @@ then :
         REDIS_LIBS="-lhiredis"
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: --with-redis value was not specified, hoping linker would find it" >&5
 printf "%s\n" "$as_me: WARNING: --with-redis value was not specified, hoping linker would find it" >&2;}
+
+                ac_fn_c_check_header_compile "$LINENO" "hiredis/hiredis_ssl.h" "ac_cv_header_hiredis_hiredis_ssl_h" "#include <hiredis/hiredis.h>
+"
+if test "x$ac_cv_header_hiredis_hiredis_ssl_h" = xyes
+then :
+
+
+printf "%s\n" "#define WITH_REDIS_SSL /**/" >>confdefs.h
+
+            REDIS_LIBS="-lhiredis_ssl $REDIS_LIBS"
+
+fi
+
     else
         REDIS_INCLUDES="-I$REDIS/include"
         if test -f $REDIS/lib/libhiredis.a; then
