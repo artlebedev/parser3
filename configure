@@ -7047,6 +7047,15 @@ then :
         AMQP_LIBS="-lrabbitmq"
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: --with-amqp value was not specified, hoping linker would find it" >&5
 printf "%s\n" "$as_me: WARNING: --with-amqp value was not specified, hoping linker would find it" >&2;}
+
+                ac_fn_c_check_header_compile "$LINENO" "amqp_ssl_socket.h" "ac_cv_header_amqp_ssl_socket_h" "$ac_includes_default"
+if test "x$ac_cv_header_amqp_ssl_socket_h" = xyes
+then :
+
+printf "%s\n" "#define WITH_AMQP_SSL /**/" >>confdefs.h
+
+fi
+
     else
         AMQP_INCLUDES="-I$AMQP/include"
         if test -f $AMQP/lib/librabbitmq.la; then
@@ -7093,19 +7102,6 @@ rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
 
     LIBS=$SAVE_LIBS
-
-    SAVE_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $AMQP_INCLUDES"
-    ac_fn_c_check_header_compile "$LINENO" "amqp_ssl_socket.h" "ac_cv_header_amqp_ssl_socket_h" "$ac_includes_default"
-if test "x$ac_cv_header_amqp_ssl_socket_h" = xyes
-then :
-
-printf "%s\n" "#define WITH_AMQP_SSL /**/" >>confdefs.h
-
-fi
-
-    CPPFLAGS=$SAVE_CPPFLAGS
-
 
 printf "%s\n" "#define WITH_AMQP /**/" >>confdefs.h
 
