@@ -381,6 +381,9 @@ AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
         AMQP_INCLUDES=""
         AMQP_LIBS="-lrabbitmq"
         AC_MSG_WARN([--with-amqp value was not specified, hoping linker would find it])
+
+        dnl SSL with the system librabbitmq only: it brings OpenSSL as its dependency
+        AC_CHECK_HEADER([amqp_ssl_socket.h],[AC_DEFINE([WITH_AMQP_SSL],,[librabbitmq with SSL support])])
     else
         AMQP_INCLUDES="-I$AMQP/include"
         if test -f $AMQP/lib/librabbitmq.la; then
@@ -404,12 +407,6 @@ AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
         fi
     )
     LIBS=$SAVE_LIBS
-
-    SAVE_CPPFLAGS=$CPPFLAGS
-    CPPFLAGS="$CPPFLAGS $AMQP_INCLUDES"
-    AC_CHECK_HEADER([amqp_ssl_socket.h],[AC_DEFINE([WITH_AMQP_SSL],,[librabbitmq with SSL support])])
-    CPPFLAGS=$SAVE_CPPFLAGS
-
     AC_DEFINE(WITH_AMQP,,has amqp)
 ])
 
@@ -427,7 +424,7 @@ AC_ARG_WITH(redis,[  --with-redis=DIR        DIR is the directory where
         REDIS_LIBS="-lhiredis"
         AC_MSG_WARN([--with-redis value was not specified, hoping linker would find it])
 
-        dnl SSL is the separate hiredis_ssl library, the system one only: it brings OpenSSL as its dependency
+        dnl SSL with the system hiredis_ssl only: it brings OpenSSL as its dependency
         AC_CHECK_HEADER([hiredis/hiredis_ssl.h],[
             AC_DEFINE(WITH_REDIS_SSL,,hiredis with SSL support)
             REDIS_LIBS="-lhiredis_ssl $REDIS_LIBS"
