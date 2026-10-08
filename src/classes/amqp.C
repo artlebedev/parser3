@@ -21,13 +21,13 @@
 #include <amqp_tcp_socket.h>
 #include <amqp_framing.h>
 
-#ifndef WITHOUT_AMQP_SSL
+#ifdef WITH_AMQP_SSL
 #include <amqp_ssl_socket.h>
 #endif
 
 #endif
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.25 2026/10/06 23:57:02 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.26 2026/10/08 18:56:00 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -98,7 +98,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	int heartbeat_sec = 30;
 	int reconnect_interval_sec = 0;
 	bool tls_specified = false;
-#ifndef WITHOUT_AMQP_SSL
+#ifdef WITH_AMQP_SSL
 	const char* tls_ca = 0;
 	const char* tls_cert = 0;
 	const char* tls_key = 0;
@@ -126,7 +126,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 			} else if(key=="auto_reconnect"){
 				reconnect_interval_sec=r.process(*value).as_int();
 			} else if(key=="tls"){
-#ifndef WITHOUT_AMQP_SSL
+#ifdef WITH_AMQP_SSL
 				tls_specified = true;
 				if(HashStringValue* tls_options=value->get_hash()){
 					for(HashStringValue::Iterator t(*tls_options); t; t.next()){
@@ -155,7 +155,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	amqp_connection_state_t conn = amqp_new_connection();
 	amqp_socket_t* socket = 0;
 
-#ifndef WITHOUT_AMQP_SSL
+#ifdef WITH_AMQP_SSL
 	if(tls_specified) {
 		socket = amqp_ssl_socket_new(conn);
 		if(!socket)

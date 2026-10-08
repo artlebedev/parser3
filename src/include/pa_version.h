@@ -19,16 +19,20 @@
 #	define PA_FEATURE_XML ""
 #endif
 #ifdef WITH_AMQP
-#	ifdef WITHOUT_AMQP_SSL
-#		define PA_FEATURE_AMQP " amqp"
-#	else
+#	ifdef WITH_AMQP_SSL
 #		define PA_FEATURE_AMQP " amqp+ssl"
+#	else
+#		define PA_FEATURE_AMQP " amqp"
 #	endif
 #else
 #	define PA_FEATURE_AMQP ""
 #endif
 #ifdef WITH_REDIS
-#	define PA_FEATURE_REDIS " redis"
+#	ifdef WITH_REDIS_SSL
+#		define PA_FEATURE_REDIS " redis+ssl"
+#	else
+#		define PA_FEATURE_REDIS " redis"
+#	endif
 #else
 #	define PA_FEATURE_REDIS ""
 #endif
