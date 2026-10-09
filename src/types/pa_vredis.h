@@ -8,7 +8,7 @@
 #ifndef PA_VREDIS_H
 #define PA_VREDIS_H
 
-#define IDENT_PA_VREDIS_H "$Id: pa_vredis.h,v 1.1 2026/10/06 23:34:31 moko Exp $"
+#define IDENT_PA_VREDIS_H "$Id: pa_vredis.h,v 1.2 2026/10/09 00:30:40 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -17,6 +17,9 @@
 
 #ifdef WITH_REDIS
 #include <hiredis/hiredis.h>
+#ifdef WITH_REDIS_SSL
+#include <hiredis/hiredis_ssl.h>
+#endif
 #endif
 
 // defines
@@ -71,17 +74,22 @@ public:
 
 public: // usage
 
-	VRedis(): fcontext(0), fuser(0), fpassword(0), fdb(0), fprotocol(3), fauto_reconnect(0) {}
+	VRedis(): fcontext(0), fssl_context(0), fuser(0), fpassword(0), fdb(0), fprotocol(3), fauto_reconnect(0) {}
 
 	redisContext* fcontext;
+	struct redisSSLContext* fssl_context; // with $.tls only
 	const char* fuser;
 	const char* fpassword;
 	int fdb;
 	int fprotocol;
 	int fauto_reconnect; // 0 = disabled, N>0 = sleeps N sec before reconnecting
 
-	/// HELLO or AUTH, then SELECT: on open and on reconnect
+	/// TLS, HELLO or AUTH, then SELECT: on open and on reconnect
 	void handshake() {
+#ifdef WITH_REDIS_SSL
+		if(fssl_context && redisInitiateSSLWithContext(fcontext, fssl_context)!=REDIS_OK)
+			throw Exception("redis", 0, "%s", fcontext->errstr);
+#endif
 		if(fprotocol==3) {
 			const char* argv[5]={"HELLO", "3"};
 			int argc=2;
@@ -103,6 +111,20 @@ public: // usage
 			const char* argv[2]={"SELECT", pa_itoa(fdb)};
 			void_command(2, argv);
 		}
+	}
+
+	/// frees the connection and its TLS context
+	void release() {
+		if(fcontext) {
+			redisFree(fcontext);
+			fcontext=0;
+		}
+#ifdef WITH_REDIS_SSL
+		if(fssl_context) {
+			redisFreeSSLContext(fssl_context);
+			fssl_context=0;
+		}
+#endif
 	}
 
 	/// sends the command and returns the reply, which the caller frees
