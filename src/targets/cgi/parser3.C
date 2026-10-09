@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.376 2026/10/07 19:37:27 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.377 2026/10/09 21:38:52 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -533,14 +533,15 @@ static void real_parser_handler(bool cgi) {
 	pa_log("request_info: method=%s, uri=%s, q=%s, dr=%s, pt=%s", request_info.method, request_info.uri, request_info.query_string, request_info.document_root, request_info.path_translated);
 #endif
 
-	// prepare to process request
-	Request r(*sapi_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 	{
+		// prepare to process request
+		Request r(*sapi_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 		// initing ::request ptr for signal handlers
 		RequestController rc(&r);
 		// process the request
 		r.core(locate_config(config_filespec, parser3_filespec), strcasecmp(request_info.method, "HEAD")==0);
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
+		// then the request is destroyed, before the libraries are unloaded: its pool cleanups call them (memcached)
 	}
 
 	// finalize libraries
