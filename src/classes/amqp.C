@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.29 2026/10/09 22:05:41 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.30 2026/10/09 22:13:18 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -193,10 +193,8 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	amqp_channel_t channel = 1;
 	amqp_channel_open(conn, channel);
 	amqp_rpc_reply_t ropen = amqp_get_rpc_reply(conn);
-	if(ropen.reply_type != AMQP_RESPONSE_NORMAL){
-		amqp_connection_close(conn, AMQP_REPLY_SUCCESS);
+	if(ropen.reply_type != AMQP_RESPONSE_NORMAL) // no amqp_connection_close: its reply could overwrite the error text in ropen
 		check(self, ropen, "open channel ");
-	}
 
 	if(self.fconnection)
 		amqp_destroy_connection(self.fconnection);
