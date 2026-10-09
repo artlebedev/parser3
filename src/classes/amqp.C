@@ -15,11 +15,11 @@
 #include "pa_vbool.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.27 2026/10/09 18:32:15 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.28 2026/10/09 21:10:38 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&) { return new VAmqp(); }
+	Value* create_new_value(Pool& apool) { return new VAmqp(apool); }
 public:
 	MAmqp();
 };
@@ -443,16 +443,7 @@ static void _publish(Request& r, MethodParams& params) {
 }
 
 static void _release(Request& r, MethodParams&) {
-	VAmqp& self=GET_SELF(r, VAmqp);
-	if(self.fconnection){
-		amqp_connection_state_t conn=self.fconnection;
-		amqp_channel_close(conn, self.fchannel, AMQP_REPLY_SUCCESS);
-		amqp_connection_close(conn, AMQP_REPLY_SUCCESS);
-		amqp_destroy_connection(conn);
-		self.fconnection=0;
-		self.fchannel=0;
-		self.fstate=VAmqp::CONNECTION_DEAD;
-	}
+	GET_SELF(r, VAmqp).release();
 }
 
 // to allow both [] and () call syntax

@@ -14,7 +14,7 @@
 #include "pa_vbool.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.6 2026/10/09 00:30:40 moko Exp $" IDENT_PA_VREDIS_H;
+volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.7 2026/10/09 21:10:38 moko Exp $" IDENT_PA_VREDIS_H;
 
 // defines
 
@@ -24,7 +24,7 @@ volatile const char * IDENT_REDIS_C="$Id: redis.C,v 1.6 2026/10/09 00:30:40 moko
 
 class MRedis: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&) { return new VRedis(); }
+	Value* create_new_value(Pool& apool) { return new VRedis(apool); }
 public:
 	MRedis();
 };

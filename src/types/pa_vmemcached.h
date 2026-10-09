@@ -10,10 +10,11 @@
 #ifndef PA_VMEMCACHED_H
 #define PA_VMEMCACHED_H
 
-#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.13 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VMEMCACHED_H "$Id: pa_vmemcached.h,v 1.14 2026/10/09 21:10:38 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
+#include "pa_pool.h"
 
 #include "pa_memcached.h"
 
@@ -23,7 +24,7 @@
 // externs
 extern Methoded *memcached_class;
 
-class VMemcached: public VStateless_object {
+class VMemcached: public VStateless_object, Pooled {
 public:
 	override const char* type() const { return VMEMCACHED_TYPE; }
 	override VStateless_class *get_class() { return memcached_class; }
@@ -33,9 +34,10 @@ public:
 	override const VJunction* put_element(const String& aname, Value* avalue);
 
 public: // usage
-	VMemcached(): fm(0), fttl(0) {}
+	VMemcached(Pool& apool): Pooled(apool), fm(0), fttl(0) {}
 
-	~VMemcached(){
+	/// called by the request pool at the end of the request
+	override ~VMemcached(){
 		if(fm)
 			f_memcached_free(fm);
 	}

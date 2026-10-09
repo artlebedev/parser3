@@ -8,11 +8,12 @@
 #ifndef PA_VAMQP_H
 #define PA_VAMQP_H
 
-#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.5 2026/10/09 18:32:15 moko Exp $"
+#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.6 2026/10/09 21:10:38 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
 #include "pa_common.h"
+#include "pa_pool.h"
 
 //for librabbitmq before 0.12
 //#define PA_AMQP_COMPAT
@@ -47,7 +48,7 @@
 // externs
 extern Methoded *amqp_class;
 
-class VAmqp: public VStateless_object {
+class VAmqp: public VStateless_object, Pooled {
 public:
 	// value
 	override const char* type() const { return VAMQP_TYPE; }
@@ -61,8 +62,10 @@ public: // usage
 	// CONNECTION_DEAD: last operation got a connection-level error - a full reconnect is required
 	enum ConnState { ALIVE, CHANNEL_DEAD, CONNECTION_DEAD };
 
-	VAmqp(): fconnection(0), fchannel(0), fstate(CONNECTION_DEAD), fcreate_options(0), freconnect_interval(0) {}
-	~VAmqp() {}
+	VAmqp(Pool& apool): Pooled(apool), fconnection(0), fchannel(0), fstate(CONNECTION_DEAD), fcreate_options(0), freconnect_interval(0) {}
+
+	/// called by the request pool at the end of the request
+	override ~VAmqp() { release(); }
 
 	amqp_connection_state_t fconnection;
 	amqp_channel_t fchannel;
@@ -87,6 +90,21 @@ public: // usage
 		return fchannel;
 	}
 
+	void release() {
+		if(!fconnection)
+			return;
+		if(fstate==ALIVE) { // a dead connection or channel is not closed politely
+			amqp_channel_close(fconnection, fchannel, AMQP_REPLY_SUCCESS);
+			amqp_connection_close(fconnection, AMQP_REPLY_SUCCESS);
+		}
+		amqp_destroy_connection(fconnection);
+		fconnection=0;
+		fchannel=0;
+		fstate=CONNECTION_DEAD;
+	}
+
+#else
+	VAmqp(Pool& apool): Pooled(apool) {}
 #endif // WITH_AMQP
 };
 

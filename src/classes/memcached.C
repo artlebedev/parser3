@@ -15,11 +15,11 @@
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.20 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.21 2026/10/09 21:10:38 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
-	Value* create_new_value(Pool&) { return new VMemcached(); }
+	Value* create_new_value(Pool& apool) { return new VMemcached(apool); }
 public:
 	MMemcached();
 };

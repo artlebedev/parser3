@@ -8,12 +8,13 @@
 #ifndef PA_VREDIS_H
 #define PA_VREDIS_H
 
-#define IDENT_PA_VREDIS_H "$Id: pa_vredis.h,v 1.2 2026/10/09 00:30:40 moko Exp $"
+#define IDENT_PA_VREDIS_H "$Id: pa_vredis.h,v 1.3 2026/10/09 21:10:38 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
 #include "pa_common.h"
 #include "pa_os.h"
+#include "pa_pool.h"
 
 #ifdef WITH_REDIS
 #include <hiredis/hiredis.h>
@@ -41,7 +42,7 @@ public:
 };
 #endif
 
-class VRedis: public VStateless_object {
+class VRedis: public VStateless_object, Pooled {
 public:
 	// value
 	override const char* type() const { return VREDIS_TYPE; }
@@ -74,7 +75,10 @@ public:
 
 public: // usage
 
-	VRedis(): fcontext(0), fssl_context(0), fuser(0), fpassword(0), fdb(0), fprotocol(3), fauto_reconnect(0) {}
+	VRedis(Pool& apool): Pooled(apool), fcontext(0), fssl_context(0), fuser(0), fpassword(0), fdb(0), fprotocol(3), fauto_reconnect(0) {}
+
+	/// called by the request pool at the end of the request
+	override ~VRedis() { release(); }
 
 	redisContext* fcontext;
 	struct redisSSLContext* fssl_context; // with $.tls only
@@ -160,6 +164,8 @@ private:
 		return fcontext;
 	}
 
+#else
+	VRedis(Pool& apool): Pooled(apool) {}
 #endif // WITH_REDIS
 };
 
