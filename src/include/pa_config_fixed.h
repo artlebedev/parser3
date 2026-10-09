@@ -8,7 +8,7 @@
 #ifndef PA_CONFIG_FIXED_H
 #define PA_CONFIG_FIXED_H
 
-#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.100 2026/10/08 18:56:00 moko Exp $"
+#define IDENT_PA_CONFIG_FIXED_H "$Id: pa_config_fixed.h,v 1.101 2026/10/09 17:14:18 moko Exp $"
 
 #if _MSC_VER < 1310
 #define inline  __inline
@@ -86,8 +86,12 @@ typedef __int64 int64_t;
 
 #define GC_NOT_DLL
 
+// PCRE2 (win32\pcre2); comment it out to build with PCRE 8.x (win32\pcre)
+#define HAVE_PCRE2
+
 // otherwise functions in libpcre will be declared as __declspec(dllimport)
 #define PCRE_STATIC
+#define PCRE2_STATIC
 
 // xml-abled parser
 #define XML
@@ -104,5 +108,11 @@ typedef __int64 int64_t;
 // Prebuilt librabbitmq has no TLS support; install a TLS-enabled version (adds a dependency on OpenSSL DLLs)
 // using "vcpkg install librabbitmq[ssl]:x64-windows" and replace the library files in win32\rabbitmq
 //#define WITH_AMQP_SSL
+
+#define WITH_REDIS
+
+// Prebuilt hiredis has no TLS support; install a TLS-enabled version (adds hiredis_ssl.lib and a dependency on OpenSSL DLLs)
+// using "vcpkg install hiredis[ssl]:x64-windows" and replace the library files in win32\redis
+//#define WITH_REDIS_SSL
 
 #endif

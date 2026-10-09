@@ -27,7 +27,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				OptimizeForWindowsApplication="FALSE"
-				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\..\..\win32\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml2;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
+				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\..\..\win32\pcre;..\..\..\..\win32\pcre2\include;..\..\lib\md5;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml2;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				AdditionalDependencies="wsock32.lib"
+				AdditionalDependencies="ws2_32.lib"
 				OutputFile=".\Release/parser3isapi.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -96,7 +96,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\..\..\win32\pcre;..\..\lib\md5;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml2;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
+				AdditionalIncludeDirectories="..\apache13;..\..\types;..\..\include;..\..\classes;..\..\sql;..\..\..\..\win32\pcre;..\..\..\..\win32\pcre2\include;..\..\lib\md5;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml2;..\..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
 				PreprocessorDefinitions="_DEBUG;WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -114,7 +114,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				AdditionalDependencies="user32.lib kernel32.lib wsock32.lib advapi32.lib"
+				AdditionalDependencies="user32.lib kernel32.lib ws2_32.lib advapi32.lib"
 				OutputFile=".\Debug/parser3isapi.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

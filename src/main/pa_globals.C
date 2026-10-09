@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.220 2026/09/20 16:00:58 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.221 2026/10/09 17:14:18 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -354,7 +354,11 @@ void pa_dlinit() {
 #define PLATFORM_32 "win32/"
 #endif
 
+#ifdef HAVE_PCRE2
+#pragma comment(lib, PREFIX "pcre2/" PLATFORM_64 CONFIGURATION "/pcre2-8-static.lib")
+#else
 #pragma comment(lib, PREFIX "pcre/" PLATFORM_64 CONFIGURATION "/pcre.lib")
+#endif
 
 #ifndef PA_DEBUG_DISABLE_GC
 #pragma comment(lib, PREFIX "gc/" PLATFORM_64 CONFIGURATION "/gc.lib")
@@ -362,6 +366,13 @@ void pa_dlinit() {
 
 #ifdef WITH_AMQP
 #pragma comment(lib, PREFIX "rabbitmq/" PLATFORM_64 CONFIGURATION "/librabbitmq.4.lib")
+#endif
+
+#ifdef WITH_REDIS
+#pragma comment(lib, PREFIX "redis/" PLATFORM_64 CONFIGURATION "/hiredis.lib")
+#ifdef WITH_REDIS_SSL
+#pragma comment(lib, PREFIX "redis/" PLATFORM_64 CONFIGURATION "/hiredis_ssl.lib")
+#endif
 #endif
 
 
