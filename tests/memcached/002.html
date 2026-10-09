@@ -1,0 +1,21 @@
+# connection
+@main[]
+$m[^memcached::open[$server]]
+$m.pa_s[connect string]
+1. connect string: $m.pa_s
+$m[^memcached::open[ $.server[$server] ]]
+2. options hash: $m.pa_s
+3. refused: ^failed{^memcached::open[127.0.0.1:1]}
+$lazy[^memcached::open[ $.server[127.0.0.1:1] $.skip-connect(true) ]]
+4. skip-connect: opened, ^failed{$v[$lazy.pa_s]}
+5. empty options: ^failed{^memcached::open[ $.skip-connect(true) ]}
+$empty[]
+6. empty connect string: ^failed{^memcached::open[$empty]}
+^m.release[]
+7. used after release: $m.pa_s
+^m.open[$server]
+8. reopened: $m.pa_s
+$t[^memcached::open[$server](60)]
+$t.pa_d[default expiration]
+9. default expiration: $t.pa_d
+^m.delete[pa_s]^m.delete[pa_d]

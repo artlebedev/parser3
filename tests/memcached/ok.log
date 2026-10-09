@@ -1,0 +1,50 @@
+
+=== 001.html
+
+
+
+1. get: hello
+
+2. missing: void
+
+
+3. empty string: "" string
+
+4. value hash: with expires
+5. add new: true
+6. add existing: false first
+
+
+7. deleted: void
+8. delete missing: ok
+
+
+9. mget: {"pa_k1":"one","pa_k2":"two"}
+
+10. mget table: {"pa_k2":"two"}
+
+11. languages are kept: &lt;b&gt; <i>
+12. number: memcached: double serialization is not supported yet
+13. invalid option: parser.runtime: called with invalid option
+14. no value: memcached: value hash must contain .value
+15. empty key: memcached: key must not be empty
+
+=== 002.html
+
+
+1. connect string: connect string
+
+2. options hash: connect string
+3. refused: memcached: connect error: SOME ERRORS WERE REPORTED (19)
+
+4. skip-connect: opened, memcached: get error: CONNECTION FAILURE (3)
+5. empty options: memcached: options hash must not be empty
+
+6. empty connect string: memcached: connect string must not be empty
+
+7. used after release: connect string
+
+8. reopened: connect string
+
+
+9. default expiration: default expiration

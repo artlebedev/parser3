@@ -1,0 +1,34 @@
+# values: set, get, add, delete, mget
+@main[]
+$m[^open_memcached[]]
+^cleanup[]
+$m.pa_s[hello]
+1. get: $m.pa_s
+$v[$m.pa_missing]
+2. missing: ^if($v is void){void}
+$m.pa_e[]
+$v[$m.pa_e]
+3. empty string: "$v" $v.CLASS_NAME
+$m.pa_t[ $.value[with expires] $.expires(60) ]
+4. value hash: $m.pa_t
+5. add new: ^show(^m.add[pa_a;first])
+6. add existing: ^show(^m.add[pa_a;second]) $m.pa_a
+^m.delete[pa_a]
+$v[$m.pa_a]
+7. deleted: ^if($v is void){void}
+8. delete missing: ^m.delete[pa_a]ok
+$m.pa_k1[one]
+$m.pa_k2[two]
+9. mget: ^show[^m.mget[pa_k1;pa_k2;pa_missing]]
+$keys[^table::create{key^#0Apa_k2^#0Apa_missing}]
+10. mget table: ^show[^m.mget[$keys]]
+$m.pa_tainted[^taint[<b>] <i>]
+11. languages are kept: ^untaint[html]{$m.pa_tainted}
+12. number: ^failed{$m.pa_n(5)}
+13. invalid option: ^failed{$m.pa_x[ $.value[v] $.ttl(1) ]}
+14. no value: ^failed{$m.pa_x[ $.expires(1) ]}
+15. empty key: ^failed{^m.add[;v]}
+^cleanup[]
+
+@cleanup[]
+^m.delete[pa_s]^m.delete[pa_e]^m.delete[pa_t]^m.delete[pa_a]^m.delete[pa_k1]^m.delete[pa_k2]^m.delete[pa_tainted]
