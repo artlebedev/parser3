@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.27 2026/10/09 20:14:28 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.28 2026/10/09 22:05:41 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -138,7 +138,9 @@ void VMemcached::open_parse(const String& connect_string, time_t attl){
 	if(fm) f_memcached_free(fm); // ^m.open[] of an opened object
 	fm=f_memcached_create(NULL);
 	memcached_server_st* fservers = f_memcached_servers_parse(connect_string.cstr());
-	check("server_push", fm, f_memcached_server_push(fm, fservers));
+	memcached_return rc=f_memcached_server_push(fm, fservers);
+	f_memcached_server_list_free(fservers); // pushed as a copy
+	check("server_push", fm, rc);
 	check("connect", fm, f_memcached_version(fm), MEMCACHED_NOT_SUPPORTED);
 }
 
@@ -161,19 +163,26 @@ Value* VMemcached::get_element(const String& aname) {
 
 	check_key(aname);
 
+	// mget used as memcached_get returns a value malloc-ed by the library, which we can not free:
+	// free is disabled in parser; under windows the library may have another C runtime
+	const char *key=aname.cstr();
+	size_t key_length=aname.length();
+	check("get", fm, f_memcached_mget(fm, &key, &key_length, 1));
+
+	Value *result=VVoid::get();
+	memcached_result_st *results=0;
 	memcached_return rc;
-	Serialization_data data;
-	data.ptr=f_memcached_get(fm, aname.cstr(), aname.length(), &data.length, &data.flags, &rc);
 
-	if(rc==MEMCACHED_SUCCESS){
-		return &deserialize(data);
+	// fetched until the end, which frees the result
+	while((results=f_memcached_fetch_result(fm, results, &rc)) && (rc == MEMCACHED_SUCCESS)){
+		Serialization_data data(f_memcached_result_flags(results), f_memcached_result_value(results), f_memcached_result_length(results));
+		result=&deserialize(data);
 	}
-	
-	if(rc==MEMCACHED_NOTFOUND)
-		return VVoid::get();
 
-	error("get", fm, rc);
-	return 0; // calm down compiler
+	if (rc != MEMCACHED_END && rc != MEMCACHED_NOTFOUND)
+		error("get", fm, rc);
+
+	return result;
 }
 
 Value &VMemcached::mget(ArrayString& akeys) {

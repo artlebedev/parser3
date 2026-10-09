@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.28 2026/10/09 21:10:38 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.29 2026/10/09 22:05:41 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -75,6 +75,15 @@ static void check(VAmqp& self, amqp_rpc_reply_t rr, const char *detail=""){
 
 	throw Exception("amqp", 0, "%sfailed", detail);
 }
+
+// destroys the new connection if connecting fails
+class Temp_amqp_connection {
+	amqp_connection_state_t fconnection;
+public:
+	Temp_amqp_connection(amqp_connection_state_t aconnection): fconnection(aconnection) {}
+	~Temp_amqp_connection() { if(fconnection) amqp_destroy_connection(fconnection); }
+	amqp_connection_state_t release() { amqp_connection_state_t result=fconnection; fconnection=0; return result; }
+};
 
 static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	const char* host_c = "localhost";
@@ -141,6 +150,7 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	}
 
 	amqp_connection_state_t conn = amqp_new_connection();
+	Temp_amqp_connection temp_connection(conn);
 	amqp_socket_t* socket = 0;
 
 #ifdef WITH_AMQP_SSL
@@ -177,24 +187,21 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	status_check(self, amqp_socket_open(socket, host_c, port), tls_specified ? "open SSL socket " : "open TCP socket ");
 
 	amqp_rpc_reply_t rlogin = amqp_login(conn, vhost_c, 0, 131072, heartbeat_sec, AMQP_SASL_METHOD_PLAIN, user_c, pass_c);
-	if(rlogin.reply_type != AMQP_RESPONSE_NORMAL){
-		amqp_destroy_connection(conn);
+	if(rlogin.reply_type != AMQP_RESPONSE_NORMAL)
 		check(self, rlogin, "login ");
-	}
 
 	amqp_channel_t channel = 1;
 	amqp_channel_open(conn, channel);
 	amqp_rpc_reply_t ropen = amqp_get_rpc_reply(conn);
 	if(ropen.reply_type != AMQP_RESPONSE_NORMAL){
 		amqp_connection_close(conn, AMQP_REPLY_SUCCESS);
-		amqp_destroy_connection(conn);
 		check(self, ropen, "open channel ");
 	}
 
 	if(self.fconnection)
 		amqp_destroy_connection(self.fconnection);
 
-	self.fconnection = conn;
+	self.fconnection = temp_connection.release();
 	self.fchannel = channel;
 	self.fstate = VAmqp::ALIVE;
 	self.freconnect_interval = reconnect_interval_sec;
