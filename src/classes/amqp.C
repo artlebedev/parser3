@@ -15,19 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_os.h"
 
-#ifdef WITH_AMQP
-
-#include <amqp.h>
-#include <amqp_tcp_socket.h>
-#include <amqp_framing.h>
-
-#ifdef WITH_AMQP_SSL
-#include <amqp_ssl_socket.h>
-#endif
-
-#endif
-
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.26 2026/10/08 18:56:00 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.27 2026/10/09 18:32:15 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class

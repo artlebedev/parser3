@@ -8,14 +8,37 @@
 #ifndef PA_VAMQP_H
 #define PA_VAMQP_H
 
-#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.4 2026/09/20 11:38:43 moko Exp $"
+#define IDENT_PA_VAMQP_H "$Id: pa_vamqp.h,v 1.5 2026/10/09 18:32:15 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
 #include "pa_common.h"
 
+//for librabbitmq before 0.12
+//#define PA_AMQP_COMPAT
+
 #ifdef WITH_AMQP
+
+#ifdef PA_AMQP_COMPAT
+
 #include <amqp.h>
+#include <amqp_tcp_socket.h>
+#include <amqp_framing.h>
+#ifdef WITH_AMQP_SSL
+#include <amqp_ssl_socket.h>
+#endif
+
+#else
+
+#include <rabbitmq-c/amqp.h>
+#include <rabbitmq-c/tcp_socket.h>
+#include <rabbitmq-c/framing.h>
+#ifdef WITH_AMQP_SSL
+#include <rabbitmq-c/ssl_socket.h>
+#endif
+
+#endif
+
 #endif
 
 // defines
