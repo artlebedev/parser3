@@ -1,0 +1,35 @@
+# arguments: files, arrays, hashes; files in the reply
+$r[^open_redis[]]
+1. flushall: ^r.flushall[]
+$f[^file::base64[AAEC/wBh]]
+2. set file: ^r.set[bin;$f]
+$g[^r.f-get[bin]]
+3. binary: $g.size ^g.base64[]
+4. string with zero: ^show[^r.strlen[bin]]
+$files[^array::create[$f;^file::base64[YgBj]]]
+5. rpush files: ^r.rpush[files;$files]
+$list[^r.f-lrange[files;0;-1]]
+6. array of files: ^list.foreach[;file]{^file.base64[]}[ ]
+7. set: ^r.set[k1;1] ^r.set[k2;2]
+8. del array: ^r.del[^array::create[k1;k2]]
+9. set: ^r.set[html;<b>]
+$v[^r.get[html]]
+10. tainted: $v ^reflection:tainting[$v]
+11. numbers: ^r.set[i](5) ^r.set[d](1.5) ^r.get[i] ^r.get[d]
+12. void: ^r.set[v;$nothing] ^show[^r.get[v]]
+13. bool: ^r.set[t](true) ^r.set[f](false) ^r.get[t] ^r.get[f]
+14. date: ^failed{^r.set[b;^date::create(2026;10;6)]}
+15. code: ^failed{^r.set[b]{x}}
+16. nested array: ^failed{^r.del[^array::create[k1;^array::create[k2]]]}
+17. hash in array: ^failed{^r.del[^array::create[ $.x[1] ]]}
+18. hset hash: ^r.hset[user; $.name[moko] $.n(1) $.flag(true) ]
+19. hgetall: ^show[^r.hgetall[user]]
+20. mset hash: ^r.mset[ $.a[1] $.b[2] ]
+21. mget: ^show[^r.mget[a;b]]
+22. array in hash: ^failed{^r.mset[ $.a[^array::create[x]] ]}
+$m[^r.f-hgetall[user]]
+23. binary map: ^m.foreach[key;value]{$key=$value.CLASS_NAME}[ ]
+$c[^r.f-call[GET;bin]]
+24. f-call: $c.CLASS_NAME $c.size
+25. no command after the prefix: ^failed{^r.f-[bin]}
+^r.release[]

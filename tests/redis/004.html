@@ -1,0 +1,11 @@
+# auto_reconnect: the connection is killed by another one
+$killer[^open_redis[]]
+$a[^open_redis[ $.db(2) $.auto_reconnect(1) ]]
+1. set: ^a.set[k;in db 2]
+2. kill: ^killer.client[KILL;ID;^a.client[ID]]
+3. killed: ^failed{^a.get[k]}
+4. reconnected: ^a.get[k]
+$b[^open_redis[]]
+5. kill: ^killer.client[KILL;ID;^b.client[ID]]
+6. killed: ^failed{^b.get[k]}
+7. no auto_reconnect: ^failed{^b.get[k]}

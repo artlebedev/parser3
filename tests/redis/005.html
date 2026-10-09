@@ -1,0 +1,25 @@
+# tls: the server certificate is of ca, client certificates are optional but checked
+$tls[$env:REDIS_TLS]
+$r[^open_redis[ $.port(6400) $.tls[ $.ca[$tls/ca.crt] ] ]]
+1. ca: ^r.ping[]
+2. set and get: ^r.set[k;over tls] ^r.get[k]
+$r2[^open_redis[ $.port(6400) $.tls[] ]]
+3. no ca, not checked: ^r2.ping[]
+4. another ca: ^failed{^open_redis[ $.port(6400) $.tls[ $.ca[$tls/other-ca.crt] ] ]}
+$r3[^open_redis[ $.port(6400) $.tls[ $.ca[$tls/other-ca.crt] $.verify(false) ] ]]
+5. another ca, not checked: ^r3.ping[]
+$r4[^open_redis[ $.port(6400) $.tls[ $.ca[$tls/ca.crt] $.cert[$tls/client.crt] $.key[$tls/client.key] ] ]]
+6. client certificate: ^r4.ping[]
+7. client certificate of another ca: ^failed{$r5[^open_redis[ $.port(6400) $.tls[ $.ca[$tls/ca.crt] $.cert[$tls/other-client.crt] $.key[$tls/other-client.key] ] ]]^r5.ping[]}
+8. certificate without key: ^failed{^open_redis[ $.port(6400) $.tls[ $.cert[$tls/client.crt] ] ]}
+9. no ca file: ^failed{^open_redis[ $.port(6400) $.tls[ $.ca[$tls/missing.crt] ] ]}
+10. invalid option: ^failed{^open_redis[ $.port(6400) $.tls[ $.cacert[$tls/ca.crt] ] ]}
+
+# auto_reconnect starts tls again
+$a[^open_redis[ $.port(6400) $.tls[ $.ca[$tls/ca.crt] ] $.db(3) $.auto_reconnect(1) ]]
+11. set: ^a.set[k;in db 3]
+12. kill: ^r.client[KILL;ID;^a.client[ID]]
+13. killed: ^failed{^a.get[k]}
+14. reconnected: ^a.get[k]
+^a.release[]
+15. released: ^failed{^a.get[k]}

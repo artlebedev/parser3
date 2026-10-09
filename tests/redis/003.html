@@ -1,0 +1,20 @@
+# connection options
+$r[^redis::open[ $.unix_socket[$env:REDIS_SOCKET] $.password[test] ]]
+1. unix socket: ^r.ping[]
+2. acl setuser: ^r.acl[SETUSER;alice;on;>secret;~*;+@all]
+$alice[^redis::open[ $.port(6399) $.user[alice] $.password[secret] ]]
+3. user: ^alice.acl[WHOAMI]
+$r2[^open_redis[ $.protocol(2) ]]
+4. protocol 2 auth: ^r2.ping[]
+$db1[^open_redis[ $.db(1) ]]
+5. set in db 1: ^db1.set[only_in_1;x]
+$v[^r.get[only_in_1]]
+6. db: ^db1.get[only_in_1] ^if($v is void){void in 0}
+7. no password: ^failed{^redis::open[ $.port(6399) ]}
+8. wrong password: ^failed{^redis::open[ $.port(6399) $.password[wrong] ]}
+9. refused: ^failed{^redis::open[ $.port(1) ]}
+10. unix socket and port: ^failed{^redis::open[ $.unix_socket[$env:REDIS_SOCKET] $.port(6399) ]}
+11. invalid option: ^failed{^redis::open[ $.hots[localhost] ]}
+12. protocol 4: ^failed{^redis::open[ $.protocol(4) ]}
+$t[^open_redis[ $.timeout(0.3) ]]
+13. timeout: ^failed{^t.blpop[nolist;5]}

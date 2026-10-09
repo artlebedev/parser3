@@ -1,0 +1,128 @@
+
+=== 001.html
+
+1. flushall: OK
+2. set: OK
+3. get: hello
+4. call: hello
+5. upper case: hello hello hello
+6. class methods are case sensitive: redis: ERR unknown command 'CALL', with args beginning with: 'GET' 's' 
+7. element: not a command
+
+8. int: 1 int
+
+9. nil: null void
+10. bitfield: [0,0]
+11. int beyond 2^53 is string: ["9007199254740993",42]
+12. zadd: 1
+
+13. double: 1.5 double
+14. bool: true
+15. rpush: 3
+16. array: ["a","b","c"]
+17. hset: 2
+18. map: {"f1":"v1","f2":"v2"}
+19. sadd: 1
+20. set: ["one"]
+21. nested: [1,[2,"x"],"y"]
+22. error: redis: WRONGTYPE Operation against a key holding the wrong kind of value
+23. unknown command: redis: ERR unknown command 'gett', with args beginning with: 's' 
+24. multi: OK QUEUED QUEUED
+25. error inside EXEC: redis: WRONGTYPE Operation against a key holding the wrong kind of value
+
+26. protocol 2, map is array: ["f1","v1","f2","v2"]
+27. protocol 2, double is string: ["a","1.5"]
+28. protocol 3: [["a",1.5]]
+
+
+29. released: redis: using unopened or released redis object
+=== 002.html
+
+1. flushall: OK
+
+2. set file: OK
+
+3. binary: 6 AAEC/wBh
+4. string with zero: "6"
+
+5. rpush files: 2
+
+6. array of files: AAEC/wBh YgBj
+7. set: OK OK
+8. del array: 2
+9. set: OK
+
+10. tainted: <b> TTT
+11. numbers: OK OK 5 1.5
+12. void: OK ""
+13. bool: OK OK 1 0
+14. date: parser.runtime: is 'date', it has no string representation
+15. code: parser.runtime: is 'junction', it has no string representation
+16. nested array: parser.runtime: redis command argument can not be a nested array or a hash
+17. hash in array: parser.runtime: redis command argument can not be a nested array or a hash
+18. hset hash: 3
+19. hgetall: {"name":"moko","n":"1","flag":"1"}
+20. mset hash: OK
+21. mget: ["1","2"]
+22. array in hash: parser.runtime: redis command argument can not be a nested array or a hash
+
+23. binary map: name=file n=file flag=file
+
+24. f-call: file 6
+25. no command after the prefix: parser.runtime: command name expected after f-
+
+=== 003.html
+
+1. unix socket: PONG
+2. acl setuser: OK
+
+3. user: alice
+
+4. protocol 2 auth: PONG
+
+5. set in db 1: OK
+
+6. db: x void in 0
+7. no password: redis: HELLO failed: NOAUTH HELLO must be called with the client already authenticated, otherwise the HELLO <proto> AUTH <user> <pass> option can be used to authenticate the client and select the RESP protocol version at the same time
+8. wrong password: redis: HELLO failed: WRONGPASS invalid username-password pair or user is disabled.
+9. refused: redis: connect failed: Connection refused
+10. unix socket and port: parser.runtime: unix_socket can not be used with host or port
+11. invalid option: parser.runtime: called with invalid option
+12. protocol 4: parser.runtime: protocol must be 2 or 3
+
+13. timeout: redis: blpop failed: Resource temporarily unavailable
+=== 004.html
+
+
+1. set: OK
+2. kill: 1
+3. killed: redis: get failed: Server closed the connection
+4. reconnected: in db 2
+
+5. kill: 1
+6. killed: redis: get failed: Server closed the connection
+7. no auto_reconnect: redis: connection is broken (auto_reconnect is not enabled): Server closed the connection
+=== 005.html
+
+
+1. ca: PONG
+2. set and get: OK over tls
+
+3. no ca, not checked: PONG
+4. another ca: redis: SSL_connect failed: certificate verify failed
+
+5. another ca, not checked: PONG
+
+6. client certificate: PONG
+7. client certificate of another ca: redis: HELLO failed: Server closed the connection
+8. certificate without key: redis: SSL context failed: Client cert and key must both be specified or skipped
+9. no ca file: redis: SSL context failed: Failed to load CA Certificate or CA Path
+10. invalid option: parser.runtime: called with invalid option
+
+
+11. set: OK
+12. kill: 1
+13. killed: redis: get failed: Server closed the connection
+14. reconnected: in db 3
+
+15. released: redis: using unopened or released redis object

@@ -1,0 +1,37 @@
+# commands and the reply types
+$r[^open_redis[]]
+1. flushall: ^r.flushall[]
+2. set: ^r.set[s;hello]
+3. get: ^r.get[s]
+4. call: ^r.call[GET;s]
+5. upper case: ^r.GET[s] ^r.Get[s] ^r.call[get;s]
+6. class methods are case sensitive: ^failed{^r.CALL[GET;s]}
+7. element: ^if(def $r.get){$r.get}{not a command}
+$v(^r.incr[n])
+8. int: $v $v.CLASS_NAME
+$v[^r.get[missing]]
+9. nil: ^show[$v] ^if($v is void){void}
+10. bitfield: ^show[^r.bitfield[bf;SET;i64;0;9007199254740993;SET;i64;64;42]]
+11. int beyond 2^^53 is string: ^show[^r.bitfield[bf;GET;i64;0;GET;i64;64]]
+12. zadd: ^r.zadd[z;1.5;a]
+$v(^r.zscore[z;a])
+13. double: $v $v.CLASS_NAME
+14. bool: ^show[^r.eval[redis.setresp(3) return true;0]]
+15. rpush: ^r.rpush[l;a;b;c]
+16. array: ^show[^r.lrange[l;0;-1]]
+17. hset: ^r.hset[h;f1;v1;f2;v2]
+18. map: ^show[^r.hgetall[h]]
+19. sadd: ^r.sadd[set;one]
+20. set: ^show[^r.smembers[set]]
+21. nested: ^show[^r.eval[return {1, {2, 'x'}, 'y'};0]]
+22. error: ^failed{^r.lpush[s;x]}
+23. unknown command: ^failed{^r.gett[s]}
+24. multi: ^r.multi[] ^r.set[s2;x] ^r.lpush[s2;y]
+25. error inside EXEC: ^failed{^r.exec[]}
+$r2[^open_redis[ $.protocol(2) ]]
+26. protocol 2, map is array: ^show[^r2.hgetall[h]]
+27. protocol 2, double is string: ^show[^r2.zrange[z;0;-1;WITHSCORES]]
+28. protocol 3: ^show[^r.zrange[z;0;-1;WITHSCORES]]
+^r2.release[]
+^r.release[]
+29. released: ^failed{^r.get[s]}
