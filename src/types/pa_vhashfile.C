@@ -13,7 +13,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vdate.h"
 
-volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.79 2026/09/27 17:13:40 moko Exp $" IDENT_PA_VHASHFILE_H;
+volatile const char * IDENT_PA_VHASHFILE_C="$Id: pa_vhashfile.C,v 1.80 2026/10/09 20:14:28 moko Exp $" IDENT_PA_VHASHFILE_H;
 
 // consts
 
@@ -36,6 +36,8 @@ void VHashfile::check(const char *step, pa_status_t status) {
 }
 
 void VHashfile::open(const String& afile_name) {
+	if(file_name) // ^h.open[] of an opened object
+		throw Exception(PARSER_RUNTIME, 0, "hashfile is already opened");
 	file_name=afile_name.taint_cstr(String::L_FILE_SPEC);
 }
 

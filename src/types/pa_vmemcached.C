@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.26 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.27 2026/10/09 20:14:28 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -122,6 +122,7 @@ void VMemcached::open(const String& options_string, time_t attl, bool connect){
 		throw Exception("memcached", 0, "options hash must not be empty");
 	
 	fttl=attl;
+	if(fm) f_memcached_free(fm); // ^m.open[] of an opened object
 	fm=f_memcached(options_string.cstr(), options_string.length());
 	if (connect)
 		check("connect", fm, f_memcached_version(fm), MEMCACHED_NOT_SUPPORTED);
@@ -134,6 +135,7 @@ void VMemcached::open_parse(const String& connect_string, time_t attl){
 		throw Exception("memcached", 0, "connect string must not be empty");
 	
 	fttl=attl;
+	if(fm) f_memcached_free(fm); // ^m.open[] of an opened object
 	fm=f_memcached_create(NULL);
 	memcached_server_st* fservers = f_memcached_servers_parse(connect_string.cstr());
 	check("server_push", fm, f_memcached_server_push(fm, fservers));

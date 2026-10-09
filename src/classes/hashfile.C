@@ -12,7 +12,7 @@
 #include "pa_vhashfile.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.69 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_HASHFILE_C="$Id: hashfile.C,v 1.70 2026/10/09 20:14:28 moko Exp $";
 
 // class
 
@@ -47,10 +47,10 @@ static void _open(Request& r, MethodParams& params) {
 		throw Exception(PARSER_RUNTIME,
 			0,
 			"this hashfile is already opened, use existing variable");
-	file_list->put(file_spec, true);
 
 	VHashfile& self=GET_SELF(r, VHashfile);
 	self.open(file_spec);
+	file_list->put(file_spec, true);
 }
 
 static void _hash(Request& r, MethodParams&) {

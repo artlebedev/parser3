@@ -8,7 +8,7 @@
 #ifndef PA_VIMAGE_H
 #define PA_VIMAGE_H
 
-#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.64 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VIMAGE_H "$Id: pa_vimage.h,v 1.65 2026/10/09 20:14:28 moko Exp $"
 
 #include "classes.h"
 #include "pa_common.h"
@@ -108,6 +108,7 @@ public:
 
 private:
 
+	// no constructor: new VImage() value-initializes, so they are zero
 	gdImage* fimage;
 	Font* ffont;
 	HashStringValue ffields;

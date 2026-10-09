@@ -8,7 +8,7 @@
 #ifndef PA_VHASHFILE_H
 #define PA_VHASHFILE_H
 
-#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.51 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VHASHFILE_H "$Id: pa_vhashfile.h,v 1.52 2026/10/09 20:14:28 moko Exp $"
 
 #include "classes.h"
 #include "pa_pool.h"
@@ -56,7 +56,7 @@ public: // value
 
 public: // usage
 
-	VHashfile(Pool& apool): Pooled(apool), m_db(0) {}
+	VHashfile(Pool& apool): Pooled(apool), file_name(0), m_db(0) {}
 	override ~VHashfile();
 
 	void open(const String& afile_name);

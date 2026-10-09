@@ -9,7 +9,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.27 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.28 2026/10/09 20:14:28 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -116,6 +116,7 @@ void VRegex::compile(){
 
 	pcre2_set_character_tables(fcmp_ctxt, fcharset->pcre_tables);
 
+	fmatch_data=0; // ^re.create[] of a created regex: sized for the previous pattern
 	fcode=pcre2_compile((PCRE2_SPTR)fpattern, PCRE2_ZERO_TERMINATED, options,
 		&err, &err_offset,
 		fcmp_ctxt);
@@ -126,6 +127,7 @@ void VRegex::compile(){
 	}
 #else
 	int err_offset;
+	fstudied=false; // ^re.create[] of a created regex: studied the previous pattern
 	fcode=pcre_compile(fpattern, options,
 		&err_ptr, &err_offset,
 		fcharset->pcre_tables);
