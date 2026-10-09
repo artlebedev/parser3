@@ -749,6 +749,45 @@ regex
     $шаблон.options
         строка с исходным текстом опций
 
+amqp
+    ^amqp::create[[
+        $.host[localhost] $.port(5672) $.user[guest] $.password[guest] $.vhost[/] $.locale[en_US]
+        $.heartbeat(30) $.auto_reconnect(секунд)
+        $.tls[ $.ca[файл] $.cert[файл] $.key[файл] $.verify(true) ]
+    ]]
+        подключается к брокеру RabbitMQ
+        auto_reconnect(N): после потери соединения переподключиться перед следующей операцией, выждав N секунд
+        tls: сертификат сервера проверяется, только если задан ca
+    ^amqp.publish[сообщение][[
+        $.exchange[] $.routing_key[ключ]|$.queue[имя] $.mandatory(false)
+        свойства сообщения: $.content_type[] $.content_encoding[] $.delivery_mode(1|2) $.priority(N) $.correlation_id[] $.reply_to[]
+            $.expiration[] $.message_id[] $.timestamp(N) $.type[] $.user_id[] $.app_id[] $.cluster_id[] $.headers[хеш]
+    ]]
+    ^amqp.consume[ $.queue[имя] $.ack(true) $.count(1) $.timeout(0) $.exclusive(false) $.consumer_tag[] ]
+        массив сообщений, готовых за timeout секунд (ждётся только первое)
+    ^amqp.consume[ $.queue[имя] $.callback[$метод] ... ]
+        вызывает @метод[сообщение] для каждого сообщения до ^amqp.stop_consume[], count сообщений или timeout секунд без сообщений
+        count и timeout по умолчанию не ограничены
+    сообщение: хеш с msg, delivery_tag, routing_key, exchange, redelivered, consumer_tag и заданными свойствами
+    ^amqp.ack(delivery_tag)
+        при $.ack(true) (по умолчанию) полученные сообщения нужно подтверждать
+    ^amqp.nack(delivery_tag)[ $.requeue(false) ]
+    ^amqp.reject(delivery_tag)[ $.requeue(true) ]
+    ^amqp.qos[ $.prefetch_count(N) ]
+    ^amqp.declare[ $.queue[имя] $.durable(false) $.exclusive(false) $.auto_delete(false) $.passive(false) $.arguments[хеш] ]
+        для пустого имени сервер создаёт очередь со своим именем, оно возвращается
+    ^amqp.declare[ $.exchange[имя] $.type[direct] $.durable(false) $.auto_delete(false) $.internal(false) $.passive(false) $.arguments[хеш] ]
+    ^amqp.delete[ $.queue[имя]|$.exchange[имя] $.if_unused(false) $.if_empty(false) ]
+    ^amqp.bind[ $.exchange[имя] $.queue[имя] $.routing_key[] ]
+    ^amqp.unbind[ $.exchange[имя] $.queue[имя] $.routing_key[] ]
+    ^amqp.purge[ $.queue[имя] ]
+        число удалённых сообщений
+    ^amqp.info[ $.queue[имя] ]
+        хеш с queue, messages, consumers
+    ^amqp.release[]
+        закрывает соединение
+    значения в arguments и headers: [строка], (число), (true|false)
+
 console
     $console:timeout
     $console:line
@@ -1103,6 +1142,27 @@ reflection
     ^reflection:override[метод[; $.to[получатель] $.name[новое имя]]]
         переопределяет или определяет метод
 
+redis
+    ^redis::open[[
+        $.host[localhost] $.port(6379)|$.unix_socket[путь]
+        $.user[] $.password[] $.db(0) $.timeout(2) $.protocol(3) $.auto_reconnect(секунд)
+        $.tls[ $.ca[файл] $.cert[файл] $.key[файл] $.verify(true) ]
+    ]]
+        подключается к серверу redis
+        timeout в секундах на подключение и на каждую команду, 0 - без ограничения
+        protocol(2) для серверов до redis 6
+        auto_reconnect(N): после потери соединения переподключиться перед следующей командой, выждав N секунд
+        tls: сертификат сервера проверяется, только если задан ca
+    ^redis.имя_команды[аргументы;...]
+        любая команда redis, например ^redis.set[ключ;значение] ^redis.get[ключ] ^redis.hgetall[ключ]
+    ^redis.call[команда;аргументы;...]
+    ^redis.f-имя_команды[аргументы;...], ^redis.f-call[команда;аргументы;...]
+        строки ответа выдаются файлами (двоичные данные)
+    аргументы: строка, число, bool как 1/0, файл своим содержимым; массив - его элементы, хеш - пары ключ значение
+    ответ: string, int, double, bool, void (nil), array, hash (map); ответ-ошибка - исключение
+    ^redis.release[]
+        закрывает соединение
+
 request
     https://site.name/a%20b/?name=some%20value
     $request:query
@@ -1433,6 +1493,8 @@ MAIN
     http.response        ^file::load[http://ok/there]                host found, connection accepted, bad answer
     http.status          ^file::load[http://ok/there]                host found, connection accepted, status!=200
     date.range           ^date::create(10000;1;1)                    date out of valid range
+    amqp                 ^amqp::create[$.port(1)]                    connection failed/error from the broker
+    redis                ^redis::open[$.port(1)]                     connection failed/error reply
 
 если в MAIN определён $SIGPIPE(1) то в случае, если обработка была прервана пользователем, сообщение
     об этом будет записано в parser3.log
@@ -1440,4 +1502,4 @@ MAIN
 если описание метода содержит локальную переменную result в явном виде (есть и неявная переменная)
     то код вывода пробельных литералов не попадает в конечный байт-код
 
-$Id: operators.ru.txt,v 1.269 2026/05/06 20:33:38 moko Exp $
+$Id: operators.ru.txt,v 1.270 2026/10/09 18:53:41 moko Exp $
