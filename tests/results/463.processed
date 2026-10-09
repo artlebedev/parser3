@@ -1,0 +1,22 @@
+Content-Type: text/html
+Content-Length: 280
+
+1. date: 2002-02-02 00:00:00
+2. table: 2 2
+3. hash: {
+"a":1,
+"b":2
+}
+4. array: [
+"a",
+"b",
+"c"
+]
+5. file: b.txt second
+6. image: 2 x 3
+7. xdoc: b
+8. regex: a b c
+9. hashfile: Exception type: parser.runtime,
+Source: open,
+Comment: hashfile is already opened
+10. still opened: in a

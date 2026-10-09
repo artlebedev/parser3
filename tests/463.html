@@ -1,0 +1,43 @@
+# a constructor called as a method of a created object
+@main[]
+$d[^date::create(2001;1;1)]
+^d.create(2002;2;2)
+1. date: ^d.sql-string[]
+
+$t[^table::create{a^#0A1}]
+^t.create{b^#0A2^#0A3}
+2. table: ^t.count[] $t.b
+
+$h[^hash::create[ $.a(1) ]]
+^h.create[ $.b(2) ]
+3. hash: ^json:string[$h]
+
+$a[^array::create[a;b]]
+^a.create[c]
+4. array: ^json:string[$a]
+
+$f[^file::create[text;a.txt;first]]
+^f.create[text;b.txt;second]
+5. file: $f.name $f.text
+
+$i[^image::create(1;1)]
+^i.create(2;3)
+6. image: $i.width x $i.height
+
+$x[^xdoc::create{<a/>}]
+^x.create{<b/>}
+7. xdoc: $x.documentElement.nodeName
+
+$s[abc]
+$r[^regex::create[(a)]]
+$m[^s.match[$r]]
+^r.create[(a)(b)(c)]
+$m[^s.match[$r]]
+8. regex: $m.1 $m.2 $m.3
+
+$hf[^hashfile::open[463_a]]
+9. hashfile: ^try-catch{^hf.open[463_b]}
+$hf.k[in a]
+$v[$hf.k]
+10. still opened: $v
+^hf.delete[]
