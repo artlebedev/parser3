@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.19 2025/08/16 14:34:25 moko Exp $
+#$Id: auto.p.in,v 1.20 2026/10/10 21:52:20 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -21,7 +21,7 @@ $confdir[^file:dirname[$filespec]]
 $charsetsdir[@datarootdir@/charsets]
 $sqldriversdir[@libdir@]
 
-$CHARSETS[
+#$CHARSETS[
 #	$.cp866[$charsetsdir/cp866.cfg]
 #	$.koi8-r[$charsetsdir/koi8-r.cfg]
 #	$.koi8-u[$charsetsdir/koi8-u.cfg]
@@ -30,7 +30,7 @@ $CHARSETS[
 #	$.windows-1254[$charsetsdir/windows-1254.cfg]
 #	$.windows-1257[$charsetsdir/windows-1257.cfg]
 #	$.x-mac-cyrillic[$charsetsdir/x-mac-cyrillic.cfg]
-]
+#]
 
 #change your client libraries paths to those on your system
 $SQL[
