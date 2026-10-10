@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.137 2026/09/27 17:13:40 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.138 2026/10/10 21:51:21 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -38,6 +38,8 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.137 2026/09/27 17:13:4
 
 #undef CRLF
 #define CRLF "\r\n"
+
+#define HTTP_TIMEOUT_COMMENT "timeout occurred while retrieving document"
 
 // helpers
 
@@ -65,6 +67,21 @@ ssize_t pa_send(int sock, const char *buffer, size_t len){
 		total_sent += bytes_sent;
 	}
 	return total_sent;
+}
+
+// socket operation failed on SO_*TIMEO timeout
+static bool sock_timed_out(int no){
+#ifdef WIN32
+	return no==WSAETIMEDOUT;
+#else
+	return no==EAGAIN || no==EWOULDBLOCK || no==EINPROGRESS /* connect on linux */;
+#endif
+}
+
+static int check_socket_timeout(int no){
+	if(sock_timed_out(no))
+		throw Exception("http.timeout", 0, HTTP_TIMEOUT_COMMENT);
+	return no;
 }
 
 bool HTTP_Headers::add_header(const char *line){
@@ -138,7 +155,7 @@ public:
 		if(received_size == 0)
 			return false;
 		if(received_size < 0) {
-			if(int no = pa_socks_errno())
+			if(int no = check_socket_timeout(pa_socks_errno()))
 				throw Exception("http.timeout", 0, "error receiving response: %s (%d)", pa_socks_strerr(no), no);
 			return false;
 		}
@@ -274,21 +291,33 @@ int HTTP_response::read_response(SOCKET sock, bool fail_on_status_ne_200) {
 /* ********************** request *************************** */
 
 #if defined(SIGALRM) && defined(HAVE_SIGSETJMP) && defined(HAVE_SIGLONGJMP)
-#	define PA_USE_ALARM
+#	define PA_HAVE_ALARM
 #endif
 
-#ifdef PA_USE_ALARM
+#ifdef PA_HAVE_ALARM
 static sigjmp_buf timeout_env;
 static void timeout_handler(int /*sig*/){
 	siglongjmp(timeout_env, 1);
 }
 
-#define PA_NO_THREADS (HTTPD_Server::mode != HTTPD_Server::MULTITHREADED)
+// alarm is per process, threads use SO_*TIMEO
+#define PA_USE_ALARM (HTTPD_Server::mode != HTTPD_Server::MULTITHREADED)
 
-#define ALARM(value) if(PA_NO_THREADS) alarm(value)
+#define ALARM(value) if(PA_USE_ALARM) alarm(value)
 #else
+#define PA_USE_ALARM false
 #define ALARM(value)
 #endif
+
+// SO_*TIMEO can be defined in .h but not implemented in protocol, so errors are ignored
+static void set_socket_timeout(SOCKET sock, int option, int timeout_secs){
+#ifdef WIN32
+	int timeout=timeout_secs < INT_MAX/1000 ? timeout_secs*1000 : 0 /* infinite */;
+#else
+	struct timeval timeout={timeout_secs, 0};
+#endif
+	setsockopt(sock, SOL_SOCKET, option, (const char*)&timeout, sizeof(timeout));
+}
 
 static int http_request(HTTP_response& response, const char* host, short port, const char* request, size_t request_size, int timeout_secs, bool fail_on_status_ne_200) {
 	if(!host)
@@ -296,13 +325,13 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 
 	volatile SOCKET sock=INVALID_SOCKET; // to prevent makeing it register variable, because it will be clobbered by longjmp [thanks gcc warning]
 		
-#ifdef PA_USE_ALARM
-	if(PA_NO_THREADS) signal(SIGALRM, timeout_handler);
-	if(PA_NO_THREADS && sigsetjmp(timeout_env, 1)) {
+#ifdef PA_HAVE_ALARM
+	if(PA_USE_ALARM) signal(SIGALRM, timeout_handler);
+	if(PA_USE_ALARM && sigsetjmp(timeout_env, 1)) {
 		// duplicating closesocket to make code more simple for old compilers
 		if(sock != INVALID_SOCKET)
 			closesocket(sock);
-		throw Exception("http.timeout", 0, "timeout occurred while retrieving document");
+		throw Exception("http.timeout", 0, HTTP_TIMEOUT_COMMENT);
 		return 0; // never
 	} else
 #endif
@@ -325,22 +354,18 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 			linger dont_linger={0,0};
 			setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char *)&dont_linger, sizeof(dont_linger));
 
-#ifdef WIN32
-// SO_*TIMEO can be defined in .h but not implemlemented in protocol,
-// failing subsequently with Option not supported by protocol (99) message
-// could not suppress that, so leaving this only for win32
-			int timeout_ms=timeout_secs*1000;
-			setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
-			setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout_ms, sizeof(timeout_ms));
-#endif
+			if(!PA_USE_ALARM){
+				set_socket_timeout(sock, SO_SNDTIMEO, timeout_secs);
+				set_socket_timeout(sock, SO_RCVTIMEO, timeout_secs);
+			}
 
 			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
-				int no=pa_socks_errno();
+				int no=check_socket_timeout(pa_socks_errno());
 				throw Exception("http.connect", 0, "cannot connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no);
 			}
 
 			if(pa_send(sock, request, request_size) < 0) {
-				int no=pa_socks_errno();
+				int no=check_socket_timeout(pa_socks_errno());
 				throw Exception("http.timeout", 0, "error sending request: %s (%d)", pa_socks_strerr(no), no);
 			}
 
@@ -1063,22 +1088,29 @@ enum HTTPD_request_state {
 	HTTPD_HEADERS
 };
 
+// timeout on "void" connection is normal
+#define PA_RECV_TIMEOUT											\
+	LOG(pa_log("httpd [%d] recv got %d sec timeout", sockfd, pa_httpd_timeout));			\
+	if(length)											\
+		throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");	\
+	return 0;
+
 ssize_t HTTPD_request::pa_recv(SOCKET sockfd, char *buffer, size_t len){
 	LOG(pa_log("httpd [%d] recv %d appending to %d ...", sockfd, len, length));
 
-#ifdef PA_USE_ALARM
-	if(PA_NO_THREADS) signal(SIGALRM, timeout_handler);
-	if(PA_NO_THREADS && sigsetjmp(timeout_env, 1)) {
-		LOG(pa_log("httpd [%d] recv got %d sec timeout", sockfd, pa_httpd_timeout));
-		if(length) // timeout on "void" connection is normal
-			throw Exception("httpd.timeout", 0, "timeout occurred while receiving request");
-		return 0;
+#ifdef PA_HAVE_ALARM
+	if(PA_USE_ALARM) signal(SIGALRM, timeout_handler);
+	if(PA_USE_ALARM && sigsetjmp(timeout_env, 1)) {
+		PA_RECV_TIMEOUT
 	} else
 #endif
 	{
 		ALARM(pa_httpd_timeout);
 		ssize_t result=recv(sockfd, buffer, len, 0);
 		ALARM(0);
+		if(result < 0 && sock_timed_out(pa_socks_errno())) {
+			PA_RECV_TIMEOUT
+		}
 		LOG(pa_log("httpd [%d] recv got %d bytes", sockfd, result));
 		LOG(pa_log("httpd [%d] %s", sockfd, buffer));
 		return result;
@@ -1250,6 +1282,9 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 //	Has no positive performance effect, requires include <netinet/tcp.h>
 //	static int sock_on=1;
 //	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&sock_on, sizeof(sock_on));
+
+	if(!PA_USE_ALARM)
+		set_socket_timeout(sock, SO_RCVTIMEO, pa_httpd_timeout);
 
 	remote_addr = pa_strdup(inet_ntoa(addr.sin_addr));
 	LOG(pa_log("httpd [%d] accepted from %s", sock, remote_addr));
