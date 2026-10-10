@@ -1,3 +1,3 @@
 #!/bin/sh
 
-../../../src/targets/cgi/parser3 -p 8100
+../../../src/targets/cgi/parser3 -f config.p -p 8100

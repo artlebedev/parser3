@@ -92,7 +92,7 @@ Server: Parser3
 Connection: close
 Accept-Ranges: bytes
 Content-Length: 15
-Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
+Last-Modified: DATE GMT
 
 test?test.test!
 =============
@@ -127,7 +127,7 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 5-9/15
 Content-Length: 5
-Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
+Last-Modified: DATE GMT
 
 test.
 =============
@@ -145,7 +145,7 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 5-14/15
 Content-Length: 10
-Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
+Last-Modified: DATE GMT
 
 test.test!
 =============
@@ -157,7 +157,7 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 10-14/15
 Content-Length: 5
-Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
+Last-Modified: DATE GMT
 
 test!
 =============
@@ -175,7 +175,7 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 10-14/15
 Content-Length: 5
-Last-Modified: Sun, 20 Oct 2024 23:34:07 GMT
+Last-Modified: DATE GMT
 
 test!
 =============
@@ -194,8 +194,8 @@ invalid request method
 running test 023.txt
 HTTP/1.0 403 Forbidden
 Content-Type: text/html; charset=UTF-8
-Server: Parser3.5.2b (compiled on x86_64-unknown-linux-gnu)
-Date: WWW, DD MMM YYYY HH MM:SS GMT
+Server: Parser3.X.X ...
+Date: DATE GMT
 Connection: close
 Content-Length: 17
 
@@ -204,8 +204,8 @@ Permission denied
 running test 024.txt
 HTTP/1.0 401 Unauthorized
 Content-Type: text/html; charset=UTF-8
-Server: Parser3.5.2b (compiled on x86_64-unknown-linux-gnu)
-Date: WWW, DD MMM YYYY HH MM:SS GMT
+Server: Parser3.X.X ...
+Date: DATE GMT
 Connection: close
 Www-Authenticate: Basic realm="auth test"
 Content-Length: 22
@@ -526,7 +526,7 @@ Connection: close
 Accept-Ranges: bytes
 Content-Range: bytes 5-14/15
 Content-Length: 10
-Last-Modified: WWW, DD MMM YYYY HH MM:SS GMT
+Last-Modified: DATE GMT
 
 test.test!
 =============
