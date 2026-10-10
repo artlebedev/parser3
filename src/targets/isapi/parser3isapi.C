@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.140 2026/10/07 19:37:27 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.141 2026/10/10 02:01:15 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -310,7 +310,7 @@ BOOL WINAPI TerminateExtension(
 	@test
 		PARSER_VERSION from outside
 */
-void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
+void real_parser_handler(SAPI_Info& SAPI_info) {
 	// collect garbage from prev request
 	pa_gc_collect();
 	
@@ -353,13 +353,13 @@ void real_parser_handler(SAPI_Info& SAPI_info, bool header_only) {
 	snprintf(config_filespec, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
 
 	// process the request
-	request.core(entry_exists(config_filespec) ? config_filespec : NULL, header_only);
+	request.core(entry_exists(config_filespec) ? config_filespec : NULL);
 }
 
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
-static const Exception call_real_parser_handler__do_PEH_return_it(SAPI_Info& SAPI_info, bool header_only) {
+static const Exception call_real_parser_handler__do_PEH_return_it(SAPI_Info& SAPI_info) {
 	try {
-		real_parser_handler(SAPI_info, header_only);
+		real_parser_handler(SAPI_info);
 	} catch(const Exception& e) {
 		return e;
 	}
@@ -367,12 +367,12 @@ static const Exception call_real_parser_handler__do_PEH_return_it(SAPI_Info& SAP
 	return Exception();
 }
 
-static void call_real_parser_handler__supress_system_exception(SAPI_Info& SAPI_info, bool header_only) {
+static void call_real_parser_handler__supress_system_exception(SAPI_Info& SAPI_info) {
 	Exception parser_exception;
 	LPEXCEPTION_POINTERS system_exception=0;
 
 	__try {
-		parser_exception=call_real_parser_handler__do_PEH_return_it(SAPI_info, header_only);
+		parser_exception=call_real_parser_handler__do_PEH_return_it(SAPI_info);
 	} __except ( (system_exception=GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER) {
 		if(system_exception)
 			if(_EXCEPTION_RECORD *er=system_exception->ExceptionRecord)
@@ -396,14 +396,13 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		200 // default http_response_code [lpECB->dwHttpStatusCode seems to be always 0, even on 404 redirect to /404.html]
 	};
 
-	bool header_only=strcasecmp(lpECB->lpszMethod, "HEAD")==0;
 	try { // global try
 #ifdef PA_SUPPRESS_SYSTEM_EXCEPTION
 		call_real_parser_handler__supress_system_exception(
 #else
 		real_parser_handler(
 #endif
-			SAPI_info, header_only);
+			SAPI_info);
 		// successful finish
 	} catch(const Exception& e) { // just in case
 		// log it
@@ -421,7 +420,7 @@ DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
 		lpECB->ServerSupportFunction(lpECB->ConnID, HSE_REQ_SEND_RESPONSE_HEADER_EX, &header_info, NULL, NULL);
 
 		// send body
-		if(!header_only)
+		if(strcasecmp(lpECB->lpszMethod, "HEAD")!=0)
 			SAPI::send_body(SAPI_info, e.comment(), strlen(e.comment()));
 
 		// unsuccessful finish

@@ -36,7 +36,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.458 2026/10/05 17:50:18 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.459 2026/10/10 02:01:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -492,6 +492,11 @@ void Request::configure() {
 			mime_types=table;
 }
 
+/// HEAD request: only the headers are sent
+static bool is_header_only(Request_info& info) {
+	return info.method && strcasecmp(info.method, "HEAD")==0;
+}
+
 /**
 	load MAIN class, execute @main.
 	MAIN class consists of all the auto.p files we'd manage to find
@@ -503,7 +508,8 @@ void Request::configure() {
 	@test log stack trace
 
 */
-void Request::core(const char* config_filespec, bool header_only, const String &amain_method_name, const String* amain_class_name) {
+void Request::core(const char* config_filespec, const String &amain_method_name, const String* amain_class_name) {
+	bool header_only=is_header_only(request_info);
 	try {
 		// loading config
 		if(config_filespec)

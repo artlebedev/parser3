@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.377 2026/10/09 21:38:52 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.378 2026/10/10 02:01:15 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -330,7 +330,7 @@ static void config_handler(SAPI_Info &info) {
 #ifdef CODE_CACHE
 	Code_cache_manager::start();
 #endif
-	r.core(config_filespec, false, String::Empty);
+	r.core(config_filespec, String::Empty);
 #ifdef CODE_CACHE
 	Code_cache_manager::finish(r);
 #endif
@@ -359,7 +359,7 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		// prepare to process request
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
 		// process the request
-		r.core(config_filespec, strcasecmp(request_info.method, "HEAD")==0, main_method_name, &httpd_class_name);
+		r.core(config_filespec, main_method_name, &httpd_class_name);
 	} catch(const Exception& e) { // exception in connection handling
 		SAPI::log(info, "%s", e.comment());
 		const char* status = info.exception_http_status(e.type());
@@ -539,7 +539,7 @@ static void real_parser_handler(bool cgi) {
 		// initing ::request ptr for signal handlers
 		RequestController rc(&r);
 		// process the request
-		r.core(locate_config(config_filespec, parser3_filespec), strcasecmp(request_info.method, "HEAD")==0);
+		r.core(locate_config(config_filespec, parser3_filespec));
 		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
 		// then the request is destroyed, before the libraries are unloaded: its pool cleanups call them (memcached)
 	}
