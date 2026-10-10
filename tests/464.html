@@ -1,0 +1,29 @@
+# ^response:send[]: the headers go with the first part, the result of @main is not sent
+@main[]
+not sent
+$response:x-test[sent with the first part]
+# a part is checked before the headers are sent
+^try{ ^response:send(true) }{ $exception.handled(true) $response:x-bool[$exception.comment] }
+^try{ ^response:send[^file::stat[464.html]] }{ $exception.handled(true) $response:x-stat[$exception.comment] }
+^response:send[1. string, untainted: ^taint[<b>]
+]
+not sent either
+^response:send[^file::create[text;part.txt;2. file
+]]
+$response:x-late[too late, not sent]
+^response:send[3. number and void: |]
+^response:send(3)
+^response:send[$void]
+^response:send[|
+]
+^check{^response:send[$.a[1]]}
+^check{^response:send[^table::create{a}]}
+^check{^response:send{code}}
+^response:send[5. the last part
+]
+
+@check[code]
+^try{$code}{ $exception.handled(true) ^response:send[4. $exception.comment^#0A] }
+
+@postprocess[body]
+^response:send[not sent: @postprocess is not called]

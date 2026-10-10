@@ -1,0 +1,9 @@
+# ^response:send[] and @unhandled_exception: it is called, but its result is not sent
+@main[]
+^response:send[sent from @main^#0A]
+^throw[test;;error after the part]
+
+@unhandled_exception[exception;stack]
+$exception.handled(true)
+not sent
+^response:send[sent from @unhandled_exception: $exception.comment]
