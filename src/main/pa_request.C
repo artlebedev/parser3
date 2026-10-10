@@ -36,7 +36,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.459 2026/10/10 02:01:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.460 2026/10/10 12:58:07 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -183,7 +183,8 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	// private defaults
 	fdefault_lang(adefault_lang), 
 	// private mime types
-	mime_types(0)
+	mime_types(0),
+	fheaders_sent(false)
 {
 	pa_register_thread_request(*this);
 
@@ -534,6 +535,10 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME, &amain_method_name, "method not found in class %s", main.type());
 
+		// ^response:send[] was used: only its parts are sent
+		if(fheaders_sent)
+			return;
+
 		// extract response body
 		Value* body_value=response.fields().get(download_name_upper); // $response:download?
 		bool as_attachment=body_value!=0;
@@ -598,14 +603,15 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 			// logging both initial and new exceptions
 			SAPI::log(sapi_info, "%s", exception_cstr);
 			SAPI::log(sapi_info, "Exception in @unhandled_exception at %s", get_exception_cstr(e, details));
-			SAPI::send_error(sapi_info, "Exception in @unhandled_exception, details are available in Parser error log.");
+			if(!fheaders_sent)
+				SAPI::send_error(sapi_info, "Exception in @unhandled_exception, details are available in Parser error log.");
 			return;
 		}
 
 		if(body_string) {  // could report an error beautifully?
 			VString body_vstring(*body_string);
 			output_result(body_vstring.as_vfile(flang, &charsets), header_only, false);
-		} else {
+		} else if(!fheaders_sent) {
 			// doing that ugly
 			SAPI::send_error(sapi_info, exception_cstr, strcmp(e.type(), "file.missing") ? "500" : "404");
 		}
@@ -995,6 +1001,9 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 }
 
 void Request::output_result(VFile* body_file, bool header_only, bool as_attachment) {
+	if(fheaders_sent)
+		return;
+
 	// header: cookies
 	cookie.output_result(sapi_info);
 	
@@ -1065,6 +1074,27 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 
 		output_sole_piece(*this, header_only, *body_file, body_file_content_type);
 	}
+}
+
+void Request::send(Value& part) {
+	// converted before the headers: a stat-ed file throws here
+	VFile* file=dynamic_cast<VFile*>(&part);
+	String::C output=file ? String::C(file->value_ptr(), file->value_size()) : String::C(part.get_string()->cstr_to_string_body_untaint(flang, 0, &charsets));
+	if(!file || file->is_text_mode())
+		output=Charset::transcode(output, charsets.source(), charsets.client());
+
+	if(!fheaders_sent) {
+		fheaders_sent=true;
+		// the headers: cookies and $response:fields, without Content-Length
+		cookie.output_result(sapi_info);
+		response.fields().put_dont_replace(content_type_name_upper, new VString(*new String(DEFAULT_CONTENT_TYPE)));
+		Add_header_attribute_info info(*this);
+		response.fields().for_each<Add_header_attribute_info*>(add_header_attribute, &info);
+		SAPI::send_headers(sapi_info);
+	}
+
+	if(!is_header_only(request_info))
+		SAPI::send_body(sapi_info, output.str, output.length);
 }
 
 const String& Request::mime_type_of(const String* file_name) {

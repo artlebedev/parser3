@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.283 2026/10/10 02:01:15 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.284 2026/10/10 12:58:07 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -216,6 +216,9 @@ public:
 	*/
 	void core(const char* config_filespec, const String& amain_method_name = main_method_name, const String* amain_class_name = NULL);
 
+	/// ^response:send[part]: the headers go with the first part, the result of @main or exception is not sent then
+	void send(Value& part);
+
 	/// executes ops
 	void execute(ArrayOperation& ops); // execute.C
 
@@ -419,6 +422,10 @@ private: // mime types
 
 	/// $MAIN:MIME-TYPES
 	Table *mime_types;
+
+private: // true if ^response:send[] was used
+
+	bool fheaders_sent;
 
 private: // connection manipulation
 
