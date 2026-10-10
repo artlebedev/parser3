@@ -12,27 +12,27 @@
 8. int: 1 int
 
 9. nil: null void
-10. bitfield: [0,0]
-11. int beyond 2^53 is string: ["9007199254740993",42]
+10. bitfield: [ 0, 0 ]
+11. int beyond 2^53 is string: [ "9007199254740993", 42 ]
 12. zadd: 1
 
 13. double: 1.5 double
 14. bool: true
 15. rpush: 3
-16. array: ["a","b","c"]
+16. array: [ "a", "b", "c" ]
 17. hset: 2
-18. map: {"f1":"v1","f2":"v2"}
+18. map: { "f1":"v1", "f2":"v2" }
 19. sadd: 1
-20. set: ["one"]
-21. nested: [1,[2,"x"],"y"]
+20. set: [ "one" ]
+21. nested: [ 1, [ 2, "x" ], "y" ]
 22. error: redis: WRONGTYPE Operation against a key holding the wrong kind of value
 23. unknown command: redis: ERR unknown command 'gett', with args beginning with: 's' 
 24. multi: OK QUEUED QUEUED
 25. error inside EXEC: redis: WRONGTYPE Operation against a key holding the wrong kind of value
 
-26. protocol 2, map is array: ["f1","v1","f2","v2"]
-27. protocol 2, double is string: ["a","1.5"]
-28. protocol 3: [["a",1.5]]
+26. protocol 2, map is array: [ "f1", "v1", "f2", "v2" ]
+27. protocol 2, double is string: [ "a", "1.5" ]
+28. protocol 3: [ [ "a", 1.5 ] ]
 
 
 29. released: redis: using unopened or released redis object
@@ -61,9 +61,9 @@
 16. nested array: parser.runtime: redis command argument can not be a nested array or a hash
 17. hash in array: parser.runtime: redis command argument can not be a nested array or a hash
 18. hset hash: 3
-19. hgetall: {"name":"moko","n":"1","flag":"1"}
+19. hgetall: { "name":"moko", "n":"1", "flag":"1" }
 20. mset hash: OK
-21. mget: ["1","2"]
+21. mget: [ "1", "2" ]
 22. array in hash: parser.runtime: redis command argument can not be a nested array or a hash
 
 23. binary map: name=file n=file flag=file

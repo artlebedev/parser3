@@ -19,9 +19,9 @@
 8. delete missing: ok
 
 
-9. mget: {"pa_k1":"one","pa_k2":"two"}
+9. mget: { "pa_k1":"one", "pa_k2":"two" }
 
-10. mget table: {"pa_k2":"two"}
+10. mget table: { "pa_k2":"two" }
 
 11. languages are kept: &lt;b&gt; <i>
 12. number: memcached: double serialization is not supported yet

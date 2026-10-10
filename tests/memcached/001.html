@@ -1,6 +1,6 @@
 # values: set, get, add, delete, mget
 @main[]
-$m[^open_memcached[]]
+$m[^memcached::open[$server]]
 ^cleanup[]
 $m.pa_s[hello]
 1. get: $m.pa_s
@@ -30,5 +30,6 @@ $m.pa_tainted[^taint[<b>] <i>]
 15. empty key: ^failed{^m.add[;v]}
 ^cleanup[]
 
-@cleanup[]
-^m.delete[pa_s]^m.delete[pa_e]^m.delete[pa_t]^m.delete[pa_a]^m.delete[pa_k1]^m.delete[pa_k2]^m.delete[pa_tainted]
+@cleanup[][keys;key]
+$keys[pa_s;pa_e;pa_t;pa_a;pa_k1;pa_k2;pa_tainted]
+$result[^keys.foreach[;key]{^m.delete[$key]}]

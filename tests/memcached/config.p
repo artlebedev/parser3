@@ -1,15 +1,11 @@
 # the memcached on localhost, see run_tests.sh
 
 @auto[]
-$server[127.0.0.1:11211]
-
-@open_memcached[]
-$result[^memcached::open[$server]]
+$server[127.0.0.1]
 
 # the value as one-line json, to see the types
-@show[value][s]
-$s[^json:string[$value]]
-$result[^s.match[\n][g]{}]
+@show[value]
+$result[^json:string[$value; $.one-line(true) ]]
 
 # the exception of the code, which is expected
 @failed[code]
