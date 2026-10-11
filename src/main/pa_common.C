@@ -17,7 +17,7 @@
 #include "pa_idna.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.349 2026/10/01 11:48:37 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.350 2026/10/11 17:06:44 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // defines for globals
 
@@ -480,7 +480,7 @@ const UTF16* pa_utf16_encode(const char* in, Charset& source_charset){
 
 	int status=pa_convertUTF8toUTF16((const UTF8**)&sIn.str, (const UTF8*)(sIn.str+sIn.length), &utf16_end, utf16+sIn.length, strictConversion);
 	if(status != conversionOK)
-		throw Exception("utf-16 encode", new String(in), "utf-16 conversion failed (%d)", status);
+		return 0; // without throw, callers treat 0 as an invalid file name
 
 	*utf16_end=0;
 

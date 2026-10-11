@@ -16,7 +16,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.11 2026/10/03 14:30:03 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.12 2026/10/11 17:06:44 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -110,42 +110,53 @@ const String* file_uri_to_path(const String& uri) {
 	return 0;
 }
 
-// externs
-
-const UTF16* pa_utf16_encode(const char* in, Charset& source_charset);
-
 // functions
 
 #ifdef _MSC_VER
 
+// externs
+
+const UTF16* pa_utf16_encode(const char* in, Charset& source_charset);
 #define PA_UTF16_ENC(value) (const wchar_t *)pa_utf16_encode(value, pa_thread_request().charsets.source())
 
+// non-UTF-8 name should be converted to an error without throw
+#define PA_UTF16_VAR(var, value, error, failed) const wchar_t* var=PA_UTF16_ENC(value); if(!var){ errno=error; return failed; }
+
 int pa_stat(const char *pathname, struct stat *buffer){
-	return _wstat64(PA_UTF16_ENC(pathname), buffer);
+	PA_UTF16_VAR(wpathname, pathname, ENOENT, -1)
+	return _wstat64(wpathname, buffer);
 }
 
 int pa_open(const char *pathname, int flags, int mode){
-	return _wopen(PA_UTF16_ENC(pathname), flags, mode);
+	PA_UTF16_VAR(wpathname, pathname, (flags & _O_CREAT) ? EINVAL : ENOENT, -1)
+	return _wopen(wpathname, flags, mode);
 }
 
 FILE *pa_fopen(const char *pathname, const char *mode){
-	return _wfopen(PA_UTF16_ENC(pathname), PA_UTF16_ENC(mode));
+	PA_UTF16_VAR(wpathname, pathname, *mode=='r' ? ENOENT : EINVAL, 0)
+	PA_UTF16_VAR(wmode, mode, EINVAL, 0)
+	return _wfopen(wpathname, wmode);
 }
 
 int pa_mkdir(const char *pathname, int){
-	return _wmkdir(PA_UTF16_ENC(pathname));
+	PA_UTF16_VAR(wpathname, pathname, EINVAL, -1)
+	return _wmkdir(wpathname);
 }
 
 int pa_rmdir(const char *pathname){
-	return _wrmdir(PA_UTF16_ENC(pathname));
+	PA_UTF16_VAR(wpathname, pathname, ENOENT, -1)
+	return _wrmdir(wpathname);
 }
 
 int pa_rename(const char *oldpath, const char *newpath){
-	return _wrename(PA_UTF16_ENC(oldpath), PA_UTF16_ENC(newpath));
+	PA_UTF16_VAR(woldpath, oldpath, ENOENT, -1)
+	PA_UTF16_VAR(wnewpath, newpath, ENOENT, -1)
+	return _wrename(woldpath, wnewpath);
 }
 
 int pa_unlink(const char *pathname){
-	return _wunlink(PA_UTF16_ENC(pathname));
+	PA_UTF16_VAR(wpathname, pathname, ENOENT, -1)
+	return _wunlink(wpathname);
 }
 
 #else
