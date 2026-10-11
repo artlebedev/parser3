@@ -1,0 +1,29 @@
+Content-Type: text/event-stream; charset=utf-8
+X-Test: sent with the first event
+Cache-Control: no-cache
+
+retry: 3000
+
+: keep-alive
+: second comment line
+
+id: 1
+data: привет &lt;tag&gt; <tag>
+
+event: update 
+id: 2
+data: first line
+data: second line
+data: third line
+
+event: json
+data: {
+data: "text":"привет",
+data: "login":"user"
+data: }
+
+data: 
+
+event: error
+data: event must be a single line
+

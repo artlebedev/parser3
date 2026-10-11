@@ -1,0 +1,36 @@
+# ^sse[$.event $.id $.retry $.comment $.data] sends one server-sent event with ^response:send[]
+@main[]
+$response:charset[windows-1251]
+$response:content-type[ $.value[text/html] $.charset[windows-1251] ]
+$response:x-test[sent with the first event]
+^sse[ $.retry(3000) ]
+^sse[ $.comment[keep-alive^#0Asecond comment line] ]
+^sse[ $.id[1] $.data[привет ^taint[<tag>] <tag>] ]
+^sse[ $.event[update ] $.id[2] $.data[first line^#0Asecond line^#0D^#0Athird line^#0D] ]
+^sse[ $.event[json] $.data[^json:string[ $.text[привет] $.login[user] ]] ]
+^sse[ $.data[] ]
+^try{ ^sse[ $.event[bad^#0Aname] $.data[not sent] ] }{ $exception.handled(true) ^sse[ $.event[error] $.data[$exception.comment] ] }
+
+@sse[event][msg;type]
+$result[]
+$type[$response:content-type]
+^if($type.value ne "text/event-stream" || $type.charset ne "utf-8" || $response:charset ne "utf-8"){
+	$response:content-type[ $.value[text/event-stream] $.charset[utf-8] ]
+	$response:charset[utf-8]
+	$response:cache-control[no-cache]
+}
+$msg[^array::create[]]
+^if(def $event.comment){ ^sse_lines[$msg;;$event.comment] }
+^if(def $event.event){ ^sse_line[$msg;event;$event.event] }
+^if(def $event.id){ ^sse_line[$msg;id;$event.id] }
+^if(def $event.retry){ ^sse_line[$msg;retry;$event.retry] }
+^if(^event.contains[data]){ ^sse_lines[$msg;data;$event.data] }
+# the empty line ends the event, as-is to avoid optimization
+^response:send[^msg.foreach[;line]{${line}^taint[as-is][^#0A]}^taint[as-is][^#0A]]
+
+@sse_lines[msg;name;text]
+^text.match[(*ANYCRLF)^^(.*)][gm]{^msg.append[${name}: $match.1]}
+
+@sse_line[msg;name;value]
+^if(^value.pos[^#0A] >= 0 || ^value.pos[^#0D] >= 0){ ^throw[sse;;$name must be a single line] }
+^msg.append[${name}: $value]
