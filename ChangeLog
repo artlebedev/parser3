@@ -1,4 +1,178 @@
+2026-10-11  moko
+
+	* tests/: 467.html, results/467.processed: ^sse[] demo for
+	  ^response:send[] added (related to feature #1306)
+
+	* tests/httpd/: run_tests.cmd, run_tests.ps1:
+	  run_tests.cmd/run_tests.ps1 added to test httpd under Windows
+
+	* src/main/: pa_common.C, pa_dir.C, pa_file.C: pa_utf16_encode no
+	  longer throws exception on bad UTF-8 to avoid undesired file
+	  functions exceptions under Windows (errno is set instead)
+
+	* tests/httpd/: ok.log, run_tests.sh, site/config.p,
+	  site/run_server.sh: httpd run_tests.sh now runs/stops parser
+	  webserver, default auto.p used
+
+	* etc/auto.p.in: $CHARSETS fully commented to allow redefinition in
+	  tests
+
+	* src/main/pa_http.C: socket timeout used not only under windows,
+	  but also in linux threaded mode, where alarm is not available
+
+2026-10-10  moko
+
+	* tests/redis/: config.p, ok.log: minor code cleanup in tests
+
+	* tests/: 464.html, 465.html, 466.html, results/464.processed,
+	  results/465.processed, results/466.processed: tests for
+	  ^response:send[part] added (related to feature #1306)
+
+	* src/: classes/response.C, include/pa_request.h,
+	  main/pa_request.C: ^response:send[part] added (implements feature
+	  #1306)
+
+	* src/: include/pa_request.h, main/pa_request.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: header_only param optimized out
+
+	* src/classes/amqp.C: more correct amqp exception handling
+
+	* src/: classes/amqp.C, lib/memcached/pa_memcached.C,
+	  lib/memcached/pa_memcached.h, types/pa_vmemcached.C: minor memory
+	  licks fixed, memcached get uses mget to avoid memory leak
+
+	* src/targets/cgi/parser3.C: pooled fix for memcached
+
+	* src/: classes/amqp.C, classes/memcached.C, classes/redis.C,
+	  types/pa_vamqp.h, types/pa_vmemcached.h, types/pa_vredis.h: amqp,
+	  redis, memcached are now Pooled - to close connection if no
+	  release was called
+
+2026-10-09  moko
+
+	* tests/: 463.html, results/463.processed: tests for a constructor
+	  called as a method of a created object
+
+	* src/: classes/hashfile.C, types/pa_vhashfile.C,
+	  types/pa_vhashfile.h, types/pa_vimage.h, types/pa_vmemcached.C,
+	  types/pa_vregex.C: more checks for a constructor called as a
+	  method of a created object
+
+	* operators.ru.txt, operators.txt: amqp and redis documented
+	  (related to feature #1288 and #1304)
+
+	* src/: classes/amqp.C, types/pa_vamqp.h: warning war:
+	  librabbitmq>0.12 by default, PA_AMQP_COMPAT added for older
+	  versions (related to feature #1288)
+
+	* src/: classes/classes.vcproj, include/pa_config_fixed.h,
+	  lib/pcre/pcre_internal.vcproj, main/main.vcproj,
+	  main/pa_globals.C, targets/apache/ApacheModuleParser3.vcproj,
+	  targets/apache/ApacheModuleParser3Core.vcproj,
+	  targets/cgi/parser3.vcproj, targets/isapi/parser3isapi.vcproj,
+	  types/types.vcproj: msvc: hiredis added, pcre2 added under
+	  windows (related to feature #1304)
+
+	* buildall: pcre jit is not used anyway
+
+	* tests/redis/: 001.html, 002.html, 003.html, 004.html, 005.html,
+	  config.p, ok.log, run_tests.sh: tests for redis integration added
+	  (related to feature #1304)
+
+	* src/: classes/redis.C, types/pa_vredis.h: redis SSL support
+	  added, similar to AMQP (related to feature #1304)
+
+2026-10-08  moko
+
+	* configure.ac: WITH_AMQP_SSL check tuned
+
+	* src/classes/amqp.C, src/include/pa_config_auto.h.in,
+	  src/include/pa_config_fixed.h, src/include/pa_version.h,
+	  configure.ac: +WITH_REDIS_SSL, WITHOUT_AMQP_SSL -> WITH_AMQP_SSL
+
+	* buildall: use gmake under FreeBSD
+
+	* configure.ac: configure: Checks for libraries moved before
+	  features as redis require -lm on FreeBSD
+
+2026-10-07  moko
+
+	* tests/460.html: sort added
+
+	* tests/results/425.processed: PCRE2 10.44 -> PCRE2 10.49
+
+	* src/: classes/file.C, include/pa_version.h,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_venv.C: PARSER_VERSION_WITH_FEATURES added and used
+	  (implements feature #1305)
+
+	* buildall: --with-amqp, --with-redis added, --with-pic now by
+	  default, gc: libatomic_ops-7.6.2 -> libatomic_ops-7.10.0,
+	  gc-8.0.4 -> gc-8.2.12, pcre2-10.44 -> pcre2-10.49 gc, pcre,
+	  rabbitmq-c, hiredis - now all in lib folder (related to feature
+	  #1268)
+
+	* src/classes/redis.C: redis file commands prefix changed to f-
+	  (related to feature #1304)
+
+	* configure.ac: hiredis is build without libtool (related to
+	  feature #1304)
+
+	* configure.ac: amqp_ssl_socket.h check added to defune
+	  WITHOUT_AMQP_SSL (related to feature #1288)
+
+	* src/classes/redis.C: file- prefix implemented to get file result
+	  from any redis command (related to feature #1304)
+
+	* src/classes/: amqp.C, file.C, redis.C: more headers reoder and
+	  cleanup
+
+	* src/classes/redis.C: headers cleanup and reorder (related to
+	  feature #1304)
+
+	* configure: autoreconf after redis was added (related to feature
+	  #1304)
+
+	* tests/results/: 323.processed, 421.processed: tests results
+	  updated after redis class was added (related to feature #1304)
+
+	* buildall, configure.ac: --with-redis option added to enable redis
+	  support using hiredis (related to feature #1304)
+
+	* src/: classes/Makefile.am, classes/classes.C,
+	  classes/classes.vcproj, classes/redis.C,
+	  include/pa_config_auto.h.in, targets/apache/Makefile.am,
+	  targets/cgi/Makefile.am, types/Makefile.am, types/pa_vredis.h:
+	  class with redis support added (implements feature #1304)
+
+2026-10-06  moko
+
+	* src/types/pa_vtable.C: compile fix with FEATURE_GET_ELEMENT4CALL
+	  undefined
+
+	* tests/httpd/code-cache/: ok.log, run_tests.sh, site/cached.p,
+	  site/config.p, site/extend.p, site/late.p, site/tests.p: tests
+	  for code caching in httpd mode (related to feature #1302)
+
+	* tests/: 182.html, results/182.processed: test for
+	  ^reflection:used[] added (related to feature #1303)
+
+	* tests/results/415.processed: actualized after Bison upgrade
+
 2026-10-05  moko
+
+	* src/classes/reflection.C: ^reflection:used[] added, list of
+	  @USE-d files (implements feature #1303)
+
+	* src/: include/Makefile.am, include/pa_code_cache.h,
+	  include/pa_request.h, main/Makefile.am, main/compile.C,
+	  main/compile.y, main/compile_tools.h, main/main.vcproj,
+	  main/pa_code_cache.C, main/pa_request.C, targets/cgi/parser3.C,
+	  types/pa_vstateless_class.C: code caching implemented for httpd
+	  mode: it records and then replays the compilation using the
+	  cached methods (implements feature #1302), pa_code_cache.h/.C
+	  added
 
 	* src/main/compile.tab.C: updated with Bison 3.8.2 from Debian 13
 
@@ -64,6 +238,10 @@
 
 	* src/main/untaint.C: '\' is a path separator everywhere, tainting
 	  updated (related to feature #1300)
+
+	* tests/console/: ok.log, run_tests.sh, 001/config.p, 001/lib.p,
+	  001/page.html, 002/auto.p, 002/page.html: tests for args handling
+	  in console mode (related to feature #1300)
 
 	* src/targets/cgi/parser3.C: '\' as a path separator for config and
 	  log options (related to feature #1300)
