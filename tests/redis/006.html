@@ -1,0 +1,7 @@
+# a command is called by ^r.command[] only: $r.command is not a command, as $h.method is not a method of the hash
+$r[^open_redis[]]
+1. command is not an element: ^if($r.get is junction){junction}{^if(def $r.get){defined}{empty}}
+2. method is an element: ^if($r.release is junction){junction}{not junction}
+3. command is called: ^r.set[pa_k;v] ^r.get[pa_k]
+4. class: $r.CLASS_NAME
+^r.release[]

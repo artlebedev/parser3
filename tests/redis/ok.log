@@ -126,3 +126,9 @@
 14. reconnected: in db 3
 
 15. released: redis: using unopened or released redis object
+=== 006.html
+
+1. command is not an element: empty
+2. method is an element: junction
+3. command is called: OK v
+4. class: redis

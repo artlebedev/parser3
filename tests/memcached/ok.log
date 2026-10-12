@@ -48,3 +48,16 @@
 
 
 9. default expiration: default expiration
+
+=== 003.html
+
+ 
+1. key named as a method: void
+2. not a junction: not junction
+3. computed CLASS key: void
+4. method is called: true false first
+5. a key is not called: parser.runtime: memcached method not found
+6. code is not stored: memcached: junction serialization is not supported yet
+
+7. deleted: void
+8. class: memcached

@@ -1,0 +1,14 @@
+# as in the hash: $m.name is the key, ^m.name[] is the method; $ never returns a method,
+# ^ never calls a key, as the code can not be stored in memcached
+@main[]
+$m[^memcached::open[$server]]
+$c1[C] $c2[LASS]
+1. key named as a method: ^if($m.delete is void){void}{not void}
+2. not a junction: ^if($m.add is junction){junction}{not junction}
+3. computed CLASS key: ^if($m.[${c1}${c2}] is void){void}{not void}
+4. method is called: ^show(^m.add[pa_m;first]) ^show(^m.add[pa_m;second]) $m.pa_m
+5. a key is not called: ^failed{^m.pa_m[]}
+6. code is not stored: ^failed{$m.pa_code{x}}
+^m.delete[pa_m]
+7. deleted: ^if($m.pa_m is void){void}
+8. class: $m.CLASS_NAME
