@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.28 2026/10/09 22:05:41 moko Exp $" IDENT_PA_VMEMCACHED_H;
+volatile const char * IDENT_PA_VMEMCACHED_C="$Id: pa_vmemcached.C,v 1.29 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VMEMCACHED_H;
 
 const char *memcached_library="libmemcached" LT_MODULE_EXT;
 
@@ -158,8 +158,7 @@ void VMemcached::remove(const String& aname) {
 }
 
 Value* VMemcached::get_element(const String& aname) {
-	if(Value *result=VStateless_object::get_element(aname))
-		return result;
+	MAYBE_GET_SPECIAL_OR_METHOD(VStateless_object::get_element(aname));
 
 	check_key(aname);
 

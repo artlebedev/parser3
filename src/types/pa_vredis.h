@@ -8,7 +8,7 @@
 #ifndef PA_VREDIS_H
 #define PA_VREDIS_H
 
-#define IDENT_PA_VREDIS_H "$Id: pa_vredis.h,v 1.3 2026/10/09 21:10:38 moko Exp $"
+#define IDENT_PA_VREDIS_H "$Id: pa_vredis.h,v 1.4 2026/10/12 21:59:21 moko Exp $"
 
 #include "classes.h"
 #include "pa_vstateless_object.h"
@@ -54,9 +54,11 @@ public:
 #else
 	override Value* get_element(const String& aname) {
 #endif
+		// $method
 		if(Value* result=VStateless_object::get_element(aname))
 			return result;
 
+		// any other name is a redis command
 		Method* method=new Method(
 			Method::CT_DYNAMIC,
 			0, MAX_REDIS_COMMAND_PARAMS,

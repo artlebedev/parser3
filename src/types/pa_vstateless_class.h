@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.100 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.101 2026/10/12 21:59:21 moko Exp $"
 
 // include
 
@@ -25,6 +25,28 @@ typedef HASH_STRING<Property *> HashStringProperty;
 typedef HASH_STRING<Method *> HashStringMethod;
 
 class Temp_method;
+
+#ifdef FEATURE_GET_ELEMENT4CALL
+
+#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
+#error FEATURE_GET_ELEMENT4CALL requires OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL: to eliminate the base get_element call, CLASS and CLASS_NAME must be compiled into the bytecode
+#endif
+
+#define PA_MAYBE(call)
+
+#else
+
+// the call returns method, and CLASS and CLASS_NAME if they are not compiled into the bytecode
+#define PA_MAYBE(call) if(Value* result=call) return result
+
+#endif
+
+/// for use in get_element: no call, $method is returned by get_element4call ONLY, CLASS and CLASS_NAME are compiled into the bytecode
+#define MAYBE_GET_SPECIAL_OR_METHOD(call) PA_MAYBE(call)
+
+/// for use in get_element of the classes without methods: no call, CLASS and CLASS_NAME are compiled into the bytecode
+/// when a method is added to such class, MAYBE_GET_SPECIAL must be replaced with 'if'
+#define MAYBE_GET_SPECIAL(call) PA_MAYBE(call)
 
 /**
 	object' class. stores

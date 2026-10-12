@@ -18,7 +18,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.131 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.132 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -383,9 +383,7 @@ Value* VForm::get_element(const String& aname) {
 	if(SYMBOLS_EQ(aname, ELEMENTS_SYMBOL))
 		return &velements;
 
-	// methods (if any)
-	if(Value* result=VStateless_class::get_element(aname))
-		return result;
+	MAYBE_GET_SPECIAL(VStateless_class::get_element(aname));
 
 	// $field
 	return fields.get(aname);

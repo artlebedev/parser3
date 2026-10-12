@@ -14,7 +14,7 @@
 #include "pa_vstring.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.49 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.50 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -203,11 +203,7 @@ static int get_rlimit_resource(const String& aname) {
 #endif
 
 Value* VStatus::get_element(const String& aname) {
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	// CLASS, CLASS_NAME
-	if(Value* result=VStateless_class::get_element(aname))
-		return result;
-#endif
+	MAYBE_GET_SPECIAL(VStateless_class::get_element(aname));
 
 	// getstatus
 	if(Cache_manager* manager=cache_managers->get(aname))

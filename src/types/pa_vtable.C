@@ -11,7 +11,7 @@
 #include "pa_vvoid.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.60 2026/10/06 15:47:08 moko Exp $" IDENT_PA_VTABLE_H;
+volatile const char * IDENT_PA_VTABLE_C="$Id: pa_vtable.C,v 1.61 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VTABLE_H;
 
 #ifndef DOXYGEN
 struct Record_info {
@@ -52,38 +52,7 @@ Value* VTable::get_element(const String& aname) {
 	if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
 		return fields_element();
 
-#ifdef FEATURE_GET_ELEMENT4CALL
-	// columns first
-	if(ftable) {
-		int index=ftable->column_name2index(aname, false);
-		if(index>=0) // column aname|number valid
-		{
-			const String* string=ftable->item(index); // there is such column
-			return string ? new VString(*string) : VString::empty();
-		}
-	}
-
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	// CLASS, CLASS_NAME
-	if(Value* result=VStateless_object::get_element(aname))
-		return result;
-#endif
-
-	throw Exception(PARSER_RUNTIME, &aname, "column not found");
-}
-
-Value* VTable::get_element4call(const String& aname) {
-	// methods
-	if(Value* result=VStateless_object::get_element(aname))
-		return result;
-
-	return bark("%s method not found", &aname);
-}
-
-#else
-	// methods first
-	if(Value* result=VStateless_object::get_element(aname))
-		return result;
+	MAYBE_GET_SPECIAL_OR_METHOD(VStateless_object::get_element(aname));
 
 	// columns
 	if(ftable) {
@@ -97,7 +66,6 @@ Value* VTable::get_element4call(const String& aname) {
 
 	throw Exception(PARSER_RUNTIME, &aname, "column not found");
 }
-#endif
 
 const VJunction* VTable::put_element(const String& aname, Value* avalue) {
 	if(ftable) {

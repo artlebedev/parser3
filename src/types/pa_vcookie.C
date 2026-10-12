@@ -13,7 +13,7 @@
 #include "pa_vhash.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.107 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VCOOKIE_H;
+volatile const char * IDENT_PA_VCOOKIE_C="$Id: pa_vcookie.C,v 1.108 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VCOOKIE_H;
 
 // defines
 
@@ -37,11 +37,7 @@ VCookie::VCookie(Request_charsets& acharsets, Request_info& arequest_info):
 }
 
 Value* VCookie::get_element(const String& aname) {
-#ifndef OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL
-	// CLASS, CLASS_NAME
-	if(Value* result=VStateless_class::get_element(aname))
-		return result;
-#endif
+	MAYBE_GET_SPECIAL(VStateless_class::get_element(aname));
 
 	// $fields
 	if(aname==COOKIE_FIELDS_ELEMENT_NAME){

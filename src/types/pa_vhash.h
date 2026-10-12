@@ -8,7 +8,7 @@
 #ifndef PA_VHASH_H
 #define PA_VHASH_H
 
-#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.90 2026/09/24 02:23:26 moko Exp $"
+#define IDENT_PA_VHASH_H "$Id: pa_vhash.h,v 1.91 2026/10/12 21:59:21 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -64,11 +64,7 @@ public: // value
 		if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
 			return this;
 
-#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		// $method, CLASS, CLASS_NAME
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-#endif
+		MAYBE_GET_SPECIAL_OR_METHOD(VStateless_object::get_element(aname));
 
 		// default value
 		return get_default();
@@ -150,11 +146,7 @@ public: // value
 		if(SYMBOLS_EQ(aname,FIELDS_SYMBOL))
 			return this;
 
-#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		// $method, CLASS, CLASS_NAME
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-#endif
+		MAYBE_GET_SPECIAL_OR_METHOD(VStateless_object::get_element(aname));
 
 		return 0;
 	}

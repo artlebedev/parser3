@@ -8,7 +8,7 @@
 #ifndef PA_VSTRING_H
 #define PA_VSTRING_H
 
-#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.85 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VSTRING_H "$Id: pa_vstring.h,v 1.86 2026/10/12 21:59:21 moko Exp $"
 
 // includes
 
@@ -53,13 +53,9 @@ public: // Value
 		return result;
 	}
 
-	/// VString: $method
+	/// VString: no elements, hash compatible if empty
 	override Value* get_element(const String& aname) {
-#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		// CLASS, CLASS_NAME and normally hidden $method
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-#endif
+		MAYBE_GET_SPECIAL_OR_METHOD(VStateless_object::get_element(aname));
 		// void, empty or whitespace string are hash compatible
 		if (fstring->is_empty() || fstring->trim().is_empty())
 			return 0;

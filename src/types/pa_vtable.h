@@ -8,7 +8,7 @@
 #ifndef PA_VTABLE_H
 #define PA_VTABLE_H
 
-#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.72 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VTABLE_H "$Id: pa_vtable.h,v 1.73 2026/10/12 21:59:21 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_table.h"
@@ -43,12 +43,8 @@ public: // Value
 	override const String* get_json_string(Json_options& options);
 	/// extract VTable
 	override Table* get_table() { return ftable; }
-	/// VTable: columns,methods
+	/// VTable: columns
 	override Value* get_element(const String& aname);
-#ifdef FEATURE_GET_ELEMENT4CALL
-	/// VTable: methods,columns
-	override Value* get_element4call(const String& aname);
-#endif
 	/// VTable: columns
 	virtual const VJunction* put_element(const String&, Value*);
 

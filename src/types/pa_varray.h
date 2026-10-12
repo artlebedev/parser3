@@ -8,7 +8,7 @@
 #ifndef PA_VARRAY_H
 #define PA_VARRAY_H
 
-#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.26 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VARRAY_H "$Id: pa_varray.h,v 1.27 2026/10/12 21:59:21 moko Exp $"
 
 #include "classes.h"
 #include "pa_value.h"
@@ -196,11 +196,8 @@ public: // value
 
 	/// VArray: (key)=value
 	override Value* get_element(const String& aname) {
-#if !defined(FEATURE_GET_ELEMENT4CALL) || !defined(OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL)
-		// $method, CLASS, CLASS_NAME
-		if(Value* result=VStateless_object::get_element(aname))
-			return result;
-#endif
+		MAYBE_GET_SPECIAL_OR_METHOD(VStateless_object::get_element(aname));
+
 		// $element, here as index() allows only numbers
 		if(Value* result=farray.get(index(aname)))
 			return result;
