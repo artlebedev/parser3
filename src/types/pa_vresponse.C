@@ -13,7 +13,7 @@
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.44 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.45 2026/10/13 14:07:26 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 
@@ -28,9 +28,7 @@ Value* VResponse::get_element(const String& aname) {
 	if(aname==REQUEST_HEADERS_ELEMENT_NAME)
 		return new VHash(ffields);
 	
-	// $method
-	if(Value* result=VStateless_class::get_element(aname))
-		return result;
+	MAYBE_GET_SPECIAL_OR_METHOD(VStateless_class::get_element(aname));
 
 	// $field
 	return ffields.get(aname.change_case(fcharsets.source(), String::CC_UPPER));
