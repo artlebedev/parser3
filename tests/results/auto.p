@@ -81,11 +81,7 @@ html	text/html
 
 
 @try-catch-comment[jCode]
-^try{$jCode}{
-	$exception.handled(true)
-	Exception: ^taint[as-is;$exception.comment]
-}
-
+^try{$jCode}{ $exception.handled(true) Exception: ^taint[as-is;$exception.comment]}
 
 @1251[]
 ^from-1251[]

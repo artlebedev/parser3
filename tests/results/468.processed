@@ -1,0 +1,166 @@
+Content-Type: text/html
+Content-Length: 4225
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+1. CLASS_NAME and CLASS.CLASS_NAME:
+1.1 $bool.CLASS_NAME, $bool.CLASS.CLASS_NAME: bool, bool
+$int.CLASS_NAME, $int.CLASS.CLASS_NAME: int, int
+$double.CLASS_NAME, $double.CLASS.CLASS_NAME: double, double
+$file.CLASS_NAME, $file.CLASS.CLASS_NAME: file, file
+$date.CLASS_NAME, $date.CLASS.CLASS_NAME: date, date
+$xdoc.CLASS_NAME, $xdoc.CLASS.CLASS_NAME: xdoc, xdoc
+$xnode.CLASS_NAME, $xnode.CLASS.CLASS_NAME: xnode, xnode
+$image.CLASS_NAME, $image.CLASS.CLASS_NAME: image, image
+$object.CLASS_NAME, $object.CLASS.CLASS_NAME: test, test
+
+1.2 $hash.CLASS_NAME, $hash.CLASS.CLASS_NAME: hash, hash
+$array.CLASS_NAME, $array.CLASS.CLASS_NAME: array, array
+$table.CLASS_NAME, $table.CLASS.CLASS_NAME: table, table
+$hashfile.CLASS_NAME, $hashfile.CLASS.CLASS_NAME: hashfile, hashfile
+$string.CLASS_NAME, $string.CLASS.CLASS_NAME: string, string
+$empty.CLASS_NAME, $empty.CLASS.CLASS_NAME: string, string
+$void.CLASS_NAME, $void.CLASS.CLASS_NAME: void, void
+
+1.3 $regex.CLASS_NAME, $regex.CLASS.CLASS_NAME: regex, regex
+$junction.CLASS_NAME, $junction.CLASS.CLASS_NAME: junction, junction
+$code.CLASS_NAME, $code.CLASS.CLASS_NAME: string, string
+$caught.CLASS_NAME, $caught.CLASS.CLASS_NAME: hash, hash
+
+1.4 $MAIN:CLASS_NAME, $MAIN:CLASS.CLASS_NAME: MAIN, MAIN
+$test:CLASS_NAME, $test:CLASS.CLASS_NAME: test, test
+$env:CLASS_NAME, $env:CLASS.CLASS_NAME: env, env
+$request:CLASS_NAME, $request:CLASS.CLASS_NAME: request, request
+$form:CLASS_NAME, $form:CLASS.CLASS_NAME: form, form
+$cookie:CLASS_NAME, $cookie:CLASS.CLASS_NAME: cookie, cookie
+$status:CLASS_NAME, $status:CLASS.CLASS_NAME: status, status
+$console:CLASS_NAME, $console:CLASS.CLASS_NAME: console, console
+$memory:CLASS_NAME, $memory:CLASS.CLASS_NAME: memory, memory
+$hash:CLASS_NAME, $hash:CLASS.CLASS_NAME: hash, hash
+$table:CLASS_NAME, $table:CLASS.CLASS_NAME: table, table
+$file:CLASS_NAME, $file:CLASS.CLASS_NAME: file, file
+$response:CLASS_NAME, $response:CLASS.CLASS_NAME: response, response
+$math:CLASS_NAME, $math:CLASS.CLASS_NAME: math, math
+$json:CLASS_NAME, $json:CLASS.CLASS_NAME: json, json
+$reflection:CLASS_NAME, $reflection:CLASS.CLASS_NAME: reflection, reflection
+$mail:CLASS_NAME, $mail:CLASS.CLASS_NAME: mail, mail
+$inet:CLASS_NAME, $inet:CLASS.CLASS_NAME: inet, inet
+
+
+2. the method is called:
+2.1  ^bool.int[]: 1
+  ^int.double[]: 1
+  ^double.int[]: 1
+  ^file.base64[]: YWJj
+  ^date.sql-string[]: 2026-10-12 00:00:00
+  ^xdoc.string[]: <?xml version="1.0" encoding="UTF-8"?>
+<a><b/></a>
+
+  ^xnode.normalize[]: 
+  ^image.html[]: <img width="1" height="1" border="0" />
+  ^object.m[]: method
+ 
+2.2  ^hash.count[]: 1
+  ^array.count[]: 2
+  ^table.count[]: 1
+  ^hashfile.cleanup[]: 
+  ^string.length[]: 3
+  ^empty.length[]: 0
+  ^void.length[]: 0
+ 
+
+3. $o.method is junction:
+3.1  $bool.int: junction
+  $int.double: junction
+  $double.int: junction
+  $file.base64: junction
+  $date.sql-string: junction
+  $xdoc.string: junction
+  $xnode.normalize: junction
+  $image.html: junction
+  $object.m: junction
+ 
+3.2     $test:s: junction
+                $memory:compact: junction
+            $math:abs: junction
+    $json:string: junction
+    $reflection:classes: junction
+    $mail:send: junction
+    $inet:ntoa: junction
+  
+
+4. $o.method is inaccessible in objects with an open set of keys:
+$hash.count: empty
+$array.count:   Exception: invalid number (int)
+$table.count:   Exception: column not found
+$hashfile.cleanup: empty
+$string.length:   Exception: element cannot be fetched from string
+$empty.length: empty
+$void.length: empty
+
+$response:send: empty
+
+
+5. fields named as the methods are found, the methods are still called:
+
+
+
+hashfile: value of cleanup, 
+hash: value of count, 1
+columns: 1 2
+
+
+$response:clear: value "value of clear"
+
+
+
+6. table and hashfile keep only strings (unlike hash or array) and thus can't be called:
+$columns.data: x
+
+^columns.data[]:   Exception: table method not found
+
+$columns.no-such-field:   Exception: column not found
+
+^columns.no-such-field[]:   Exception: table method not found
+
+
+^hashfile.key[]:   Exception: hashfile method not found
+
+6.1 but hash values can be called:
+
+^hash.f[]: method
+
+
+7. CLASS is compiled into the class, the computed name is the key:
+ 
+
+hash: hash, key value
+
+

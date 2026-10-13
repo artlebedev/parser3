@@ -1,0 +1,132 @@
+# $o.CLASS, $o.CLASS_NAME, $o.method and ^o.method[] for the types and the static classes.
+# With FEATURE_GET_ELEMENT4CALL $o.method is not a method for everything with an open set of keys:
+# it is empty or an error, only ^o.method[] is the method; for the rest $o.method is junction
+
+@main[]
+
+#preparing vars of all possible types
+$bool(true)
+$double(1.5)
+$int(^double.int[])
+$string[abc]
+$empty[]
+$void[$empty.anything]
+$hash[ $.key[value] ]
+$array[a;b]
+$table[^table::create{a
+1}]
+$file[^file::create[text;a.txt;abc]]
+$date[^date::create(2026;10;12)]
+$regex[^regex::create[a][i]]
+$image[^image::create(1;1)]
+$xdoc[^xdoc::create{<a><b/></a>}]
+$xnode[$xdoc.documentElement]
+$hashfile[^hashfile::open[468_dir/hf]]
+$object[^test::create[]]
+$junction[$object.m]
+$code{code}
+^try{ ^throw[type;source;comment] }{ $exception.handled(true) $caught[$exception] }
+
+# object and it's method without parameters
+$visible[
+	$.bool[int]
+	$.int[double]
+	$.double[int]
+	$.file[base64]
+	$.date[sql-string]
+	$.xdoc[string]
+	$.xnode[normalize]
+	$.image[html]
+	$.object[m]
+]
+
+# the objects where $o.method is inaccessible (open set of keys or possible typo)
+$fields[
+	$.hash[count]
+	$.array[count]
+	$.table[count]
+	$.hashfile[cleanup]
+	$.string[length]
+	$.empty[length]
+	$.void[length]
+]
+
+$objects[ $.regex[] $.junction[] $.code[] $.caught[] ]
+
+# the static class, the method
+$statics[
+	$.MAIN[] $.test[s] $.env[] $.request[] $.form[] $.cookie[] $.status[] $.console[] $.memory[compact] $.hash[] $.table[] $.file[]
+	$.response[] $.math[abs] $.json[string] $.reflection[classes] $.mail[send] $.inet[ntoa]
+]
+
+1. CLASS_NAME and CLASS.CLASS_NAME:
+1.1 ^class_names[$visible;.]
+1.2 ^class_names[$fields;.]
+1.3 ^class_names[$objects;.]
+1.4 ^class_names[$statics;:]
+
+2. the method is called:
+2.1 ^visible.foreach[name;method]{ ^show{^^${name}.${method}[]} }
+2.2 ^fields.foreach[name;method]{ ^show{^^${name}.${method}[]} }
+
+3. ^$o.method is junction:
+3.1 ^visible.foreach[name;method]{ ^kind{^$${name}.$method} }
+3.2 ^statics.foreach[name;method]{ ^if(def $method){ ^kind{^$${name}:$method} } }
+
+4. ^$o.method is inaccessible in objects with an open set of keys:
+^fields.foreach[name;method]{^kind{^$${name}.${method}}}
+^kind{^$response:send}
+
+5. fields named as the methods are found, the methods are still called:
+$hashfile.cleanup[value of cleanup]
+$hash[ $.count[value of count] ]
+$columns[^table::create{count	data
+1	x
+2	y}]
+hashfile: $hashfile.cleanup, ^hashfile.cleanup[]
+hash: $hash.count, ^hash.count[]
+columns: $columns.count ^columns.count[]
+
+$response:clear[value of clear]
+^kind{^$response:clear}
+^response:clear[]
+
+6. table and hashfile keep only strings (unlike hash or array) and thus can't be called:
+^show{^$columns.data}
+^show{^^columns.data[]}
+^show{^$columns.no-such-field}
+^show{^^columns.no-such-field[]}
+$hashfile.key[value of key]
+^show{^^hashfile.key[]}
+6.1 but hash values can be called:
+$hash[ $.f[$junction] ]
+^show{^^hash.f[]}
+
+7. CLASS is compiled into the class, the computed name is the key:
+$c1[C] $c2[LASS]
+$hash[ $.CLASS[key value] ]
+hash: $hash.CLASS.CLASS_NAME, $hash.[${c1}${c2}]
+
+# memcached and redis tests in their dirs
+^hashfile.delete[]
+$response:untaint[html]
+
+@class_names[names;separator]
+^names.foreach[name;method]{^show{^$${name}${separator}CLASS_NAME, ^$${name}${separator}CLASS.CLASS_NAME}}
+
+@show[code]
+${code}: ^try-catch-comment{^process{$code}}^#0A
+
+@kind[code][value]
+${code}: ^try-catch-comment{$value[^process{$code}]^if($value is junction){junction}{^if(def $value){value "$value"}{empty}}}^#0A
+
+@CLASS
+test
+
+@create[]
+
+@m[]
+method
+
+@s[]
+static
