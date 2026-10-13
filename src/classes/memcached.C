@@ -12,10 +12,11 @@
 #include "pa_request.h"
 #include "pa_vstring.h"
 #include "pa_vtable.h"
+#include "pa_varray.h"
 #include "pa_vbool.h"
 #include "pa_vmemcached.h"
 
-volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.21 2026/10/09 21:10:38 moko Exp $";
+volatile const char * IDENT_MEMCACHED_C="$Id: memcached.C,v 1.22 2026/10/13 23:16:35 moko Exp $";
 
 class MMemcached: public Methoded {
 public: // VStateless_class
@@ -62,31 +63,30 @@ static void _clear(Request& r, MethodParams& params) {
 
 static void _mget(Request& r, MethodParams& params) {
 	VMemcached& self=GET_SELF(r, VMemcached);
-	Value& param=params.as_no_junction(0, PARAM_MUST_NOT_BE_CODE);
 
-	if(param.is_string()){
+	ArrayString keys(params.count());
 
-		ArrayString keys(params.count());
-		
-		for(size_t i=0; i<params.count(); i++) {
-			keys+=&params.as_string(i, "key must be string");
-		}
-
-		r.write(self.mget(keys));
-	} else {
-		Table* table=param.get_table();
-		if(table==0){
-			throw Exception("memcached", 0, "key must be string or table");
-		}
-		
-		ArrayString keys(table->count());
-		
-		for(size_t i=0; i<table->count(); i++) {
-			keys+=table->get(i)->get(0);
-		}
-
-		r.write(self.mget(keys));
+	for(size_t i=0; i<params.count(); i++) {
+		Value& param=params.as_no_junction(i, PARAM_MUST_NOT_BE_CODE);
+		if(const String* string=param.get_string()){
+			keys+=string;
+		} else if(Table* table=param.get_table()){
+			for(size_t j=0; j<table->count(); j++)
+				keys+=table->get(j)->get(0);
+		} else if(VArray* array=dynamic_cast<VArray*>(&param)){
+			for(ArrayValue::Iterator j(array->array()); j; j.next()){
+				if(Value* value=j.value()){
+					const String* string=value->get_string();
+					if(!string)
+						value->bark("array element is '%s', it does not have string value");
+					keys+=string;
+				}
+			}
+		} else
+			throw Exception("memcached", 0, "key must be string, table or array of strings");
 	}
+
+	r.write(self.mget(keys));
 }
 
 static void _add(Request& r, MethodParams& params) {
