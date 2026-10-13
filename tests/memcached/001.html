@@ -19,6 +19,7 @@ $v[$m.pa_a]
 8. delete missing: ^m.delete[pa_a]ok
 $m.pa_k1[one]
 $m.pa_k2[two]
+
 9. mget: ^show[^m.mget[pa_k1;pa_k2;pa_missing]]
 $keys[^table::create{key^#0Apa_k2^#0Apa_missing}]
 10. mget table: ^show[^m.mget[$keys]]
@@ -28,6 +29,17 @@ $m.pa_tainted[^taint[<b>] <i>]
 13. invalid option: ^failed{$m.pa_x[ $.value[v] $.ttl(1) ]}
 14. no value: ^failed{$m.pa_x[ $.expires(1) ]}
 15. empty key: ^failed{^m.add[;v]}
+
+$arr[pa_k1;pa_k2;pa_missing]
+16. mget array: ^show[^m.mget[$arr]]
+17. mget mixed: ^show[^m.mget[pa_k1;$keys]] ^show[^m.mget[$keys;pa_k1]]
+$holes[^array::create[pa_k1]] $holes.3[pa_k2]
+18. mget array with holes: ^show[^m.mget[$holes]]
+19. mget empty array: ^show[^m.mget[^array::create[]]]
+$arr.1[ $.k[v] ]
+20. array element is not a string: ^failed{^m.mget[$arr]}
+21. param is not a key: ^failed{^m.mget[ $.k[v] ]}
+
 ^cleanup[]
 
 @cleanup[][keys;key]

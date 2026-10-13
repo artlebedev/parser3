@@ -19,6 +19,7 @@
 8. delete missing: ok
 
 
+
 9. mget: { "pa_k1":"one", "pa_k2":"two" }
 
 10. mget table: { "pa_k2":"two" }
@@ -28,6 +29,17 @@
 13. invalid option: parser.runtime: called with invalid option
 14. no value: memcached: value hash must contain .value
 15. empty key: memcached: key must not be empty
+
+
+16. mget array: { "pa_k1":"one", "pa_k2":"two" }
+17. mget mixed: { "pa_k1":"one", "pa_k2":"two" } { "pa_k2":"two", "pa_k1":"one" }
+ 
+18. mget array with holes: { "pa_k1":"one", "pa_k2":"two" }
+19. mget empty array: {}
+
+20. array element is not a string: parser.runtime: array element is 'hash', it does not have string value
+21. param is not a key: memcached: key must be string, table or array of strings
+
 
 === 002.html
 
