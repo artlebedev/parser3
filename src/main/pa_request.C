@@ -36,7 +36,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.461 2026/10/13 16:14:53 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.462 2026/10/13 20:02:00 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -160,7 +160,6 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	method_frame(0),
 	rcontext(0),
 	wcontext(0),
-	flang(adefault_lang),
 	fconnection(0),
 	fin_cycle(0),
 	fskip(SKIP_NOTHING),
@@ -173,7 +172,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	main_class(VClassMAIN_create()),
 	form(*new VForm(charsets, arequest_info)),
 	mail(*new VMail),
-	response(*new VResponse(arequest_info, charsets)),
+	response(*new VResponse(arequest_info, charsets, adefault_lang)),
 	cookie(*new VCookie(charsets, arequest_info)),
 	console(*new VConsole),
 
@@ -555,7 +554,7 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 		}
 
 		// can throw exceptions while handling $response:download[]
-		output_result(body_value->as_vfile(flang, &charsets), header_only, as_attachment);
+		output_result(body_value->as_vfile(response.lang, &charsets), header_only, as_attachment);
 	} catch(const Exception& e) { // request handling problem
 
 		// OK, as native execution stack has unwound
@@ -567,6 +566,7 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 
 		// reset response
 		response.fields().clear();
+		response.lang=response.default_lang;
 		SAPI::clear_headers(sapi_info);
 
 		// this is what we'd return in $response:body
@@ -606,7 +606,7 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 
 		if(body_string) {  // could report an error beautifully?
 			VString body_vstring(*body_string);
-			output_result(body_vstring.as_vfile(flang, &charsets), header_only, false);
+			output_result(body_vstring.as_vfile(response.lang, &charsets), header_only, false);
 		} else if(!fheaders_sent) {
 			// doing that ugly
 			SAPI::send_error(sapi_info, exception_cstr, strcmp(e.type(), "file.missing") ? "500" : "404");
@@ -1075,7 +1075,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 void Request::send(Value& part) {
 	// converted before the headers: a stat-ed file throws here
 	VFile* file=dynamic_cast<VFile*>(&part);
-	String::C output=file ? String::C(file->value_ptr(), file->value_size()) : String::C(part.get_string()->cstr_to_string_body_untaint(flang, 0, &charsets));
+	String::C output=file ? String::C(file->value_ptr(), file->value_size()) : String::C(part.get_string()->cstr_to_string_body_untaint(response.lang, 0, &charsets));
 	if(!file || file->is_text_mode())
 		output=Charset::transcode(output, charsets.source(), charsets.client());
 

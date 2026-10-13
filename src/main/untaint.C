@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.182 2026/10/02 22:49:09 moko Exp $";
+volatile const char * IDENT_UNTAINT_C="$Id: untaint.C,v 1.183 2026/10/13 20:02:01 moko Exp $";
 
 
 #include "pa_string.h"
@@ -672,4 +672,50 @@ const char* String::untaint_and_transcode_cstr(Language lang, const Request_char
 		return Charset::transcode(cstr_to_string_body_untaint(lang, 0, charsets), charsets->source(), charsets->client()).cstr();
 	} else
 		return cstr_to_string_body_untaint(lang, 0, charsets).cstr();
+}
+
+class Name2lang_hash: public HashString<String::Language> {
+public:
+	Name2lang_hash() {
+		#define ULN(name, LANG) put(name, (value_type)(String::L_##LANG));
+		ULN("clean", CLEAN);
+		ULN("as-is", AS_IS);
+		ULN("optimized-as-is", AS_IS|String::L_OPTIMIZE_BIT);
+		ULN("file-spec", FILE_SPEC);
+		ULN("http-header", HTTP_HEADER);
+		ULN("mail-header", MAIL_HEADER);
+		ULN("uri", URI);
+		ULN("sql", SQL);
+		ULN("js", JS);
+		ULN("xml", XML);
+		ULN("optimized-xml", XML|String::L_OPTIMIZE_BIT);
+		ULN("html", HTML);
+		ULN("optimized-html", HTML|String::L_OPTIMIZE_BIT);
+		ULN("regex", REGEX);
+		ULN("parser-code", PARSER_CODE);
+		ULN("json", JSON);
+		#undef ULN
+	}
+
+	static Name2lang_hash &instance(){
+		static Name2lang_hash *singleton=NULL;
+		if(!singleton)
+			singleton=new Name2lang_hash;
+		return *singleton;
+	}
+
+};
+
+String::Language String::name2lang(const String& name) {
+	Language lang=Name2lang_hash::instance().get(name);
+	if(!lang)
+		throw Exception(PARSER_RUNTIME, &name, "invalid taint language");
+	return lang;
+}
+
+const char* String::lang2name(Language lang) {
+	for(Name2lang_hash::Iterator i(Name2lang_hash::instance()); i; i.next())
+		if(i.value()==lang)
+			return i.key().cstr();
+	return 0;
 }

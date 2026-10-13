@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.243 2026/10/01 11:48:37 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.244 2026/10/13 20:02:00 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -92,7 +92,7 @@ class String: public PA_Object {
 public:
 
 	/** piece is tainted or not. the lang to use when detaint
-		remember to change String_Untaint_lang_name @ untaint.C along
+		remember to change Name2lang_hash @ untaint.C along
 
 		WARNING WARNING WARNING WARNING WARNING WARNING 
 		
@@ -134,6 +134,11 @@ public:
 		// READ WARNING ABOVE BEFORE ADDING ANYTHING
 		L_OPTIMIZE_BIT = 0x80  ///< flag, requiring cstr whitespace optimization
 	};
+
+	/// throws an exception for an unknown name
+	static Language name2lang(const String& name);
+	/// 0 if there is none
+	static const char* lang2name(Language lang);
 
 	enum Trim_kind {
 		TRIM_BOTH,

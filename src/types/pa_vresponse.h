@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.51 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.52 2026/10/13 20:02:01 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -50,7 +50,12 @@ public: // Value
 
 public:	// usage
 
-	VResponse(Request_info& ainfo, Request_charsets& acharsets): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets) {}
+	/// $response:untaint, response data untainting lang
+	String::Language lang;
+	/// $response:untaint is reset to it in @unhandled_exception
+	const String::Language default_lang;
+
+	VResponse(Request_info& ainfo, Request_charsets& acharsets, String::Language alang): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets), lang(alang), default_lang(alang) {}
 
 	/// used in pa_request.C
 	HashStringValue& fields() { return ffields; }

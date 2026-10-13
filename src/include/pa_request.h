@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.285 2026/10/13 16:14:53 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.286 2026/10/13 20:02:00 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -168,8 +168,6 @@ public:
 	VMethodFrame* method_frame;
 	Value* rcontext;
 	WContext* wcontext;
-	/// response untainting lang
-	String::Language flang;
 	/// current connection
 	SQL_Connection* fconnection;
 	//@}

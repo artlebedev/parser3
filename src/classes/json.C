@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.70 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.71 2026/10/13 20:02:00 moko Exp $";
 
 // class
 
@@ -258,8 +258,6 @@ static const char* json_error_message(int error_code){
 	return error_messages[error_code];
 }
 
-extern String::Language get_untaint_lang(const String& lang_name);
-
 #define SOURCE_MAX_LEN 60
 
 void json_exception_with_source(Request& r, const char* msg, const char* json, int offset){
@@ -359,7 +357,7 @@ static void _parse(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(Value* value=options->get("taint")) {
-				json.taint=get_untaint_lang(value->as_string());
+				json.taint=String::name2lang(value->as_string());
 				valid_options++;
 			}
 			if(Value* value=options->get("object")) {

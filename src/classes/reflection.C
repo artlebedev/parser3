@@ -12,7 +12,7 @@
 #include "pa_vobject.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.106 2026/10/05 19:47:29 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.107 2026/10/13 20:02:00 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -573,8 +573,6 @@ static void _override(Request& r, MethodParams& params) {
 	target->set_method(*name, new Method(*method));
 }
 
-String::Language get_untaint_lang(const String& lang_name); // op.C
-
 static void _tainting(Request& r, MethodParams& params) {
 	const String& str=params.as_string(params.count()-1, "param must be string");
 	String::Language lang = String::L_UNSPECIFIED;
@@ -586,7 +584,7 @@ static void _tainting(Request& r, MethodParams& params) {
 			optimized=true;
 		else if(slang == "tainted")
 			lang=String::L_TAINTED;
-		else lang=get_untaint_lang(slang);
+		else lang=String::name2lang(slang);
 	}
 
 	if(!str.is_empty()){

@@ -13,11 +13,12 @@
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.45 2026/10/13 14:07:26 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.46 2026/10/13 20:02:01 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 
 #define REQUEST_HEADERS_ELEMENT_NAME "headers"
+#define UNTAINT_ELEMENT_NAME "untaint"
 
 Value* VResponse::get_element(const String& aname) {
 	// $charset
@@ -27,7 +28,11 @@ Value* VResponse::get_element(const String& aname) {
 	// $headers
 	if(aname==REQUEST_HEADERS_ELEMENT_NAME)
 		return new VHash(ffields);
-	
+
+	// $untaint
+	if(aname==UNTAINT_ELEMENT_NAME)
+		return new VString(*new String(String::lang2name(lang)));
+
 	MAYBE_GET_SPECIAL_OR_METHOD(VStateless_class::get_element(aname));
 
 	// $field
@@ -38,6 +43,8 @@ const VJunction* VResponse::put_element(const String& aname, Value* avalue) {
 	// guard charset change
 	if(aname==CHARSET_NAME)
 		fcharsets.set_client(pa_charsets.get(avalue->as_string()));
+	else if(aname==UNTAINT_ELEMENT_NAME)
+		lang=String::name2lang(avalue->as_string());
 	else
 		ffields.put(aname.change_case(fcharsets.source(), String::CC_UPPER), !avalue || (avalue->is_string() && !avalue->is_defined()) ? 0: avalue);
 

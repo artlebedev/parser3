@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.285 2026/09/26 19:06:55 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.286 2026/10/13 20:02:00 moko Exp $";
 
 // defines
 
@@ -57,40 +57,6 @@ static const String exception_var_name(EXCEPTION_VAR_NAME);
 
 #define CACHE_EXCEPTION_HANDLED_CACHE_NAME "cache"
 
-// helpers
-
-class Untaint_lang_name2enum: public HashString<String::Language> {
-public:
-	Untaint_lang_name2enum() {
-		#define ULN(name, LANG) put(name, (value_type)(String::L_##LANG));
-		ULN("clean", CLEAN);
-		ULN("as-is", AS_IS);
-		ULN("optimized-as-is", AS_IS|String::L_OPTIMIZE_BIT);
-		ULN("file-spec", FILE_SPEC);
-		ULN("http-header", HTTP_HEADER);
-		ULN("mail-header", MAIL_HEADER);
-		ULN("uri", URI);
-		ULN("sql", SQL);
-		ULN("js", JS);
-		ULN("xml", XML);
-		ULN("optimized-xml", XML|String::L_OPTIMIZE_BIT);
-		ULN("html", HTML);
-		ULN("optimized-html", HTML|String::L_OPTIMIZE_BIT);
-		ULN("regex", REGEX);
-		ULN("parser-code", PARSER_CODE);
-		ULN("json", JSON);
-		#undef ULN
-	}
-
-	static Untaint_lang_name2enum &instance(){
-		static Untaint_lang_name2enum *singleton=NULL;
-		if(!singleton)
-			singleton=new Untaint_lang_name2enum;
-		return *singleton;
-	}
-
-};
-
 // methods
 
 static void _if(Request& r, MethodParams& params) {
@@ -109,19 +75,12 @@ static void _if(Request& r, MethodParams& params) {
 		r.process_write(params[i]);
 }
 
-String::Language get_untaint_lang(const String& lang_name){
-	String::Language lang=Untaint_lang_name2enum::instance().get(lang_name);
-	if(!lang)
-		throw Exception(PARSER_RUNTIME,	&lang_name, "invalid taint language");
-	return lang;
-}
-
 static void _untaint(Request& r, MethodParams& params) {
 	String::Language lang;
 	if(params.count()==1)
 		lang=String::L_AS_IS; // mark as simply 'as-is'. useful in html from sql
 	else
-		lang=get_untaint_lang(params.as_string(0, "lang must be string"));
+		lang=String::name2lang(params.as_string(0, "lang must be string"));
 
 	Value& vbody=params.as_junction(params.count()-1, "body must be code");
 	Value& result=r.process(vbody);
@@ -139,7 +98,7 @@ static void _taint(Request& r, MethodParams& params) {
 	if(params.count()==1)
 		lang=String::L_TAINTED; // mark as simply 'tainted'. useful in table:create
 	else
-		lang=get_untaint_lang(params.as_string(0, "lang must be string"));
+		lang=String::name2lang(params.as_string(0, "lang must be string"));
 
 	{
 		Value& vbody=params.as_no_junction(params.count()-1, "body must not be code");
@@ -150,7 +109,7 @@ static void _taint(Request& r, MethodParams& params) {
 }
 
 static void _apply_taint(Request& r, MethodParams& params) {
-	String::Language lang=params.count()==1 ? String::L_AS_IS : get_untaint_lang(params.as_string(0, "lang must be string"));
+	String::Language lang=params.count()==1 ? String::L_AS_IS : String::name2lang(params.as_string(0, "lang must be string"));
 	const String &sbody=params.as_string(params.count()-1, "body must be string");
 	String::Body result_body=sbody.cstr_to_string_body_untaint(lang, r.connection(false), &r.charsets);
 	r.write(*new String(result_body, String::L_AS_IS));
