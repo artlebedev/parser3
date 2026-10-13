@@ -36,7 +36,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.460 2026/10/10 12:58:07 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.461 2026/10/13 16:14:53 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -180,8 +180,6 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	// private
 	configure_admin_done(false),
 
-	// private defaults
-	fdefault_lang(adefault_lang), 
 	// private mime types
 	mime_types(0),
 	fheaders_sent(false)
@@ -567,8 +565,6 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 		VException& details=*new VException(*this, e);
 		const char* exception_cstr=get_exception_cstr(e, details);
 
-		// reset language to default
-		flang=fdefault_lang;
 		// reset response
 		response.fields().clear();
 		SAPI::clear_headers(sapi_info);

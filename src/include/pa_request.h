@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.284 2026/10/10 12:58:07 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.285 2026/10/13 16:14:53 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -37,7 +37,6 @@ const size_t pseudo_file_no__process=1;
 
 // forwards
 
-class Temp_lang;
 class Methoded;
 class VMethodFrame;
 class VMail;
@@ -58,7 +57,6 @@ class Code_cache;
 
 /// Main workhorse.
 class Request: public PA_Object {
-	friend class Temp_lang;
 	friend class Temp_connection;
 	friend class Temp_request_self;
 	friend class Temp_value_element;
@@ -170,7 +168,7 @@ public:
 	VMethodFrame* method_frame;
 	Value* rcontext;
 	WContext* wcontext;
-	/// current language
+	/// response untainting lang
 	String::Language flang;
 	/// current connection
 	SQL_Connection* fconnection;
@@ -414,10 +412,6 @@ private: // execute.C
 	Value& get_element4call(Value& ncontext, const String& name);
 #endif
 
-private: // defaults
-
-	const String::Language fdefault_lang;
-
 private: // mime types
 
 	/// $MAIN:MIME-TYPES
@@ -475,8 +469,6 @@ class Request_context_saver {
 	VMethodFrame* method_frame;
 	Value* rcontext;
 	WContext* wcontext;
-	/// current language
-	String::Language flang; 
 	/// current connection
 	SQL_Connection* fconnection;
 
@@ -488,13 +480,11 @@ public:
 		method_frame(ar.method_frame),
 		rcontext(ar.rcontext),
 		wcontext(ar.wcontext),
-		flang(ar.flang),
 		fconnection(ar.fconnection) {}
 	void restore() {
 		fr.stack.set_top_index(stack);
 		fr.anti_endless_execute_recursion=anti_endless_execute_recursion;
 		fr.method_frame=method_frame, fr.rcontext=rcontext; fr.wcontext=wcontext;
-		fr.flang=flang;
 		fr.fconnection=fconnection;
 	}
 };
