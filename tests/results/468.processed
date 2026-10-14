@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 4225
+Content-Length: 4227
 
 
 
@@ -125,7 +125,7 @@ $string.length:   Exception: element cannot be fetched from string
 $empty.length: empty
 $void.length: empty
 
-$response:send: empty
+$response:stream: empty
 
 
 5. fields named as the methods are found, the methods are still called:

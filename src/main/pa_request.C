@@ -36,7 +36,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.462 2026/10/13 20:02:00 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.463 2026/10/14 23:18:32 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -532,7 +532,7 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME, &amain_method_name, "method not found in class %s", main.type());
 
-		// ^response:send[] was used: only its parts are sent
+		// ^response:stream[] was used: only its parts are sent
 		if(fheaders_sent)
 			return;
 
@@ -1072,7 +1072,7 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	}
 }
 
-void Request::send(Value& part) {
+void Request::stream(Value& part) {
 	// converted before the headers: a stat-ed file throws here
 	VFile* file=dynamic_cast<VFile*>(&part);
 	String::C output=file ? String::C(file->value_ptr(), file->value_size()) : String::C(part.get_string()->cstr_to_string_body_untaint(response.lang, 0, &charsets));

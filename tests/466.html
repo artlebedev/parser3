@@ -1,7 +1,7 @@
-# ^response:send[] in @postprocess: its result is not sent
+# ^response:stream[] in @postprocess: its result is not sent
 @main[]
 the body
 
 @postprocess[body]
-^response:send[sent from @postprocess: $body]
+^response:stream[sent from @postprocess: $body]
 $result[not sent]

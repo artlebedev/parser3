@@ -1,4 +1,4 @@
-# ^sse[$.event $.id $.retry $.comment $.data] sends one server-sent event with ^response:send[]
+# ^sse[$.event $.id $.retry $.comment $.data] sends one server-sent event with ^response:stream[]
 @main[]
 $response:charset[windows-1251]
 $response:content-type[ $.value[text/html] $.charset[windows-1251] ]
@@ -26,7 +26,7 @@ $msg[^array::create[]]
 ^if(def $event.retry){ ^sse_line[$msg;retry;$event.retry] }
 ^if(^event.contains[data]){ ^sse_lines[$msg;data;$event.data] }
 # the empty line ends the event, as-is to avoid optimization
-^response:send[^msg.foreach[;line]{${line}^taint[as-is][^#0A]}^taint[as-is][^#0A]]
+^response:stream[^msg.foreach[;line]{${line}^taint[as-is][^#0A]}^taint[as-is][^#0A]]
 
 @sse_lines[msg;name;text]
 ^text.match[(*ANYCRLF)^^(.*)][gm]{^msg.append[${name}: $match.1]}

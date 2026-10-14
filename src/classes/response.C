@@ -12,7 +12,7 @@
 #include "pa_vresponse.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.37 2026/10/10 12:58:07 moko Exp $";
+volatile const char * IDENT_RESPONSE_C="$Id: response.C,v 1.38 2026/10/14 23:18:32 moko Exp $";
 
 // class
 
@@ -33,12 +33,12 @@ static void _clear(Request& r, MethodParams&) {
 	GET_SELF(r, VResponse).fields().clear();
 }
 
-static void _send(Request& r, MethodParams& params) {
+static void _stream(Request& r, MethodParams& params) {
 	Value& part=params[0];
 	// checked here, before headers are sent
 	if(!dynamic_cast<VFile*>(&part))
 		params.as_string(0, "part must be string or file");
-	r.send(part);
+	r.stream(part);
 }
 
 // constructor
@@ -47,6 +47,6 @@ MResponse::MResponse(): Methoded("response") {
 	// ^clear[]
 	add_native_method("clear", Method::CT_STATIC, _clear, 0, 0);
 
-	// ^send[string or file]: the headers go with the first part, the result of @main is not sent then
-	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+	// ^stream[string or file]: the headers go with the first part, the result of @main is not sent then
+	add_native_method("stream", Method::CT_STATIC, _stream, 1, 1);
 }
