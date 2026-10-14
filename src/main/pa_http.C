@@ -13,7 +13,7 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.138 2026/10/10 21:51:21 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.139 2026/10/14 00:32:44 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1249,17 +1249,8 @@ HTTPD_Connection::~HTTPD_Connection(){
 	}
 }
 
-static int sock_ready(SOCKET fd, int timeout_value){
-	struct timeval timeout = {0, timeout_value * 1000};
-	fd_set fds;
-	FD_ZERO(&fds);
-	FD_SET(fd, &fds);
-	int nfds = (int)fd + 1; /* typecast as nfds is ignored in MSVC anyway */
-	return select(nfds, &fds, NULL, NULL, &timeout)>0;  /* read */
-}
-
 bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
-	int ready = sock_ready(server_sock, timeout_value);
+	int ready = pa_sock_ready(server_sock, false, timeout_value);
 	if (ready < 0) {
 		int no=pa_socks_errno();
 		if(no == EINTR)

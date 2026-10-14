@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.37 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.38 2026/10/14 00:32:44 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -22,11 +22,6 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
-#define socklen_t int
-#else
-#define closesocket close
-#define INVALID_SOCKET -1
-typedef int SOCKET;
 #endif
 
 #ifndef DOXYGEN

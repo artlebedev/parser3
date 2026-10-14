@@ -5,14 +5,14 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.35 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.36 2026/10/14 00:32:44 moko Exp $";
 
 #include "pa_config_includes.h"
+#include "pa_socks.h"
 
 #ifdef _MSC_VER
 
 #include "pa_exception.h"
-#include "pa_socks.h"
 #include "pa_string.h"
 
 #include <windows.h>
@@ -63,7 +63,14 @@ int pa_socks_errno() {
 	return WSAGetLastError();
 }
 
+int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {
+	WSAPOLLFD fd={sock, (SHORT)(for_write ? POLLWRNORM : POLLRDNORM), 0};
+	return WSAPoll(&fd, 1, timeout_ms);
+}
+
 #else
+
+#include <poll.h>
 
 void pa_socks_init() {}
 void pa_socks_done() {}
@@ -73,6 +80,11 @@ const char* pa_socks_strerr(int no) {
 }
 int pa_socks_errno() {
 	return errno;
+}
+
+int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {
+	struct pollfd fd={sock, (short)(for_write ? POLLOUT : POLLIN), 0};
+	return poll(&fd, 1, timeout_ms);
 }
 
 #endif
