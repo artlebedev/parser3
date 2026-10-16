@@ -126,6 +126,9 @@
 			RelativePath="pa_md5.h">
 		</File>
 		<File
+			RelativePath="pa_sha1.h">
+		</File>
+		<File
 			RelativePath="pa_sha2.h">
 		</File>
 		<File
@@ -148,6 +151,21 @@
 					GlobalOptimizations="TRUE"
 					AdditionalIncludeDirectories=""
 					PreprocessorDefinitions=""/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="pa_sha1.C">
+			<FileConfiguration
+				Name="Debug|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					CompileAs="2"/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32">
+				<Tool
+					Name="VCCLCompilerTool"
+					CompileAs="2"/>
 			</FileConfiguration>
 		</File>
 		<File

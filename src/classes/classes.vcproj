@@ -205,6 +205,9 @@
 			RelativePath=".\response.C">
 		</File>
 		<File
+			RelativePath=".\websocket.C">
+		</File>
+		<File
 			RelativePath=".\string.C">
 		</File>
 		<File

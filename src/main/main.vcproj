@@ -27,7 +27,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="..\lib\ltdl;..\classes\gd;..\include;..\types;..\classes;..\lib\punycode;..\..\..\win32\pcre;..\..\..\win32\pcre2\include;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml2;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
+				AdditionalIncludeDirectories="..\lib\ltdl;..\classes\gd;..\include;..\types;..\classes;..\lib\md5;..\lib\punycode;..\..\..\win32\pcre;..\..\..\win32\pcre2\include;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include\libxml2;..\..\..\win32\gnome\libxml2-x.x.x\win32\release\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\release\include"
 				PreprocessorDefinitions="NDEBUG;_LIB;WIN32"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\lib\ltdl;..\classes\gd;..\include;..\types;..\classes;..\lib\punycode;..\..\..\win32\pcre;..\..\..\win32\pcre2\include;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml2;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
+				AdditionalIncludeDirectories="..\lib\ltdl;..\classes\gd;..\include;..\types;..\classes;..\lib\md5;..\lib\punycode;..\..\..\win32\pcre;..\..\..\win32\pcre2\include;..\sql;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include\libxml2;..\..\..\win32\gnome\libxml2-x.x.x\win32\debug\include;..\..\..\win32\gnome\libxslt-x.x.x\win32\debug\include"
 				PreprocessorDefinitions="_DEBUG;_LIB;WIN32"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -216,6 +216,12 @@
 		</File>
 		<File
 			RelativePath="..\include\pa_base64.h">
+		</File>
+		<File
+			RelativePath=".\pa_websocket.C">
+		</File>
+		<File
+			RelativePath="..\include\pa_websocket.h">
 		</File>
 		<File
 			RelativePath="..\include\pa_config_fixed.h">
