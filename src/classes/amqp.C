@@ -15,7 +15,7 @@
 #include "pa_vbool.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.30 2026/10/09 22:13:18 moko Exp $" IDENT_PA_VAMQP_H;
+volatile const char * IDENT_AMQP_C="$Id: amqp.C,v 1.31 2026/10/16 18:59:50 moko Exp $" IDENT_PA_VAMQP_H;
 
 class MAmqp: public Methoded {
 public: // VStateless_class
@@ -205,14 +205,16 @@ static void amqp_connect(VAmqp& self, Request& r, HashStringValue* options) {
 	self.freconnect_interval = reconnect_interval_sec;
 }
 
-// repairs a channel-level error cheaply: reopen on the same connection. Only valid when the server has
-// already sent (or is about to send) channel.close - we're completing that handshake with close-ok, not
-// initiating our own.
+// Repairs a channel-level error cheaply: reopen on the same connection. Only valid when the server has already
+// sent (or is about to send) channel.close - we're completing that handshake with close-ok, not initiating our own.
+// The new channel gets a new number: the deliveries the broker has sent on the dead one may still be in the library's buffers.
 static void amqp_repair_channel(VAmqp& self) {
 	amqp_channel_close_ok_t close_ok;
 	amqp_send_method(self.fconnection, self.fchannel, AMQP_CHANNEL_CLOSE_OK_METHOD, &close_ok);
-	amqp_channel_open(self.fconnection, self.fchannel);
+	amqp_channel_t channel = self.fchannel < amqp_get_channel_max(self.fconnection) ? self.fchannel+1 : 1;
+	amqp_channel_open(self.fconnection, channel);
 	check(self, amqp_get_rpc_reply(self.fconnection), "channel repair ");
+	self.fchannel = channel;
 	self.fstate = VAmqp::ALIVE;
 }
 
@@ -766,6 +768,12 @@ static struct timeval* amqp_wait_tv(struct timeval& tv, int timeout){
 static amqp_rpc_reply_t amqp_consume_message_checked(amqp_connection_state_t conn, amqp_channel_t channel, amqp_envelope_t* envelope, struct timeval* tv) {
 	for(;;) {
 		amqp_rpc_reply_t res = amqp_consume_message(conn, envelope, tv, 0);
+		if(res.reply_type == AMQP_RESPONSE_NORMAL && envelope->channel != channel) {
+			// Only the deliveries from the given channel are returned: the ones that arrived
+			// on a channel closed by the broker are skipped, the broker will deliver them again.
+			amqp_destroy_envelope(envelope);
+			continue;
+		}
 		if(res.reply_type != AMQP_RESPONSE_LIBRARY_EXCEPTION || res.library_error != AMQP_STATUS_UNEXPECTED_STATE)
 			return res;
 
