@@ -15,7 +15,7 @@
 #include "pa_charsets.h"
 #include "pa_websocket.h"
 
-volatile const char * IDENT_WEBSOCKET_C="$Id: websocket.C,v 1.1 2026/10/16 13:55:16 moko Exp $" IDENT_PA_WEBSOCKET_H;
+volatile const char * IDENT_WEBSOCKET_C="$Id: websocket.C,v 1.2 2026/10/16 15:16:21 moko Exp $" IDENT_PA_WEBSOCKET_H;
 
 // class
 
@@ -30,7 +30,6 @@ DECLARE_CLASS_VAR(websocket, new MWebsocket);
 
 // defines
 
-const size_t MAX_MESSAGE_SIZE_DEFAULT=10*0x400*0x400;
 #define MAX_CONTROL_SIZE 125
 #define MAX_REASON_SIZE (MAX_CONTROL_SIZE-2)
 
@@ -82,7 +81,7 @@ static void _accept(Request& r, MethodParams&) {
 	fields.put(accept_name_upper, new VString(*new String(accept_key)));
 	r.start(VResponse::WEBSOCKET);
 
-	websocket.start(MAX_MESSAGE_SIZE_DEFAULT);
+	websocket.start(pa_post_max_size);
 }
 
 static void _receive(Request& r, MethodParams& params) {

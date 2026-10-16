@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.288 2026/10/16 13:55:16 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.289 2026/10/16 15:16:21 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -53,6 +53,7 @@ extern int pa_array_limit;
 extern int pa_execute_recursion_limit;
 extern int pa_httpd_timeout;
 extern size_t pa_file_size_limit;
+extern size_t pa_post_max_size;
 
 class Code_cache;
 

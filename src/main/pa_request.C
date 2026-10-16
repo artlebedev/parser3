@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.464 2026/10/16 13:55:16 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.465 2026/10/16 15:16:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -59,7 +59,8 @@ const int EXECUTE_RECURSION_RESERVE=100;
 const int LOOP_LIMIT=100000;
 const int ARRAY_LIMIT=1000000;
 const int HTTPD_TIMEOUT=4;
-const size_t FILE_SIZE_LIMIT=512*1024*1024;
+const size_t FILE_SIZE_LIMIT=512*0x400*0x400; // 512MB
+const size_t POST_MAX_SIZE=10*0x400*0x400;    // 10MB
 
 // defines for globals
 
@@ -84,6 +85,7 @@ int pa_array_limit=ARRAY_LIMIT;
 int pa_execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
 int pa_httpd_timeout=HTTPD_TIMEOUT;
 size_t pa_file_size_limit=FILE_SIZE_LIMIT;
+size_t pa_post_max_size=POST_MAX_SIZE;
 
 // defines for statics
 
@@ -109,6 +111,7 @@ static const String loop_limit_name("max_loop");
 static const String array_limit_name("max_array_size");
 static const String recursion_limit_name("max_recursion");
 static const String file_size_limit_name("max_file_size");
+static const String post_max_size_name("post_max_size");
 static const String lock_wait_timeout_name("lock_wait_timeout");
 static const String httpd_name("HTTPD");
 static const String httpd_timeout_name("timeout");
@@ -379,6 +382,15 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		pa_file_size_limit=(size_t)limit;
 		if(pa_file_size_limit==0)
 			pa_file_size_limit=SSIZE_MAX;
+	}, "LIMITS.%s must be number");
+
+	pa_post_max_size=POST_MAX_SIZE;
+	CONF_OPTION(limits, post_max_size_name, {
+		double limit=option->as_double();
+		if(limit >= (double)SSIZE_MAX)
+			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %s", post_max_size_name.cstr(), pa_itoa(SSIZE_MAX));
+		if(limit > 0)
+			pa_post_max_size=(size_t)limit;
 	}, "LIMITS.%s must be number");
 
 	pa_lock_attempts=PA_LOCK_ATTEMPTS;

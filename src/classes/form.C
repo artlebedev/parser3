@@ -11,10 +11,7 @@
 #include "pa_request.h"
 #include "pa_vform.h"
 
-volatile const char * IDENT_FORM_C="$Id: form.C,v 1.53 2026/04/25 13:38:46 moko Exp $";
-
-/// $LIMITS.max_post_size default 10M
-const size_t MAX_POST_SIZE_DEFAULT=10*0x400*0x400;
+volatile const char * IDENT_FORM_C="$Id: form.C,v 1.54 2026/10/16 15:16:21 moko Exp $";
 
 // class
 
@@ -34,31 +31,15 @@ public:
 
 DECLARE_CLASS_VAR(form, new MForm);
 
-// defines for statics
-
-#define LIMITS_NAME "LIMITS"
-#define MAX_POST_SIZE_NAME "post_max_size"
-
-// statics
-
-static const String max_post_size_name(MAX_POST_SIZE_NAME);
-static const String limits_name(LIMITS_NAME);
-
 // methods
 
 // constructor & configurator
 
 void MForm::configure_admin(Request& r) {
 
-	Value* limits=r.main_class.get_element(limits_name);
 	if(r.request_info.can_have_body()){
-		// $limits.max_post_size default 10M
-		Value* element=limits ? limits->get_element(max_post_size_name) : 0;
-		size_t value=element ? (size_t)element->as_double() : 0;
-		size_t max_post_size=value ? value : MAX_POST_SIZE_DEFAULT;
-		
-		if(r.request_info.content_length>max_post_size)
-			throw Exception(PARSER_RUNTIME, 0, "posted content_length(%u) > $" LIMITS_NAME "." MAX_POST_SIZE_NAME "(%u)", r.request_info.content_length, max_post_size);
+		if(r.request_info.content_length>pa_post_max_size)
+			throw Exception(PARSER_RUNTIME, 0, "posted content_length(%s) > $LIMITS.post_max_size(%s)", pa_uitoa(r.request_info.content_length), pa_uitoa(pa_post_max_size));
 
 		// read POST data
 		if(r.request_info.content_length) {
@@ -72,6 +53,6 @@ void MForm::configure_admin(Request& r) {
 			r.request_info.post_size=0;
 		}
 		if(r.request_info.post_size!=r.request_info.content_length)
-			throw Exception(0, 0, "post_size(%u) != content_length(%u)", r.request_info.post_size, r.request_info.content_length);
+			throw Exception(0, 0, "post_size(%s) != content_length(%s)", pa_uitoa(r.request_info.post_size), pa_uitoa(r.request_info.content_length));
 	}
 }

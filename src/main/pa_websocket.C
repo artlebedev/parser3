@@ -10,7 +10,7 @@
 #include "pa_sha1.h"
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_WEBSOCKET_C="$Id: pa_websocket.C,v 1.1 2026/10/16 13:55:16 moko Exp $" IDENT_PA_WEBSOCKET_H;
+volatile const char * IDENT_PA_WEBSOCKET_C="$Id: pa_websocket.C,v 1.2 2026/10/16 15:16:21 moko Exp $" IDENT_PA_WEBSOCKET_H;
 
 #define MAX_CONTROL_PAYLOAD 125
 #define MIN_READ_SIZE 4096
@@ -158,9 +158,9 @@ WebSocket::Parsed WebSocket::parse(Frame &frame) {
 	if(available<2)
 		return INCOMPLETE;
 
-	bool fin=p[0] & 0x80;
+	bool fin=(p[0] & 0x80)!=0;
 	int opcode=p[0] & 0x0F;
-	bool masked=p[1] & 0x80;
+	bool masked=(p[1] & 0x80)!=0;
 	uint64_t length=p[1] & 0x7F;
 	size_t header=2;
 
@@ -322,7 +322,7 @@ void WebSocket::write_frame(int opcode, const char *data, size_t size) {
 	unsigned char header[10];
 	size_t header_size=0;
 
-	header[header_size++]=0x80 | opcode;
+	header[header_size++]=(unsigned char)(0x80 | opcode);
 	if(size<126){
 		header[header_size++]=(unsigned char)size;
 	} else if(size<=0xFFFF){
