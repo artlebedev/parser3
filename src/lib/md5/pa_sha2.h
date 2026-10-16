@@ -29,11 +29,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: pa_sha2.h,v 1.2 2013/07/16 21:48:36 moko Exp $
  */
 
 #ifndef __PA_SHA2_H__
 #define __PA_SHA2_H__
+
+#define IDENT_PA_SHA2_H "$Id: pa_sha2.h,v 1.3 2026/10/16 13:55:16 moko Exp $"
 
 #ifdef __cplusplus
 extern "C" {

@@ -26,6 +26,7 @@
 #include "pa_charsets.h"
 #include "pa_cache_managers.h"
 #include "pa_http.h"
+#include "pa_websocket.h"
 #include "pa_vmail.h"
 #include "pa_vform.h"
 #include "pa_vcookie.h"
@@ -36,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.463 2026/10/14 23:18:32 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.464 2026/10/16 13:55:16 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -175,13 +176,13 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	response(*new VResponse(arequest_info, charsets, adefault_lang)),
 	cookie(*new VCookie(charsets, arequest_info)),
 	console(*new VConsole),
+	websocket(0),
 
 	// private
 	configure_admin_done(false),
 
 	// private mime types
-	mime_types(0),
-	fheaders_sent(false)
+	mime_types(0)
 {
 	pa_register_thread_request(*this);
 
@@ -532,8 +533,10 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 		if(!body_string)
 			throw Exception(PARSER_RUNTIME, &amain_method_name, "method not found in class %s", main.type());
 
-		// ^response:stream[] was used: only its parts are sent
-		if(fheaders_sent)
+		if(response.started==VResponse::WEBSOCKET)
+			websocket->close(); // graceful: waits for the Close of the client
+		// ignore the result in websocket or stream mode
+		if(response.started)
 			return;
 
 		// extract response body
@@ -599,7 +602,7 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 			// logging both initial and new exceptions
 			SAPI::log(sapi_info, "%s", exception_cstr);
 			SAPI::log(sapi_info, "Exception in @unhandled_exception at %s", get_exception_cstr(e, details));
-			if(!fheaders_sent)
+			if(!response.started)
 				SAPI::send_error(sapi_info, "Exception in @unhandled_exception, details are available in Parser error log.");
 			return;
 		}
@@ -607,7 +610,7 @@ void Request::core(const char* config_filespec, const String &amain_method_name,
 		if(body_string) {  // could report an error beautifully?
 			VString body_vstring(*body_string);
 			output_result(body_vstring.as_vfile(response.lang, &charsets), header_only, false);
-		} else if(!fheaders_sent) {
+		} else if(!response.started) {
 			// doing that ugly
 			SAPI::send_error(sapi_info, exception_cstr, strcmp(e.type(), "file.missing") ? "500" : "404");
 		}
@@ -997,7 +1000,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 }
 
 void Request::output_result(VFile* body_file, bool header_only, bool as_attachment) {
-	if(fheaders_sent)
+	if(response.started)
 		return;
 
 	// header: cookies
@@ -1072,21 +1075,29 @@ void Request::output_result(VFile* body_file, bool header_only, bool as_attachme
 	}
 }
 
+void Request::start(VResponse::Started mode) {
+	// the headers: cookies and $response:fields, without Content-Length
+	// prepare before response.started is set: after that an exception is not reported to the client
+	cookie.output_result(sapi_info);
+	Add_header_attribute_info info(*this);
+	response.fields().for_each<Add_header_attribute_info*>(add_header_attribute, &info);
+	response.started=mode;
+	SAPI::send_headers(sapi_info);
+}
+
 void Request::stream(Value& part) {
-	// converted before the headers: a stat-ed file throws here
+	if(response.started==VResponse::WEBSOCKET)
+		throw Exception("websocket", 0, "unable to stream: websocket is active");
+
+	// convert before response.started is set: after that an exception is not reported to the client
 	VFile* file=dynamic_cast<VFile*>(&part);
 	String::C output=file ? String::C(file->value_ptr(), file->value_size()) : String::C(part.get_string()->cstr_to_string_body_untaint(response.lang, 0, &charsets));
 	if(!file || file->is_text_mode())
 		output=Charset::transcode(output, charsets.source(), charsets.client());
 
-	if(!fheaders_sent) {
-		fheaders_sent=true;
-		// the headers: cookies and $response:fields, without Content-Length
-		cookie.output_result(sapi_info);
+	if(!response.started) {
 		response.fields().put_dont_replace(content_type_name_upper, new VString(*new String(DEFAULT_CONTENT_TYPE)));
-		Add_header_attribute_info info(*this);
-		response.fields().for_each<Add_header_attribute_info*>(add_header_attribute, &info);
-		SAPI::send_headers(sapi_info);
+		start(VResponse::STREAM);
 	}
 
 	if(!is_header_only(request_info))

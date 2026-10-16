@@ -33,6 +33,8 @@
 
 #include "pa_sha2.h"
 
+volatile const char * IDENT_PA_SHA2_C="$Id: pa_sha2.c,v 1.4 2026/10/16 13:55:16 moko Exp $" IDENT_PA_SHA2_H;
+
 /*
  * ASSERT NOTE:
  * Some sanity checking code is included using assert().  On my FreeBSD

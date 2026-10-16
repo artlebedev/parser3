@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.287 2026/10/14 23:18:32 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.288 2026/10/16 13:55:16 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -16,6 +16,7 @@
 #include "pa_wcontext.h"
 #include "pa_value.h"
 #include "pa_vhash.h"
+#include "pa_vresponse.h"
 #include "pa_stack.h"
 #include "pa_request_info.h"
 #include "pa_request_charsets.h"
@@ -41,10 +42,10 @@ class Methoded;
 class VMethodFrame;
 class VMail;
 class VForm;
-class VResponse;
 class VCookie;
 class VStateless_class;
 class VConsole;
+class WebSocket;
 class VException;
 
 extern int pa_loop_limit;
@@ -212,8 +213,11 @@ public:
 	*/
 	void core(const char* config_filespec, const String& amain_method_name = main_method_name, const String* amain_class_name = NULL);
 
-	/// ^response:stream[part]: the headers go with the first part, the result of @main or exception is not sent then
+	/// ^response:stream[part]: the headers go with the first part
 	void stream(Value& part);
+
+	/// sends headers and sets response.started
+	void start(VResponse::Started mode);
 
 	/// executes ops
 	void execute(ArrayOperation& ops); // execute.C
@@ -355,6 +359,8 @@ public:
 	VCookie& cookie;
 	/// $console
 	VConsole& console;
+	/// inited in httpd mode
+	WebSocket* websocket;
 
 	/// classes configured data
 	HashString<void*> classes_conf;
@@ -414,10 +420,6 @@ private: // mime types
 
 	/// $MAIN:MIME-TYPES
 	Table *mime_types;
-
-private: // true if ^response:stream[] was used
-
-	bool fheaders_sent;
 
 private: // connection manipulation
 

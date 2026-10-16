@@ -8,7 +8,7 @@
 #include "classes.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.40 2026/10/06 23:34:31 moko Exp $" IDENT_CLASSES_H;
+volatile const char * IDENT_CLASSES_C="$Id: classes.C,v 1.41 2026/10/16 13:55:16 moko Exp $" IDENT_CLASSES_H;
 
 // Methoded
 
@@ -58,6 +58,7 @@ Methoded_array::Methoded_array() {
 	ADD_CLASS_VAR(reflection)
 	ADD_CLASS_VAR(regex)
 	ADD_CLASS_VAR(response)
+	ADD_CLASS_VAR(websocket)
 	ADD_CLASS_VAR(string)
 	ADD_CLASS_VAR(table)
 	ADD_CLASS_VAR(void) // should be after string for set_base

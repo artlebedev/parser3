@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.22 2025/05/26 00:52:15 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.23 2026/10/16 13:55:16 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -207,6 +207,7 @@ public:
 			int code;
 			const char *message;
 		} static lookup[] = {
+			{101, "Switching Protocols"},
 			{200, "OK"},
 			{204, "No Content"},
 			{206, "Partial Content"},
@@ -242,7 +243,8 @@ public:
 	}
 
 	virtual void send_headers() {
-		String result("HTTP/1.0 ");
+		// the handshake of WebSocket requires HTTP/1.1
+		String result(http_response_code==101 ? "HTTP/1.1 " : "HTTP/1.0 ");
 		result << pa_uitoa(http_response_code) << " " << status_message(http_response_code) << "\r\n" << headers << "\r\n";
 		send_body(result.cstr(), result.length());
 		http_response_code=HEADERS_SENT;

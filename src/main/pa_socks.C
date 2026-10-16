@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.36 2026/10/14 00:32:44 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.37 2026/10/16 13:55:16 moko Exp $";
 
 #include "pa_config_includes.h"
 #include "pa_socks.h"
@@ -63,6 +63,10 @@ int pa_socks_errno() {
 	return WSAGetLastError();
 }
 
+bool pa_socks_is_reset(int no) {
+	return no==WSAECONNRESET || no==WSAECONNABORTED;
+}
+
 int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {
 	WSAPOLLFD fd={sock, (SHORT)(for_write ? POLLWRNORM : POLLRDNORM), 0};
 	return WSAPoll(&fd, 1, timeout_ms);
@@ -80,6 +84,10 @@ const char* pa_socks_strerr(int no) {
 }
 int pa_socks_errno() {
 	return errno;
+}
+
+bool pa_socks_is_reset(int no) {
+	return no==ECONNRESET;
 }
 
 int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {

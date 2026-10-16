@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.378 2026/10/10 02:01:15 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.379 2026/10/16 13:55:16 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -18,6 +18,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.378 2026/10/10 02:01:1
 #include "pa_vconsole.h"
 #include "pa_sapi_info.h"
 #include "pa_code_cache.h"
+#include "pa_websocket.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -358,6 +359,8 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 
 		// prepare to process request
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+		WebSocket websocket(connection);
+		r.websocket=&websocket;
 		// process the request
 		r.core(config_filespec, main_method_name, &httpd_class_name);
 	} catch(const Exception& e) { // exception in connection handling

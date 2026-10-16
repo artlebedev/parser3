@@ -13,7 +13,11 @@
 #include "pa_vfile.h"
 #include "pa_random.h"
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.139 2026/10/14 00:32:44 moko Exp $" IDENT_PA_HTTP_H; 
+#ifndef WIN32
+#include <netinet/tcp.h> // for TCP_NODELAY
+#endif
+
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.140 2026/10/16 13:55:16 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1240,6 +1244,30 @@ size_t HTTPD_Connection::send_body(const void *buf, size_t size) {
 		throw Exception("httpd.write", 0, "error sending response: %s (%d)", pa_socks_strerr(no), no);
 	}
 	return result;
+}
+
+String::C HTTPD_Connection::unprocessed() {
+	return String::C(request->buf + request->body_offset, request->length - request->body_offset);
+}
+
+size_t HTTPD_Connection::receive(char *dest, size_t max_bytes) {
+	ssize_t received_size=recv(sock, dest, max_bytes, 0);
+	if(received_size < 0) {
+		int no=pa_socks_errno();
+		if(pa_socks_is_reset(no))
+			return 0;
+		throw Exception("httpd.read", 0, "error receiving data: %s (%d)", pa_socks_strerr(no), no);
+	}
+	return received_size;
+}
+
+void HTTPD_Connection::set_nodelay() {
+	int nodelay=1;
+	setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (const char *)&nodelay, sizeof(nodelay));
+}
+
+void HTTPD_Connection::set_send_timeout(int timeout_secs) {
+	set_socket_timeout(sock, SO_SNDTIMEO, timeout_secs);
 }
 
 HTTPD_Connection::~HTTPD_Connection(){

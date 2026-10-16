@@ -12,13 +12,15 @@
 #include "pa_vstring.h"
 #include "pa_vdate.h"
 #include "pa_vhash.h"
+#include "pa_vvoid.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.46 2026/10/13 20:02:01 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.47 2026/10/16 13:55:16 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 
 #define REQUEST_HEADERS_ELEMENT_NAME "headers"
 #define UNTAINT_ELEMENT_NAME "untaint"
+#define STARTED_ELEMENT_NAME "started"
 
 Value* VResponse::get_element(const String& aname) {
 	// $charset
@@ -33,6 +35,15 @@ Value* VResponse::get_element(const String& aname) {
 	if(aname==UNTAINT_ELEMENT_NAME)
 		return new VString(*new String(String::lang2name(lang)));
 
+	// $started
+	if(aname==STARTED_ELEMENT_NAME) {
+		if(started==STREAM)
+			return new VString(*new String("stream"));
+		if(started==WEBSOCKET)
+			return new VString(*new String("websocket"));
+		return VVoid::get();
+	}
+
 	MAYBE_GET_SPECIAL_OR_METHOD(VStateless_class::get_element(aname));
 
 	// $field
@@ -45,6 +56,8 @@ const VJunction* VResponse::put_element(const String& aname, Value* avalue) {
 		fcharsets.set_client(pa_charsets.get(avalue->as_string()));
 	else if(aname==UNTAINT_ELEMENT_NAME)
 		lang=String::name2lang(avalue->as_string());
+	else if(aname==STARTED_ELEMENT_NAME)
+		return Value::put_element(aname, avalue);
 	else
 		ffields.put(aname.change_case(fcharsets.source(), String::CC_UPPER), !avalue || (avalue->is_string() && !avalue->is_defined()) ? 0: avalue);
 

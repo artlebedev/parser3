@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.38 2026/10/14 00:32:44 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.39 2026/10/16 13:55:16 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -108,6 +108,13 @@ public:
 	bool read_header();
 	size_t read_post(char *, size_t);
 	size_t send_body(const void *, size_t);
+
+	/// bytes received after the request headers, not processed yet
+	String::C unprocessed();
+	/// receives up to size bytes, returns 0 if the connection is closed
+	size_t receive(char *, size_t);
+	void set_nodelay();
+	void set_send_timeout(int timeout_secs);
 };
 
 class HTTPD_Server : public PA_Allocated {

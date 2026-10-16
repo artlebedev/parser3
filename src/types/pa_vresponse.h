@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.52 2026/10/13 20:02:01 moko Exp $"
+#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.53 2026/10/16 13:55:16 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -55,7 +55,12 @@ public:	// usage
 	/// $response:untaint is reset to it in @unhandled_exception
 	const String::Language default_lang;
 
-	VResponse(Request_info& ainfo, Request_charsets& acharsets, String::Language alang): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets), lang(alang), default_lang(alang) {}
+	/// if not UNSTARTED, the headers are already sent and the result of @main or exception is not sent
+	enum Started { UNSTARTED=0, STREAM, WEBSOCKET };
+	/// $response:started
+	Started started;
+
+	VResponse(Request_info& ainfo, Request_charsets& acharsets, String::Language alang): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets), lang(alang), default_lang(alang), started(UNSTARTED) {}
 
 	/// used in pa_request.C
 	HashStringValue& fields() { return ffields; }

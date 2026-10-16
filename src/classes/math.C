@@ -17,6 +17,7 @@
 #include "pa_vfile.h"
 #include "pa_request.h"
 #include "pa_md5.h"
+#include "pa_sha1.h"
 #include "pa_sha2.h"
 #include "pa_random.h"
 
@@ -24,7 +25,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.113 2026/09/15 20:48:14 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.114 2026/10/16 13:55:16 moko Exp $";
 
 // defines
 
@@ -198,153 +199,14 @@ static void _md5(Request& r, MethodParams& params) {
 }
 
 
-//SHA-1:
-
-struct SHA1Context {
-	unsigned Message_Digest[5], Length_Low, Length_High;
-	unsigned int Message_Block[64];
-	int Message_Block_Index, Computed, Corrupted;
-};
-
-#define SHA1CircularShift(bits,word) ((((word) << (bits)) & 0xFFFFFFFF)|((word) >> (32-(bits))))
-void SHA1ProcessMessageBlock(SHA1Context *);
-void SHA1PadMessage(SHA1Context *);
-void SHA1Reset(SHA1Context *context) {
-	context->Length_Low = context->Length_High = context->Message_Block_Index = 0;
-	context->Message_Digest[0]	= 0x67452301;
-	context->Message_Digest[1]	= 0xEFCDAB89;
-	context->Message_Digest[2]	= 0x98BADCFE;
-	context->Message_Digest[3]	= 0x10325476;
-	context->Message_Digest[4]	= 0xC3D2E1F0;
-	context->Computed = context->Corrupted  = 0;
-}
-
-int SHA1Result(SHA1Context *context) {
-	if (context->Corrupted)
-		return 0;
-	if (!context->Computed) {
-		SHA1PadMessage(context);
-		context->Computed = 1;
-	}
-	return 1;
-}
-
-void SHA1Input(SHA1Context *context, const unsigned char *message_array, unsigned length) {
-	if (!length)
-		return;
-	if (context->Computed || context->Corrupted) {
-		context->Corrupted = 1;
-		return;
-	}
-
-	while(length-- && !context->Corrupted) {
-		context->Message_Block[context->Message_Block_Index++] = (*message_array & 0xFF);
-		context->Length_Low += 8;
-		context->Length_Low &= 0xFFFFFFFF;
-		if (!context->Length_Low && !(context->Length_High=((1+context->Length_High)&0xFFFFFFFF)))
-			context->Corrupted = 1; // too long message
-		if (context->Message_Block_Index == 64)
-			SHA1ProcessMessageBlock(context);
-		message_array++;
-	}
-}
-
-void SHA1ProcessMessageBlock(SHA1Context *context) {
-	const unsigned K[] = {0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 };
-	int t;
-	unsigned    temp, W[80], buf[5];
-	unsigned &A=buf[0], &B=buf[1], &C=buf[2], &D=buf[3], &E=buf[4];
-
-	for(t = 0; t < 16; t++)
-		W[t] = (((unsigned) context->Message_Block[t * 4]) << 24) | (((unsigned) context->Message_Block[t * 4 + 1]) << 16) | (((unsigned) context->Message_Block[t * 4 + 2]) << 8) | ((unsigned) context->Message_Block[t * 4 + 3]);
-
-	for(t = 16; t < 80; t++)
-		W[t] = SHA1CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
-
-	memcpy (buf, context->Message_Digest, sizeof(buf));
-	for(t = 0; t < 20; t++) {
-		temp =  (SHA1CircularShift(5,A) + ((B & C) | ((~B) & D)) + E + W[t] + K[0]) & 0xFFFFFFFF;
-		E = D; D = C;
-		C = SHA1CircularShift(30,B);
-		B = A; A = temp;
-	}
-
-	for(t = 20; t < 40; t++) {
-		temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[1]) & 0xFFFFFFFF;
-		E = D; D = C;
-		C = SHA1CircularShift(30,B);
-		B = A; A = temp;
-	}
-
-	for(t = 40; t < 60; t++) {
-		temp = (SHA1CircularShift(5,A) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2]) & 0xFFFFFFFF;
-		E = D; D = C;
-		C = SHA1CircularShift(30,B);
-		B = A; A = temp;
-	}
-
-	for(t = 60; t < 80; t++) {
-		temp = (SHA1CircularShift(5,A) + (B ^ C ^ D) + E + W[t] + K[3]) & 0xFFFFFFFF;
-		E = D; D = C;
-		C = SHA1CircularShift(30,B);
-		B = A; A = temp;
-	}
-
-	for (t = 0; t < 5; t++)
-		context->Message_Digest[t] = (context->Message_Digest[t] + buf[t]) & 0xFFFFFFFF;
-
-	context->Message_Block_Index = 0;
-}
-
-void SHA1PadMessage(SHA1Context *context) {
-	context->Message_Block[context->Message_Block_Index++] = 0x80;
-	if (context->Message_Block_Index > 56) {
-		//was 55, one shift
-		while(context->Message_Block_Index < 64)
-			context->Message_Block[context->Message_Block_Index++] = 0;
-		SHA1ProcessMessageBlock(context);
-		while(context->Message_Block_Index < 56)
-			context->Message_Block[context->Message_Block_Index++] = 0;
-	} else
-		while(context->Message_Block_Index < 56)
-			context->Message_Block[context->Message_Block_Index++] = 0;
-	context->Message_Block[56] = (context->Length_High >> 24) & 0xFF;
-	context->Message_Block[57] = (context->Length_High >> 16) & 0xFF;
-	context->Message_Block[58] = (context->Length_High >> 8) & 0xFF;
-	context->Message_Block[59] = (context->Length_High) & 0xFF;
-	context->Message_Block[60] = (context->Length_Low >> 24) & 0xFF;
-	context->Message_Block[61] = (context->Length_Low >> 16) & 0xFF;
-	context->Message_Block[62] = (context->Length_Low >> 8) & 0xFF;
-	context->Message_Block[63] = (context->Length_Low) & 0xFF;
-	SHA1ProcessMessageBlock(context);
-}
-
-#ifdef PA_BIG_ENDIAN
-#define SWAP(n) (n)
-#else
-#define SWAP(n) (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
-#endif
-
-void SHA1ReadDigest(void *buf, SHA1Context *c)
-{
-	if(!SHA1Result(c))
-		throw Exception (PARSER_RUNTIME, 0, "Cannot compute SHA1");
-
-	((uint32_t *)buf)[0] = SWAP(c->Message_Digest[0]);
-	((uint32_t *)buf)[1] = SWAP(c->Message_Digest[1]);
-	((uint32_t *)buf)[2] = SWAP(c->Message_Digest[2]);
-	((uint32_t *)buf)[3] = SWAP(c->Message_Digest[3]);
-	((uint32_t *)buf)[4] = SWAP(c->Message_Digest[4]);
-}
-
 static void _sha1(Request& r, MethodParams& params) {
 	const char *string = params.as_string(0, PARAMETER_MUST_BE_STRING).cstr_to_string_body_untaint(String::L_AS_IS, r.connection(false), &r.charsets).cstr();
 
-	SHA1Context c;
+	PA_SHA1_CTX c;
 	unsigned char digest[20];
-	SHA1Reset (&c);
-	SHA1Input (&c, (const unsigned char*)string, strlen(string));
-	SHA1ReadDigest(digest, &c);
+	pa_SHA1Reset (&c);
+	pa_SHA1Input (&c, (const unsigned char*)string, strlen(string));
+	pa_SHA1ReadDigest(digest, &c);
 
 	r.write(*new String(hex_string(digest, sizeof(digest), false)));
 }
@@ -451,15 +313,15 @@ static void _digest(Request& r, MethodParams& params) {
 	}
 
 	if(method == M_SHA1){
-		SHA1Context c;
+		PA_SHA1_CTX c;
 		if(hmac){
-			HMAC(hmac, hmac_len, SHA1Reset, SHA1Input, SHA1ReadDigest, 64, 20);
+			HMAC(hmac, hmac_len, pa_SHA1Reset, pa_SHA1Input, pa_SHA1ReadDigest, 64, 20);
 		} else {
-			SHA1Reset(&c);
-			SHA1Input(&c, (const unsigned char*)data.str, data.length);
+			pa_SHA1Reset(&c);
+			pa_SHA1Input(&c, (const unsigned char*)data.str, data.length);
 		}
 		char *str=(char *)pa_malloc(20);
-		SHA1ReadDigest(str, &c);
+		pa_SHA1ReadDigest(str, &c);
 		digest = String::C(str, 20);
 	}
 
