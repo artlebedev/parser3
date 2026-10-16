@@ -112,8 +112,8 @@ CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmain_la_LIBADD =
 am_libmain_la_OBJECTS = pa_pool.lo pa_os.lo pa_threads.lo pa_common.lo \
-	pa_file.lo pa_base64.lo compile.tab.lo compile.lo \
-	compile_tools.lo execute.lo pa_cache_managers.lo \
+	pa_file.lo pa_base64.lo pa_websocket.lo compile.tab.lo \
+	compile.lo compile_tools.lo execute.lo pa_cache_managers.lo \
 	pa_code_cache.lo pa_exception.lo pa_xml_exception.lo \
 	pa_globals.lo pa_int.lo pa_xml_io.lo pa_memory.lo \
 	pa_request.lo pa_string.lo pa_table.lo untaint.lo pa_dir.lo \
@@ -159,8 +159,8 @@ am__depfiles_remade = ./$(DEPDIR)/compile.Plo \
 	./$(DEPDIR)/pa_stylesheet_manager.Plo \
 	./$(DEPDIR)/pa_symbols.Plo ./$(DEPDIR)/pa_table.Plo \
 	./$(DEPDIR)/pa_threads.Plo ./$(DEPDIR)/pa_uue.Plo \
-	./$(DEPDIR)/pa_xml_exception.Plo ./$(DEPDIR)/pa_xml_io.Plo \
-	./$(DEPDIR)/untaint.Plo
+	./$(DEPDIR)/pa_websocket.Plo ./$(DEPDIR)/pa_xml_exception.Plo \
+	./$(DEPDIR)/pa_xml_io.Plo ./$(DEPDIR)/untaint.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -369,10 +369,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/punycode $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
+AM_CPPFLAGS = -I../types -I../classes -I../sql -I../lib/punycode -I../lib/md5 $(INCLTDL) @PCRE_INCLUDES@ @XML_INCLUDES@
 noinst_HEADERS = compile_tools.h utf8-to-lower.inc utf8-to-upper.inc
 noinst_LTLIBRARIES = libmain.la
-libmain_la_SOURCES = pa_pool.C pa_os.C pa_threads.C pa_common.C pa_file.C pa_base64.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_code_cache.C pa_exception.C pa_xml_exception.C pa_globals.C pa_int.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
+libmain_la_SOURCES = pa_pool.C pa_os.C pa_threads.C pa_common.C pa_file.C pa_base64.C pa_websocket.C compile.tab.C compile.C compile_tools.C execute.C pa_cache_managers.C pa_code_cache.C pa_exception.C pa_xml_exception.C pa_globals.C pa_int.C pa_xml_io.C pa_memory.C pa_request.C pa_string.C pa_table.C untaint.C pa_dir.C pa_exec.C pa_socks.C pa_dictionary.C pa_charset.C pa_charsets.C pa_uue.C pa_sql_driver_manager.C pa_stylesheet_manager.C pa_stylesheet_connection.C pa_http.C pa_random.C pa_symbols.C
 EXTRA_DIST = compile.y main.vcproj
 all: all-am
 
@@ -458,6 +458,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_table.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_threads.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_uue.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_websocket.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_exception.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xml_io.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/untaint.Plo@am__quote@ # am--include-marker
@@ -651,6 +652,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/pa_table.Plo
 	-rm -f ./$(DEPDIR)/pa_threads.Plo
 	-rm -f ./$(DEPDIR)/pa_uue.Plo
+	-rm -f ./$(DEPDIR)/pa_websocket.Plo
 	-rm -f ./$(DEPDIR)/pa_xml_exception.Plo
 	-rm -f ./$(DEPDIR)/pa_xml_io.Plo
 	-rm -f ./$(DEPDIR)/untaint.Plo
@@ -731,6 +733,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/pa_table.Plo
 	-rm -f ./$(DEPDIR)/pa_threads.Plo
 	-rm -f ./$(DEPDIR)/pa_uue.Plo
+	-rm -f ./$(DEPDIR)/pa_websocket.Plo
 	-rm -f ./$(DEPDIR)/pa_xml_exception.Plo
 	-rm -f ./$(DEPDIR)/pa_xml_io.Plo
 	-rm -f ./$(DEPDIR)/untaint.Plo
