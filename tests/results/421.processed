@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 11080
+Content-Length: 11341
 
 1. nonexistent method exception check for all classes
 Class MAIN methoded ^MAIN:bad[] Exception type: parser.runtime,
@@ -195,6 +195,12 @@ Comment: void method not found
 Exception type: parser.runtime,
 Source: bad,
 Comment: void method not found
+Class websocket methoded ^websocket:bad[] Exception type: parser.runtime,
+Source: bad,
+Comment: websocket method not found
+Exception type: parser.runtime,
+Source: bad,
+Comment: websocket method not found
 Class xdoc methoded (xnode)
 ^xdoc:bad[] Exception type: parser.runtime,
 Source: bad,
@@ -316,6 +322,9 @@ $table:bad no exception
 no exception
 Class void
 $void:bad no exception
+no exception
+Class websocket
+$websocket:bad no exception
 no exception
 Class xdoc
 $xdoc:bad no exception

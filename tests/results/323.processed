@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 979
+Content-Length: 1011
 
 MAIN methoded MAIN ()
 amqp methoded amqp ()
@@ -32,6 +32,7 @@ status status ()
 string methoded string ()
 table methoded table ()
 void methoded void (string)
+websocket methoded websocket ()
 xdoc methoded xdoc (xnode)
 xnode methoded xnode ()
 Exception type: parser.runtime,
