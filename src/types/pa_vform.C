@@ -18,7 +18,7 @@
 #include "pa_vtable.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.132 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VFORM_H;
+volatile const char * IDENT_PA_VFORM_C="$Id: pa_vform.C,v 1.133 2026/10/17 00:39:04 moko Exp $" IDENT_PA_VFORM_H;
 
 // defines
 
@@ -72,7 +72,7 @@ VForm::VForm(Request_charsets& acharsets, Request_info& arequest_info): VStatele
 	charset_detected(false),
 	post_content_type(UNKNOWN),
 
-	filled_source(0), filled_client(0), fpost_charset(0),
+	filled_source(0), filled_client(0), filled_post(0), fpost_charset(0),
 
 	fields(vfields.hash()), tables(vtables.hash()), files(vfiles.hash()), imap(vimap.hash()), elements(velements.hash())
 {
@@ -346,6 +346,7 @@ void VForm::refill_fields_tables_and_files() {
 
 	filled_source=&fcharsets.source();
 	filled_client=&fcharsets.client();
+	filled_post=frequest_info.post_data;
 }
 
 void VForm::detect_post_charset(){
@@ -356,7 +357,7 @@ void VForm::detect_post_charset(){
 }
 
 bool VForm::should_refill_fields_tables_and_files() {
-	return &fcharsets.source()!=filled_source || &fcharsets.client()!=filled_client;
+	return &fcharsets.source()!=filled_source || &fcharsets.client()!=filled_client || frequest_info.post_data!=filled_post;
 }
 
 Value* VForm::get_element(const String& aname) {

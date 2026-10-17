@@ -8,7 +8,7 @@
 #ifndef PA_VFORM_H
 #define PA_VFORM_H
 
-#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.71 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VFORM_H "$Id: pa_vform.h,v 1.72 2026/10/17 00:39:04 moko Exp $"
 
 // includes
 
@@ -74,12 +74,8 @@ private:
 	void ParseGetFormInput(const char* query_string, size_t length);
 	void ParseFormInput(const char* data, size_t length, Charset* client_charset=0);
 	void ParseMimeInput(char *content_type, const char* data, size_t length, Charset* client_charset=0);
-	void AppendFormEntry(
-		const char* cname_cstr, 
-		const char* raw_cvalue_ptr, const size_t raw_cvalue_size, Charset* client_charset=0);
-	void AppendFormFileEntry(
-		const char* cname_cstr, 
-		const char* raw_cvalue_ptr, const size_t raw_cvalue_size,
+	void AppendFormEntry(const char* cname_cstr, const char* raw_cvalue_ptr, const size_t raw_cvalue_size, Charset* client_charset=0);
+	void AppendFormFileEntry(const char* cname_cstr, const char* raw_cvalue_ptr, const size_t raw_cvalue_size,
 		const char* file_name_cstr, Charset* client_charset=0);
 
 	bool should_refill_fields_tables_and_files();
@@ -90,6 +86,7 @@ private:
 
 	Charset* filled_source;
 	Charset* filled_client;
+	const char* filled_post;
 	Charset* fpost_charset; // charset which was specified in content-type in incoming POST
 
 	VHash vfields, vtables, vfiles, vimap, velements;
