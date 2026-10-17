@@ -1,0 +1,141 @@
+# The WebSocket demo: front and back in one file.
+# The browser opens the page using a usual request, then the JS opens it using ws://.
+
+@main[]
+^if($env:HTTP_UPGRADE eq websocket){
+	^back[]
+}{
+	^front[]
+}
+
+
+# ---------- the server ----------
+
+@back[][message]
+^websocket:accept[]
+^while(true){
+	# wait for a message from the browser, but not longer than a second
+	$message[^websocket:receive(0.05)]
+	^if($message is hash){
+		^if($message.type eq close){
+			^break[]
+		}
+		^answer[$message]
+	}
+	$counter($counter+1)
+	^send_status[]
+}
+
+
+@answer[message]
+^if($message.type eq binary){
+	^send[ $.type[answer] $.text[got $message.data.size bytes] ]
+}($message.data eq ping){
+	^send[ $.type[pong] ]
+}{
+	^send[ $.type[answer] $.text[$message.data?] ]
+}
+
+
+# what the server tells about itself: the time and resources usage
+@send_status[]
+^send[
+	$.type[status]
+	$.counter($counter)
+	$.time[^date:sql-string[].^eval($status:rusage.tv_usec/1000)[%03.0f]]
+	$.utime($status:rusage.utime)
+	$.used($status:memory.used)
+	$.allocated($status:memory.ever_allocated_since_compact)
+]
+
+@send[message]
+^websocket:send[^json:string[$message]]
+
+
+# ---------- the page ----------
+
+@front[]
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WebSocket demo</title>
+</head>
+<body align="center">
+
+<h1>WebSocket demo</h1>
+<p>Connection: <b id="state">connecting...</b> (to connect again, reload the page)</p>
+<p>Server: <span id="server">nothing yet</span></p>
+
+<p><form onsubmit="sendText(); return false;">
+	<input id="text" value="Hello">
+	<button>Send</button>
+	<button type="button" onclick="sendPing()">Ping</button>
+	<button type="button" onclick="sendBytes()">Send 1MB</button>
+	<button type="button" onclick="socket.close(1000)">Close</button>
+</form></p>
+
+<textarea id="log" cols="80" rows="20" readonly></textarea>
+
+<script>
+	// same page, but the protocol is WebSocket
+	var socket = new WebSocket("ws://" + location.host + "/");
+	var state = document.getElementById("state");
+	var server = document.getElementById("server");
+	var log = document.getElementById("log");
+	var pingTime = 0;
+
+	socket.onopen = function () {
+		state.textContent = "open";
+		addToLog("connected");
+	};
+
+	socket.onclose = function (event) {
+		state.textContent = "closed";
+		addToLog("closed, code " + event.code);
+	};
+
+	// the server has sent a message
+	socket.onmessage = function (event) {
+		var message = JSON.parse(event.data);
+
+		if (message.type == "status") {
+			server.textContent =  message.time + " message " + message.counter + ", CPU time " + message.utime.toFixed(2) + " s, " +
+				"memory used " + message.used.toFixed() + " KB, allocated since last compact " + message.allocated.toFixed() + " KB";
+		} else if (message.type == "answer") {
+			addToLog("server answered: " + message.text);
+		} else if (message.type == "pong") {
+			addToLog("pong, it took " + (Date.now() - pingTime) + " ms");
+		}
+	};
+
+	function send(data) {
+		if (socket.readyState != WebSocket.OPEN) {
+			addToLog("not connected");
+			return;
+		}
+		socket.send(data);
+		addToLog("sent: " + (typeof data == "string" ? data : data.length + " bytes"));
+	}
+
+	function sendText() {
+		send(document.getElementById("text").value);
+	}
+
+	function sendPing() {
+		pingTime = Date.now();
+		send("ping");
+	}
+
+	// not a text but bytes
+	function sendBytes() {
+		send(new Uint8Array(1000000));
+	}
+
+	function addToLog(line) {
+		log.value = new Date().toLocaleTimeString() + " " + line + "\n" + log.value;
+	}
+</script>
+
+</body>
+</html>
