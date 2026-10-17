@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.27 2026/10/02 19:57:10 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.28 2026/10/17 22:58:09 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -137,9 +137,12 @@ int pa_sleep(unsigned long secs, unsigned long usecs) {
 	Sleep(secs * 1000 + usecs / 1000); 
 	return 0;
 #else
-	struct timeval t;
+	struct timespec t;
 	t.tv_sec = secs;
-	t.tv_usec = usecs;
-	return (select(0, NULL, NULL, NULL, &t)<0 ? errno : 0); 
+	t.tv_nsec = usecs * 1000;
+	// GC stops the threads with signals, the sleep goes on for the time left
+	int result;
+	while((result=nanosleep(&t, &t))<0 && errno==EINTR);
+	return result<0 ? errno : 0;
 #endif
 }

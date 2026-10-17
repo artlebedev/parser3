@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.37 2026/10/16 13:55:16 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.38 2026/10/17 22:58:09 moko Exp $";
 
 #include "pa_config_includes.h"
 #include "pa_socks.h"
@@ -67,6 +67,10 @@ bool pa_socks_is_reset(int no) {
 	return no==WSAECONNRESET || no==WSAECONNABORTED;
 }
 
+bool pa_socks_is_interrupted(int no) {
+	return no==WSAEINTR;
+}
+
 int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {
 	WSAPOLLFD fd={sock, (SHORT)(for_write ? POLLWRNORM : POLLRDNORM), 0};
 	return WSAPoll(&fd, 1, timeout_ms);
@@ -90,9 +94,25 @@ bool pa_socks_is_reset(int no) {
 	return no==ECONNRESET;
 }
 
+bool pa_socks_is_interrupted(int no) {
+	return no==EINTR;
+}
+
 int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {
 	struct pollfd fd={sock, (short)(for_write ? POLLOUT : POLLIN), 0};
 	return poll(&fd, 1, timeout_ms);
 }
 
 #endif
+
+ssize_t pa_sock_recv(SOCKET sock, char *buf, size_t len) {
+	ssize_t result;
+	while((result=recv(sock, buf, len, 0)) < 0 && pa_socks_is_interrupted(pa_socks_errno()));
+	return result;
+}
+
+ssize_t pa_sock_send(SOCKET sock, const char *buf, size_t len) {
+	ssize_t result;
+	while((result=send(sock, buf, len, 0)) < 0 && pa_socks_is_interrupted(pa_socks_errno()));
+	return result;
+}

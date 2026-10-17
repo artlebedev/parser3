@@ -17,7 +17,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.140 2026/10/16 13:55:16 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.141 2026/10/17 22:58:09 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -57,7 +57,7 @@ void pa_log(const char* fmt, ...);
 ssize_t pa_send(int sock, const char *buffer, size_t len){
 	size_t total_sent = 0;
 	while (total_sent < len) {
-		ssize_t bytes_sent=send(sock, buffer + total_sent, len - total_sent, 0);
+		ssize_t bytes_sent=pa_sock_send(sock, buffer + total_sent, len - total_sent);
 		if (bytes_sent < 0) {
 			return bytes_sent;
 		} else if (bytes_sent == 0) {
@@ -155,7 +155,7 @@ public:
 	bool read(SOCKET sock, size_t size){
 		if(length + size > buf_size)
 			resize(buf_size * 2 + size);
-		ssize_t received_size=recv(sock, buf + length, size, 0);
+		ssize_t received_size=pa_sock_recv(sock, buf + length, size);
 		if(received_size == 0)
 			return false;
 		if(received_size < 0) {
@@ -1110,7 +1110,7 @@ ssize_t HTTPD_request::pa_recv(SOCKET sockfd, char *buffer, size_t len){
 #endif
 	{
 		ALARM(pa_httpd_timeout);
-		ssize_t result=recv(sockfd, buffer, len, 0);
+		ssize_t result=pa_sock_recv(sockfd, buffer, len);
 		ALARM(0);
 		if(result < 0 && sock_timed_out(pa_socks_errno())) {
 			PA_RECV_TIMEOUT
@@ -1251,7 +1251,7 @@ String::C HTTPD_Connection::unprocessed() {
 }
 
 size_t HTTPD_Connection::receive(char *dest, size_t max_bytes) {
-	ssize_t received_size=recv(sock, dest, max_bytes, 0);
+	ssize_t received_size=pa_sock_recv(sock, dest, max_bytes);
 	if(received_size < 0) {
 		int no=pa_socks_errno();
 		if(pa_socks_is_reset(no))
@@ -1281,7 +1281,7 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 	int ready = pa_sock_ready(server_sock, false, timeout_value);
 	if (ready < 0) {
 		int no=pa_socks_errno();
-		if(no == EINTR)
+		if(pa_socks_is_interrupted(no))
 			return false;
 		throw Exception("httpd.accept", 0, "error waiting for connection: %s (%d)", pa_socks_strerr(no), no);
 	}
