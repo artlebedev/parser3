@@ -8,7 +8,7 @@
 #ifndef PA_SOCKS_H
 #define PA_SOCKS_H
 
-#define IDENT_PA_SOCKS_H "$Id: pa_socks.h,v 1.27 2026/10/17 22:58:09 moko Exp $"
+#define IDENT_PA_SOCKS_H "$Id: pa_socks.h,v 1.28 2026/10/17 23:11:25 moko Exp $"
 
 #ifdef _MSC_VER
 #define socklen_t int
@@ -34,7 +34,7 @@ bool pa_socks_is_interrupted(int no);
 ssize_t pa_sock_recv(SOCKET sock, char *buf, size_t len);
 ssize_t pa_sock_send(SOCKET sock, const char *buf, size_t len);
 
-/// waits up to timeout_ms for the socket to be ready for reading (or writing): >0 ready, 0 timeout, <0 error
+/// waits up to timeout_ms (negative is forever) for the socket to be ready for reading (or writing): >0 ready, 0 timeout, <0 error
 int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms);
 
 #endif

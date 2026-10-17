@@ -17,7 +17,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.141 2026/10/17 22:58:09 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.142 2026/10/17 23:11:25 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1281,8 +1281,6 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 	int ready = pa_sock_ready(server_sock, false, timeout_value);
 	if (ready < 0) {
 		int no=pa_socks_errno();
-		if(pa_socks_is_interrupted(no))
-			return false;
 		throw Exception("httpd.accept", 0, "error waiting for connection: %s (%d)", pa_socks_strerr(no), no);
 	}
 	if (ready == 0)

@@ -10,7 +10,7 @@
 #include "pa_sha1.h"
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_WEBSOCKET_C="$Id: pa_websocket.C,v 1.3 2026/10/17 22:58:09 moko Exp $" IDENT_PA_WEBSOCKET_H;
+volatile const char * IDENT_PA_WEBSOCKET_C="$Id: pa_websocket.C,v 1.4 2026/10/17 23:11:25 moko Exp $" IDENT_PA_WEBSOCKET_H;
 
 #define MAX_CONTROL_PAYLOAD 125
 #define MIN_READ_SIZE 4096
@@ -123,11 +123,9 @@ void WebSocket::start(size_t amax_message_size) {
 }
 
 bool WebSocket::fill(int timeout_ms) {
-	int ready;
-	while((ready=pa_sock_ready(connection.sock, false, timeout_ms))<0) {
+	int ready=pa_sock_ready(connection.sock, false, timeout_ms);
+	if(ready<0) {
 		int no=pa_socks_errno();
-		if(pa_socks_is_interrupted(no))
-			continue;
 		throw Exception("httpd.read", 0, "error waiting for data: %s (%d)", pa_socks_strerr(no), no);
 	}
 	if(!ready)
