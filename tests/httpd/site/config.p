@@ -12,4 +12,7 @@ $HTTPD[
 # $.mode[threaded]
 ]
 
+# accessing $form before the POST is read (after @conf in etc/auto.p), and #44 checks it is refilled after the POST.
+$fields-before-conf[$form:fields]
+
 ^use[$etc/auto.p]

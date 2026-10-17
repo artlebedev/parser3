@@ -2,5 +2,5 @@ fields: ^json:string[$form:fields]
 tables: ^json:string[$form:tables]
 files: ^json:string[$form:files]
 elements: ^json:string[$form:elements]
-
 name: $form:name
+^if(def $form:conf){ fields-before-conf: ^json:string[$fields-before-conf]}

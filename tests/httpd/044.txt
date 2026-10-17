@@ -1,0 +1,5 @@
+POST /form.html?conf=1 HTTP/1.0
+Content-Length: 6
+Content-Type: application/x-www-form-urlencoded
+
+post=2

@@ -307,7 +307,7 @@ HTTP/1.0 200 OK
 Content-Type: text/html; charset=UTF-8
 Server: Parser3
 Connection: close
-Content-Length: 269
+Content-Length: 270
 
 fields: {
 "name":"v1",
@@ -342,6 +342,7 @@ elements: {
 ]
 }
 name: v1
+
 =============
 running test 031.curl
 fields: {
@@ -432,6 +433,7 @@ elements: {
 ]
 }
 name: value
+
 =============
 running test 032.txt
 HTTP/1.0 200 OK
@@ -541,4 +543,36 @@ HTTP/1.0 416 Range Not Satisfiable
 Content-Type: text/plain
 
 
+=============
+running test 044.txt
+HTTP/1.0 200 OK
+Content-Type: text/html; charset=UTF-8
+Server: Parser3
+Connection: close
+Content-Length: 193
+
+fields: {
+"conf":"1",
+"post":"2"
+}
+tables: {
+"conf":[
+{"field":"1"}
+],
+"post":[
+{"field":"2"}
+]
+}
+files: {}
+elements: {
+"conf":[
+"1"
+],
+"post":[
+"2"
+]
+}
+name: fields-before-conf: {
+"conf":"1"
+}
 =============
