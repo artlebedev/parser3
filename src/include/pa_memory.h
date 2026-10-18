@@ -9,7 +9,7 @@
 #ifndef PA_MEMORY_H
 #define PA_MEMORY_H
 
-#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.47 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_MEMORY_H "$Id: pa_memory.h,v 1.48 2026/10/18 22:42:42 moko Exp $"
 
 // include
 
@@ -154,5 +154,27 @@ inline char *strdup(const char*, size_t){ return strdup_disabled(); }
 
 void pa_gc_collect(bool forced=false);
 void pa_gc_set_free_space_divisor(int);
+
+class String;
+
+/**
+	Keeps the pointer GC does not see and returns it. The first case is the exception: C++ runtime keeps the exception in flight
+	in malloc memory, which GC does not scan. To avoid collection, exception fields are passed through pa_gc_reference().
+*/
+
+const String* pa_gc_reference(const String*);
+const char* pa_gc_reference(const char*);
+
+/// for the pointers GC does not see: should be created on the stack at the very start of every thread and live until its end
+class Temp_gc_references {
+	enum { SIZE=32 };
+	const void* items[SIZE];
+	unsigned index;
+	Temp_gc_references* previous;
+public:
+	Temp_gc_references();
+	~Temp_gc_references();
+	void keep(const void* data) { items[index++ % SIZE]=data; }
+};
 
 #endif

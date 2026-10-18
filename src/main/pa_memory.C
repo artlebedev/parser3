@@ -9,7 +9,7 @@
 #include "pa_common.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.24 2026/04/25 13:38:46 moko Exp $" IDENT_PA_MEMORY_H;
+volatile const char * IDENT_PA_MEMORY_C="$Id: pa_memory.C,v 1.25 2026/10/18 22:42:43 moko Exp $" IDENT_PA_MEMORY_H;
 
 void *pa_fail_alloc(const char* what, size_t size) {
 #ifdef PA_DEBUG_DISABLE_GC
@@ -57,4 +57,27 @@ void pa_gc_set_free_space_divisor(int divisor){
 		pa_free_space_divisor = divisor;
 	}
 #endif
+}
+
+static THREAD_LOCAL Temp_gc_references* thread_gc_references=NULL; // this is stack object, GC won't collect it
+
+Temp_gc_references::Temp_gc_references(): index(0), previous(thread_gc_references) {
+	memset(items, 0, sizeof(items));
+	thread_gc_references=this;
+}
+
+Temp_gc_references::~Temp_gc_references() {
+	thread_gc_references=previous;
+}
+
+const char* pa_gc_reference(const char* data) {
+	if(data && thread_gc_references)
+		thread_gc_references->keep(data);
+	return data;
+}
+
+const String* pa_gc_reference(const String* data) {
+	if(data && thread_gc_references)
+		thread_gc_references->keep(data);
+	return data;
 }

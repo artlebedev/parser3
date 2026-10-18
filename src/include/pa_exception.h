@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.77 2026/09/26 17:41:10 moko Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.78 2026/10/18 22:42:42 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -69,7 +69,7 @@ public:
 	// modifies exception to fine-tune error reporting
 	void set_source(const String* aproblem_source) {
 		if(!problem_source())
-			fproblem_source=aproblem_source;
+			fproblem_source=pa_gc_reference(aproblem_source);
 	}
 
 	void add_comment(const char* acomment);

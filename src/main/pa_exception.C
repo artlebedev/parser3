@@ -10,7 +10,7 @@
 #include "pa_sapi.h"
 #include "pa_globals.h"
 
-volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.65 2026/10/18 21:05:35 moko Exp $" IDENT_PA_EXCEPTION_H;
+volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.66 2026/10/18 22:42:43 moko Exp $" IDENT_PA_EXCEPTION_H;
 
 // methods
 
@@ -18,20 +18,20 @@ Exception::Exception(): ftype(0), fproblem_source(0), fcomment(0) {}
 
 Exception::Exception(const Exception& src):
 	ftype(src.ftype),
-	fproblem_source(src.fproblem_source),
-	fcomment(src.fcomment) {
+	fproblem_source(pa_gc_reference(src.fproblem_source)),
+	fcomment(pa_gc_reference(src.fcomment)) {
 }
 
 Exception& Exception::operator =(const Exception& src) {
 	ftype=src.ftype;
-	fproblem_source=src.fproblem_source;
-	fcomment=src.fcomment;
+	fproblem_source=pa_gc_reference(src.fproblem_source);
+	fcomment=pa_gc_reference(src.fcomment);
 	return *this;
 }
 
 Exception::Exception(const char* atype, const String* aproblem_source, const char* comment_fmt, ...) {
 	ftype=atype;
-	fproblem_source=aproblem_source ? new String(*aproblem_source) : 0;
+	fproblem_source=aproblem_source ? pa_gc_reference(new String(*aproblem_source)) : 0;
 
 	if(!comment_fmt) {
 		fcomment=0;
@@ -39,20 +39,20 @@ Exception::Exception(const char* atype, const String* aproblem_source, const cha
 		va_list args;
 		va_start(args, comment_fmt);
 		fcomment=va_arg(args, const char *);
-		fcomment=fcomment ? pa_strdup(fcomment) : 0;
+		fcomment=fcomment ? pa_gc_reference(pa_strdup(fcomment)) : 0;
 		va_end(args);
 	} else {
 		char comment[MAX_STRING];
 		va_list args;
 		va_start(args, comment_fmt);
-		fcomment=pa_strdup(comment, pa_vsnprintf(comment, MAX_STRING, comment_fmt, args));
+		fcomment=pa_gc_reference(pa_strdup(comment, pa_vsnprintf(comment, MAX_STRING, comment_fmt, args)));
 		va_end(args);
 	}
 }
 
 void Exception::add_comment(const char* acomment) {
 	if(acomment)
-		fcomment=pa_strcat(fcomment, acomment);
+		fcomment=pa_gc_reference(pa_strcat(fcomment, acomment));
 }
 
 const String* Exception::problem_source() const {

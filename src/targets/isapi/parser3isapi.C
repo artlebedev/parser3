@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.142 2026/10/18 21:05:35 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.143 2026/10/18 22:42:43 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -389,6 +389,8 @@ static void call_real_parser_handler__supress_system_exception(SAPI_Info& SAPI_i
 #endif
 
 DWORD WINAPI HttpExtensionProc(LPEXTENSION_CONTROL_BLOCK lpECB) {
+	Temp_gc_references gc_references; // for pointers GC does not see
+
 	//_asm int 3;
 	SAPI_Info SAPI_info={
 		lpECB,

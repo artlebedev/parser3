@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.381 2026/10/18 21:16:41 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.382 2026/10/18 22:42:43 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -382,6 +382,8 @@ DWORD WINAPI connection_thread(void *arg){
 #else
 static void *connection_thread(void *arg){
 #endif
+	Temp_gc_references gc_references; // for pointers GC does not see, the very start of the thread
+
 	HTTPD_Connection &connection=*(HTTPD_Connection*)arg;
 	SAPI_Info_HTTPD info(connection);
 
@@ -624,6 +626,8 @@ static void usage(const char* message=NULL) {
 	}
 
 int main(int argc, char *argv[]) {
+	Temp_gc_references gc_references; // for pointers GC does not see
+
 #ifdef PA_DEBUG_CGI_ENTRY_EXIT
 	pa_log("main: entry");
 #endif
