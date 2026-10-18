@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.380 2026/10/18 21:05:35 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.381 2026/10/18 21:16:41 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -71,7 +71,7 @@ const char *parser3_log_filespec() { // $status:log-filename
 	const char* slog=log_filespec;
 
 	if(!slog) {
-		static char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
+		static THREAD_LOCAL char log_spec[MAX_STRING + 12 /* '/parser3.log' */];
 		pa_strncpy(log_spec, filespec_4log, MAX_STRING);
 
 		if(char* log_dir_pos=strrchr(log_spec, '/')){
@@ -100,7 +100,13 @@ static void pa_log(const char* fmt, va_list args) {
 
 	// prefix
 	time_t t=time(0);
-	if(const char* stamp=ctime(&t)) { // never saw that
+#ifdef _MSC_VER
+	const char* stamp=ctime(&t); // the buffer is per thread
+#else
+	char stamp_buffer[32];       // the buffer of ctime() is shared by the threads
+	const char* stamp=ctime_r(&t, stamp_buffer);
+#endif
+	if(stamp) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
 			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp, (unsigned int)pa_get_thread_id() );
 	}
