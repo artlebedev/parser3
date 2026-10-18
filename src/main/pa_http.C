@@ -17,7 +17,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.142 2026/10/17 23:11:25 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.143 2026/10/18 21:18:39 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1355,7 +1355,7 @@ SOCKET HTTPD_Server::bind(const char *host_port){
 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&sock_on, sizeof(sock_on)) ||
 	    setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&sock_on, sizeof(sock_on)) ||
 	    ::bind(sock, (struct sockaddr*)&me, sizeof(me)) ||
-	    listen(sock, 16)) {
+	    listen(sock, 511)) { // same default as in apache/nginx
 		closesocket(sock);
 		int no = pa_socks_errno();
 		throw Exception("httpd.bind", 0, "cannot bind socket: %s (%d)", pa_socks_strerr(no), no);
