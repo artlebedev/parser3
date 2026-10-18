@@ -8,7 +8,7 @@
 #ifndef PA_SOCKS_H
 #define PA_SOCKS_H
 
-#define IDENT_PA_SOCKS_H "$Id: pa_socks.h,v 1.28 2026/10/17 23:11:25 moko Exp $"
+#define IDENT_PA_SOCKS_H "$Id: pa_socks.h,v 1.29 2026/10/18 18:15:24 moko Exp $"
 
 #ifdef _MSC_VER
 #define socklen_t int
@@ -30,7 +30,7 @@ bool pa_socks_is_reset(int no);
 /// true if the error means that the call is interrupted by a signal
 bool pa_socks_is_interrupted(int no);
 
-/// recv and send, restarted if interrupted by a signal: GC stops the threads with signals
+/// recv and send, restarted if interrupted by a signal: GC stops the threads with signals, the socket timeout (SO_RCVTIMEO, SO_SNDTIMEO) is not restarted
 ssize_t pa_sock_recv(SOCKET sock, char *buf, size_t len);
 ssize_t pa_sock_send(SOCKET sock, const char *buf, size_t len);
 
