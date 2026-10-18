@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.432 2026/09/29 02:56:52 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.433 2026/10/18 21:05:35 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -117,7 +117,7 @@ const char* debug_value_to_cstr(Value& value){
 
 void va_debug_printf(SAPI_Info& sapi_info, const char* fmt,va_list args) {
 	char buf[MAX_STRING];
-	vsnprintf(buf, MAX_STRING, fmt, args);
+	pa_vsnprintf(buf, MAX_STRING, fmt, args);
 	SAPI::log(sapi_info, "%s", buf);
 }
 

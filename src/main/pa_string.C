@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.286 2026/10/01 11:48:37 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.287 2026/10/18 21:05:35 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -321,7 +321,7 @@ String& String::append_help_length(const char* str, size_t helper_length, Langua
 
 String::String(int value, const char *format) : langs(L_CLEAN){
 	char buf[MAX_NUMBER];
-	body.append_strdup_know_length(buf, snprintf(buf, MAX_NUMBER, format, value));
+	body.append_strdup_know_length(buf, pa_snprintf(buf, MAX_NUMBER, format, value));
 }
 
 String& String::append_strdup(const char* str, size_t helper_length, Language lang) {

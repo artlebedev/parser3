@@ -12,7 +12,7 @@
 #include "pa_vobject.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.107 2026/10/13 20:02:00 moko Exp $";
+volatile const char * IDENT_REFLECTION_C="$Id: reflection.C,v 1.108 2026/10/18 21:05:35 moko Exp $";
 
 static const String class_type_methoded("methoded");
 
@@ -454,7 +454,7 @@ static void _uid(Request& r, MethodParams& params) {
 	Value& obj=params.as_no_junction(0, "object must not be code");
 
 	char local_buf[MAX_NUMBER];
-	int size=snprintf(local_buf, sizeof(local_buf), "%p", &obj);
+	int size=pa_snprintf(local_buf, sizeof(local_buf), "%p", &obj);
 
 	r.write(*new String(String::C(pa_strdup(local_buf, (size_t)size), size)));
 }

@@ -10,7 +10,7 @@
 #include "pa_vint.h"
 #include "pa_vstring.h"
 
-volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.31 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VDATE_H;
+volatile const char * IDENT_PA_PA_VDATE_C="$Id: pa_vdate.C,v 1.32 2026/10/18 21:05:35 moko Exp $" IDENT_PA_VDATE_H;
 
 #define ZERO_DATE (-62169984000ll-SECS_PER_DAY) // '0000-00-00 00:00:00' - 1 day
 #define MAX_DATE (253402300799ll+SECS_PER_DAY) // '9999-12-31 23:59:59' + 1 day
@@ -54,7 +54,7 @@ static int gmt_offset() {
 static void pa_set_tz(const char* ntz) {
 	if(ntz && *ntz){
 		static char temp_tz_pair[MAX_STRING];
-		snprintf(temp_tz_pair, sizeof(temp_tz_pair), "TZ=%s", ntz);
+		pa_snprintf(temp_tz_pair, sizeof(temp_tz_pair), "TZ=%s", ntz);
 		putenv(temp_tz_pair);
 	} else {
 #ifdef HAVE_UNSETENV
@@ -122,23 +122,23 @@ const String* VDate::get_sql_string(sql_string_type aformat) {
 	switch(aformat){
 		case sql_string_datetime:{
 			static const char *format="%.4d-%.2d-%.2d %.2d:%.2d:%.2d";
-			static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+			static int size=4+1+2+1+2 +1+ 2+1+2+1+2 +1/*zero-teminator*/;
 			char *buf=new(PointerFreeGC) char[size];
-			snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
+			pa_snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
 			return new String(buf);
 		}
 		case sql_string_date:{
 			static const char *format="%.4d-%.2d-%.2d";
-			static int size=4+1+2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+			static int size=4+1+2+1+2 +1/*zero-teminator*/;
 			char *buf=new(PointerFreeGC) char[size];
-			snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday);
+			pa_snprintf(buf, size, format, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday);
 			return new String(buf);
 		}
 		case sql_string_time:{
 			static const char *format="%.2d:%.2d:%.2d";
-			static int size=2+1+2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+			static int size=2+1+2+1+2 +1/*zero-teminator*/;
 			char *buf=new(PointerFreeGC) char[size];
-			snprintf(buf, size, format, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
+			pa_snprintf(buf, size, format, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
 			return new String(buf);
 		}
 	}
@@ -158,9 +158,9 @@ const String* VDate::get_gmt_string() {
 	static const char days[7][4]={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
 	static const char *format="%s, %.2d %s %.4d %.2d:%.2d:%.2d GMT";
-	static int size=3+1+1+2+1+3+1+4+1+2+1+2+1+2+4 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+	static int size=3+1+1+2+1+3+1+4+1+2+1+2+1+2+4 +1/*zero-teminator*/;
 	char *buf=new(PointerFreeGC) char[size];
-	snprintf(buf, size, format, days[gtm.tm_wday], gtm.tm_mday, month_names[gtm.tm_mon], gtm.tm_year+1900, gtm.tm_hour, gtm.tm_min, gtm.tm_sec);
+	pa_snprintf(buf, size, format, days[gtm.tm_wday], gtm.tm_mday, month_names[gtm.tm_mon], gtm.tm_year+1900, gtm.tm_hour, gtm.tm_min, gtm.tm_sec);
 	return new String(buf);
 }
 
@@ -177,10 +177,10 @@ const String* VDate::get_iso_string(iso_string_type format) {
 			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d%c%.2d%.2d",
 			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d.000%c%.2d%.2d",
 		};
-		static int size=4+1+2+1+2 +1 +2+1+2+1+2 +4 +1 +2+1+2 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		static int size=4+1+2+1+2 +1 +2+1+2+1+2 +4 +1 +2+1+2 +1/*zero-teminator*/;
 		const char *sformat=sformats[format & (iso_string_ms | iso_string_no_colon)];
 		char *buf=new(PointerFreeGC) char[size];
-		snprintf(buf, size, sformat, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec,
+		pa_snprintf(buf, size, sformat, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec,
 			sign, offset/3600, (offset/60)%60);
 		return new String(buf);
 	} else {
@@ -188,10 +188,10 @@ const String* VDate::get_iso_string(iso_string_type format) {
 			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2dZ",
 			"%.4d-%.2d-%.2dT%.2d:%.2d:%.2d.000Z"
 		};
-		static int size=4+1+2+1+2 +1 +2+1+2+1+2 +4 +1 +1/*zero-teminator*/+1/*for faulty snprintfs*/;
+		static int size=4+1+2+1+2 +1 +2+1+2+1+2 +4 +1 +1/*zero-teminator*/;
 		const char *sformat=sformats[format & (iso_string_ms)];
 		char *buf=new(PointerFreeGC) char[size];
-		snprintf(buf, size, sformat, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
+		pa_snprintf(buf, size, sformat, ftm.tm_year+1900, ftm.tm_mon+1, ftm.tm_mday, ftm.tm_hour, ftm.tm_min, ftm.tm_sec);
 		return new String(buf);
 	}
 }

@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.465 2026/10/16 15:16:21 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.466 2026/10/18 21:05:35 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -439,7 +439,7 @@ const char* Request::get_exception_cstr(const Exception& e, VException& details)
 #define PA_SOURCE_VALUE details.problem_source->cstr(),
 
 #define EXCEPTION_CSTR(f1,v1,f2,v2) \
-			snprintf(result, MAX_STRING, \
+			pa_snprintf(result, MAX_STRING, \
 				PA_URI_FORMAT \
 				f1 f2 \
 				PA_COMMENT_TYPE_FORMAT, \
@@ -990,7 +990,7 @@ static void output_pieces(Request& r, bool header_only, const String& filename, 
 			part_length = rg.end-rg.start+1;
 
 			char buf[MAX_STRING];
-			snprintf(buf, MAX_STRING, "bytes %s-%s/%s", pa_uitoa(rg.start), pa_uitoa(rg.end), pa_uitoa(content_length));
+			pa_snprintf(buf, MAX_STRING, "bytes %s-%s/%s", pa_uitoa(rg.start), pa_uitoa(rg.end), pa_uitoa(content_length));
 			SAPI::add_header_attribute(r.sapi_info, HTTP_STATUS, "206");
 			SAPI::add_header_attribute(r.sapi_info, "content-range", buf);
 		} else {

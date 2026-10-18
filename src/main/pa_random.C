@@ -12,7 +12,7 @@
 #include "pa_exception.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.17 2026/04/25 13:38:46 moko Exp $" IDENT_PA_RANDOM_H;
+volatile const char * IDENT_PA_RANDOM_C="$Id: pa_random.C,v 1.18 2026/10/18 21:05:35 moko Exp $" IDENT_PA_RANDOM_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -148,7 +148,7 @@ static uuid get_uuid() {
 char *get_uuid_cstr(bool lower, bool solid) {
 	uuid uuid=get_uuid();
 
-	const size_t bufsize=36+1/*zero-teminator*/+1/*for faulty snprintfs*/;
+	const size_t bufsize=36+1/*zero-teminator*/;
 	char* cstr=new(PointerFreeGC) char[bufsize];
 
 	const char *format[] = {
@@ -158,7 +158,7 @@ char *get_uuid_cstr(bool lower, bool solid) {
 		"%08x%04x%04x%02x%02x%02x%02x%02x%02x%02x%02x"
 	};
 
-	snprintf(cstr, bufsize,
+	pa_snprintf(cstr, bufsize,
 		format[(lower ? 1:0) + (solid ? 2:0)],
 		uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
 		uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
@@ -170,10 +170,10 @@ char *get_uuid_cstr(bool lower, bool solid) {
 char *get_uuid_boundary() {
 	uuid uuid=get_uuid();
 
-	const int boundary_bufsize=10+32+1/*for zero-teminator*/+1/*for faulty snprintfs*/;
+	const int boundary_bufsize=10+32+1/*for zero-teminator*/;
 	char* boundary=new(PointerFreeGC) char[boundary_bufsize];
 
-	snprintf(boundary, boundary_bufsize,
+	pa_snprintf(boundary, boundary_bufsize,
 		"----------%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X",
 		uuid.time_low, uuid.time_mid, uuid.time_hi_and_version,
 		uuid.clock_seq >> 8, uuid.clock_seq & 0xFF,
@@ -257,7 +257,7 @@ char *get_uuid7_cstr(bool lower, bool solid) {
 	uuid[6] = (uuid[6] & 0x0f) | 0x70; /* 4 bit version [0111] */
 	uuid[8] = (uuid[8] & 0x3f) | 0x80; /* 2 bit variant [10]   */
 
-	const size_t bufsize=36+1/*zero-teminator*/+1/*for faulty snprintfs*/;
+	const size_t bufsize=36+1/*zero-teminator*/;
 	char* cstr=new(PointerFreeGC) char[bufsize];
 
 	const char *format[] = {
@@ -267,7 +267,7 @@ char *get_uuid7_cstr(bool lower, bool solid) {
 		"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
 	};
 
-	snprintf(cstr, bufsize, format[(lower ? 1:0) + (solid ? 2:0)],
+	pa_snprintf(cstr, bufsize, format[(lower ? 1:0) + (solid ? 2:0)],
 		uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7],
 		uuid[8], uuid[9], uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]
 	);

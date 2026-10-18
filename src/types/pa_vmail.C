@@ -20,7 +20,7 @@
 #include "pa_varray.h"
 #include "pa_uue.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.149 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.150 2026/10/18 21:05:35 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -242,7 +242,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 		const char *partName=part_name_begins[partType];
 		
 		char partNameNumbered[MAX_STRING];
-		snprintf(partNameNumbered, MAX_STRING, "%s%d", partName, partNumber);
+		pa_snprintf(partNameNumbered, MAX_STRING, "%s%d", partName, partNumber);
 
 		// $.partN[
 		VHash* vpartHash(new VHash);
@@ -262,7 +262,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 
 		// $.value[text/plain]
 		char value[MAX_STRING];
-		snprintf(value, MAX_STRING, "%s/%s", type->type ? type->type : "x-unknown", type->subtype ? type->subtype : "x-unknown");
+		pa_snprintf(value, MAX_STRING, "%s/%s", type->type ? type->type : "x-unknown", type->subtype ? type->subtype : "x-unknown");
 		putReceived(vcontent_type->hash(), VALUE_NAME, value);
 
 		// $.charset[windows-1251] && co

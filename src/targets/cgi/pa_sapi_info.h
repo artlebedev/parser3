@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.23 2026/10/16 13:55:16 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.24 2026/10/18 21:05:35 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -101,7 +101,7 @@ public:
 			return;
 		// memory allocation is not allowed
 		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, HTTP_STATUS_CAPITALIZED ": %s\r\n"
+		pa_snprintf(buf, MAX_STRING, HTTP_STATUS_CAPITALIZED ": %s\r\n"
 				HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n\r\n", status);
 		send_body(buf, strlen(buf));
 		send_body(exception_cstr, strlen(exception_cstr));
@@ -259,7 +259,7 @@ public:
 			return;
 		// memory allocation is not allowed
 		char buf[MAX_STRING];
-		snprintf(buf, MAX_STRING, "HTTP/1.0 %s %s\r\n"
+		pa_snprintf(buf, MAX_STRING, "HTTP/1.0 %s %s\r\n"
 				HTTP_CONTENT_TYPE_CAPITALIZED ": text/plain\r\n\r\n", status, status_message(atoi(status)));
 		send_body(buf, strlen(buf));
 		send_body(exception_cstr, strlen(exception_cstr));

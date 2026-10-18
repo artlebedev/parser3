@@ -14,7 +14,7 @@
 #include "pa_common.h"
 #include "pa_charset.h"
 
-volatile const char * IDENT_PA_XML_EXCEPTION_C="$Id: pa_xml_exception.C,v 1.15 2026/04/25 13:38:46 moko Exp $" IDENT_PA_XML_EXCEPTION_H;
+volatile const char * IDENT_PA_XML_EXCEPTION_C="$Id: pa_xml_exception.C,v 1.16 2026/10/18 21:05:35 moko Exp $" IDENT_PA_XML_EXCEPTION_H;
 
 // methods
 
@@ -25,7 +25,7 @@ XmlException::XmlException(const String* aproblem_source, const char* aproblem_c
 	fcomment=new(PointerFreeGC) char[MAX_STRING];
 	va_list args;
 	va_start(args, aproblem_comment);
-	vsnprintf((char *)fcomment, MAX_STRING, aproblem_comment, args);
+	pa_vsnprintf((char *)fcomment, MAX_STRING, aproblem_comment, args);
 	va_end(args);
 }
 

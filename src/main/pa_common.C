@@ -17,7 +17,7 @@
 #include "pa_idna.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.350 2026/10/11 17:06:44 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
+volatile const char * IDENT_PA_COMMON_C="$Id: pa_common.C,v 1.351 2026/10/18 21:05:35 moko Exp $" IDENT_PA_COMMON_H IDENT_PA_HASH_H IDENT_PA_INLINE_HASH_H IDENT_PA_ARRAY_H IDENT_PA_STACK_H;
 
 // defines for globals
 
@@ -577,29 +577,28 @@ const char *pa_idna_decode(const char *in, Charset &asked_charset){
 
 	return result;
 }
-/// must be last in this file
-#undef vsnprintf
-int pa_vsnprintf(char* b, size_t s, const char* f, va_list l) {
-	if(!s)
+
+int pa_vsnprintf(char* b, size_t size, const char* f, va_list l) {
+	if(!size)
 		return 0;
 
 	int r;
-	// note: on win32 & maybe somewhere else
-	// vsnprintf do not writes terminating 0 in 'buffer full' case, reducing
-	// http://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
-	--s;
+	// room for the terminating 0
+	size_t s=size-1;
 
 	// clients do not check for negative 's', feature: ignore such prints
 	if((ssize_t)s<0)
 		return 0;
 
 #ifdef _MSC_VER
+	// note: on win32 vsnprintf do not writes terminating 0 in 'buffer full' case, so it gets the size reduced
+	// http://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
 	// win32: if the number of bytes to write exceeds buffer, then count bytes are written and -1 is returned
-	r=_vsnprintf(b, s, f, l); 
+	r=_vsnprintf(b, s, f, l);
 	if(r<0) 
 		r=s;
 #else
-	r=vsnprintf(b, s, f, l); 
+	r=vsnprintf(b, size, f, l);
 	/*
 	solaris: man vsnprintf
 

@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.221 2026/10/09 17:14:18 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.222 2026/10/18 21:05:35 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -85,7 +85,7 @@ static void xmlParserGenericErrorFunc(void *  /*ctx*/, const char* msg, ...) {
 		
 	va_list args;
 	va_start(args, msg);
-	p->used+=vsnprintf(p->buf+p->used, sizeof(p->buf)-p->used, msg, args);
+	p->used+=pa_vsnprintf(p->buf+p->used, sizeof(p->buf)-p->used, msg, args);
 	va_end(args);
 }
 

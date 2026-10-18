@@ -8,7 +8,7 @@
 #ifndef PA_COMMON_H
 #define PA_COMMON_H
 
-#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.202 2026/10/01 11:48:37 moko Exp $"
+#define IDENT_PA_COMMON_H "$Id: pa_common.h,v 1.203 2026/10/18 21:05:35 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -50,13 +50,9 @@ extern const String content_disposition_filename_name;
 class Value;
 typedef HASH_STRING<Value*> HashStringValue;
 
-// replace system s*nprintf with our versions
-#undef vsnprintf
+/// use instead of system *snprintf: zero-terminated, returns the real length (<= size-1)
 int pa_vsnprintf(char *, size_t, const char* , va_list);
-#define vsnprintf pa_vsnprintf 
-#undef snprintf
 int pa_snprintf(char *, size_t, const char* , ...);
-#define snprintf pa_snprintf
 
 #ifdef _MSC_VER
 

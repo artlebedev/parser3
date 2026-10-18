@@ -10,12 +10,10 @@
 #include "pa_exception.h"
 #include "smtp.h"
 
-volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.18 2026/04/25 13:38:46 moko Exp $" IDENT_SMTP_H;
+volatile const char * IDENT_SMTP_C="$Id: smtp.C,v 1.19 2026/10/18 21:05:35 moko Exp $" IDENT_SMTP_H;
 
 // pa_common.C
-#undef snprintf
 extern int pa_snprintf(char *, size_t, const char* , ...);
-#define snprintf pa_snprintf
 
 //#define DEBUG_SHOW
 
@@ -431,13 +429,13 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 	if( 220 != get_line() )
 		SendSmtpError("SMTP server error");
 
-	snprintf(out_data, sizeof(out_data), "HELO %s\r\n", my_hostname );
+	pa_snprintf(out_data, sizeof(out_data), "HELO %s\r\n", my_hostname );
 	SendLine(out_data, strlen(out_data) );
 
 	if( 250 != get_line() )
 	    SendSmtpError("SMTP server error");
 
-	snprintf(out_data, sizeof(out_data), "MAIL From: <%s>\r\n", from);
+	pa_snprintf(out_data, sizeof(out_data), "MAIL From: <%s>\r\n", from);
 	SendLine(out_data, strlen(out_data) );
 
 	if( 250 != get_line() )
@@ -456,7 +454,7 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 				ptr[len++] = '\0';
 		}
 
-		snprintf(out_data, sizeof(out_data), "RCPT To: <%s>\r\n", ptr);
+		pa_snprintf(out_data, sizeof(out_data), "RCPT To: <%s>\r\n", ptr);
 		SendLine(out_data, strlen(out_data) );
 
 		if( 250 != get_line() )
@@ -469,7 +467,7 @@ prepare_message(char *from, char *to, const char* server, const char* service)
 			break;
 	}
 
-	snprintf(out_data, sizeof(out_data), "DATA\r\n");
+	pa_snprintf(out_data, sizeof(out_data), "DATA\r\n");
 	SendLine(out_data, strlen(out_data));
 
 	if( 354 != get_line() )

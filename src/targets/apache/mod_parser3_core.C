@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.47 2026/10/10 02:01:15 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.48 2026/10/18 21:05:35 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -63,7 +63,7 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
 	char buf[MAX_LOG_STRING];
-	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
+	size_t size=pa_vsnprintf(buf, MAX_LOG_STRING, fmt, args);
 	size=remove_crlf(buf, buf+size);
 	pa_ap_log_rerror(0, 0, PA_APLOG_ERR | PA_APLOG_NOERRNO, SAPI_info.r, "%s", buf);
 	va_end(args);
@@ -73,7 +73,7 @@ void SAPI::die(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	char buf[MAX_LOG_STRING];
-	size_t size=vsnprintf(buf, MAX_LOG_STRING, fmt, args);
+	size_t size=pa_vsnprintf(buf, MAX_LOG_STRING, fmt, args);
 	size=remove_crlf(buf, buf+size);
 	pa_ap_log_error(PA_APLOG_MARK, PA_APLOG_EMERG, 0, "%s", buf);
 	exit(1);

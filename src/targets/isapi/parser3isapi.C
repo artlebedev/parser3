@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.141 2026/10/10 02:01:15 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.142 2026/10/18 21:05:35 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -82,7 +82,7 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	const char* prefix="PARSER_ERROR:";
 	strcpy(buf, prefix);
 	char *start=buf+strlen(prefix);
-	DWORD size=vsnprintf(start, MAX_LOG_STRING-strlen(prefix), fmt, args);
+	DWORD size=pa_vsnprintf(start, MAX_LOG_STRING-strlen(prefix), fmt, args);
 	size=remove_crlf(start, start+size);
 
 	SAPI_info.lpECB->ServerSupportFunction(SAPI_info.lpECB->ConnID, HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
@@ -231,7 +231,7 @@ void SAPI::send_headers(SAPI_Info& SAPI_info) {
 			header_info.pszStatus="401 Authorization Required";
 			break;
 		default:
-			snprintf(status_buf, MAX_STATUS_LENGTH, 
+			pa_snprintf(status_buf, MAX_STATUS_LENGTH, 
 				"%d Undescribed", SAPI_info.http_response_code);
 			header_info.pszStatus=status_buf;
 			break;
@@ -350,7 +350,7 @@ void real_parser_handler(SAPI_Info& SAPI_info) {
 		beside_binary_path[0]='.'; beside_binary_path[1]=0;
 	}
 	char config_filespec[MAX_STRING];
-	snprintf(config_filespec, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
+	pa_snprintf(config_filespec, MAX_STRING, "%s/%s", beside_binary_path, AUTO_FILE_NAME);
 
 	// process the request
 	request.core(entry_exists(config_filespec) ? config_filespec : NULL);

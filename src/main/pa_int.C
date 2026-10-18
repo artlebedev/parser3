@@ -10,7 +10,7 @@
 #include "pa_string.h"
 #include "pa_exception.h"
 
-volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.10 2026/09/15 20:48:14 moko Exp $" IDENT_PA_INT_H;
+volatile const char * IDENT_PA_INT_C="$Id: pa_int.C,v 1.11 2026/10/18 21:05:35 moko Exp $" IDENT_PA_INT_H;
 
 #ifdef PA_WIDE_INT
 int check4int(pa_wint avalue){
@@ -328,27 +328,27 @@ const char* format_double(double value, const char* fmt) {
 	if(fmt && strlen(fmt)){
 		switch(format_type(fmt)){
 			case FormatDouble:
-				size=snprintf(local_buf, sizeof(local_buf), fmt, value);
+				size=pa_snprintf(local_buf, sizeof(local_buf), fmt, value);
 				break;
 			case FormatUInt:
 				if(value >= 0){ // on Apple M1 (uint)<negative value> is 0
 #ifdef PA_WIDE_INT
 					char fmt_buf[MAX_FORMAT_LEN+4];
-					size=snprintf(local_buf, sizeof(local_buf), wide_int_fmt(fmt, fmt_buf), (unsigned long long)clip2wint(value)); // WUINT_MAX == WINT_MAX
+					size=pa_snprintf(local_buf, sizeof(local_buf), wide_int_fmt(fmt, fmt_buf), (unsigned long long)clip2wint(value)); // WUINT_MAX == WINT_MAX
 #else
-					size=snprintf(local_buf, sizeof(local_buf), fmt, clip2uint(value));
+					size=pa_snprintf(local_buf, sizeof(local_buf), fmt, clip2uint(value));
 #endif
 				} else {
 					// for unsigned formats, wrap negatives to uint as unsigned wint would exceed the 53-bit range
-					size=snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
+					size=pa_snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
 				}
 				break;
 			case FormatInt:{
 #ifdef PA_WIDE_INT
 				char fmt_buf[MAX_FORMAT_LEN+4];
-				size=snprintf(local_buf, sizeof(local_buf), wide_int_fmt(fmt, fmt_buf), (long long)clip2wint(value));
+				size=pa_snprintf(local_buf, sizeof(local_buf), wide_int_fmt(fmt, fmt_buf), (long long)clip2wint(value));
 #else
-				size=snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
+				size=pa_snprintf(local_buf, sizeof(local_buf), fmt, clip2int(value));
 #endif
 				break;
 				}

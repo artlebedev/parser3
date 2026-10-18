@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.41 2026/10/11 17:06:44 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.42 2026/10/18 21:05:35 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -33,7 +33,7 @@ time_t filetime_to_timet(FILETIME const& ft){
 
 bool findfirst(const char* _pathname, struct ffblk *_ffblk, int /*_attrib*/) {
 	char mask[MAXPATH];
-	snprintf(mask, MAXPATH, "%s/*.*", _pathname);
+	pa_snprintf(mask, MAXPATH, "%s/*.*", _pathname);
 
 	const UTF16* utf16mask=pa_utf16_encode(mask, pa_thread_request().charsets.source());
 	if(!utf16mask) { // not UTF-8, there can't be such a directory
@@ -112,7 +112,7 @@ void findclose(struct ffblk *_ffblk) {
 
 void ffblk::stat_file() {
 	char fileSpec[MAXPATH];
-	snprintf(fileSpec, MAXPATH, "%s/%s", filePath, ff_name);
+	pa_snprintf(fileSpec, MAXPATH, "%s/%s", filePath, ff_name);
 	
 	if(pa_stat(fileSpec, &_st) != 0) {
 		memset(&_st,0,sizeof(_st));

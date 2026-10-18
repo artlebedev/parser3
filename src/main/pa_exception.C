@@ -10,7 +10,7 @@
 #include "pa_sapi.h"
 #include "pa_globals.h"
 
-volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.64 2026/04/25 13:38:46 moko Exp $" IDENT_PA_EXCEPTION_H;
+volatile const char * IDENT_PA_EXCEPTION_C="$Id: pa_exception.C,v 1.65 2026/10/18 21:05:35 moko Exp $" IDENT_PA_EXCEPTION_H;
 
 // methods
 
@@ -45,7 +45,7 @@ Exception::Exception(const char* atype, const String* aproblem_source, const cha
 		char comment[MAX_STRING];
 		va_list args;
 		va_start(args, comment_fmt);
-		fcomment=pa_strdup(comment, vsnprintf(comment, MAX_STRING, comment_fmt, args));
+		fcomment=pa_strdup(comment, pa_vsnprintf(comment, MAX_STRING, comment_fmt, args));
 		va_end(args);
 	}
 }
