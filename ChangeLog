@@ -1,3 +1,133 @@
+2026-10-19  moko
+
+	* src/: include/pa_exception.h, include/pa_memory.h,
+	  main/pa_exception.C, main/pa_memory.C, main/pa_xml_exception.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C: Temp_gc_references added and used
+
+	* src/main/pa_http.C: increase listen queue as websocket support
+	  was added
+
+	* src/targets/cgi/parser3.C: minor logging fixes
+
+	* src/: classes/inet.C, classes/reflection.C, include/pa_common.h,
+	  lib/smtp/smtp.C, main/execute.C, main/pa_common.C, main/pa_dir.C,
+	  main/pa_exception.C, main/pa_globals.C, main/pa_int.C,
+	  main/pa_random.C, main/pa_request.C, main/pa_string.C,
+	  main/pa_xml_exception.C, targets/apache/mod_parser3_core.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C,
+	  targets/isapi/parser3isapi.C, types/pa_vdate.C,
+	  types/pa_vdouble.h, types/pa_vmail.C: pa_snprintf and
+	  pa_vsnprintf are now called explicitly, snprintf/vsnprintf macros
+	  removed only Windows _vsnprintf needs size-1, thus "+1 for faulty
+	  snprintfs" removed.
+
+2026-10-18  moko
+
+	* src/: include/pa_socks.h, main/pa_socks.C: hopefully final turing
+	  for EINTR handling
+
+	* src/: include/pa_socks.h, main/pa_http.C, main/pa_socks.C,
+	  main/pa_websocket.C: EINTR handling tuned once again
+
+	* src/: include/pa_socks.h, main/pa_http.C, main/pa_os.C,
+	  main/pa_socks.C, main/pa_websocket.C: pa_sock_recv / pa_sock_send
+	  added to continue if interruped (usually by GC)
+
+2026-10-17  moko
+
+	* tests/httpd/site/config.p: comment tuned
+
+	* tests/httpd/: 044.txt, ok.log, site/config.p, site/form.html:
+	  testing the $form is refilled after the POST is read
+
+	* src/types/: pa_vform.C, pa_vform.h: the POST content should be
+	  checked in refill confition, as is read after @conf, where $form
+	  can be accessed (for query string only)
+
+2026-10-16  moko
+
+	* src/classes/amqp.C: repair channel tuned: the new channel gets a
+	  new number as the deliveries the broker has sent on the dead one
+	  may still be in the library's buffers (related to feature #1288)
+
+	* tests/results/: 323.processed, 421.processed: tests results
+	  updated after websocket class was added (related to feature
+	  #1310)
+
+	* src/: classes/form.C, classes/websocket.C, include/pa_request.h,
+	  main/pa_request.C, main/pa_websocket.C: post_max_size moved to
+	  request:configure_admin and used in websocket as well, warnings
+	  war (related to feature #1310)
+
+	* src/: classes/Makefile.am, classes/classes.vcproj,
+	  include/Makefile.am, lib/md5/Makefile.am, lib/md5/md5.vcproj,
+	  main/Makefile.am, main/main.vcproj: project files updates for
+	  websocket (RFC 6455) support (related to feature #1310)
+
+	* src/: classes/classes.C, classes/math.C, classes/websocket.C,
+	  include/pa_http.h, include/pa_request.h, include/pa_socks.h,
+	  include/pa_websocket.h, lib/md5/pa_sha1.C, lib/md5/pa_sha1.h,
+	  lib/md5/pa_sha2.c, lib/md5/pa_sha2.h, main/pa_http.C,
+	  main/pa_request.C, main/pa_socks.C, main/pa_websocket.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C,
+	  types/pa_vresponse.C, types/pa_vresponse.h: websocket (RFC 6455)
+	  support added (implements feature #1310) sha1 code moved to
+	  lib/md5.
+
+2026-10-15  moko
+
+	* src/classes/response.C, src/include/pa_request.h,
+	  src/main/pa_request.C, tests/464.html, tests/465.html,
+	  tests/466.html, tests/467.html, tests/468.html,
+	  tests/results/468.processed: ^response:send[] ->
+	  response:stream[] (related to feature #1306)
+
+2026-10-14  moko
+
+	* src/: include/pa_http.h, include/pa_socks.h, main/pa_http.C,
+	  main/pa_socks.C: select -> poll
+
+	* tests/results/: 175.processed, 180.processed, 195.processed,
+	  298.processed, 380.processed: try-catch-comment whitespace tuned
+
+	* tests/memcached/: 001.html, ok.log: tests for array support in
+	  memcached:mget added (related to feature #1309)
+
+	* src/classes/memcached.C: memcached:mget - array support added
+	  (implements feature #1309)
+
+	* tests/: 468.html, results/468.processed, results/auto.p: many
+	  more tests for get_element/get_element4call added (related to
+	  feature #1307)
+
+2026-10-13  moko
+
+	* src/: classes/json.C, classes/op.C, classes/reflection.C,
+	  include/pa_request.h, include/pa_string.h, main/pa_request.C,
+	  main/untaint.C, types/pa_vresponse.C, types/pa_vresponse.h:
+	  $response:untaint added, it allows to change response data
+	  untainting lang (implements feature #1308) get_untaint_lang
+	  renamed to String::name2lang, String::lang2name added
+
+	* src/: include/pa_request.h, main/pa_request.C: cleanup: response
+	  untainting lang can't be changed since Temp_lang removal (#1091),
+	  thus save/restore no longer required
+
+	* src/types/pa_vresponse.C: VResponse joins "open key class list"
+	  (related to feature #1307)
+
+	* tests/: memcached/003.html, memcached/ok.log, redis/006.html,
+	  redis/ok.log: more tests for key/method priority added
+
+	* src/types/: pa_varray.h, pa_vconsole.h, pa_vcookie.C, pa_venv.C,
+	  pa_vform.C, pa_vhash.h, pa_vhashfile.h, pa_vmemcached.C,
+	  pa_vredis.h, pa_vrequest.C, pa_vstateless_class.h, pa_vstatus.C,
+	  pa_vstring.h, pa_vtable.C, pa_vtable.h:
+	  MAYBE_GET_SPECIAL_OR_METHOD and MAYBE_GET_SPECIAL added ans used
+	  to avoid OPTIMIZE_BYTECODE_GET_ELEMENT__SPECIAL defines; used in
+	  memcached and hashfile to allow keys with method names
+
 2026-10-11  moko
 
 	* tests/: 467.html, results/467.processed: ^sse[] demo for
@@ -22,7 +152,8 @@
 
 2026-10-10  moko
 
-	* tests/redis/: config.p, ok.log: minor code cleanup in tests
+	* tests/: memcached/001.html, memcached/config.p, memcached/ok.log,
+	  redis/config.p, redis/ok.log: minor code cleanup in tests
 
 	* tests/: 464.html, 465.html, 466.html, results/464.processed,
 	  results/465.processed, results/466.processed: tests for
@@ -37,6 +168,9 @@
 	  targets/isapi/parser3isapi.C: header_only param optimized out
 
 	* src/classes/amqp.C: more correct amqp exception handling
+
+	* tests/memcached/: 001.html, 002.html, config.p, ok.log,
+	  run_tests.sh: memcached tests commited
 
 	* src/: classes/amqp.C, lib/memcached/pa_memcached.C,
 	  lib/memcached/pa_memcached.h, types/pa_vmemcached.C: minor memory
