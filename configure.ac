@@ -386,8 +386,8 @@ AC_ARG_WITH(amqp,[  --with-amqp=DIR         DIR is the directory where
         AC_CHECK_HEADER([amqp_ssl_socket.h],[AC_DEFINE([WITH_AMQP_SSL],,[librabbitmq with SSL support])])
     else
         AMQP_INCLUDES="-I$AMQP/include"
-        if test -f $AMQP/lib/librabbitmq.la; then
-            AMQP_LIBS="$AMQP/lib/librabbitmq.la"
+        if test -f $AMQP/lib/librabbitmq.a; then
+            AMQP_LIBS="$AMQP/lib/librabbitmq.a"
         else
             AMQP_LIBS="-L$AMQP/lib -lrabbitmq"
         fi
