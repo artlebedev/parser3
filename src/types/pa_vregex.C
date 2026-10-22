@@ -10,7 +10,7 @@
 #include "pa_vstring.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.29 2026/10/22 19:34:39 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.30 2026/10/22 19:56:23 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -33,8 +33,7 @@ const char* get_pcre_exec_error_text(int exec_result){
 #ifdef REGEX_CACHE
 
 #define REGEX_CACHE_BUCKETS 256
-#define REGEX_CACHE_LIMIT 512       // the cache is cleared when full to avoid unlimited growth
-#define REGEX_CACHE_MAX_PATTERN_LENGTH 512
+#define REGEX_CACHE_LIMIT 256       // the cache is cleared when full to avoid unlimited growth
 
 /// pcre2_code is read-only while matching and can be used by many threads, while the match data belongs to VRegex
 class Regex_cache_entry: public PA_Object {
@@ -46,7 +45,7 @@ public:
 	Regex_cache_entry* next;
 
 	Regex_cache_entry(Charset* acharset, int aoptions, const char* apattern, pcre2_code* acode, Regex_cache_entry* anext):
-		charset(acharset), options(aoptions), pattern(pa_strdup(apattern)), code(acode), next(anext) {}
+		charset(acharset), options(aoptions), pattern(apattern), code(acode), next(anext) {}
 };
 
 static Regex_cache_entry* regex_cache[REGEX_CACHE_BUCKETS];
@@ -68,9 +67,6 @@ static pcre2_code* regex_cache_get(uint bucket, Charset* charset, int options, c
 }
 
 static void regex_cache_put(uint bucket, Charset* charset, int options, const char* pattern, pcre2_code* code){
-	if(strlen(pattern)>REGEX_CACHE_MAX_PATTERN_LENGTH)
-		return; // longer patterns are not cached to conserve memory
-
 	SYNCHRONIZED;
 	if(regex_cache_count>=REGEX_CACHE_LIMIT){
 		memset(regex_cache, 0, sizeof(regex_cache));
