@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.466 2026/10/18 21:05:35 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.467 2026/10/22 23:20:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -121,6 +121,7 @@ static const String httpd_code_cache_name("code-cache");
 #endif
 
 static const String conf_method_name("conf");
+static const String mime_types_method_name("mime-types");
 static const String post_process_method_name("postprocess");
 static const String response_body_file_name("file");
 
@@ -496,11 +497,6 @@ void Request::configure() {
 	// configure admin options if not configured yet
 	if(!configure_admin_done)
 		configure_admin(main_class);
-
-	// $MAIN:MIME-TYPES
-	if(Value* element=main_class.get_element(mime_types_name))
-		if(Table *table=element->get_table())
-			mime_types=table;
 }
 
 /// HEAD request: only the headers are sent
@@ -1121,17 +1117,31 @@ const String& Request::mime_type_of(const String* file_name) {
 }
 
 const String& Request::mime_type_of(const char* user_file_name_cstr) {
-	if(mime_types)
-		if(const char* cext=strrchr(user_file_name_cstr, '.')) {
-			String sext(++cext);
-			Table::Action_options options;
-			if(mime_types->locate(0, sext.change_case(charsets.source(), String::CC_LOWER), options)) {
-				if(const String* result=mime_types->item(1))
-					return *result;
-				else
-					throw Exception(PARSER_RUNTIME, 0, MIME_TYPES_NAME " table column elements must not be empty");
-			}
+	// built at the first use: @mime-types[] result or $MAIN:MIME-TYPES
+	if(!mime_types) {
+		Value* element=0;
+		if(const Method *method=main_class.get_method(mime_types_method_name)) {
+			METHOD_FRAME_ACTION(*method, method_frame/*caller*/, main_class, {
+				call(frame);
+				element=&frame.result();
+			});
+		} else
+			element=main_class.get_element(mime_types_name);
+
+		Table *table=element ? element->get_table() : 0;
+		mime_types=table ? table : new Table(0); // empty if nothing is defined
+	}
+
+	if(const char* cext=strrchr(user_file_name_cstr, '.')) {
+		String sext(++cext);
+		Table::Action_options options;
+		if(mime_types->locate(0, sext.change_case(charsets.source(), String::CC_LOWER), options)) {
+			if(const String* result=mime_types->item(1))
+				return *result;
+			else
+				throw Exception(PARSER_RUNTIME, 0, MIME_TYPES_NAME " table column elements must not be empty");
 		}
+	}
 
 	return *new String("application/octet-stream");
 }

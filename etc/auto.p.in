@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.20 2026/10/10 21:52:20 moko Exp $
+#$Id: auto.p.in,v 1.21 2026/10/22 23:20:42 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -42,13 +42,31 @@ mysql	$sqldriversdir/libparser3mysql.@dll_extension@	libmysqlclient.@dll_extensi
 }]
 ]
 
+$LIMITS[
+	$.post_max_size(64*0x400*0x400)
+#	$.max_file_size(512*0x400*0x400)
+#	$.max_loop(100000)
+#	$.max_array_size(1000000)
+#	$.max_recursion(1000)
+]
+
+#$HTTPD[
+#	$.mode[threaded]
+#]
+
+#$MAIL[
+#	$.SMTP[localhost]
+#]
+
 #for ^file::load[name;user-name] mime-type autodetection
-$MIME-TYPES[^table::create{ext	mime-type
+@mime-types[]
+$result[^table::create{ext	mime-type
 7z	application/x-7z-compressed
 avi	video/x-msvideo
+avif	image/avif
 bmp	image/bmp
 css	text/css
-cvs	text/csv
+csv	text/csv
 doc	application/msword
 docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document
 dtd	application/xml-dtd
@@ -83,34 +101,19 @@ tif	image/tiff
 tiff	image/tiff
 ttf	font/ttf
 txt	text/plain
+wasm	application/wasm
 wav	audio/x-wav
 xls	application/vnd.ms-excel
 xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 xml	text/xml
 xsl	text/xml
 webm	video/webm
+webmanifest	application/manifest+json
 webp	image/webp
 woff	font/woff
 woff2	font/woff2
 zip	application/zip
 }]
-
-$LIMITS[
-	$.post_max_size(64*0x400*0x400)
-#	$.max_file_size(512*0x400*0x400)
-#	$.max_loop(100000)
-#	$.max_array_size(1000000)
-#	$.max_recursion(1000)
-]
-
-#$HTTPD[
-#	$.mode[threaded]
-#]
-
-#$MAIL[
-#	$.SMTP[localhost]
-#]
-
 
 @fatal_error[title;subtitle;body]
 $response:status(500)
