@@ -17,7 +17,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.143 2026/10/18 21:18:39 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.144 2026/10/22 21:28:37 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1161,6 +1161,11 @@ bool HTTPD_request::read_header(SOCKET sock) {
 					break;
 
 				parse_headers();
+
+				if(length==body_offset){ // nothing but the headers (GET, websocket handshake), the buffer is no longer needed
+					buf=NULL;
+					length=body_offset=buf_size=0;
+				}
 				return true;
 			}
 		}
@@ -1184,7 +1189,8 @@ bool HTTPD_request::read_header(SOCKET sock) {
 
 size_t HTTPD_request::read_post(SOCKET sock, char *body, size_t max_bytes) {
 	size_t total_read = min(length - body_offset, max_bytes);
-	memcpy(body, buf + body_offset, total_read);
+	if(total_read)
+		memcpy(body, buf + body_offset, total_read);
 
 	while (total_read < max_bytes){
 		ssize_t received_size = pa_recv(sock, body + total_read, max_bytes - total_read);
