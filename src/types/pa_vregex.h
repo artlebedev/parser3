@@ -8,7 +8,7 @@
 #ifndef PA_VREGEX_H
 #define PA_VREGEX_H
 
-#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.19 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VREGEX_H "$Id: pa_vregex.h,v 1.20 2026/10/22 19:34:39 moko Exp $"
 
 // include
 
@@ -28,6 +28,11 @@ enum Match_feature {
 };
 
 extern Methoded* regex_class;
+
+#ifdef HAVE_PCRE2
+/// compiled patterns are reused: in a loop, by the other threads and by the next httpd requests
+#define REGEX_CACHE
+#endif
 
 // VRegex
 class VRegex: public VStateless_object {
@@ -97,7 +102,9 @@ public: // usage
 		pcre2_match_data_free(fmatch_data);
 		pcre2_match_context_free(fmatch_ctxt);
 		pcre2_compile_context_free(fcmp_ctxt);
-		pcre2_code_free(fcode);
+#ifndef REGEX_CACHE
+		pcre2_code_free(fcode); // the cache owns it otherwise
+#endif
 #else
 		if(fextra)
 			pcre_free(fextra);

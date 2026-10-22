@@ -8,8 +8,9 @@
 #include "pa_vregex.h"
 #include "pa_vint.h"
 #include "pa_vstring.h"
+#include "pa_threads.h"
 
-volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.28 2026/10/09 20:14:28 moko Exp $" IDENT_PA_VREGEX_H;
+volatile const char * IDENT_PA_VREGEX_C="$Id: pa_vregex.C,v 1.29 2026/10/22 19:34:39 moko Exp $" IDENT_PA_VREGEX_H;
 
 // defines
 
@@ -28,6 +29,58 @@ const char* get_pcre_exec_error_text(int exec_result){
 	return "execution error (%d)";
 }
 
+
+#ifdef REGEX_CACHE
+
+#define REGEX_CACHE_BUCKETS 256
+#define REGEX_CACHE_LIMIT 512       // the cache is cleared when full to avoid unlimited growth
+#define REGEX_CACHE_MAX_PATTERN_LENGTH 512
+
+/// pcre2_code is read-only while matching and can be used by many threads, while the match data belongs to VRegex
+class Regex_cache_entry: public PA_Object {
+public:
+	Charset* charset;
+	int options;
+	const char* pattern;
+	pcre2_code* code;
+	Regex_cache_entry* next;
+
+	Regex_cache_entry(Charset* acharset, int aoptions, const char* apattern, pcre2_code* acode, Regex_cache_entry* anext):
+		charset(acharset), options(aoptions), pattern(pa_strdup(apattern)), code(acode), next(anext) {}
+};
+
+static Regex_cache_entry* regex_cache[REGEX_CACHE_BUCKETS];
+static uint regex_cache_count=0;
+
+/// the same pattern with other options or charset is rare and just shares the bucket
+static uint regex_cache_hash(const char* pattern){
+	uint result=0;
+	generic_hash_code(result, pattern);
+	return result % REGEX_CACHE_BUCKETS;
+}
+
+static pcre2_code* regex_cache_get(uint bucket, Charset* charset, int options, const char* pattern){
+	SYNCHRONIZED;
+	for(Regex_cache_entry* e=regex_cache[bucket]; e; e=e->next)
+		if(e->charset==charset && e->options==options && strcmp(e->pattern, pattern)==0)
+			return e->code;
+	return 0;
+}
+
+static void regex_cache_put(uint bucket, Charset* charset, int options, const char* pattern, pcre2_code* code){
+	if(strlen(pattern)>REGEX_CACHE_MAX_PATTERN_LENGTH)
+		return; // longer patterns are not cached to conserve memory
+
+	SYNCHRONIZED;
+	if(regex_cache_count>=REGEX_CACHE_LIMIT){
+		memset(regex_cache, 0, sizeof(regex_cache));
+		regex_cache_count=0;
+	}
+	regex_cache[bucket]=new Regex_cache_entry(charset, options, pattern, code, regex_cache[bucket]);
+	regex_cache_count++;
+}
+
+#endif
 
 Value& VRegex::as_expr_result() {
 	return *new VInt(as_int());
@@ -111,12 +164,19 @@ void VRegex::compile(){
 	size_t err_offset;
 	PCRE2_UCHAR buffer[120];
 
+	fmatch_data=0; // ^re.create[] of a created regex: sized for the previous pattern
+
+#ifdef REGEX_CACHE
+	uint bucket=regex_cache_hash(fpattern);
+	if((fcode=regex_cache_get(bucket, fcharset, options, fpattern)))
+		return;
+#endif
+
 	if(!fcmp_ctxt)
 		fcmp_ctxt=pcre2_compile_context_create(fgen_ctxt);
 
 	pcre2_set_character_tables(fcmp_ctxt, fcharset->pcre_tables);
 
-	fmatch_data=0; // ^re.create[] of a created regex: sized for the previous pattern
 	fcode=pcre2_compile((PCRE2_SPTR)fpattern, PCRE2_ZERO_TERMINATED, options,
 		&err, &err_offset,
 		fcmp_ctxt);
@@ -125,6 +185,10 @@ void VRegex::compile(){
 		pcre2_get_error_message(err, buffer, sizeof(buffer));
 		err_ptr=(const char*)buffer;
 	}
+#ifdef REGEX_CACHE
+	else
+		regex_cache_put(bucket, fcharset, options, fpattern, fcode);
+#endif
 #else
 	int err_offset;
 	fstudied=false; // ^re.create[] of a created regex: studied the previous pattern
