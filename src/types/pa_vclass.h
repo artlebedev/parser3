@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.78 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.79 2026/10/22 20:45:14 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 #define CLASS_GETTER_UNPROTECTED
@@ -90,7 +90,7 @@ private:
 
 public:
 
-	VClass(const char* atype, const String* afilespec=0) : ftype(atype), ffilespec(afilespec ? *afilespec : String::Empty), state(IS_GETTER_ACTIVE){}
+	VClass(const char* atype, const String* afilespec=0, VStateless_class* adonor=0) : VStateless_class(adonor), ftype(atype), ffilespec(afilespec ? *afilespec : String::Empty), state(IS_GETTER_ACTIVE){}
 
 	const String& get_filespec(){ return ffilespec; }
 

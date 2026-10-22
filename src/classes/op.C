@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.286 2026/10/13 20:02:00 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.287 2026/10/22 20:45:14 moko Exp $";
 
 // defines
 
@@ -34,6 +34,8 @@ volatile const char * IDENT_OP_C="$Id: op.C,v 1.286 2026/10/13 20:02:00 moko Exp
 class VClassMAIN: public VClass {
 public:
 	VClassMAIN();
+	/// native methods are copied from the donor
+	VClassMAIN(VClassMAIN& donor): VClass(MAIN_CLASS_NAME, 0, &donor) {}
 };
 
 // defines for statics
@@ -1004,5 +1006,7 @@ VClassMAIN::VClassMAIN(): VClass(MAIN_CLASS_NAME) {
 // constructor & configurator
 
 VStateless_class& VClassMAIN_create() {
-	return *new VClassMAIN;
+	// adding native methods from a singleton
+	static VClassMAIN* prototype=new VClassMAIN;
+	return *new VClassMAIN(*prototype);
 }
