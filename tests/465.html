@@ -6,4 +6,4 @@
 @unhandled_exception[exception;stack]
 $exception.handled(true)
 not sent
-^response:stream[sent from @unhandled_exception: $exception.comment]
+^response:stream[sent from @unhandled_exception: $exception.comment, started: [$response:started]]

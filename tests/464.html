@@ -1,10 +1,18 @@
 # ^response:stream[]: the headers go with the first part, the result of @main is not sent
-@main[]
+@main[][before;error;failed]
 not sent
+# the first field of the response is not a header: see the failed start below
+$response:x-table[^table::create{a}]
 $response:x-test[sent with the first part]
+$before[$response:started]
+# $response:started can not be assigned
+^try{ $response:started[stream] }{ $exception.handled(true) $error[$exception.comment] }
 # a part is checked before the headers are sent
 ^try{ ^response:stream(true) }{ $exception.handled(true) $response:x-bool[$exception.comment] }
 ^try{ ^response:stream[^file::stat[464.html]] }{ $exception.handled(true) $response:x-stat[$exception.comment] }
+# the headers are prepared before the state is set: a failure is an ordinary error, nothing is sent
+^try{ ^response:stream[never sent] }{ $exception.handled(true) $failed[$exception.comment, started: [$response:started]] }
+$response:x-table[ok]
 ^response:stream[1. string, untainted: ^taint[<b>]
 ]
 not sent either
@@ -19,7 +27,9 @@ $response:x-late[too late, not sent]
 ^check{^response:stream[$.a[1]]}
 ^check{^response:stream[^table::create{a}]}
 ^check{^response:stream{code}}
-^response:stream[5. the last part
+^response:stream[5. state, before the first part: [$before], assignment: $error, failed start: $failed, now: [$response:started]
+]
+^response:stream[6. the last part
 ]
 
 @check[code]

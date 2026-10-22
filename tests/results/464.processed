@@ -1,3 +1,4 @@
+X-Table: ok
 X-Test: sent with the first part
 X-Bool: part%20must%20be%20string%20or%20file%20%28parameter%20%231%20is%20%27bool%27%29
 X-Stat: getting%20value%20of%20stat-ed%20file
@@ -9,4 +10,5 @@ Content-Type: text/html
 4. part must be string or file (parameter #1 is &apos;hash&apos;)
 4. part must be string or file (parameter #1 is &apos;table&apos;)
 4. part must be string or file (parameter #1 is &apos;junction&apos;)
-5. the last part
+5. state, before the first part: [], assignment: element cannot be stored into response, failed start: trying to append here neither string nor date (table), started: [], now: [stream]
+6. the last part
