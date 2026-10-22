@@ -7058,8 +7058,8 @@ fi
 
     else
         AMQP_INCLUDES="-I$AMQP/include"
-        if test -f $AMQP/lib/librabbitmq.la; then
-            AMQP_LIBS="$AMQP/lib/librabbitmq.la"
+        if test -f $AMQP/lib/librabbitmq.a; then
+            AMQP_LIBS="$AMQP/lib/librabbitmq.a"
         else
             AMQP_LIBS="-L$AMQP/lib -lrabbitmq"
         fi
