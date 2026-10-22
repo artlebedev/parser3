@@ -1,0 +1,16 @@
+@mime-types[]
+$calls($calls+1)
+$result[^table::create{ext	mime-type
+txt	text/plain
+html	text/html
+}]
+
+@main[]
+$calls(0)
+calls before: $calls
+$names[a.TXT;b.html;c.bin]
+^names.foreach[;name]{
+$f[^file::create[text;$name;x]]
+${name}: $f.content-type
+calls after: $calls
+}

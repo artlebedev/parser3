@@ -1,0 +1,10 @@
+Content-Type: text/html
+Content-Length: 129
+
+calls before: 0
+a.TXT: text/plain
+calls after: 1
+b.html: text/html
+calls after: 1
+c.bin: application/octet-stream
+calls after: 1
