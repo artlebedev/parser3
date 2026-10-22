@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.48 2026/10/22 15:09:45 moko Exp $
+# $Id: buildall,v 1.49 2026/10/22 16:13:32 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -312,9 +312,9 @@ if test "$build_amqp" = "yes" -a ! -f "$project_dir/lib/amqp/lib/librabbitmq.a";
 	-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
 	-DBUILD_SHARED_LIBS=OFF \
 	-DBUILD_TESTING=OFF \
-	-DENABLE_SSL_SUPPORT=OFF
+	-DENABLE_SSL_SUPPORT=OFF || exit 1
     echo "Building $lib..."
-    cmake --build build --target install
+    cmake --build build --target install || exit 1
     cleanup
 fi
 
