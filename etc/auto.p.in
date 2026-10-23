@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.22 2026/10/23 18:47:40 moko Exp $
+#$Id: auto.p.in,v 1.23 2026/10/23 20:56:26 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -42,13 +42,13 @@ mysql	$sqldriversdir/libparser3mysql.@dll_extension@	libmysqlclient.@dll_extensi
 }]
 ]
 
-$LIMITS[
-	$.post_max_size(64*0x400*0x400)
+#$LIMITS[
+#	$.post_max_size(64*0x400*0x400)
 #	$.max_file_size(512*0x400*0x400)
 #	$.max_loop(100000)
 #	$.max_array_size(1000000)
 #	$.max_recursion(1000)
-]
+#]
 
 #$HTTPD[
 #	$.mode[threaded]
@@ -57,6 +57,7 @@ $LIMITS[
 #$MAIL[
 #	$.SMTP[localhost]
 #]
+
 
 #for ^file::load[name;user-name] mime-type autodetection
 @GET_MIME-TYPES[]
@@ -115,6 +116,7 @@ woff2	font/woff2
 zip	application/zip
 }]
 $MIME-TYPES[$result]
+
 
 @fatal_error[title;subtitle;body]
 $response:status(500)
