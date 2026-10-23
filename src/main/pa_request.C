@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.469 2026/10/23 20:48:48 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.470 2026/10/23 20:58:45 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -339,12 +339,6 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	VClass::getter_protected=getter_protected; // thread local: changes in Temp_getter_protected
 #endif
 
-#ifdef CODE_CACHE
-	CONF_OPTION(httpd, httpd_code_cache_name, {
-		Code_cache_manager::set_enabled(option->as_bool());
-	}, "HTTPD.%s must be bool");
-#endif
-
 	bool all_vars_local=false;
 	CONF_OPTION(conf, locals_name, {
 		all_vars_local=option->as_bool();
@@ -409,6 +403,12 @@ void Request::configure_admin(VStateless_class& conf_class) {
 
 	Value* httpd=conf_class.get_element(httpd_name);
 
+#ifdef CODE_CACHE
+	CONF_OPTION(httpd, httpd_code_cache_name, {
+		Code_cache_manager::set_enabled(option->as_bool());
+	}, "HTTPD.%s must be bool");
+#endif
+
 	int httpd_timeout=HTTPD_TIMEOUT;
 	CONF_OPTION(httpd, httpd_timeout_name, {
 		httpd_timeout=option->as_int();
@@ -417,7 +417,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 	pa_httpd_timeout=httpd_timeout;
 
 	if(httpd)
-		if(Value* option=httpd->get_element( httpd_mode_name)) {
+		if(Value* option=httpd->get_element(httpd_mode_name)) {
 			if(option->get_junction())
 				throw Exception(PARSER_RUNTIME, 0, "$MAIN:HTTPD:mode must be string");
 			HTTPD_Server::set_mode(option->as_string());
