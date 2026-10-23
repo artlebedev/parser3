@@ -8,7 +8,7 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.68 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.69 2026/10/23 18:47:40 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
@@ -182,3 +182,13 @@ const String* VClass::get_json_string(Json_options& options){
 	}
 	return options.hash_json_string(get_hash());
 }
+
+#ifdef CLASS_GETTER_UNPROTECTED
+Temp_getter_protected::Temp_getter_protected(bool avalue): fsaved(VClass::getter_protected) {
+	VClass::getter_protected=avalue;
+}
+
+Temp_getter_protected::~Temp_getter_protected() {
+	VClass::getter_protected=fsaved;
+}
+#endif

@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.79 2026/10/22 20:45:14 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.80 2026/10/23 18:47:40 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 #define CLASS_GETTER_UNPROTECTED
@@ -95,5 +95,18 @@ public:
 	const String& get_filespec(){ return ffilespec; }
 
 };
+
+#ifdef CLASS_GETTER_UNPROTECTED
+///	Auto-object used for temporarily changing VClass::getter_protected
+class Temp_getter_protected {
+	bool fsaved;
+public:
+	Temp_getter_protected(bool avalue);
+	~Temp_getter_protected();
+};
+#define TEMP_GETTER_PROTECTED(value) Temp_getter_protected temp_getter_protected(value)
+#else
+#define TEMP_GETTER_PROTECTED(value)
+#endif
 
 #endif

@@ -1,4 +1,4 @@
-#$Id: auto.p.in,v 1.21 2026/10/22 23:20:42 moko Exp $
+#$Id: auto.p.in,v 1.22 2026/10/23 18:47:40 moko Exp $
 
 @auto[]
 #source/client charsets
@@ -59,7 +59,7 @@ $LIMITS[
 #]
 
 #for ^file::load[name;user-name] mime-type autodetection
-@mime-types[]
+@GET_MIME-TYPES[]
 $result[^table::create{ext	mime-type
 7z	application/x-7z-compressed
 avi	video/x-msvideo
@@ -114,6 +114,7 @@ woff	font/woff
 woff2	font/woff2
 zip	application/zip
 }]
+$MIME-TYPES[$result]
 
 @fatal_error[title;subtitle;body]
 $response:status(500)

@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.467 2026/10/22 23:20:42 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.468 2026/10/23 18:47:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -121,7 +121,6 @@ static const String httpd_code_cache_name("code-cache");
 #endif
 
 static const String conf_method_name("conf");
-static const String mime_types_method_name("mime-types");
 static const String post_process_method_name("postprocess");
 static const String response_body_file_name("file");
 
@@ -1117,18 +1116,11 @@ const String& Request::mime_type_of(const String* file_name) {
 }
 
 const String& Request::mime_type_of(const char* user_file_name_cstr) {
-	// built at the first use: @mime-types[] result or $MAIN:MIME-TYPES
+	// built at the first use: $MAIN:MIME-TYPES (table or @GET_MIME-TYPES[] property)
 	if(!mime_types) {
-		Value* element=0;
-		if(const Method *method=main_class.get_method(mime_types_method_name)) {
-			METHOD_FRAME_ACTION(*method, method_frame/*caller*/, main_class, {
-				call(frame);
-				element=&frame.result();
-			});
-		} else
-			element=main_class.get_element(mime_types_name);
-
-		Table *table=element ? element->get_table() : 0;
+		Value* element=main_class.get_element(mime_types_name);
+		TEMP_GETTER_PROTECTED(false); // @GET_MIME-TYPES[] assigns $MIME-TYPES, which replaces the getter with the table
+		Table *table=element ? process(*element).get_table() : 0;
 		mime_types=table ? table : new Table(0); // empty if nothing is defined
 	}
 

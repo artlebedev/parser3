@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.290 2026/10/22 23:20:42 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.291 2026/10/23 18:47:40 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -419,7 +419,7 @@ private: // execute.C
 
 private: // mime types
 
-	/// @mime-types[] result or $MAIN:MIME-TYPES, built at the first use
+	/// $MAIN:MIME-TYPES (table or @GET_MIME-TYPES[] property), built at the first use
 	Table *mime_types;
 
 private: // connection manipulation
