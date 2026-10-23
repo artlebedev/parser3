@@ -18,7 +18,7 @@
 #ifndef GIF_H
 #define GIF_H
 
-#define IDENT_GIF_H "$Id: gif.h,v 1.12 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_GIF_H "$Id: gif.h,v 1.13 2026/10/23 18:58:07 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -149,7 +149,7 @@ private: // read gif
 
 	int GetDataBlock(FILE *fd, unsigned char *buf);
 	int LWZReadByte(FILE *fd, int flag, int input_code_size);
-	void ReadImage(FILE *fd, int len, int height, unsigned char(*cmap)[256], int interlace, int ignore);
+	int ReadImage(FILE *fd, int len, int height, unsigned char(*cmap)[256], int interlace);
 	int DoExtension(FILE *fd, int label, int *Transparent);
 	int GetCode(FILE *fd, int code_size, int flag);
 

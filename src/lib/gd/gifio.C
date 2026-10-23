@@ -37,7 +37,9 @@
 
 #include "gif.h"
 
-volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.12 2026/04/25 13:38:46 moko Exp $";
+#include <limits.h>
+
+volatile const char * IDENT_GIFIO_C="$Id: gifio.C,v 1.13 2026/10/23 18:58:07 moko Exp $";
 
 static int colorstobpp(int colors);
 
@@ -737,6 +739,9 @@ gdGifEncoder::gdGifEncoder(gdImage& aim):
 #define CM_BLUE                2
 	
 #define        MAX_LWZ_BITS            12
+
+#define STACK_SIZE ((1<<(MAX_LWZ_BITS))*2)
+#define CSD_BUF_SIZE 280
 	
 #define INTERLACE              0x40
 #define LOCALCOLORMAP  0x80
@@ -772,7 +777,6 @@ static int ReadColorMap(FILE *fd, int number, unsigned char(*buffer)[256]);
 
 bool gdImage::CreateFromGif(FILE *fd)
 {
-	int imageNumber;
 	int BitPixel;
 	int Transparent =(-1);
 	unsigned char   buf[16];
@@ -782,11 +786,14 @@ bool gdImage::CreateFromGif(FILE *fd)
 	int             imw, imh;
 	int             useGlobalColormap;
 	int             bitPixel;
-	int             imageCount = 0;
+	bool            haveGlobalColormap;
 	char            version[4];
 	ZeroDataBlock = FALSE;
-	
-	imageNumber = 1;
+
+	/* the file defines 2..256 colors, but ReadImage copies all 256, stack variables should be inited */
+	memset(ColorMap, 0, sizeof(ColorMap));
+	memset(localColorMap, 0, sizeof(localColorMap));
+
 	if(! ReadOK(fd,buf,6)) {
 		return false;
 	}
@@ -804,7 +811,8 @@ bool gdImage::CreateFromGif(FILE *fd)
 	}
 	BitPixel        = 2<<(buf[4]&0x07);
 	
-	if(BitSet(buf[4], LOCALCOLORMAP)) {    /* Global Colormap */
+	haveGlobalColormap = BitSet(buf[4], LOCALCOLORMAP);    /* Global Colormap */
+	if(haveGlobalColormap) {
 		if(ReadColorMap(fd, BitPixel, ColorMap)) {
 			return false;
 		}
@@ -813,22 +821,8 @@ bool gdImage::CreateFromGif(FILE *fd)
 		if(! ReadOK(fd,&c,1)) {
 			return false;
 		}
-		if(c == ';') {         /* GIF terminator */
-			int i;
-			if(imageCount < imageNumber) {
-				return false;
-			}
-			/* Check for open colors at the end, so
-			we can reduce colorsTotal and ultimately
-			BitsPerPixel */
-			for(i=((colorsTotal-1));(i>=0); i--) {
-				if(open[i]) {
-					colorsTotal--;
-				} else {
-					break;
-				}
-			} 
-			return true;
+		if(c == ';') {         /* GIF terminator, but no image was found */
+			return false;
 		}
 		
 		if(c == '!') {         /* Extension */
@@ -843,8 +837,6 @@ bool gdImage::CreateFromGif(FILE *fd)
 			continue;
 		}
 		
-		++imageCount;
-		
 		if(! ReadOK(fd,buf,9)) {
 			return false;
 		}
@@ -855,25 +847,47 @@ bool gdImage::CreateFromGif(FILE *fd)
 		
 		imw = LM_to_uint(buf[4],buf[5]);
 		imh = LM_to_uint(buf[6],buf[7]);
+		/* as in gdImageCreate: sizes must be positive and their product must fit into int */
+		if(imw <= 0 || imh <= 0 || imw > INT_MAX/imh) {
+			return false;
+		}
 		Create(imw, imh);
 		interlace = BitSet(buf[8], INTERLACE);
 		if(! useGlobalColormap) {
 			if(ReadColorMap(fd, bitPixel, localColorMap)) { 
 				return false;
 			}
-			ReadImage(fd, imw, imh, localColorMap, 
-				BitSet(buf[8], INTERLACE), 
-				imageCount != imageNumber);
+			if(! ReadImage(fd, imw, imh, localColorMap, interlace)) {
+				return false;
+			}
 		} else {
-			ReadImage(fd, imw, imh,
-				ColorMap, 
-				BitSet(buf[8], INTERLACE), 
-				imageCount != imageNumber);
+			if(! haveGlobalColormap) {
+				/* still a valid gif, apply simple default palette as per spec */
+				ColorMap[CM_RED][1] = 0xff;
+				ColorMap[CM_GREEN][1] = 0xff;
+				ColorMap[CM_BLUE][1] = 0xff;
+			}
+			if(! ReadImage(fd, imw, imh, ColorMap, interlace)) {
+				return false;
+			}
 		}
 		if(Transparent !=(-1)) {
 			SetColorTransparent(Transparent);
-		}	   
+		}
+		break;                 /* only the first image is used */
 	}
+
+	/* Check for open colors at the end, so
+	we can reduce colorsTotal and ultimately
+	BitsPerPixel */
+	for(int i=colorsTotal-1; i>=0; i--) {
+		if(open[i]) {
+			colorsTotal--;
+		} else {
+			break;
+		}
+	}
+	return colorsTotal != 0;
 }
 
 static int
@@ -898,22 +912,23 @@ ReadColorMap(FILE *fd, int number, unsigned char(*buffer)[256])
 
 int gdImage::DoExtension(FILE *fd, int label, int *Transparent)
 {
-	static unsigned char     buf[256];
+	unsigned char     buf[256];
 	
 	switch(label) {
 	case 0xf9: {             /* Graphic Control Extension */
+		memset(buf, 0, 4); /* initialize a few bytes in the case the next function fails */
 		(void) GetDataBlock(fd,(unsigned char*) buf);
 		if((buf[0] & 0x1) != 0)
 			*Transparent = buf[3];
 		
-		while(GetDataBlock(fd,(unsigned char*) buf) != 0)
+		while(GetDataBlock(fd,(unsigned char*) buf) > 0)
 			;
 		return FALSE;
 		}
 	default:
 		break;
 	}
-	while(GetDataBlock(fd,(unsigned char*) buf) != 0)
+	while(GetDataBlock(fd,(unsigned char*) buf) > 0)
 		;
 	
 	return FALSE;
@@ -937,16 +952,18 @@ gdImage::GetDataBlock(FILE *fd, unsigned char *buf)
 	return count;
 }
 
+/* the state of the decoder (here and in LWZReadByte) is THREAD_LOCAL: images may be loaded by several threads at once */
 int gdImage::GetCode(FILE *fd, int code_size, int flag)
 {
-	static unsigned char    buf[280];
-	static int              curbit, lastbit, done, last_byte;
+	static THREAD_LOCAL unsigned char    buf[CSD_BUF_SIZE];
+	static THREAD_LOCAL int              curbit, lastbit, done, last_byte;
 	int                     i, j, ret;
-	unsigned char           count;
+	int                     count;
 	
 	if(flag) {
 		curbit = 0;
 		lastbit = 0;
+		last_byte = 2;
 		done = FALSE;
 		return 0;
 	}
@@ -960,18 +977,34 @@ int gdImage::GetCode(FILE *fd, int code_size, int flag)
 		}
 		buf[0] = buf[last_byte-2];
 		buf[1] = buf[last_byte-1];
-		
-		if((count = GetDataBlock(fd, &buf[2])) == 0)
-			done = TRUE;
-		
-		last_byte = 2 + count;
+		last_byte = 2;
 		curbit =(curbit - lastbit) + 16;
-		lastbit =(2+count)*8 ;
+		lastbit = 16;
+		
+		do {
+			if(last_byte > (CSD_BUF_SIZE - 255))
+				return -1;
+			
+			if((count = GetDataBlock(fd, &buf[last_byte])) <= 0) {
+				done = TRUE;
+				break;
+			}
+			
+			last_byte += count;
+			lastbit += count*8;
+		} while((curbit+code_size) > lastbit);
 	}
 	
-	ret = 0;
-	for(i = curbit, j = 0; j < code_size; ++i, ++j)
-		ret |=((buf[ i / 8 ] &(1 <<(i % 8))) != 0) << j;
+	if((curbit+code_size) > lastbit)
+		return -1;
+	
+	if((curbit+code_size-1) >= (CSD_BUF_SIZE*8)) {
+		ret = -1;
+	} else {
+		ret = 0;
+		for(i = curbit, j = 0; j < code_size; ++i, ++j)
+			ret |=((buf[ i / 8 ] &(1 <<(i % 8))) != 0) << j;
+	}
 	
 	curbit += code_size;
 	
@@ -980,14 +1013,14 @@ int gdImage::GetCode(FILE *fd, int code_size, int flag)
 
 int gdImage::LWZReadByte(FILE *fd, int flag, int input_code_size)
 {
-	static int      fresh = FALSE;
+	static THREAD_LOCAL int      fresh = FALSE;
 	int             code, incode;
-	static int      code_size, set_code_size;
-	static int      max_code, max_code_size;
-	static int      firstcode, oldcode;
-	static int      clear_code, end_code;
-	static int      table[2][(1<< MAX_LWZ_BITS)];
-	static int      stack[(1<<(MAX_LWZ_BITS))*2], *sp;
+	static THREAD_LOCAL int      code_size, set_code_size;
+	static THREAD_LOCAL int      max_code, max_code_size;
+	static THREAD_LOCAL int      firstcode, oldcode;
+	static THREAD_LOCAL int      clear_code, end_code;
+	static THREAD_LOCAL int      table[2][(1<< MAX_LWZ_BITS)];
+	static THREAD_LOCAL int      stack[STACK_SIZE], *sp;
 	int    i;
 	
 	if(flag) {
@@ -1007,7 +1040,7 @@ int gdImage::LWZReadByte(FILE *fd, int flag, int input_code_size)
 			table[1][i] = i;
 		}
 		for(; i <(1<<MAX_LWZ_BITS); ++i)
-			table[0][i] = table[1][0] = 0;
+			table[0][i] = table[1][i] = 0;
 		
 		sp = stack;
 		
@@ -1051,9 +1084,16 @@ int gdImage::LWZReadByte(FILE *fd, int flag, int input_code_size)
 			
 			if(count != 0)
 				return -2;
+
+			return -2;
 		}
 		
 		incode = code;
+		
+		if(sp == (stack + STACK_SIZE)) {
+			/* Bad compressed data stream */
+			return -1;
+		}
 		
 		if(code >= max_code) {
 			*sp++ = firstcode;
@@ -1061,11 +1101,24 @@ int gdImage::LWZReadByte(FILE *fd, int flag, int input_code_size)
 		}
 		
 		while(code >= clear_code) {
+			if(sp == (stack + STACK_SIZE)) {
+				/* Bad compressed data stream */
+				return -1;
+			}
+			if(code >= (1<<MAX_LWZ_BITS)) {
+				/* Corrupted code */
+				return -1;
+			}
+			
 			*sp++ = table[1][code];
 			if(code == table[0][code]) {
 				/* Oh well */
 			}
 			code = table[0][code];
+		}
+		if(code >= (1<<MAX_LWZ_BITS)) {
+			/* Corrupted code */
+			return -1;
 		}
 		
 		*sp++ = firstcode = table[1][code];
@@ -1089,12 +1142,21 @@ int gdImage::LWZReadByte(FILE *fd, int flag, int input_code_size)
 	return code;
 }
 
-void gdImage::ReadImage(FILE *fd, int len, int height, unsigned char(*cmap)[256], int interlace, int ignore)
+int gdImage::ReadImage(FILE *fd, int len, int height, unsigned char(*cmap)[256], int interlace)
 {
 	unsigned char   c;      
 	int             v;
 	int             xpos = 0, ypos = 0, pass = 0;
 	int i;
+	/*
+	**  Initialize the Compression routines
+	*/
+	if(! ReadOK(fd,&c,1)) {
+		return FALSE; 
+	}
+	if(c > MAX_LWZ_BITS) {
+		return FALSE;
+	}
 	/* Stash the color map into the image */
 	for(i=0;(i<gdMaxColors); i++) {
 		red[i] = cmap[CM_RED][i];	
@@ -1104,26 +1166,14 @@ void gdImage::ReadImage(FILE *fd, int len, int height, unsigned char(*cmap)[256]
 	}
 	/* Many(perhaps most) of these colors will remain marked open. */
 	colorsTotal = gdMaxColors;
-	/*
-	**  Initialize the Compression routines
-	*/
-	if(! ReadOK(fd,&c,1)) {
-		return; 
-	}
 	if(LWZReadByte(fd, TRUE, c) < 0) {
-		return;
-	}
-	
-	/*
-	**  If this is an "uninteresting picture" ignore it.
-	*/
-	if(ignore) {
-		while(LWZReadByte(fd, FALSE, c) >= 0)
-			;
-		return;
+		return FALSE;
 	}
 	
 	while((v = LWZReadByte(fd,FALSE,c)) >= 0 ) {
+		if(v >= gdMaxColors) {
+			v = 0;
+		}
 		/* This how we recognize which colors are actually used. */
 		if(open[v]) {
 			open[v] = 0;
@@ -1168,5 +1218,5 @@ fini:
 	if(LWZReadByte(fd,FALSE,c)>=0) {
 		/* Ignore extra */
 	}
+	return TRUE;
 }
-
