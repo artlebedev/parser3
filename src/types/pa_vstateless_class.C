@@ -11,7 +11,7 @@
 #include "pa_symbols.h"
 #include "pa_request.h"
 
-volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.71 2026/10/05 17:50:18 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
+volatile const char * IDENT_PA_VSTATELESS_CLASS_C="$Id: pa_vstateless_class.C,v 1.72 2026/10/23 20:48:48 moko Exp $" IDENT_PA_VSTATELESS_CLASS_H IDENT_PA_METHOD_H;
 
 bool VStateless_class::gall_vars_local=false;
 
@@ -36,10 +36,6 @@ void VStateless_class::set_method(const String& aname, Method* amethod) {
 }
 
 void VStateless_class::real_set_method(const String& aname, Method* amethod) {
-#ifdef SYMBOLS_CACHING
-	// instance() as called from static constuctors
-	Symbols::instance().add(aname);
-#endif
 	fmethods.put(aname, amethod);
 	if(amethod && amethod->name!=&aname) // to avoid needless shared method modification when replaying the cached code
 		amethod->name=&aname;
@@ -70,7 +66,12 @@ void VStateless_class::add_native_method(
 #endif
 		);
 
-	set_method(*new String(cstr_name), method);
+	const String& name=*new String(cstr_name);
+#ifdef SYMBOLS_CACHING
+	// only native methods are added: symbols must not change in threads
+	Symbols::instance().add(name);
+#endif
+	set_method(name, method);
 }
 
 /// VStateless_class: $method

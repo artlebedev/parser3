@@ -8,7 +8,7 @@
 #ifndef PA_VCLASS_H
 #define PA_VCLASS_H
 
-#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.80 2026/10/23 18:47:40 moko Exp $"
+#define IDENT_PA_VCLASS_H "$Id: pa_vclass.h,v 1.81 2026/10/23 20:48:48 moko Exp $"
 
 #define OBJECT_PROTOTYPE
 #define CLASS_GETTER_UNPROTECTED
@@ -53,10 +53,10 @@ public: // Value
 public:
 
 #ifdef OBJECT_PROTOTYPE
-	static bool prototype;
+	static bool prototype; // not thread local: never changes
 #endif
 #ifdef CLASS_GETTER_UNPROTECTED
-	static bool getter_protected;
+	static THREAD_LOCAL bool getter_protected; // thread local: changes in Temp_getter_protected
 #endif
 
 	// VStateless_class

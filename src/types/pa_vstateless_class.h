@@ -8,7 +8,7 @@
 #ifndef PA_VSTATELESS_CLASS_H
 #define PA_VSTATELESS_CLASS_H
 
-#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.101 2026/10/12 21:59:21 moko Exp $"
+#define IDENT_PA_VSTATELESS_CLASS_H "$Id: pa_vstateless_class.h,v 1.102 2026/10/23 20:48:48 moko Exp $"
 
 // include
 
@@ -119,7 +119,7 @@ public: // Value
 
 public: // usage
 
-	static bool gall_vars_local; // @conf[] $MAIN:LOCALS
+	static bool gall_vars_local; // @conf[] $MAIN:LOCALS, not thread local: never changes
 
 	VStateless_class(VStateless_class* amethoded_donor=0):
 		flocked(false),

@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.468 2026/10/23 18:47:40 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.469 2026/10/23 20:48:48 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -84,8 +84,8 @@ int pa_loop_limit=LOOP_LIMIT;
 int pa_array_limit=ARRAY_LIMIT;
 int pa_execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
 int pa_httpd_timeout=HTTPD_TIMEOUT;
-size_t pa_file_size_limit=FILE_SIZE_LIMIT;
-size_t pa_post_max_size=POST_MAX_SIZE;
+THREAD_LOCAL size_t pa_file_size_limit=FILE_SIZE_LIMIT;
+THREAD_LOCAL size_t pa_post_max_size=POST_MAX_SIZE;
 
 // defines for statics
 
@@ -313,101 +313,108 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		}
 	}
 
+	Value* conf=&conf_class;
+
 #ifdef STRICT_VARS
-	VVoid::strict_vars=false;
-	if(Value* strict_vars=conf_class.get_element(strict_vars_name)) {
-		if(strict_vars->is_bool())
-			VVoid::strict_vars=strict_vars->as_bool();
-		else
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", strict_vars_name.cstr());
-	}
+	bool strict_vars=false;
+	CONF_OPTION(conf, strict_vars_name, {
+		strict_vars=option->as_bool();
+	}, "%s must be bool");
+	VVoid::strict_vars=strict_vars;
 #endif
 
 #ifdef OBJECT_PROTOTYPE
-	VClass::prototype=true;
-	if(Value* prototype=conf_class.get_element(prototype_name)) {
-		if(prototype->is_bool())
-			VClass::prototype=prototype->as_bool();
-		else
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", prototype_name.cstr());
-	}
+	bool prototype=true;
+	CONF_OPTION(conf, prototype_name, {
+		prototype=option->as_bool();
+	}, "%s must be bool");
+	VClass::prototype=prototype;
 #endif
 
 #ifdef CLASS_GETTER_UNPROTECTED
-	VClass::getter_protected=true;
-	if(Value* getter_protected=conf_class.get_element(getter_protected_name)) {
-		if(getter_protected->is_bool())
-			VClass::getter_protected=getter_protected->as_bool();
-		else
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", getter_protected_name.cstr());
-	}
+	bool getter_protected=true;
+	CONF_OPTION(conf, getter_protected_name, {
+		getter_protected=option->as_bool();
+	}, "%s must be bool");
+	VClass::getter_protected=getter_protected; // thread local: changes in Temp_getter_protected
 #endif
 
-	VStateless_class::gall_vars_local=false;
-	if(Value* locals=conf_class.get_element(locals_name)) {
-		if(locals->is_bool()){
-			VStateless_class::gall_vars_local=locals->as_bool();
+#ifdef CODE_CACHE
+	CONF_OPTION(httpd, httpd_code_cache_name, {
+		Code_cache_manager::set_enabled(option->as_bool());
+	}, "HTTPD.%s must be bool");
+#endif
+
+	bool all_vars_local=false;
+	CONF_OPTION(conf, locals_name, {
+		all_vars_local=option->as_bool();
+		if(all_vars_local)
 			main_class.set_all_vars_local();
-		} else
-			throw Exception(PARSER_RUNTIME, 0, "$MAIN:%s must be bool", locals_name.cstr());
-	}
+	}, "%s must be bool");
+	VStateless_class::gall_vars_local=all_vars_local;
 
 	Value* limits=conf_class.get_element(limits_name);
 
-	pa_loop_limit=LOOP_LIMIT;
+	int loop_limit=LOOP_LIMIT;
 	CONF_OPTION(limits, loop_limit_name, {
-		pa_loop_limit=option->as_int();
-		if(pa_loop_limit==0) pa_loop_limit=INT_MAX;
+		loop_limit=option->as_int();
+		if(loop_limit==0) loop_limit=INT_MAX;
 	}, "LIMITS.%s must be int");
+	pa_loop_limit=loop_limit;
 
-	pa_array_limit=ARRAY_LIMIT;
+	int array_limit=ARRAY_LIMIT;
 	CONF_OPTION(limits, array_limit_name, {
-		pa_array_limit=option->as_int();
-		if(pa_array_limit==0) pa_array_limit=INT_MAX;
+		array_limit=option->as_int();
+		if(array_limit==0) array_limit=INT_MAX;
 	}, "LIMITS.%s must be int");
+	pa_array_limit=array_limit;
 
-	pa_execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
+	execute_recursion_limit=EXECUTE_RECURSION_LIMIT;
 	CONF_OPTION(limits, recursion_limit_name, {
-		pa_execute_recursion_limit=option->as_int();
-		if(pa_execute_recursion_limit<=0) pa_execute_recursion_limit=INT_MAX;
-		pa_execute_recursion_limit=min(pa_execute_recursion_limit, INT_MAX-EXECUTE_RECURSION_RESERVE);
+		execute_recursion_limit=option->as_int();
+		if(execute_recursion_limit<=0) execute_recursion_limit=INT_MAX;
+		execute_recursion_limit=min(execute_recursion_limit, INT_MAX-EXECUTE_RECURSION_RESERVE);
 	}, "LIMITS.%s must be int");
-	execute_recursion_limit=pa_execute_recursion_limit;
+	pa_execute_recursion_limit=execute_recursion_limit;
 
-	pa_file_size_limit=FILE_SIZE_LIMIT;
+	size_t file_size_limit=FILE_SIZE_LIMIT;
 	CONF_OPTION(limits, file_size_limit_name, {
 		double limit=option->as_double();
 		if(limit >= (double)SSIZE_MAX)
 			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %s", file_size_limit_name.cstr(), pa_itoa(SSIZE_MAX));
-		pa_file_size_limit=(size_t)limit;
-		if(pa_file_size_limit==0)
-			pa_file_size_limit=SSIZE_MAX;
+		file_size_limit=(size_t)limit;
+		if(file_size_limit==0)
+			file_size_limit=SSIZE_MAX;
 	}, "LIMITS.%s must be number");
+	pa_file_size_limit=file_size_limit; // thread local: url-dependent
 
-	pa_post_max_size=POST_MAX_SIZE;
+	size_t post_max_size=POST_MAX_SIZE;
 	CONF_OPTION(limits, post_max_size_name, {
 		double limit=option->as_double();
 		if(limit >= (double)SSIZE_MAX)
 			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %s", post_max_size_name.cstr(), pa_itoa(SSIZE_MAX));
 		if(limit > 0)
-			pa_post_max_size=(size_t)limit;
+			post_max_size=(size_t)limit;
 	}, "LIMITS.%s must be number");
+	pa_post_max_size=post_max_size; // thread local: url-dependent
 
-	pa_lock_attempts=PA_LOCK_ATTEMPTS;
+	unsigned int lock_attempts=PA_LOCK_ATTEMPTS;
 	CONF_OPTION(limits, lock_wait_timeout_name, {
 		double limit=option->as_double();
 		if(limit >= 3600*24)
 			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %d", lock_wait_timeout_name.cstr(), 3600*24);
-		pa_lock_attempts=(unsigned int)(limit*2)+1;
+		lock_attempts=(unsigned int)(limit*2)+1;
 	}, "LIMITS.%s must be number");
+	pa_lock_attempts=lock_attempts;
 
 	Value* httpd=conf_class.get_element(httpd_name);
 
-	pa_httpd_timeout=HTTPD_TIMEOUT;
+	int httpd_timeout=HTTPD_TIMEOUT;
 	CONF_OPTION(httpd, httpd_timeout_name, {
-		pa_httpd_timeout=option->as_int();
-		if(pa_httpd_timeout==0) pa_httpd_timeout=INT_MAX;
+		httpd_timeout=option->as_int();
+		if(httpd_timeout==0) httpd_timeout=INT_MAX;
 	}, "HTTPD.%s must be int");
+	pa_httpd_timeout=httpd_timeout;
 
 	if(httpd)
 		if(Value* option=httpd->get_element( httpd_mode_name)) {
@@ -415,12 +422,6 @@ void Request::configure_admin(VStateless_class& conf_class) {
 				throw Exception(PARSER_RUNTIME, 0, "$MAIN:HTTPD:mode must be string");
 			HTTPD_Server::set_mode(option->as_string());
 		}
-
-#ifdef CODE_CACHE
-	CONF_OPTION(httpd, httpd_code_cache_name, {
-		Code_cache_manager::set_enabled(option->as_bool());
-	}, "HTTPD.%s must be bool");
-#endif
 
 	// configure method_frame options
 	//	until someone with less privileges have overriden them

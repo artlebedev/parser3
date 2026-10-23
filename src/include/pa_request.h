@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.291 2026/10/23 18:47:40 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.292 2026/10/23 20:48:48 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -48,12 +48,12 @@ class VConsole;
 class WebSocket;
 class VException;
 
-extern int pa_loop_limit;
-extern int pa_array_limit;
-extern int pa_execute_recursion_limit;
-extern int pa_httpd_timeout;
-extern size_t pa_file_size_limit;
-extern size_t pa_post_max_size;
+extern int pa_loop_limit; // not thread local: never changes
+extern int pa_array_limit; // not thread local: never changes
+extern int pa_execute_recursion_limit; // not thread local: never changes
+extern int pa_httpd_timeout; // not thread local: never changes
+extern THREAD_LOCAL size_t pa_file_size_limit; // thread local: url-dependent
+extern THREAD_LOCAL size_t pa_post_max_size; // thread local: url-dependent
 
 class Code_cache;
 

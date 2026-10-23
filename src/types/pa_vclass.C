@@ -8,13 +8,13 @@
 #include "pa_vclass.h"
 #include "pa_vobject.h"
 
-volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.69 2026/10/23 18:47:40 moko Exp $" IDENT_PA_VCLASS_H;
+volatile const char * IDENT_PA_VCLASS_C="$Id: pa_vclass.C,v 1.70 2026/10/23 20:48:48 moko Exp $" IDENT_PA_VCLASS_H;
 
 #ifdef OBJECT_PROTOTYPE
 	bool VClass::prototype = true;
 #endif
 #ifdef CLASS_GETTER_UNPROTECTED
-	bool VClass::getter_protected = true;
+	THREAD_LOCAL bool VClass::getter_protected = true;
 #endif
 
 Property& VClass::get_property(const String& aname) {

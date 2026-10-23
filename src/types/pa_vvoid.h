@@ -8,7 +8,7 @@
 #ifndef PA_VVOID_H
 #define PA_VVOID_H
 
-#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.48 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_VVOID_H "$Id: pa_vvoid.h,v 1.49 2026/10/23 20:48:48 moko Exp $"
 
 #define STRICT_VARS
 
@@ -41,7 +41,7 @@ public: // Value
 	}
 
 #ifdef STRICT_VARS
-	static bool strict_vars;
+	static bool strict_vars; // not thread local: never changes
 #define CHECK_STRICT if(strict_vars) throw Exception(PARSER_RUNTIME, 0, "Use of uninitialized value");
 #else
 #define CHECK_STRICT
