@@ -1,0 +1,15 @@
+Content-Type: text/html
+Content-Length: 561
+
+1. the initial indent can't be longer than the recursion limit
+Exception type: parser.runtime,
+Source: string,
+Comment: call canceled - endless json recursion detected
+2. distinct[all]: numbering goes on from the last number, every object has its own, numbered keys of the data are skipped
+{ "a":1, "a_2":2, "o":{ "a":3, "a_2":4, "a_3":5 }, "a_3":6, "a_2_2":7, "a_4":8 }
+{ "a":1, "a_3":0, "a_2":2, "a_4":3, "a_5":4 }
+[ { "a":1, "a_2":2 }, { "a":3, "a_2":4 } ]
+3. and it is not quadratic
+5001 keys, last a_5000: 5000, z: 0
+4. negative depth is no limit
+[ [ 1 ] ]

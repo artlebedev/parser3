@@ -1,0 +1,20 @@
+@main[]
+1. the initial indent can't be longer than the recursion limit
+^try-catch{ ^json:string[$.k[v] ; $.indent[^for[i](1;200){^#09}] ] }
+
+2. distinct[all]: numbering goes on from the last number, every object has its own, numbered keys of the data are skipped
+^test[{"a":1,"a":2,"o":{"a":3,"a":4,"a":5},"a":6,"a_2":7,"a":8}]
+^test[{"a":1,"a_3":0,"a":2,"a":3,"a":4}]
+^test[[{"a":1,"a":2},{"a":3,"a":4}]]
+
+3. and it is not quadratic
+$s[^for[i](1;5000){"a":$i,}]
+$o[^json:parse[{${s}"z":0}; $.distinct[all] ]]
+^o._count[] keys, last a_5000: $o.a_5000, z: $o.z
+
+4. negative depth is no limit
+^json:string[^json:parse[[[1]]; $.depth(-1) ]; $.one-line(true) ]
+
+@test[s]
+$o[^json:parse[$s; $.distinct[all] ]]
+^json:string[$o; $.one-line(true) ]
