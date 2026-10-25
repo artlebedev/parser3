@@ -26,7 +26,7 @@
 #include "pa_table.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.200 2026/09/27 17:37:51 moko Exp $";
+volatile const char * IDENT_IMAGE_C="$Id: image.C,v 1.201 2026/10/25 16:58:12 moko Exp $";
 
 // defines
 
@@ -246,8 +246,54 @@ public:
 
 ///*********************************************** support functions
 
+/// Exif lives in one JPEG segment, whose length is 16 bits: nothing in Exif is longer
+#define JPG_EXIF_MAX_SIZE 0xFFFF
+
+/// limits of the work a measured file can require
+class Measure_budget {
+public:
+	enum Kind {
+		EXIF_VALUES, ///< bytes of the values lying outside of the Exif IFD entries
+		EXIF_IFDS,   ///< jumps from an IFD to the Exif and GPS IFDs
+		MP4_DEPTH,   ///< nesting of MP4 chunks: given back by release()
+		KIND_COUNT
+	};
+
+	Measure_budget(const String& aorigin): origin(aorigin) {
+		left[EXIF_VALUES]=JPG_EXIF_MAX_SIZE;
+		left[EXIF_IFDS]=4; // IFD0 has two of them (Exif and GPS), the rest is spare
+		left[MP4_DEPTH]=8; // real files nest chunks 3 levels deep: moov/trak/mdia
+	}
+
+	void use(Kind kind, uint amount=1) {
+		static const char* const messages[KIND_COUNT]={
+			"broken Exif - too long values",
+			"broken Exif - too many IFD references",
+			"broken MP4 file - chunks nested too deep"
+		};
+
+		if(amount>left[kind])
+			throw Exception(IMAGE_FORMAT, &origin, messages[kind]);
+		left[kind]-=amount;
+	}
+
+	/// gives back what use() took
+	void release(Kind kind, uint amount=1) {
+		left[kind]+=amount;
+	}
+
+private:
+	const String& origin;
+	uint left[KIND_COUNT];
+};
+
 class Measure_reader {
 public:
+	const String& file_name;
+	Measure_budget budget; // of the file being measured
+
+	Measure_reader(const String& afile_name): file_name(afile_name), budget(afile_name) {}
+
 	virtual size_t read(const char* &buf, size_t limit)=0;
 	virtual void seek(uint64_t value)=0;
 	virtual uint64_t tell()=0;
@@ -255,12 +301,12 @@ public:
 };
 
 class Measure_file_reader: public Measure_reader {
-	const String& file_name;
 	int f;
+	uint64_t size;
 
 public:
-	Measure_file_reader(int af, const String& afile_name):
-		file_name(afile_name), f(af) {
+	Measure_file_reader(int af, const String& afile_name, uint64_t asize):
+		Measure_reader(afile_name), f(af), size(asize) {
 	}
 
 	override size_t read(const char* &abuf, size_t limit) {
@@ -281,20 +327,17 @@ public:
 
 	override uint64_t tell() { return pa_lseek(f, 0, SEEK_CUR); }
 
-	override uint64_t length() { return pa_lseek(f, 0, SEEK_END); }
+	override uint64_t length() { return size; }
 
 };
 
 class Measure_buf_reader: public Measure_reader {
-
 	const char* buf; size_t size;
-	const String& file_name; 
-
 	size_t offset;
 
 public:
 	Measure_buf_reader(const char* abuf, size_t asize, const String& afile_name): 
-		buf(abuf), size(asize), file_name(afile_name), offset(0) {
+		Measure_reader(afile_name), buf(abuf), size(asize), offset(0) {
 	}
 	
 	override size_t read(const char* &abuf, size_t limit) {
@@ -411,10 +454,10 @@ static Value* parse_IFD_entry_formatted_one_value(bool is_big, ushort format, si
 	case 10: // signed rational
 		{
 			signed int numerator=(signed int)endian_to_uint(is_big, value); value+=component_size/2;
-			uint denominator=endian_to_uint(is_big, value);
+			signed int denominator=(signed int)endian_to_uint(is_big, value);
 			if(!denominator)
 				return 0;
-			return new VDouble(numerator/denominator);
+			return new VDouble(((double)numerator)/denominator);
 		}
 		/*
 	case 11: // single float
@@ -443,7 +486,8 @@ static Value* parse_IFD_entry_formatted_value(bool is_big, ushort format, size_t
 			catch(...) { /*ignore bad date times*/ }
 		}
 
-		return new VString(cstr);
+		const char* end=(const char*)memchr(cstr, 0, length);
+		return new VString(pa_strdup(cstr, end ? end-cstr : length));
 	}
 
 	if(components_count==1)
@@ -490,6 +534,8 @@ static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, uint64_
 	// You can get the total data byte length by multiplies 
 	// a 'bytes/components' value (see above chart) by number of components stored 'NNNNNNNN' area
 	uint components_count=endian_to_uint(is_big, entry.components_count);
+	if(components_count>JPG_EXIF_MAX_SIZE)
+		throw Exception(IMAGE_FORMAT, &reader.file_name, "broken Exif - too many components");
 	uint value_size=component_size*components_count;
 	// If its size is over 4bytes, 'DDDDDDDD' contains the offset to data stored address
 	Value* result;
@@ -497,13 +543,16 @@ static Value* parse_IFD_entry_value(bool is_big, Measure_reader& reader, uint64_
 	if(value_size<=4)
 		result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, entry.value_or_offset_to_it);
 	else {
+		reader.budget.use(Measure_budget::EXIF_VALUES, value_size);
+
 		uint64_t remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it));
 			const char* value;
 			if(reader.read(value, value_size)<value_size)
-				return 0;
-			result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, (const uchar*)value);
+				result=0;
+			else
+				result=parse_IFD_entry_formatted_value(is_big, format, component_size, components_count, (const uchar*)value);
 		}
 		reader.seek(remembered);
 	}
@@ -517,6 +566,8 @@ static void parse_IFD_entry(HashStringValue& hash, bool is_big, Measure_reader& 
 	ushort tag=endian_to_ushort(is_big, entry.tag);
 
 	if(tag==JPG_IFD_TAG_EXIF_OFFSET || tag==JPG_IFD_TAG_EXIF_GPS_OFFSET){
+		reader.budget.use(Measure_budget::EXIF_IFDS); // an IFD can point to itself
+
 		uint64_t remembered=reader.tell();
 		{
 			reader.seek(tiff_base+endian_to_uint(is_big, entry.value_or_offset_to_it));
@@ -907,8 +958,13 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 				throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - truncated chunk extended size header");
 			MP4_ExtSize *ext_size=(MP4_ExtSize *)buf;
 			size=((uint64_t)endian_to_uint(true, ext_size->high) << 32) + endian_to_uint(true, ext_size->low);
-		}
+		} else if(size==0) // the chunk extends to the end (of file or container)
+			size=(anext ? anext : reader.length())-next;
 		next+=size;
+
+		// the chunk can't end before its header does (size is too small or wraps around): we would never get to the end
+		if(next<reader.tell())
+			throw Exception(IMAGE_FORMAT, &origin_string, "broken MP4 file - bad chunk size");
 
 		if(first){
 			if(strncmp(head->signature, "ftyp", 4)!=0)
@@ -916,8 +972,10 @@ static bool measure_mp4(const String& origin_string, Measure_reader& reader, ush
 			first=false;
 			anext=reader.length(); // to avoid reading beyond EOF
 		} else if(strncmp(head->signature, "moov", 4)==0 || strncmp(head->signature, "mdia", 4)==0 || strncmp(head->signature, "trak", 4)==0) {
+			reader.budget.use(Measure_budget::MP4_DEPTH);
 			if(measure_mp4(origin_string, reader, width, height, next, lastTkhd))
 				return true;
+			reader.budget.release(Measure_budget::MP4_DEPTH);
 		} else if(strncmp(head->signature, "tkhd", 4)==0) {
 			if(size>8){
 				reader.seek(next-8);
@@ -980,8 +1038,8 @@ static void measure(const String& file_name, Measure_reader& reader, Measure_inf
 
 // methods
 
-static void file_measure_action(struct stat& /*finfo*/, int f, const String& file_spec, void *context) {
-	Measure_file_reader reader(f, file_spec);
+static void file_measure_action(struct stat& finfo, int f, const String& file_spec, void *context) {
+	Measure_file_reader reader(f, file_spec, finfo.st_size);
 	measure(file_spec, reader, *static_cast<Measure_info *>(context));
 }
 
