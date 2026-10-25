@@ -20,7 +20,7 @@
 #include "pa_vxdoc.h"
 #endif
 
-volatile const char * IDENT_JSON_C="$Id: json.C,v 1.71 2026/10/13 20:02:00 moko Exp $";
+volatile const char * IDENT_JSON_C="$Id: json.C,v 1.72 2026/10/25 18:28:39 moko Exp $";
 
 // class
 
@@ -36,7 +36,7 @@ public:
 
 DECLARE_CLASS_VAR(json, new MJson);
 
-bool handle_array_default=true;
+THREAD_LOCAL bool handle_array_default=true; // thread local: can be changed anytime
 
 // methods
 struct Json : public PA_Allocated {
@@ -103,6 +103,12 @@ const VJunction* MJson::put_element(const String& aname, Value* avalue) {
 }
 
 
+static String numbered_key(const String& key, uint number){
+	String result;
+	result << key << "_" << pa_uitoa(number);
+	return result;
+}
+
 static void set_json_value(Json *json, Value *value){
 	VHashBase *top = json->stack.top_value();
 	if(json->key == NULL){
@@ -121,11 +127,18 @@ static void set_json_value(Json *json, Value *value){
 				break;
 			case Json::D_ALL:
 				if (top->hash().put_dont_replace(*json->key, value)){
-					for(int i=2;;i++){
-						String key;
-						key << *json->key << "_" << pa_uitoa(i);
-						if (!top->hash().put_dont_replace(key, value)) break;
+					// linear counting every time takes quadratic time, thus binary search; one of 2..count+1 is free for sure
+					uint lo=2, hi=top->hash().count()+1;
+					while(lo<hi){
+						uint mid=lo+(hi-lo)/2;
+						if(top->hash().get(numbered_key(*json->key, mid)))
+							lo=mid+1;
+						else
+							hi=mid;
 					}
+					// the found number is free, unless the numbered keys have gaps
+					for(uint i=lo;;i++)
+						if (!top->hash().put_dont_replace(numbered_key(*json->key, i), value)) break;
 				}
 				break;
 		}
@@ -339,7 +352,8 @@ static void _parse(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(1)) {
 			int valid_options=0;
 			if(Value* value=options->get("depth")) {
-				config.max_nesting=r.process(*value).as_int();
+				int depth=r.process(*value).as_int();
+				config.max_nesting=depth>0 ? depth : 0; // 0 is no limit, negative is the same
 				valid_options++;
 			}
 			if(Value* value=options->get("double")) {
@@ -456,7 +470,7 @@ class Json_string_recursion {
 	Json_options& foptions;
 public:
 	Json_string_recursion(Json_options& aoptions) : foptions(aoptions) {
-		if(++foptions.json_string_recursion==ANTI_ENDLESS_JSON_STRING_RECURSION)
+		if(++foptions.json_string_recursion>=ANTI_ENDLESS_JSON_STRING_RECURSION)
 			throw Exception(PARSER_RUNTIME, 0, "call canceled - endless json recursion detected");
 	}
 	~Json_string_recursion() {
