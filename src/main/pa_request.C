@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.470 2026/10/23 20:58:45 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.471 2026/10/26 19:06:51 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -116,6 +116,7 @@ static const String lock_wait_timeout_name("lock_wait_timeout");
 static const String httpd_name("HTTPD");
 static const String httpd_timeout_name("timeout");
 static const String httpd_mode_name("mode");
+static const String httpd_max_connections_name("max-connections");
 #ifdef CODE_CACHE
 static const String httpd_code_cache_name("code-cache");
 #endif
@@ -415,6 +416,13 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		if(httpd_timeout==0) httpd_timeout=INT_MAX;
 	}, "HTTPD.%s must be int");
 	pa_httpd_timeout=httpd_timeout;
+
+	int httpd_max_connections=INT_MAX;
+	CONF_OPTION(httpd, httpd_max_connections_name, {
+		httpd_max_connections=option->as_int();
+		if(httpd_max_connections<=0) httpd_max_connections=INT_MAX;
+	}, "HTTPD.%s must be int");
+	HTTPD_Server::max_connections=httpd_max_connections;
 
 	if(httpd)
 		if(Value* option=httpd->get_element(httpd_mode_name)) {

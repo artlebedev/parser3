@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.382 2026/10/18 22:42:43 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.383 2026/10/26 19:06:51 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -409,20 +409,30 @@ static void httpd_mode() {
 	while(1){
 #ifndef _MSC_VER
 		pid_t pid=1;
-		if(HTTPD_Server::mode == HTTPD_Server::PARALLEL)
-			while (waitpid((pid_t)(-1), 0, WNOHANG) > 0);
 #endif
 		try {
 			HTTPD_Connection connection;
-			if(!connection.accept(sock, 500))
+			bool accepted=connection.accept(sock, 500);
+#ifndef _MSC_VER
+			if(HTTPD_Server::mode == HTTPD_Server::PARALLEL)
+				while (waitpid((pid_t)(-1), 0, WNOHANG) > 0)
+					HTTPD_Server::track_connection(-1); // the child has exited, some of them while we were waiting
+#endif
+			if(!accepted)
 				continue;
+
+			if(HTTPD_Server::too_many_connections()){
+				SAPI_Info_HTTPD info(connection);
+				SAPI::send_error(info, "too many connections", "503"); // no thread or process is started
+				continue;
+			}
 
 			switch (HTTPD_Server::mode) {
 				case HTTPD_Server::MULTITHREADED:
 #ifdef _MSC_VER
 					if (!GC_CreateThread(0, 0, connection_thread, new HTTPD_Connection(connection), 0, 0))
 						throw Exception("httpd.fork", 0, "thread creation failed");
-					connection.sock=INVALID_SOCKET;
+					connection.sock=INVALID_SOCKET; // thread owns the connection now
 					break;
 #else
 #ifdef HAVE_TLS
@@ -433,22 +443,25 @@ static void httpd_mode() {
 
 					if(int result=GC_pthread_create(&thread, &attr, connection_thread, new HTTPD_Connection(connection)))
 						throw Exception("httpd.fork", 0, "thread creation failed (%d)", result);
-					connection.sock=INVALID_SOCKET;
+					connection.sock=INVALID_SOCKET; // thread owns the connection now
 					break;
 #endif
 				case HTTPD_Server::PARALLEL:
 					pid=fork();
 					if(pid<0)
 						throw Exception("httpd.fork", 0, "fork failed: %s (%d)", strerror(errno), errno);
-					if(pid>0)
-						continue; // parent should close connection.sock as well
+					if(pid>0){
+						closesocket(connection.sock);   // parent should close connection.sock as well
+						connection.sock=INVALID_SOCKET; // child owns the connection now
+						continue;
+					}
 #endif
 				case HTTPD_Server::SEQUENTIAL: // and fork child
 
 					SAPI_Info_HTTPD info(connection);
 					connection_handler(info, connection);
 			}
-			// closing connection socket in HTTPD_Connection destructor
+			// SEQUENTIAL or error: closing connection socket in HTTPD_Connection destructor
 		} catch(const Exception& e) { // exception in accept or send_error
 			pa_log("%s", e.comment());
 		}

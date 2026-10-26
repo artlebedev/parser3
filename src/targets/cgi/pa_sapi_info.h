@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.24 2026/10/18 21:05:35 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.25 2026/10/26 19:06:51 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -223,6 +223,7 @@ public:
 			{500, "Internal Server Error"},
 			{501, "Not Implemented"},
 			{502, "Bad Gateway"},
+			{503, "Service Unavailable"},
 			{504, "Gateway Timeout"},
 			{  0, "Undescribed"}
 		};

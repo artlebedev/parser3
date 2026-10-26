@@ -8,7 +8,7 @@
 #ifndef PA_HTTP_H
 #define PA_HTTP_H
 
-#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.39 2026/10/16 13:55:16 moko Exp $"
+#define IDENT_PA_HTTP_H "$Id: pa_http.h,v 1.40 2026/10/26 19:06:51 moko Exp $"
 
 #include "pa_vstring.h"
 #include "pa_vint.h"
@@ -125,6 +125,15 @@ public:
 		MULTITHREADED
 	} static mode;
 	static const char *port;
+
+	static int max_connections; // not thread local: never changes; INT_MAX by default
+	static int connections;     // accepted and not finished yet
+
+	static bool too_many_connections(){ return connections>max_connections; }
+
+	/// +1 on accept, -1 by whoever owns the connection at the end:
+	/// HTTPD_Connection destructor destructor, or the parent reaping the child in PARALLEL mode
+	static void track_connection(int delta);
 
 	static void set_mode(const String&);
 	static SOCKET bind(const char *);

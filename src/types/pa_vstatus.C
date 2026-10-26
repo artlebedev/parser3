@@ -13,8 +13,9 @@
 #include "pa_vdouble.h"
 #include "pa_vstring.h"
 #include "pa_threads.h"
+#include "pa_http.h"
 
-volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.50 2026/10/12 21:59:21 moko Exp $" IDENT_PA_VSTATUS_H;
+volatile const char * IDENT_PA_VSTATUS_C="$Id: pa_vstatus.C,v 1.51 2026/10/26 19:06:51 moko Exp $" IDENT_PA_VSTATUS_H;
 
 #ifdef _MSC_VER
 #include <windows.h>
@@ -217,6 +218,10 @@ Value* VStatus::get_element(const String& aname) {
 
 	if(aname=="mode")
 		return new VString(*new String(parser3_mode));
+
+	// in parallel mode it is the value when the connection was accepted
+	if(aname=="connections")
+		return new VInt(HTTPD_Server::connections);
 
 	if(aname=="log-filename")
 		return new VString(*new String(pa_strdup(parser3_log_filespec())));

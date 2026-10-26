@@ -12,12 +12,13 @@
 #include "pa_request_charsets.h"
 #include "pa_vfile.h"
 #include "pa_random.h"
+#include "pa_threads.h"
 
 #ifndef WIN32
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.144 2026/10/22 21:28:37 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.145 2026/10/26 19:06:51 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -1280,6 +1281,7 @@ HTTPD_Connection::~HTTPD_Connection(){
 	if(sock != INVALID_SOCKET){
 		LOG(pa_log("httpd [%d] closed", sock));
 		closesocket(sock);
+		HTTPD_Server::track_connection(-1);
 	}
 }
 
@@ -1301,6 +1303,7 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 		int no=pa_socks_errno();
 		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
 	}
+	HTTPD_Server::track_connection(1); // taken back by the owner
 
 //	Has no positive performance effect, requires include <netinet/tcp.h>
 //	static int sock_on=1;
@@ -1316,6 +1319,13 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 
 HTTPD_Server::HTTPD_MODE HTTPD_Server::mode = HTTPD_Server::SEQUENTIAL;
 const char *HTTPD_Server::port=NULL;
+int HTTPD_Server::max_connections=INT_MAX;
+int HTTPD_Server::connections=0;
+
+void HTTPD_Server::track_connection(int delta){
+	SYNCHRONIZED;
+	connections+=delta;
+}
 
 void HTTPD_Server::set_mode(const String &value){
                 if(value == "sequental") mode = SEQUENTIAL;
