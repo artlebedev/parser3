@@ -1,3 +1,72 @@
+2026-10-25  moko
+
+	* tests/: 474.html, results/474.processed: more tests for json
+	  $.distinct[all]
+
+	* src/classes/json.C: replaced linar free key search with binary
+	  search for $.distinct[all]
+
+	* src/classes/image.C: Measure_budget added to limit the work a
+	  measured file can require
+
+2026-10-23  moko
+
+	* etc/auto.p.in: $LIMITS commented to allow their specification
+	  from outside when using default auto.p
+
+	* src/: include/pa_os.h, include/pa_request.h, main/pa_request.C,
+	  types/pa_vclass.C, types/pa_vclass.h,
+	  types/pa_vstateless_class.C, types/pa_vstateless_class.h,
+	  types/pa_vvoid.h: thread safety for @conf: THREAD_LOCAL specified
+	  where should be, CONF_OPTION used for bool values,
+	  SYMBOLS_CACHING used only for native methods names to aboid
+	  Symbols modifications in threads.
+
+	* buildall: avoid autotools calls when checked from git (related to
+	  feature #1268)
+
+	* src/lib/gd/: gif.h, gifio.C: multithreading support, upstream
+	  changes (related to feature #1268)
+
+	* etc/auto.p.in, src/include/pa_request.h, src/main/pa_request.C,
+	  src/types/pa_vclass.C, src/types/pa_vclass.h: @mime-types[]
+	  replaced with @GET_MIME-TYPES[] for better compatibility (related
+	  to feature #1311)
+
+	* tests/473.html: @mime-types[] -> @GET_MIME-TYPES[] (related to
+	  feature #1311)
+
+	* tests/: 464.html, 465.html, results/464.processed,
+	  results/465.processed: $response:started tested (related to
+	  feature #1306)
+
+	* tests/: 473.html, results/473.processed: test for @mime-types[]
+	  added (related to feature #1311)
+
+	* etc/auto.p.in, src/include/pa_request.h, src/main/pa_request.C:
+	  optimization: $MAIN:MIME-TYPES is replaced with @mime-types[],
+	  which is called only if needed (implements feature #1311)
+
+	* src/main/pa_http.C: recycle headers buffer if nothing left
+
+2026-10-22  moko
+
+	* src/: classes/op.C, types/pa_vclass.h: MAIN native methods are
+	  cached in a singleton
+
+	* src/types/pa_vregex.C: minor tuning
+
+	* src/types/: pa_vregex.C, pa_vregex.h: compiled regexe patterns
+	  are now cached and can be reused: in a loop, by the other threads
+	  and by the next httpd requests
+
+	* buildall: cmake check added
+
+	* configure.ac: cmake builds .a, not .la
+
+	* buildall: avoid extra 16Kb stack memory clear (increases memory
+	  consumption when many threads)
+
 2026-10-19  moko
 
 	* src/: include/pa_exception.h, include/pa_memory.h,
