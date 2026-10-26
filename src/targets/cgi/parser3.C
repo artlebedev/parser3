@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.383 2026/10/26 19:06:51 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.384 2026/10/26 19:56:21 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -397,6 +397,22 @@ static void *connection_thread(void *arg){
 	return 0;
 }
 
+static void reject_connection(HTTPD_Connection &connection) {
+	// main thread only
+	static unsigned long total=0;
+	static time_t logged=0;
+
+	total++;
+	time_t now=time(0);
+	if(now!=logged){ // not more than once a second
+		logged=now;
+		pa_log("max-connections limit %d reached, rejecting connection from %s (%lu rejected in total)", HTTPD_Server::max_connections, connection.remote_addr, total);
+	}
+
+	SAPI_Info_HTTPD info(connection);
+	SAPI::send_error(info, "too many connections", "503");
+}
+
 static void httpd_mode() {
 	config_handler(*sapi_info);
 
@@ -422,8 +438,7 @@ static void httpd_mode() {
 				continue;
 
 			if(HTTPD_Server::too_many_connections()){
-				SAPI_Info_HTTPD info(connection);
-				SAPI::send_error(info, "too many connections", "503"); // no thread or process is started
+				reject_connection(connection); // no thread or process is started
 				continue;
 			}
 
