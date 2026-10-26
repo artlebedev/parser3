@@ -1496,10 +1496,7 @@ MAIN
     amqp                 ^amqp::create[$.port(1)]                    connection failed/error from the broker
     redis                ^redis::open[$.port(1)]                     connection failed/error reply
 
-если в MAIN определён $SIGPIPE(1) то в случае, если обработка была прервана пользователем, сообщение
-    об этом будет записано в parser3.log
-
 если описание метода содержит локальную переменную result в явном виде (есть и неявная переменная)
     то код вывода пробельных литералов не попадает в конечный байт-код
 
-$Id: operators.ru.txt,v 1.270 2026/10/09 18:53:41 moko Exp $
+$Id: operators.ru.txt,v 1.271 2026/10/26 22:52:46 moko Exp $

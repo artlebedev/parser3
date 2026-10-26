@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.385 2026/10/26 22:41:38 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.386 2026/10/26 22:52:46 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -211,23 +211,9 @@ static const char* full_disk_path(const char* file_name = "") {
 	return pa_strcat(backslashes_to_slashes(getcwd(cwd, MAX_STRING) ? cwd : ""), "/", path);
 }
 
-static void log_signal(const char* signal_name) {
-	pa_log("%s received %s processing request", signal_name, request ? "while" : "before or after");
-}
-
 #ifdef SIGPIPE
-#define SIGPIPE_NAME "SIGPIPE"
-static const String sigpipe_name(SIGPIPE_NAME);
-static void SIGPIPE_handler(int /*sig*/){
-	Value* sigpipe=0;
-	if(request)
-		sigpipe=request->main_class.get_element(sigpipe_name);
-	if(sigpipe && sigpipe->as_bool())
-		log_signal(SIGPIPE_NAME);
-
-	if(request)
-		request->set_skip(Request::SKIP_INTERRUPTED);
-}
+// write to a closed socket or pipe fails with EPIPE. Not SIG_IGN, as the ignored signal is inherited by the executed programs
+static void SIGPIPE_handler(int /*sig*/){}
 #endif
 
 // requires pa_thread_request() in entry_exists() under Windows
@@ -423,10 +409,6 @@ static void httpd_mode() {
 	config_handler(*sapi_info);
 
 	SOCKET sock = HTTPD_Server::bind(httpd_host_port);
-
-#ifdef SIGPIPE
-	signal(SIGPIPE, SIG_IGN);
-#endif
 
 	while(1){
 #ifndef _MSC_VER
