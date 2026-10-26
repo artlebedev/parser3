@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.384 2026/10/26 19:56:21 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.385 2026/10/26 22:41:38 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -87,51 +87,57 @@ const char *parser3_log_filespec() { // $status:log-filename
 
 // SAPI
 
-static void pa_log(const char* fmt, va_list args) {
-	// use no memory [so that we could log out-of-memory error]
-	const char* slog=parser3_log_filespec();
-	FILE *f=strcmp(slog,"-") ? fopen(slog, "at") : stderr;
+#ifndef O_CLOEXEC
+#define O_CLOEXEC 0
+#endif
+#ifndef STDERR_FILENO
+#define STDERR_FILENO 2
+#endif
 
-	// fallback to stderr
-	if(!f)
-		f=stderr;
-
-	setbuf(f, 0); // stderr stream is unbuffered by default, but still...
+static void pa_log(const char* stamp, const char* fmt, va_list args) {
+	// use no memory (to log out-of-memory error): the line is built on the stack and written at once
+	char line[64 + MAX_LOG_STRING + 1024 + 32 + 100]; // prefix + message + request info suffix: uri + method and the rest of it
+	size_t size=0;
 
 	// prefix
-	time_t t=time(0);
-#ifdef _MSC_VER
-	const char* stamp=ctime(&t); // the buffer is per thread
-#else
-	char stamp_buffer[32];       // the buffer of ctime() is shared by the threads
-	const char* stamp=ctime_r(&t, stamp_buffer);
+#ifndef _MSC_VER
+	char stamp_buffer[32];
 #endif
+	if(!stamp){
+		time_t t=time(0);
+#ifdef _MSC_VER
+		stamp=ctime(&t);                  // the buffer is per thread
+#else
+		stamp=ctime_r(&t, stamp_buffer);  // the buffer of ctime() is shared by the threads
+#endif
+	}
 	if(stamp) { // never saw that
 		if(size_t len=strlen(stamp)) // saw once stamp being =""
-			fprintf(f, "[%.*s] [%u] ", (int)len-1, stamp, (unsigned int)pa_get_thread_id() );
+			size=pa_snprintf(line, 64, "[%.*s] [%u] ", (int)len-1 /* exclude \n */, stamp, (unsigned int)pa_get_thread_id() );
 	}
 
 	// message
-	char buf[MAX_LOG_STRING];
-	size_t size=pa_vsnprintf(buf, MAX_LOG_STRING, fmt, args);
-	size=remove_crlf(buf, buf+size);
-	fwrite(buf, size, 1, f);
+	size+=remove_crlf(line+size, line+size+pa_vsnprintf(line+size, MAX_LOG_STRING, fmt, args));
 
-	if(request_info_4log && request_info_4log->method) {
-		fprintf(f, " [uri=%s, method=%s, cl=%lu]\n", request_info_4log->uri ? request_info_4log->uri : "<unknown>", request_info_4log->method, (unsigned long)request_info_4log->content_length);
-	} else
-		fputs(" [no request info]\n", f);
-
-	if(f!=stderr)
-		fclose(f);
+	// suffix
+	if(request_info_4log && request_info_4log->method)
+		size+=pa_snprintf(line+size, sizeof(line)-size, " [uri=%.1024s, method=%.32s, cl=%lu]\n", request_info_4log->uri ? request_info_4log->uri : "<unknown>", request_info_4log->method, (unsigned long)request_info_4log->content_length);
 	else
-		fflush(f);
+		size+=pa_snprintf(line+size, sizeof(line)-size, " [no request info]\n");
+
+	const char* slog=parser3_log_filespec();
+	int fd=strcmp(slog,"-") ? pa_open(slog, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, 0666) : -1;
+	if(fd<0)
+		fd=STDERR_FILENO; // fallback to stderr
+	PA_UNUSED int ignore_result=write(fd, line, (unsigned int)size);
+	if(fd!=STDERR_FILENO)
+		close(fd);
 }
 
 void pa_log(const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	pa_log(fmt, args);
+	pa_log(0, fmt, args);
 	va_end(args);
 }
 
@@ -139,7 +145,7 @@ void pa_log(const char* fmt, ...) {
 void SAPI::log(SAPI_Info&, const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
-	pa_log(fmt, args);
+	pa_log(0, fmt, args);
 	va_end(args);
 }
 
@@ -148,7 +154,7 @@ void SAPI::die(const char* fmt, ...) {
 
 	// logging first, first vsnprintf
 	va_start(args,fmt);
-	pa_log(fmt, args);
+	pa_log(0, fmt, args);
 	va_end(args);
 
 	// inform user, second vsnprintf
@@ -736,7 +742,7 @@ int main(int argc, char *argv[]) {
 		log_filespec=getenv(PARSER_LOG_ENV_NAME);
 	if(!log_filespec)
 		log_filespec=getenv(REDIRECT_PREFIX PARSER_LOG_ENV_NAME);
-	if(log_filespec)
+	if(log_filespec && strcmp(log_filespec, "-")) // "-" is stderr
 		log_filespec=full_disk_path(log_filespec);
 
 #ifdef _MSC_VER
