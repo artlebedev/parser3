@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.26 2026/10/27 23:05:00 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.27 2026/10/27 23:38:52 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -9,10 +9,6 @@
 /// IIS refuses to read bigger chunks
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
 const int HEADERS_SENT = 999; // can't send error message after headers have been sent
-
-// for timer signal handler (it runs in the thread of the request) and cgi console detection
-static THREAD_LOCAL Request *request=0;
-
 
 class SAPI_Info : public PA_Allocated {
 public:
@@ -89,7 +85,7 @@ public:
 	}
 
 	virtual void send_headers() {
-		if(!request || !request->console.was_used()){
+		if(!thread_request || !thread_request->console.was_used()){
 			headers << "\r\n";
 			send_body(headers.cstr(), headers.length());
 			http_response_code=HEADERS_SENT;

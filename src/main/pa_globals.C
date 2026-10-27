@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.222 2026/10/18 21:05:35 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.223 2026/10/27 23:38:52 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -48,11 +48,6 @@ short hex_value[0x100] = {
 
 THREAD_LOCAL Request* thread_request=NULL; // every TLS should be referenced elsewhere, or GC will collect it
 
-void pa_register_thread_request(Request& r) {
-	thread_request=&r;
-}
-
-/// retrives request set by pa_set_request function, useful in contextless places [slow]
 Request& pa_thread_request() {
 	if(!thread_request)
 		throw Exception(0, 0, "request is not initialized");

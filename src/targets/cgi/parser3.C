@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.387 2026/10/27 23:05:00 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.388 2026/10/27 23:38:52 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -286,16 +286,6 @@ static const char* maybe_reconstruct_IIS_status_in_qs(const char* original) {
 
 #endif
 
-class RequestController {
-public:
-	RequestController(Request* r){
-		request=r;
-	}
-	~RequestController(){
-		request=0;
-	}
-};
-
 #define RESPONSE_TIMEOUT_GRACE 1 // seconds to finish after the interruption, then the process is killed
 
 /// $response:timeout: interrupts the request that is not finished in time, the object is created before the request and destroyed after it
@@ -331,7 +321,7 @@ public:
 
 private:
 	bool kill_process;
-	volatile sig_atomic_t expired;
+	volatile int expired;
 	bool armed;
 	pa_timer timer;
 	int seconds;
@@ -352,8 +342,8 @@ private:
 		}
 
 		timeout->expired=1;
-		if(request)
-			request->set_skip(Request::SKIP_INTERRUPTED);
+		if(thread_request)
+			thread_request->set_skip(Request::SKIP_INTERRUPTED);
 	}
 };
 
@@ -426,7 +416,6 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 
 		// prepare to process request
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
-		RequestController rc(&r);
 		WebSocket websocket(connection);
 		r.websocket=&websocket;
 		// process the request
@@ -636,11 +625,8 @@ static void real_parser_handler(bool cgi) {
 
 		// prepare to process request
 		Request r(*sapi_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
-		// initing ::request ptr for signal handlers
-		RequestController rc(&r);
 		// process the request
 		r.core(locate_config(config_filespec, parser3_filespec));
-		// clearing ::request in rc destructor to prevent signal handlers from accessing invalid memory
 		// then the request is destroyed, before the libraries are unloaded: its pool cleanups call them (memcached)
 	}
 

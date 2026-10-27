@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.471 2026/10/26 19:06:51 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.472 2026/10/27 23:38:52 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -188,8 +188,6 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	// private mime types
 	mime_types(0)
 {
-	pa_register_thread_request(*this);
-
 	// file_no=0 => unknown
 	file_list+=String::Body("UNKNOWN");
 	file_list+=String::Body("-body of process-"); // pseudo_file_no__process
@@ -232,9 +230,14 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	put_class(new VMath);
 	// memory class
 	put_class(new VMemory);
+
+	// the last: the destructor is not called if the constructor throws
+	thread_request=this;
 }
 
 Request::~Request() {
+	thread_request=0;
+
 #ifdef XML
 	// if for some strange reason xml generic errors failed to be reported, free them up
 	if(const char* xml_generic_errors=xmlGenericErrors()) {

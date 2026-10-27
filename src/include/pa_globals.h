@@ -8,7 +8,9 @@
 #ifndef PA_GLOBALS_H
 #define PA_GLOBALS_H
 
-#define IDENT_PA_GLOBALS_H "$Id: pa_globals.h,v 1.121 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_GLOBALS_H "$Id: pa_globals.h,v 1.122 2026/10/27 23:38:52 moko Exp $"
+
+#include "pa_config_includes.h"
 
 #ifdef XML
 #	include "libxml/tree.h"
@@ -35,9 +37,9 @@ bool xmlHaveGenericErrors();
 const char* xmlGenericErrors();
 #endif
 
-/// register request for local thread to retrive later with pa_get_request()
-void pa_register_thread_request(Request&);
-/// retrives request set by pa_set_request function, useful in contextless places [slow]
+/// request of the local thread: set in the Request constructor and cleared in its destructor, can be used in signal handlers
+extern THREAD_LOCAL Request* thread_request;
+/// retrives thread_request or throws if there is none, useful in contextless places
 Request& pa_thread_request();
 
 #endif
