@@ -8,7 +8,7 @@
 #ifndef PA_SAPI_H
 #define PA_SAPI_H
 
-#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.42 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_SAPI_H "$Id: pa_sapi.h,v 1.43 2026/10/27 23:05:00 moko Exp $"
 
 // includes
 
@@ -37,6 +37,8 @@ struct SAPI {
 	static size_t send_body(SAPI_Info& info, const void *buf, size_t size);
 	// send error to client
 	static void send_error(SAPI_Info& info, const char *exception_cstr, const char *status = "500");
+	/// interrupt the request in the given number of seconds from now, 0 cancels the timer
+	static void set_response_timeout(SAPI_Info& info, int seconds);
 
 	class Env {
 	public:

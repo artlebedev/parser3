@@ -5,7 +5,7 @@ Parser: apache 1.3/2.X module, part, compiled by parser3project.
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.49 2026/10/18 22:42:43 moko Exp $";
+volatile const char * IDENT_MOD_PARSER3_CORE_C="$Id: mod_parser3_core.C,v 1.50 2026/10/27 23:05:00 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -68,6 +68,8 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 	pa_ap_log_rerror(0, 0, PA_APLOG_ERR | PA_APLOG_NOERRNO, SAPI_info.r, "%s", buf);
 	va_end(args);
 }
+
+void SAPI::set_response_timeout(SAPI_Info&, int) {} // not implemented
 
 void SAPI::die(const char* fmt, ...) {
 	va_list args;

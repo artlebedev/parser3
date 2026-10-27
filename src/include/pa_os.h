@@ -8,7 +8,7 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.17 2026/10/23 20:48:48 moko Exp $"
+#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.18 2026/10/27 23:05:00 moko Exp $"
 
 #define PA_LOCK_ATTEMPTS 20
 #define PA_LOCK_WAIT_TIMEOUT_SECS 0
@@ -27,6 +27,18 @@ int pa_unlock(int fd);
 
 /// yields to OS for secs secs and usecs microseconds (1E-6)
 int pa_sleep(unsigned long secs, unsigned long usecs);
+
+/// ctime in the buffer of the calling thread, valid till the next call; empty string on error
+const char *pa_ctime(time_t t);
+
+/// timer started with pa_timer_start
+typedef void *pa_timer;
+
+/// calls the signal handler in the calling thread after secs seconds and then every interval seconds if it is not 0
+/// The handler interrupts the blocking calls (EINTR), it must be async-signal-safe, one handler is used by all timers
+/// Linux only, returns false elsewhere or on error
+bool pa_timer_start(pa_timer *timer, int secs, int interval, void (*handler)(int));
+void pa_timer_stop(pa_timer timer);
 
 #ifdef _MSC_VER
 /// sets errno from GetLastError(), as CRT does, if the passed windows api call result is zero; returns it

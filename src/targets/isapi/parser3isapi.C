@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.143 2026/10/18 22:42:43 moko Exp $";
+volatile const char * IDENT_PARSER3ISAPI_C="$Id: parser3isapi.C,v 1.144 2026/10/27 23:05:00 moko Exp $";
 
 #ifndef _MSC_VER
 #	error compile ISAPI module with MSVC [no urge for now to make it autoconf-ed (PAF)]
@@ -87,6 +87,8 @@ void SAPI::log(SAPI_Info& SAPI_info, const char* fmt, ...) {
 
 	SAPI_info.lpECB->ServerSupportFunction(SAPI_info.lpECB->ConnID, HSE_APPEND_LOG_PARAMETER, buf, &size, 0);
 }
+
+void SAPI::set_response_timeout(SAPI_Info&, int) {} // not implemented
 
 /// @todo event log
 void SAPI::die(const char* fmt, ...) {

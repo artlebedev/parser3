@@ -13,14 +13,18 @@
 #include "pa_vdate.h"
 #include "pa_vhash.h"
 #include "pa_vvoid.h"
+#include "pa_vint.h"
+#include "pa_request.h"
+#include "pa_globals.h"
 
-volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.47 2026/10/16 13:55:16 moko Exp $" IDENT_PA_VRESPONSE_H;
+volatile const char * IDENT_PA_VRESPONSE_C="$Id: pa_vresponse.C,v 1.48 2026/10/27 23:05:00 moko Exp $" IDENT_PA_VRESPONSE_H;
 
 // defines
 
 #define REQUEST_HEADERS_ELEMENT_NAME "headers"
 #define UNTAINT_ELEMENT_NAME "untaint"
 #define STARTED_ELEMENT_NAME "started"
+#define TIMEOUT_ELEMENT_NAME "timeout"
 
 Value* VResponse::get_element(const String& aname) {
 	// $charset
@@ -44,6 +48,10 @@ Value* VResponse::get_element(const String& aname) {
 		return VVoid::get();
 	}
 
+	// $timeout
+	if(aname==TIMEOUT_ELEMENT_NAME)
+		return new VInt(timeout);
+
 	MAYBE_GET_SPECIAL_OR_METHOD(VStateless_class::get_element(aname));
 
 	// $field
@@ -58,6 +66,11 @@ const VJunction* VResponse::put_element(const String& aname, Value* avalue) {
 		lang=String::name2lang(avalue->as_string());
 	else if(aname==STARTED_ELEMENT_NAME)
 		return Value::put_element(aname, avalue);
+	else if(aname==TIMEOUT_ELEMENT_NAME) {
+		int seconds=avalue->as_int();
+		timeout=seconds>0 ? seconds : 0;
+		SAPI::set_response_timeout(pa_thread_request().sapi_info, timeout);
+	}
 	else
 		ffields.put(aname.change_case(fcharsets.source(), String::CC_UPPER), !avalue || (avalue->is_string() && !avalue->is_defined()) ? 0: avalue);
 

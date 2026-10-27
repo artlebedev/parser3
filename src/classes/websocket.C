@@ -15,7 +15,7 @@
 #include "pa_charsets.h"
 #include "pa_websocket.h"
 
-volatile const char * IDENT_WEBSOCKET_C="$Id: websocket.C,v 1.2 2026/10/16 15:16:21 moko Exp $" IDENT_PA_WEBSOCKET_H;
+volatile const char * IDENT_WEBSOCKET_C="$Id: websocket.C,v 1.3 2026/10/27 23:05:00 moko Exp $" IDENT_PA_WEBSOCKET_H;
 
 // class
 
@@ -52,6 +52,14 @@ static WebSocket& get_accepted_websocket(Request& r) {
 		throw Exception("websocket", 0, "connection is not accepted, use ^websocket:accept[] first");
 	return result;
 }
+
+/// the timer is stopped while waiting for the message (not response time) and then started from scratch
+class Temp_disable_response_timeout {
+	Request& r;
+public:
+	Temp_disable_response_timeout(Request& ar) : r(ar) { SAPI::set_response_timeout(r.sapi_info, 0); }
+	~Temp_disable_response_timeout() { SAPI::set_response_timeout(r.sapi_info, r.response.timeout); }
+};
 
 // text goes in UTF-8 and the string is in the source charset, tainted data is untainted as in the response
 static String::C to_utf8(Request& r, const String& string) {
@@ -92,7 +100,12 @@ static void _receive(Request& r, MethodParams& params) {
 		throw Exception(PARSER_RUNTIME, 0, "timeout must not be negative");
 
 	WebSocket::Message message;
-	if(!websocket.receive(timeout*1000 < INT_MAX ? (int)(timeout*1000) : INT_MAX, message)) {
+	bool received;
+	{
+		Temp_disable_response_timeout temp(r);
+		received=websocket.receive(timeout*1000 < INT_MAX ? (int)(timeout*1000) : INT_MAX, message);
+	}
+	if(!received) {
 		r.write(*VVoid::get());
 		return;
 	}

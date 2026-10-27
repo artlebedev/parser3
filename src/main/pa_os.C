@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.28 2026/10/17 22:58:09 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.29 2026/10/27 23:05:00 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -146,3 +146,58 @@ int pa_sleep(unsigned long secs, unsigned long usecs) {
 	return result<0 ? errno : 0;
 #endif
 }
+
+const char *pa_ctime(time_t t) {
+#ifdef _MSC_VER
+	const char *result=ctime(&t); // the buffer is per thread
+#else
+	static THREAD_LOCAL char buffer[32];
+	const char *result=ctime_r(&t, buffer);
+#endif
+	return result ? result : "";
+}
+
+#ifdef __linux__
+
+#include <sys/syscall.h>
+
+#ifndef sigev_notify_thread_id
+#define sigev_notify_thread_id _sigev_un._tid
+#endif
+
+bool pa_timer_start(pa_timer *timer, int secs, int interval, void (*handler)(int)) {
+	struct sigaction action;
+	memset(&action, 0, sizeof(action));
+	action.sa_handler=handler; // no SA_RESTART: the signal interrupts the blocking calls
+	sigaction(SIGUSR1, &action, 0);
+
+	// the signal is sent to the calling thread only
+	struct sigevent event;
+	memset(&event, 0, sizeof(event));
+	event.sigev_notify=SIGEV_THREAD_ID;
+	event.sigev_signo=SIGUSR1;
+	event.sigev_notify_thread_id=(pid_t)syscall(SYS_gettid);
+	if(timer_create(CLOCK_MONOTONIC, &event, timer))
+		return false;
+
+	struct itimerspec spec;
+	memset(&spec, 0, sizeof(spec));
+	spec.it_value.tv_sec=secs;
+	spec.it_interval.tv_sec=interval;
+	if(timer_settime(*timer, 0, &spec, 0)){
+		timer_delete(*timer);
+		return false;
+	}
+	return true;
+}
+
+void pa_timer_stop(pa_timer timer) {
+	timer_delete(timer);
+}
+
+#else
+
+bool pa_timer_start(pa_timer *, int, int, void (*)(int)) { return false; }
+void pa_timer_stop(pa_timer) {}
+
+#endif

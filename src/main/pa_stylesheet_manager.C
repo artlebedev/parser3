@@ -10,12 +10,13 @@
 #include "pa_stylesheet_manager.h"
 #include "pa_exception.h"
 #include "pa_common.h"
+#include "pa_os.h"
 #include "pa_threads.h"
 #include "pa_stack.h"
 #include "pa_vhash.h"
 #include "pa_vtable.h"
 
-volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.38 2026/04/25 13:38:46 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
+volatile const char * IDENT_PA_STYLESHEET_MANAGER_C="$Id: pa_stylesheet_manager.C,v 1.39 2026/10/27 23:05:00 moko Exp $" IDENT_PA_STYLESHEET_MANAGER_H;
 
 // globals
 
@@ -105,7 +106,7 @@ static void add_connection_to_status_cache_table(Stylesheet_connection& connecti
 		row+=new String(connection.file_spec(), String::L_AS_IS);
 		// time
 		time_t time_used=connection.get_time_used();
-		row+=new String(pa_strdup(ctime(&time_used)));
+		row+=new String(pa_strdup(pa_ctime(time_used)));
 
 		*table+=&row;
 	}

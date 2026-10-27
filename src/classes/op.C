@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.287 2026/10/22 20:45:14 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.288 2026/10/27 23:05:00 moko Exp $";
 
 // defines
 
@@ -863,8 +863,11 @@ static void _throw_operator(Request&, MethodParams& params) {
 
 static void _sleep_operator(Request& r, MethodParams& params) {
 	double seconds=params.as_double(0, "seconds must be double", r);
-	if(seconds>0)
-		pa_sleep((int)trunc(seconds), (int)trunc((seconds-trunc(seconds))*1000000));
+	// sleeping by ticks to notice the interruption
+	for(double tick; seconds>0 && !r.get_skip(); seconds-=tick){
+		tick=seconds<0.1 ? seconds : 0.1;
+		pa_sleep(0, (unsigned long)(tick*1000000));
+	}
 }
 
 static void _a_operator(Request& r, MethodParams& params) {

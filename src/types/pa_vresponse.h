@@ -8,7 +8,7 @@
 #ifndef PA_VRESPONSE_H
 #define PA_VRESPONSE_H
 
-#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.53 2026/10/16 13:55:16 moko Exp $"
+#define IDENT_PA_VRESPONSE_H "$Id: pa_vresponse.h,v 1.54 2026/10/27 23:05:00 moko Exp $"
 
 #include "pa_vstateless_object.h"
 #include "pa_string.h"
@@ -60,7 +60,10 @@ public:	// usage
 	/// $response:started
 	Started started;
 
-	VResponse(Request_info& ainfo, Request_charsets& acharsets, String::Language alang): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets), lang(alang), default_lang(alang), started(UNSTARTED) {}
+	/// $response:timeout in seconds, 0 is none, the assignment calls SAPI::set_response_timeout
+	int timeout;
+
+	VResponse(Request_info& ainfo, Request_charsets& acharsets, String::Language alang): VStateless_class(response_class), finfo(ainfo), fcharsets(acharsets), lang(alang), default_lang(alang), started(UNSTARTED), timeout(0) {}
 
 	/// used in pa_request.C
 	HashStringValue& fields() { return ffields; }

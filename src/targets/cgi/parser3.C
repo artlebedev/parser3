@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.386 2026/10/26 22:52:46 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.387 2026/10/27 23:05:00 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -19,6 +19,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.386 2026/10/26 22:52:4
 #include "pa_sapi_info.h"
 #include "pa_code_cache.h"
 #include "pa_websocket.h"
+#include "pa_os.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -100,21 +101,10 @@ static void pa_log(const char* stamp, const char* fmt, va_list args) {
 	size_t size=0;
 
 	// prefix
-#ifndef _MSC_VER
-	char stamp_buffer[32];
-#endif
-	if(!stamp){
-		time_t t=time(0);
-#ifdef _MSC_VER
-		stamp=ctime(&t);                  // the buffer is per thread
-#else
-		stamp=ctime_r(&t, stamp_buffer);  // the buffer of ctime() is shared by the threads
-#endif
-	}
-	if(stamp) { // never saw that
-		if(size_t len=strlen(stamp)) // saw once stamp being =""
-			size=pa_snprintf(line, 64, "[%.*s] [%u] ", (int)len-1 /* exclude \n */, stamp, (unsigned int)pa_get_thread_id() );
-	}
+	if(!stamp)
+		stamp=pa_ctime(time(0));
+	if(size_t len=strlen(stamp)) // saw once stamp being =""
+		size=pa_snprintf(line, 64, "[%.*s] [%u] ", (int)len-1 /* exclude \n */, stamp, (unsigned int)pa_get_thread_id() );
 
 	// message
 	size+=remove_crlf(line+size, line+size+pa_vsnprintf(line+size, MAX_LOG_STRING, fmt, args));
@@ -138,6 +128,14 @@ void pa_log(const char* fmt, ...) {
 	va_list args;
 	va_start(args,fmt);
 	pa_log(0, fmt, args);
+	va_end(args);
+}
+
+// for signal handlers, where pa_ctime can't be called: the stamp is prepared in advance
+static void pa_log_at(const char* stamp, const char* fmt, ...) {
+	va_list args;
+	va_start(args,fmt);
+	pa_log(stamp, fmt, args);
 	va_end(args);
 }
 
@@ -298,6 +296,74 @@ public:
 	}
 };
 
+#define RESPONSE_TIMEOUT_GRACE 1 // seconds to finish after the interruption, then the process is killed
+
+/// $response:timeout: interrupts the request that is not finished in time, the object is created before the request and destroyed after it
+class Response_timeout {
+public:
+	static THREAD_LOCAL Response_timeout *current;
+
+	/// @a akill_process: the process will be killed if the request is still running after the grace period
+	Response_timeout(bool akill_process) : kill_process(akill_process), expired(0), armed(false) {
+		current=this;
+	}
+	~Response_timeout() {
+		set(0);
+		current=0;
+	}
+
+	/// restarts the timer for the given number of seconds, 0 cancels it
+	void set(int aseconds) {
+		if(armed){
+			pa_timer_stop(timer);
+			armed=false;
+		}
+		if(!aseconds)
+			return;
+
+		seconds=aseconds;
+		expired=0;
+		if(kill_process) // pa_ctime can't be called from the handler, so preparing for the log in advance
+			stamp=pa_strdup(pa_ctime(time(0)+seconds+RESPONSE_TIMEOUT_GRACE));
+
+		armed=pa_timer_start(&timer, seconds, kill_process ? RESPONSE_TIMEOUT_GRACE : 0, handler);
+	}
+
+private:
+	bool kill_process;
+	volatile sig_atomic_t expired;
+	bool armed;
+	pa_timer timer;
+	int seconds;
+	const char *stamp;
+
+	static void handler(int) {
+		Response_timeout *timeout=current;
+		if(!timeout)
+			return;
+
+		if(timeout->expired && timeout->kill_process){
+			// the request is still running after the grace period
+			pa_log_at(timeout->stamp, "response timeout (%d s) exceeded, process killed", timeout->seconds);
+#ifndef _MSC_VER
+			kill(getpid(), SIGKILL);
+#endif
+			return;
+		}
+
+		timeout->expired=1;
+		if(request)
+			request->set_skip(Request::SKIP_INTERRUPTED);
+	}
+};
+
+THREAD_LOCAL Response_timeout *Response_timeout::current=0;
+
+void SAPI::set_response_timeout(SAPI_Info&, int seconds) {
+	if(Response_timeout::current)
+		Response_timeout::current->set(seconds);
+}
+
 class RequestInfoController {
 public:
 	RequestInfoController(Request_info* rinfo, SAPI_Info* sinfo){
@@ -355,8 +421,12 @@ static void connection_handler(SAPI_Info_HTTPD &info, HTTPD_Connection &connecti
 		request_info.mail_received = false;
 		request_info.argv = argv_extra;
 
+		// process can be killed on timeout only in parallel mode
+		Response_timeout response_timeout(HTTPD_Server::mode == HTTPD_Server::PARALLEL);
+
 		// prepare to process request
 		Request r(info, request_info, String::Language(String::L_HTML|String::L_OPTIMIZE_BIT));
+		RequestController rc(&r);
 		WebSocket websocket(connection);
 		r.websocket=&websocket;
 		// process the request
@@ -561,13 +631,16 @@ static void real_parser_handler(bool cgi) {
 #endif
 
 	{
+		// CGI process can be killed on timeout
+		Response_timeout response_timeout(true);
+
 		// prepare to process request
 		Request r(*sapi_info, request_info, cgi ? String::Language(String::L_HTML|String::L_OPTIMIZE_BIT) : String::L_AS_IS);
 		// initing ::request ptr for signal handlers
 		RequestController rc(&r);
 		// process the request
 		r.core(locate_config(config_filespec, parser3_filespec));
-		// clearing ::request in RequestController destructor to prevent signal handlers from accessing invalid memory
+		// clearing ::request in rc destructor to prevent signal handlers from accessing invalid memory
 		// then the request is destroyed, before the libraries are unloaded: its pool cleanups call them (memcached)
 	}
 

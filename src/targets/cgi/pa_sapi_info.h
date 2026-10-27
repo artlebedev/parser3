@@ -1,7 +1,7 @@
 #ifndef PA_SAPI_INFO_H
 #define PA_SAPI_INFO_H
 
-#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.25 2026/10/26 19:06:51 moko Exp $"
+#define IDENT_PA_SAPI_INFO_H "$Id: pa_sapi_info.h,v 1.26 2026/10/27 23:05:00 moko Exp $"
 
 #include "pa_sapi.h"
 #include "pa_http.h"
@@ -10,8 +10,8 @@
 const size_t READ_POST_CHUNK_SIZE=0x400*0x400; // 1M
 const int HEADERS_SENT = 999; // can't send error message after headers have been sent
 
-// for signal handlers and cgi console detection
-static Request *request=0;
+// for timer signal handler (it runs in the thread of the request) and cgi console detection
+static THREAD_LOCAL Request *request=0;
 
 
 class SAPI_Info : public PA_Allocated {
