@@ -564,6 +564,7 @@ PA_TRY_COMPILE([#include <time.h>], [struct tm tm; tm.tm_tzadj=0;], AC_DEFINE(HA
 AC_MSG_CHECKING(for gettid)
 PA_TRY_COMPILE([
 #include <sys/types.h>
+#include <unistd.h>
 #include <sys/syscall.h>
 ], [uint tid=syscall(__NR_gettid);], AC_DEFINE(HAVE_GETTID) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
