@@ -22825,6 +22825,7 @@ printf %s "checking for gettid... " >&6; }
 /* end confdefs.h.  */
 
 #include <sys/types.h>
+#include <unistd.h>
 #include <sys/syscall.h>
 
 int
