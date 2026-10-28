@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.50 2026/10/23 18:59:57 moko Exp $
+# $Id: buildall,v 1.51 2026/10/28 21:27:06 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -331,7 +331,7 @@ fi
 cd $parser3_dir
 if test ! -f "Makefile"; then
     echo "Configuring parser3..."
-    touch *
+    touch configure.ac acsite.m4 aclocal.m4 Makefile.am Makefile.in configure src/include/pa_config_auto.h.in
     ./configure --prefix=$install_directory \
 	--sysconfdir=$install_directory/bin \
 	--datadir=$install_directory/bin \
