@@ -8,7 +8,7 @@
 #ifndef PA_EXCEPTION_H
 #define PA_EXCEPTION_H
 
-#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.78 2026/10/18 22:42:42 moko Exp $"
+#define IDENT_PA_EXCEPTION_H "$Id: pa_exception.h,v 1.79 2026/10/28 01:37:15 moko Exp $"
 
 const char* const PARSER_RUNTIME = "parser.runtime";
 const char* const IMAGE_FORMAT = "image.format";
@@ -98,10 +98,22 @@ protected:
 
 };
 
-// recovery recursion reserve is exhausted: bypass catch/finally handlers
-class Recursion_limit_exception: public Exception {
+/// bypasses catch/finally handlers of ^try and goes to @unhandled_exception
+class Uncatchable_exception: public Exception {
 public:
-	Recursion_limit_exception(): Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion recovery limit exceeded") {}
+	Uncatchable_exception(const Exception& src): Exception(src) {}
+};
+
+// recovery recursion reserve is exhausted
+class Recursion_limit_exception: public Uncatchable_exception {
+public:
+	Recursion_limit_exception(): Uncatchable_exception(Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion recovery limit exceeded")) {}
+};
+
+// the request is not finished in time, see $response:timeout
+class Interrupted_exception: public Uncatchable_exception {
+public:
+	Interrupted_exception(int seconds): Uncatchable_exception(Exception("parser.interrupted", 0, "response timeout (%d s) exceeded", seconds)) {}
 };
 
 #endif

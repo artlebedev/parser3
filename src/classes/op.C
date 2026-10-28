@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.288 2026/10/27 23:05:00 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.289 2026/10/28 01:37:15 moko Exp $";
 
 // defines
 
@@ -509,7 +509,7 @@ static Try_catch_result try_catch(Request& r, Value& body_code(Request&, I), I i
 
 	try {
 		result.processed_code=body_code(r, info);
-	} catch(const Recursion_limit_exception&) {
+	} catch(const Uncatchable_exception&) {
 		rethrow;
 	} catch(const Exception& e) {
 		size_t trace_bottom=r.exception_trace.bottom_index();
@@ -806,7 +806,7 @@ static void _try_operator(Request& r, MethodParams& params) {
 	try{
 		// process try and catch code
 		result=try_catch(r, process_try_body_code, &body_code, &catch_code);
-	} catch(const Recursion_limit_exception&) {
+	} catch(const Uncatchable_exception&) {
 		rethrow;
 	} catch(...){
 		// process finally code but ignore the result
