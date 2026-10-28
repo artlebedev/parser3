@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.29 2026/10/27 23:05:00 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.30 2026/10/28 22:01:36 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -157,7 +157,7 @@ const char *pa_ctime(time_t t) {
 	return result ? result : "";
 }
 
-#ifdef __linux__
+#ifdef HAVE_GETTID
 
 #include <sys/syscall.h>
 
@@ -176,7 +176,7 @@ bool pa_timer_start(pa_timer *timer, int secs, int interval, void (*handler)(int
 	memset(&event, 0, sizeof(event));
 	event.sigev_notify=SIGEV_THREAD_ID;
 	event.sigev_signo=SIGUSR1;
-	event.sigev_notify_thread_id=(pid_t)syscall(SYS_gettid);
+	event.sigev_notify_thread_id=(pid_t)syscall(__NR_gettid);
 	if(timer_create(CLOCK_MONOTONIC, &event, timer))
 		return false;
 

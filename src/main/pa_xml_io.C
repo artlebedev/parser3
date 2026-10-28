@@ -9,7 +9,7 @@
 
 #ifdef XML
 
-volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.49 2026/09/28 02:52:42 moko Exp $" IDENT_PA_XML_IO_H;
+volatile const char * IDENT_PA_XML_IO_C="$Id: pa_xml_io.C,v 1.50 2026/10/28 22:01:36 moko Exp $" IDENT_PA_XML_IO_H;
 
 #include "libxslt/extensions.h"
 
@@ -145,6 +145,9 @@ static void *xmlFileOpenMethod (const char* afilename) {
 		if(!body)
 			throw Exception(0, new String(afilename), "'%s' method not found in %s class", method_cstr, MAIN_CLASS_NAME);
 		buf=body->untaint_cstr(String::L_XML);
+	} catch(const Interrupted_exception& e) {
+		pa_thread_request().interrupt(); // can't be rethrown through the library and is already cleared, so set again to be thrown when the library returns
+		buf=e.comment();
 	} catch(const Exception& e) {
 		buf=e.comment();
 	} catch(...) {

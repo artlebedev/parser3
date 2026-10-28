@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.289 2026/10/28 01:37:15 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.290 2026/10/28 22:01:36 moko Exp $";
 
 // defines
 
@@ -487,7 +487,8 @@ public:
 		arequest.set_skip(Request::SKIP_NOTHING);
 	}
 	~Temp_skip() {
-		if(frequest.get_skip() == Request::SKIP_NOTHING)
+		// the interruption is not restored: if it is not set now, it is already thrown
+		if(frequest.get_skip() == Request::SKIP_NOTHING && saved_skip != Request::SKIP_INTERRUPTED)
 			frequest.set_skip(saved_skip);
 	}
 };
