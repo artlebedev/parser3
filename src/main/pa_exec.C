@@ -13,7 +13,9 @@
 #include "pa_exception.h"
 #include "pa_common.h"
 
-volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.107 2026/10/03 14:30:03 moko Exp $" IDENT_PA_EXEC_H;
+volatile const char * IDENT_PA_EXEC_C="$Id: pa_exec.C,v 1.108 2026/10/28 20:22:22 moko Exp $" IDENT_PA_EXEC_H;
+
+THREAD_LOCAL int pa_exec_active_pid=0;
 
 #ifdef _MSC_VER
 
@@ -317,12 +319,17 @@ static pid_t execve_piped(const char* file_spec_cstr,
 		rsplit(dir,'/'); // trim filename
 		PA_UNUSED int ignore_result=chdir(dir);
 
+		// put the child in its own process group so the response timeout can kill it and its children
+		setpgid(0, 0);
+
 		//  execute
 		execve(file_spec_cstr, argv, env);
 		exit(-errno);
 	}
 	
 	/* Parent process */
+
+	setpgid(pid, pid); // repeat in the parent in case the timeout fires before the child calls setpgid()
 	
 	if(pipe_out) {
 		close(out_fds[1]);
@@ -341,6 +348,12 @@ static pid_t execve_piped(const char* file_spec_cstr,
 
 	return pid;
 }
+
+class Temp_exec_pid {
+public:
+	Temp_exec_pid(pid_t pid) { pa_exec_active_pid=pid; }
+	~Temp_exec_pid() { pa_exec_active_pid=0; }
+};
 
 static int get_exit_status(int pid) {
 	int status=0;
@@ -500,7 +513,8 @@ PA_exec_result pa_exec(bool forced_allow, const String& file_spec, const HashStr
 		argv_cstrs, env_cstrs,
 		&pipe_write, &pipe_read, &pipe_err);
 	if(pid>0) {
-		// in child
+		// child running
+		Temp_exec_pid temp(pid);
 		if(in.length>0) // there is some in data
 			PA_UNUSED int ignore_result=write(pipe_write, in.str, in.length);
 		close(pipe_write);

@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.389 2026/10/28 01:17:38 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.390 2026/10/28 20:22:22 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -20,6 +20,7 @@ volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.389 2026/10/28 01:17:3
 #include "pa_code_cache.h"
 #include "pa_websocket.h"
 #include "pa_os.h"
+#include "pa_exec.h"
 
 #ifdef _MSC_VER
 #include <crtdbg.h>
@@ -331,6 +332,11 @@ private:
 		Response_timeout *timeout=current;
 		if(!timeout)
 			return;
+
+#ifndef _MSC_VER
+		if(pa_exec_active_pid)
+			kill(-pa_exec_active_pid, SIGKILL); // kill the whole process group so nothing is left orphaned
+#endif
 
 		if(timeout->expired && timeout->kill_process){
 			// the request is still running after the grace period

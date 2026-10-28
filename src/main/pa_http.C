@@ -18,7 +18,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.145 2026/10/26 19:06:51 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.146 2026/10/28 20:22:22 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -39,6 +39,15 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.145 2026/10/26 19:06:5
 
 #ifndef INADDR_NONE
 #define INADDR_NONE ((ulong) -1)
+#endif
+
+#ifdef SOCK_CLOEXEC
+// avoid inheritance by the executed programs
+#define PA_ACCEPT(sock, addr, len) ::accept4(sock, addr, len, SOCK_CLOEXEC)
+#define PA_SOCKET(domain, type, protocol) ::socket(domain, (type) | SOCK_CLOEXEC, protocol)
+#else
+#define PA_ACCEPT(sock, addr, len) ::accept(sock, addr, len)
+#define PA_SOCKET(domain, type, protocol) ::socket(domain, type, protocol)
 #endif
 
 #undef CRLF
@@ -1298,7 +1307,7 @@ bool HTTPD_Connection::accept(SOCKET server_sock, int timeout_value) {
 	socklen_t sock_addr_len = sizeof(struct sockaddr_in);
 	memset(&addr, 0, sock_addr_len);
 
-	sock = ::accept(server_sock, (struct sockaddr *)&addr, &sock_addr_len);
+	sock = PA_ACCEPT(server_sock, (struct sockaddr *)&addr, &sock_addr_len);
 	if(sock == INVALID_SOCKET){
 		int no=pa_socks_errno();
 		throw Exception("httpd.accept", 0, "error accepting connection: %s (%d)", pa_socks_strerr(no), no);
@@ -1359,7 +1368,7 @@ SOCKET HTTPD_Server::bind(const char *host_port){
 		me.sin_addr.s_addr=INADDR_ANY;
 	}
 
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/);
+	SOCKET sock = PA_SOCKET(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/);
 
 	if(sock == INVALID_SOCKET){
 		int no=pa_socks_errno();

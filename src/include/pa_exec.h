@@ -8,7 +8,7 @@
 #ifndef PA_EXEC_H
 #define PA_EXEC_H
 
-#define IDENT_PA_EXEC_H "$Id: pa_exec.h,v 1.28 2026/09/27 17:13:40 moko Exp $"
+#define IDENT_PA_EXEC_H "$Id: pa_exec.h,v 1.29 2026/10/28 20:22:22 moko Exp $"
 
 #include "pa_string.h"
 #include "pa_hash.h"
@@ -16,6 +16,9 @@
 #include "pa_value.h"
 #include "pa_charset.h"
 #include "pa_file.h"
+
+/// pid of the active exec child, 0 if none; also its process group id: killed on the response timeout
+extern THREAD_LOCAL int pa_exec_active_pid;
 
 struct PA_exec_result {
 	int status; ///< exit code
