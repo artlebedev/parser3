@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.434 2026/10/27 23:05:00 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.435 2026/10/28 01:17:38 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -1212,10 +1212,8 @@ void Request::execute(ArrayOperation& ops) {
 		check_skip:
 			{
 				if(fskip){
-					if(fskip==Request::SKIP_INTERRUPTED){
-						set_skip(Request::SKIP_NOTHING);
-						throw Exception("parser.interrupted", 0, "response timeout (%d s) exceeded", response.timeout);
-					}
+					if(fskip==Request::SKIP_INTERRUPTED)
+						throw_interrupted();
 					return;
 				}
 				break;

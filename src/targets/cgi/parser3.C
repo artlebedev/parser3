@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.388 2026/10/27 23:38:52 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.389 2026/10/28 01:17:38 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -343,7 +343,7 @@ private:
 
 		timeout->expired=1;
 		if(thread_request)
-			thread_request->set_skip(Request::SKIP_INTERRUPTED);
+			thread_request->interrupt();
 	}
 };
 

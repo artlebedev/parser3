@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.472 2026/10/27 23:38:52 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.473 2026/10/28 01:17:38 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -155,6 +155,12 @@ void Request::recursion_limit_reached() {
 	throw Exception(PARSER_RUNTIME, 0, "call canceled - endless recursion detected");
 }
 
+void Request::throw_interrupted() {
+	finterrupted=0;
+	set_skip(SKIP_NOTHING);
+	throw Exception("parser.interrupted", 0, "response timeout (%d s) exceeded", response.timeout);
+}
+
 Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Language adefault_lang):
 	// private
 	anti_endless_execute_recursion(0),
@@ -168,6 +174,7 @@ Request::Request(SAPI_Info& asapi_info, Request_info& arequest_info, String::Lan
 	fconnection(0),
 	fin_cycle(0),
 	fskip(SKIP_NOTHING),
+	finterrupted(0),
 
 	// public
 	request_info(arequest_info),

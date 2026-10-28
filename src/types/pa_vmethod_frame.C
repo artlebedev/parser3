@@ -10,7 +10,7 @@
 #include "pa_request.h"
 #include "pa_vfile.h"
 
-volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.54 2026/04/25 13:38:46 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
+volatile const char * IDENT_PA_VMETHOD_FRAME_C="$Id: pa_vmethod_frame.C,v 1.55 2026/10/28 01:17:38 moko Exp $" IDENT_PA_VMETHOD_FRAME_H IDENT_PA_VCALLER_WRAPPER_H;
 
 // MethodParams: methods
 
@@ -25,10 +25,11 @@ Value& MethodParams::get_processed(Value& value, const char* msg, int index, Req
 	if(!value.get_junction())
 		throw Exception(PARSER_RUNTIME, 0, "%s (parameter #%d)", msg, 1+index);
 	Value& result=r.process(value);
-	if(r.get_skip()){
-		const char *skip=skip_name[r.get_skip()];
+	if(Request::Skip skip=r.get_skip()){
+		if(skip==Request::SKIP_INTERRUPTED)
+			r.throw_interrupted();
 		r.set_skip(Request::SKIP_NOTHING);
-		throw Exception(PARSER_RUNTIME, 0, "%s is not allowed in expression passed to native method (parameter #%d)", skip, 1+index);
+		throw Exception(PARSER_RUNTIME, 0, "%s is not allowed in expression passed to native method (parameter #%d)", skip_name[skip], 1+index);
 	}
 	return result;
 }

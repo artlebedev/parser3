@@ -8,7 +8,7 @@
 #ifndef PA_REQUEST_H
 #define PA_REQUEST_H
 
-#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.292 2026/10/23 20:48:48 moko Exp $"
+#define IDENT_PA_REQUEST_H "$Id: pa_request.h,v 1.293 2026/10/28 01:17:38 moko Exp $"
 
 #include "pa_pool.h"
 #include "pa_hash.h"
@@ -177,7 +177,8 @@ public:
 private:
 
 	int fin_cycle;
-	Skip fskip;
+	volatile Skip fskip;       // also changed from the signal handler
+	volatile int finterrupted; // set by the signal handler, if fskip was overwritten meanwhile, the next set_skip() restores SKIP_INTERRUPTED from it
 	VMethodFrame* freturn_method_frame;
 
 public:
@@ -329,10 +330,14 @@ public:
 	}
 
 	Skip get_skip() { return fskip; }
-	void set_skip(Skip askip) { fskip=askip; }
-	void set_skip_return(VMethodFrame& amethod_frame) { fskip=SKIP_RETURN; freturn_method_frame=&amethod_frame; }
-	inline bool check_skip_break() { bool result=fskip >= SKIP_BREAK; if(fskip <= SKIP_BREAK) fskip=SKIP_NOTHING; return result; }
-	inline void check_skip_return() { if(fskip==SKIP_RETURN && method_frame==freturn_method_frame) fskip=SKIP_NOTHING; }
+	void set_skip(Skip askip) { fskip=finterrupted ? SKIP_INTERRUPTED : askip; }
+	void set_skip_return(VMethodFrame& amethod_frame) { freturn_method_frame=&amethod_frame; set_skip(SKIP_RETURN); }
+	inline bool check_skip_break() { bool result=fskip >= SKIP_BREAK; if(fskip <= SKIP_BREAK) set_skip(SKIP_NOTHING); return result; }
+	inline void check_skip_return() { if(fskip==SKIP_RETURN && method_frame==freturn_method_frame) set_skip(SKIP_NOTHING); }
+	/// for signal handlers
+	void interrupt() { finterrupted=1; fskip=SKIP_INTERRUPTED; }
+	/// clears the interruption and throws parser.interrupted
+	void throw_interrupted();
 
 	void set_in_cycle(int adelta) { fin_cycle+=adelta; }
 	bool get_in_cycle() { return fin_cycle>0; }
