@@ -85,6 +85,7 @@ esac
 
 AC_CHECK_LIB(m, sin)
 AC_CHECK_LIB(crypt, crypt)
+AC_SEARCH_LIBS(timer_create, rt)
 
 
 dnl Misc arguments
