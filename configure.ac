@@ -569,11 +569,11 @@ PA_TRY_COMPILE([
 #include <sys/syscall.h>
 ], [uint tid=syscall(__NR_gettid);], AC_DEFINE(HAVE_GETTID) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
-AC_MSG_CHECKING(for pthread_getthreadid_np)
-PA_TRY_COMPILE([
-#include <pthread.h>
-#include <pthread_np.h>
-], [unsigned int tid=pthread_getthreadid_np();], AC_DEFINE(HAVE_PTHREAD_GETTHREADID_NP) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
+AC_MSG_CHECKING(for thr_self)
+PA_TRY_LINK([
+#include <sys/types.h>
+#include <sys/thr.h>
+], [long tid; thr_self(&tid);], AC_DEFINE(HAVE_THR_SELF) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 
 AC_MSG_CHECKING(for TLS)
 PA_TRY_COMPILE([__thread int i=0;], [], AC_DEFINE(HAVE_TLS) AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
@@ -601,7 +601,7 @@ AH_TEMPLATE([HAVE_TIMEZONE],[Define if you have timezone external variable in <t
 AH_TEMPLATE([HAVE_TM_GMTOFF],[Define if you have tm_gmtoff member of tm structure in <time.h>])
 AH_TEMPLATE([HAVE_TM_TZADJ],[Define if you have tm_tzadj member of tm structure in <time.h>])
 AH_TEMPLATE([HAVE_GETTID],[Define if you have gettid()])
-AH_TEMPLATE([HAVE_PTHREAD_GETTHREADID_NP],[Define if you have pthread_getthreadid_np()])
+AH_TEMPLATE([HAVE_THR_SELF],[Define if you have thr_self() (FreeBSD)])
 AH_TEMPLATE([HAVE_TLS],[Define if you have Thread-Local Storage])
 AH_TEMPLATE([PA_DATE64],[Define if you have 0..9999 year date range support])
 

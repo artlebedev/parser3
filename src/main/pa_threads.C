@@ -7,7 +7,7 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.12 2026/10/29 10:30:36 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.13 2026/10/29 11:50:58 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 
@@ -39,15 +39,17 @@ void Mutex::release() {
 #ifdef HAVE_GETTID
 #include <sys/syscall.h>
 #endif
-#ifdef HAVE_PTHREAD_GETTHREADID_NP
-#include <pthread_np.h>
+#ifdef HAVE_THR_SELF
+#include <sys/thr.h>
 #endif
 
 uint pa_get_thread_id() {
 #if defined(HAVE_GETTID)
 	return syscall(__NR_gettid);
-#elif defined(HAVE_PTHREAD_GETTHREADID_NP)
-	return pthread_getthreadid_np();
+#elif defined(HAVE_THR_SELF)
+	long id;
+	thr_self(&id);
+	return id;
 #else
 	return getpid();
 #endif
