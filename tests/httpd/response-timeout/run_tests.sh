@@ -30,6 +30,8 @@ alive() { # the process exists and is not a zombie
 run() { # httpd mode
 	echo "=== $1"
 	rm -f site/parser3.log site/hang.pid site/hang-child.pid site/detach.pid
+	# the port of the previous server may be busy for a while
+	for i in 1 2 3 4 5 6 7 8 9 10; do nc -z localhost $PORT 2>/dev/null || break; sleep 1; done
 	(cd site && TEST_HTTPD_MODE=$1 CGI_PARSER_CONFIG=`pwd`/config.p exec $PARSER -p $PORT) 2>/dev/null & # threads print the libxml warnings to stderr
 	server=$!
 	# wait for the server listens
@@ -56,7 +58,7 @@ run() { # httpd mode
 	fi
 	echo "the server goes on:"; get quick
 
-	kill $server; wait $server 2>/dev/null
+	{ kill $server; wait $server; } 2>/dev/null
 	# the program which has left lives on
 	[ -f site/detach.pid ] && kill `cat site/detach.pid` 2>/dev/null
 	grep -o "response timeout (1 s) exceeded, process killed" site/parser3.log 2>/dev/null | sort -u

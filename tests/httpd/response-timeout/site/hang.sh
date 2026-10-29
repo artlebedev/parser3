@@ -1,5 +1,5 @@
 #!/bin/sh
 echo $$ >hang.pid
-sleep 8 &
+sleep 5 &
 echo $! >hang-child.pid
 wait
