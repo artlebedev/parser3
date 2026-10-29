@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.40 2026/10/18 18:15:24 moko Exp $";
+volatile const char * IDENT_PA_SOCKS_C="$Id: pa_socks.C,v 1.41 2026/10/29 19:51:53 moko Exp $";
 
 #include "pa_config_includes.h"
 #include "pa_socks.h"
@@ -87,9 +87,14 @@ int pa_sock_ready(SOCKET sock, bool for_write, int timeout_ms) {
 	return WSAPoll(&fd, 1, timeout_ms);
 }
 
+int pa_sock_connect(SOCKET sock, const struct sockaddr *addr, socklen_t addrlen) {
+	return connect(sock, addr, addrlen);
+}
+
 #else
 
 #include <poll.h>
+#include "pa_request.h"
 
 void pa_socks_init() {}
 void pa_socks_done() {}
@@ -106,6 +111,9 @@ bool pa_socks_is_reset(int no) {
 }
 
 bool pa_socks_is_interrupted(int no) {
+	// the request is interrupted by the response timeout: the error does not matter
+	if(thread_request && thread_request->get_skip()==Request::SKIP_INTERRUPTED)
+		thread_request->throw_interrupted();
 	return no==EINTR;
 }
 
@@ -144,7 +152,7 @@ static bool sock_ready_within_remaining_timeout(SOCKET sock, bool for_write, soc
 	struct timeval socket_timeout;
 	socklen_t timeout_size=sizeof(socket_timeout);
 	if(getsockopt(sock, SOL_SOCKET, for_write ? SO_SNDTIMEO : SO_RCVTIMEO, &socket_timeout, &timeout_size)<0 || !(socket_timeout.tv_sec || socket_timeout.tv_usec))
-		return true; // no timeout
+		return pa_sock_ready(sock, for_write, -1)>0; // no timeout
 
 	long long passed=timeval_ms(sock_now())-timeval_ms(start);
 	long long left=timeval_ms(socket_timeout)-passed;
@@ -152,6 +160,27 @@ static bool sock_ready_within_remaining_timeout(SOCKET sock, bool for_write, soc
 	if(ready==0)
 		errno=EAGAIN;
 	return ready>0;
+}
+
+int pa_sock_connect(SOCKET sock, const struct sockaddr *addr, socklen_t addrlen) {
+	sock_time start=sock_now();
+	if(connect(sock, addr, addrlen)==0)
+		return 0;
+	if(!pa_socks_is_interrupted(errno))
+		return -1;
+
+	// the connection goes on in the background
+	if(!sock_ready_within_remaining_timeout(sock, true, start))
+		return -1;
+
+	int error=0;
+	socklen_t error_size=sizeof(error);
+	if(getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &error_size)<0)
+		return -1;
+	if(!error)
+		return 0;
+	errno=error;
+	return -1;
 }
 
 #endif

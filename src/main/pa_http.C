@@ -18,7 +18,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.146 2026/10/28 20:22:22 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.147 2026/10/29 19:51:53 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -373,7 +373,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 				set_socket_timeout(sock, SO_RCVTIMEO, timeout_secs);
 			}
 
-			if(connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
+			if(pa_sock_connect(sock, (struct sockaddr *)&dest, sizeof(dest))) {
 				int no=check_socket_timeout(pa_socks_errno());
 				throw Exception("http.connect", 0, "cannot connect to host \"%s\": %s (%d)", host, pa_socks_strerr(no), no);
 			}
