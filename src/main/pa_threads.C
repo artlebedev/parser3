@@ -7,7 +7,7 @@
 
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.13 2026/10/29 11:50:58 moko Exp $" IDENT_PA_THREADS_H;
+volatile const char * IDENT_PA_THREADS_C="$Id: pa_threads.C,v 1.14 2026/10/29 20:33:33 moko Exp $" IDENT_PA_THREADS_H;
 
 Mutex global_mutex;
 
@@ -40,7 +40,9 @@ void Mutex::release() {
 #include <sys/syscall.h>
 #endif
 #ifdef HAVE_THR_SELF
+extern "C" { // old FreeBSD requires it
 #include <sys/thr.h>
+}
 #endif
 
 uint pa_get_thread_id() {
