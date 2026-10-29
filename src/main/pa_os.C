@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.31 2026/10/29 10:30:36 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.32 2026/10/29 11:42:27 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -179,22 +179,24 @@ bool pa_timer_start(pa_timer *timer, int secs, int interval, void (*handler)(int
 	event.sigev_notify=SIGEV_THREAD_ID;
 	event.sigev_signo=PA_TIMER_SIGNAL;
 	event.sigev_notify_thread_id=pa_get_thread_id();
-	if(timer_create(CLOCK_MONOTONIC, &event, timer))
+	timer_t id;
+	if(timer_create(CLOCK_MONOTONIC, &event, &id))
 		return false;
 
 	struct itimerspec spec;
 	memset(&spec, 0, sizeof(spec));
 	spec.it_value.tv_sec=secs;
 	spec.it_interval.tv_sec=interval;
-	if(timer_settime(*timer, 0, &spec, 0)){
-		timer_delete(*timer);
+	if(timer_settime(id, 0, &spec, 0)){
+		timer_delete(id);
 		return false;
 	}
+	*timer=(pa_timer)id;
 	return true;
 }
 
 void pa_timer_stop(pa_timer timer) {
-	timer_delete(timer);
+	timer_delete((timer_t)timer);
 }
 
 #else
