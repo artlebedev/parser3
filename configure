@@ -22917,6 +22917,37 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pthread_getthreadid_np" >&5
+printf %s "checking for pthread_getthreadid_np... " >&6; }
+
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <pthread.h>
+#include <pthread_np.h>
+
+int
+main (void)
+{
+unsigned int tid=pthread_getthreadid_np();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"
+then :
+  printf "%s\n" "#define HAVE_PTHREAD_GETTHREADID_NP 1" >>confdefs.h
+ { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+printf "%s\n" "yes" >&6; }
+else case e in #(
+  e) { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+   ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+
+
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for TLS" >&5
 printf %s "checking for TLS... " >&6; }
 
@@ -22985,6 +23016,7 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext ;;
 esac
 fi
+
 
 
 
