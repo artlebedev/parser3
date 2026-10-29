@@ -1,0 +1,71 @@
+=== sequental
+sleep:
+parser.interrupted: response timeout (1 s) exceeded [200]
+loop:
+parser.interrupted: response timeout (1 s) exceeded [200]
+sleep in try:
+parser.interrupted: response timeout (1 s) exceeded [200]
+loop in try:
+parser.interrupted: response timeout (1 s) exceeded [200]
+sleep in nested try with finally:
+parser.interrupted: response timeout (1 s) exceeded [200]
+timeout cancelled:
+done after the timeout [200]
+timeout restarted:
+done, the timer was restarted [200]
+hang in the executed program:
+parser.interrupted: response timeout (1 s) exceeded [200]
+http client waiting for the answer of the busy server itself:
+parser.interrupted: response timeout (1 s) exceeded [200]
+interruption swallowed in a libxml callback:
+parser.interrupted: response timeout (1 s) exceeded [200]
+the program and its child are killed:
+the server goes on:
+quick [200]
+=== parallel
+sleep:
+parser.interrupted: response timeout (1 s) exceeded [200]
+loop:
+parser.interrupted: response timeout (1 s) exceeded [200]
+sleep in try:
+parser.interrupted: response timeout (1 s) exceeded [200]
+loop in try:
+parser.interrupted: response timeout (1 s) exceeded [200]
+sleep in nested try with finally:
+parser.interrupted: response timeout (1 s) exceeded [200]
+timeout cancelled:
+done after the timeout [200]
+timeout restarted:
+done, the timer was restarted [200]
+hang in the executed program:
+parser.interrupted: response timeout (1 s) exceeded [200]
+interruption swallowed in a libxml callback:
+parser.interrupted: response timeout (1 s) exceeded [200]
+the program and its child are killed:
+@unhandled_exception is slow, the process is killed, the connection is closed at once:
+ [000]
+the server goes on:
+quick [200]
+response timeout (1 s) exceeded, process killed
+=== threaded
+sleep:
+parser.interrupted: response timeout (1 s) exceeded [200]
+loop:
+parser.interrupted: response timeout (1 s) exceeded [200]
+sleep in try:
+parser.interrupted: response timeout (1 s) exceeded [200]
+loop in try:
+parser.interrupted: response timeout (1 s) exceeded [200]
+sleep in nested try with finally:
+parser.interrupted: response timeout (1 s) exceeded [200]
+timeout cancelled:
+done after the timeout [200]
+timeout restarted:
+done, the timer was restarted [200]
+hang in the executed program:
+parser.interrupted: response timeout (1 s) exceeded [200]
+interruption swallowed in a libxml callback:
+parser.interrupted: response timeout (1 s) exceeded [200]
+the program and its child are killed:
+the server goes on:
+quick [200]
