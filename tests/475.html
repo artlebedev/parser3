@@ -1,0 +1,16 @@
+# $response:timeout is not caught by ^try, the catch and finally code is not run
+@main[]
+$response:timeout(1)
+^try{
+	^for[i](1;10000){^for[j](1;10000){nothing}}
+}{
+	$marks[ caught]
+	$exception.handled(true)
+}{
+	$marks[$marks finally]
+}
+not reached
+
+@unhandled_exception[exception;stack]
+$exception.type: $exception.comment
+marks: $marks
