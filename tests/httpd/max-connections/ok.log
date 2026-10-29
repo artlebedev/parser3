@@ -1,0 +1,34 @@
+=== parallel, max-connections 0
+two connections are being served:
+quick, connections: 3 [200]
+quick, connections: 3 [200]
+slow, connections: 1 vs 1 now [200]
+slow, connections: 2 vs 2 now [200]
+they have finished:
+quick, connections: 1 [200]
+=== parallel, max-connections 2
+two connections are being served:
+too many connections [503]
+too many connections [503]
+slow, connections: 1 vs 1 now [200]
+slow, connections: 2 vs 2 now [200]
+they have finished:
+quick, connections: 1 [200]
+max-connections limit 2 reached, rejecting connection from 127.0.0.1 (1 rejected in total) [no request info]
+=== threaded, max-connections 0
+two connections are being served:
+quick, connections: 3 [200]
+quick, connections: 3 [200]
+slow, connections: 1 vs 2 now [200]
+slow, connections: 2 vs 1 now [200]
+they have finished:
+quick, connections: 1 [200]
+=== threaded, max-connections 2
+two connections are being served:
+too many connections [503]
+too many connections [503]
+slow, connections: 1 vs 2 now [200]
+slow, connections: 2 vs 1 now [200]
+they have finished:
+quick, connections: 1 [200]
+max-connections limit 2 reached, rejecting connection from 127.0.0.1 (1 rejected in total) [no request info]
