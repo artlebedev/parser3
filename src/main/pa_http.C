@@ -18,7 +18,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.147 2026/10/29 19:51:53 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.148 2026/10/29 23:51:57 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -46,8 +46,19 @@ volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.147 2026/10/29 19:51:5
 #define PA_ACCEPT(sock, addr, len) ::accept4(sock, addr, len, SOCK_CLOEXEC)
 #define PA_SOCKET(domain, type, protocol) ::socket(domain, (type) | SOCK_CLOEXEC, protocol)
 #else
+#ifdef FD_CLOEXEC
+// FreeBSD < 10: a program executed by another thread between the call and fcntl still inherits the socket
+static SOCKET pa_cloexec(SOCKET sock) {
+	if(sock != INVALID_SOCKET)
+		fcntl(sock, F_SETFD, FD_CLOEXEC);
+	return sock;
+}
+#define PA_ACCEPT(sock, addr, len) pa_cloexec(::accept(sock, addr, len))
+#define PA_SOCKET(domain, type, protocol) pa_cloexec(::socket(domain, type, protocol))
+#else
 #define PA_ACCEPT(sock, addr, len) ::accept(sock, addr, len)
 #define PA_SOCKET(domain, type, protocol) ::socket(domain, type, protocol)
+#endif
 #endif
 
 #undef CRLF
