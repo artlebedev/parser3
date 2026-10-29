@@ -22917,26 +22917,26 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
 
 
-{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for pthread_getthreadid_np" >&5
-printf %s "checking for pthread_getthreadid_np... " >&6; }
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for thr_self" >&5
+printf %s "checking for thr_self... " >&6; }
 
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-#include <pthread.h>
-#include <pthread_np.h>
+#include <sys/types.h>
+#include <sys/thr.h>
 
 int
 main (void)
 {
-unsigned int tid=pthread_getthreadid_np();
+long tid; thr_self(&tid);
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_compile "$LINENO"
+if ac_fn_c_try_link "$LINENO"
 then :
-  printf "%s\n" "#define HAVE_PTHREAD_GETTHREADID_NP 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_THR_SELF 1" >>confdefs.h
  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 printf "%s\n" "yes" >&6; }
 else case e in #(
@@ -22945,7 +22945,8 @@ printf "%s\n" "no" >&6; }
    ;;
 esac
 fi
-rm -f core conftest.err conftest.$ac_objext conftest.beam conftest.$ac_ext
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
 
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for TLS" >&5
