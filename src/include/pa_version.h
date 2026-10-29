@@ -13,7 +13,7 @@
 #else
 #	define PA_FEATURE_SAFE_MODE ""
 #endif
-#ifdef HAVE_GETTID
+#ifdef PA_RESPONSE_TIMEOUT
 #	define PA_FEATURE_RESPONSE_TIMEOUT " response-timeout"
 #else
 #	define PA_FEATURE_RESPONSE_TIMEOUT ""

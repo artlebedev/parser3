@@ -190,6 +190,11 @@ inline size_t min(size_t a, size_t b){ return a<b ? a : b; }
 
 #endif // __cplusplus
 
+// $response:timeout needs the timer that signals the calling thread and the OS id of the thread
+#if defined(HAVE_GETTID) || defined(HAVE_PTHREAD_GETTHREADID_NP)
+# define PA_RESPONSE_TIMEOUT
+#endif
+
 // libgc usage configuration
 //#define PA_DEBUG_DISABLE_GC
 

@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.30 2026/10/28 22:01:36 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.31 2026/10/29 10:30:36 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -157,9 +157,11 @@ const char *pa_ctime(time_t t) {
 	return result ? result : "";
 }
 
-#ifdef HAVE_GETTID
+#ifdef PA_RESPONSE_TIMEOUT
 
-#include <sys/syscall.h>
+#include "pa_threads.h"
+
+#define PA_TIMER_SIGNAL SIGVTALRM
 
 #ifndef sigev_notify_thread_id
 #define sigev_notify_thread_id _sigev_un._tid
@@ -169,14 +171,14 @@ bool pa_timer_start(pa_timer *timer, int secs, int interval, void (*handler)(int
 	struct sigaction action;
 	memset(&action, 0, sizeof(action));
 	action.sa_handler=handler; // no SA_RESTART: the signal interrupts the blocking calls
-	sigaction(SIGUSR1, &action, 0);
+	sigaction(PA_TIMER_SIGNAL, &action, 0);
 
 	// the signal is sent to the calling thread only
 	struct sigevent event;
 	memset(&event, 0, sizeof(event));
 	event.sigev_notify=SIGEV_THREAD_ID;
-	event.sigev_signo=SIGUSR1;
-	event.sigev_notify_thread_id=(pid_t)syscall(__NR_gettid);
+	event.sigev_signo=PA_TIMER_SIGNAL;
+	event.sigev_notify_thread_id=pa_get_thread_id();
 	if(timer_create(CLOCK_MONOTONIC, &event, timer))
 		return false;
 

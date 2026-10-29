@@ -8,7 +8,7 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.19 2026/10/28 22:01:36 moko Exp $"
+#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.20 2026/10/29 10:30:36 moko Exp $"
 
 #define PA_LOCK_ATTEMPTS 20
 #define PA_LOCK_WAIT_TIMEOUT_SECS 0
@@ -36,7 +36,7 @@ typedef void *pa_timer;
 
 /// calls the signal handler in the calling thread after secs seconds and then every interval seconds if it is not 0
 /// The handler interrupts the blocking calls (EINTR), it must be async-signal-safe, one handler is used by all timers
-/// Linux only (needs gettid), returns false elsewhere or on error
+/// needs PA_RESPONSE_TIMEOUT (Linux, FreeBSD), returns false elsewhere or on error
 bool pa_timer_start(pa_timer *timer, int secs, int interval, void (*handler)(int));
 void pa_timer_stop(pa_timer timer);
 
