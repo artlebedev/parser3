@@ -33,7 +33,7 @@ run() { # httpd mode, max connections
 	get slow >slow2.out & slow2=$!
 	sleep 0.1
 	echo "two connections are being served:"; get quick; get quick
-	wait $slow1 $slow2
+	wait $slow1; wait $slow2
 	cat slow1.out slow2.out
 	echo "they have finished:"; get quick
 
