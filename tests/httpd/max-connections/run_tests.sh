@@ -4,16 +4,27 @@
 PARSER=`pwd`/../../../src/targets/cgi/parser3
 PORT=8102
 
-get() { # GET /?name
-	curl -s -w ' [%{http_code}]' http://localhost:$PORT/?$1
-	echo
-}
+if command -v curl >/dev/null 2>&1; then
+	get() { # GET /?name
+		curl -s -w ' [%{http_code}]' http://localhost:$PORT/?$1
+		echo
+	}
+else
+	get() { # GET /?name, no curl (FreeBSD): fetch does not return the body of 503
+		response=`printf 'GET /?%s HTTP/1.0\r\n\r\n' $1 | nc -w 6 localhost $PORT | tr -d '\r'`
+		status=`printf '%s\n' "$response" | sed -n '1s/^HTTP\/[0-9.]* \([0-9]*\).*/\1/p'`
+		body=`printf '%s\n' "$response" | sed '1,/^$/d'`
+		echo "$body [${status:-000}]"
+	}
+fi
 
 run() { # httpd mode, max connections
 	echo "=== $1, max-connections $2"
 	rm -f site/parser3.log
-	(cd site && TEST_HTTPD_MODE=$1 TEST_MAX_CONNECTIONS=$2 CGI_PARSER_CONFIG=`pwd`/config.p exec $PARSER -p $PORT) &
+	cd site
+	TEST_HTTPD_MODE=$1 TEST_MAX_CONNECTIONS=$2 CGI_PARSER_CONFIG=`pwd`/config.p $PARSER -p $PORT &
 	server=$!
+	cd ..
 	# wait for the server listens
 	for i in 1 2 3 4 5; do nc -z localhost $PORT 2>/dev/null && break; sleep 0.2; done
 
