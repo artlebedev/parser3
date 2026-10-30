@@ -9,8 +9,8 @@ class_file() { # file, class, method, text
 }
 
 get() { # the response body of the test @name in site/tests.p
-	printf 'GET /?%s HTTP/1.0\r\n\r\n' "$1" | nc localhost $PORT | tr -d '\r' | sed '1,/^$/d'
-	echo
+	body=`printf 'GET /?%s HTTP/1.0\r\n\r\n' "$1" | nc localhost $PORT | tr -d '\r' | sed '1,/^$/d'`
+	printf '%s\n' "$body"
 }
 
 run() { # httpd mode, code cache: on or off
