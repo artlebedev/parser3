@@ -32,7 +32,7 @@ run() { # httpd mode
 	rm -f site/parser3.log site/hang.pid site/hang-child.pid site/detach.pid
 	# not in a subshell: on FreeBSD $! is the subshell then, the killed one is not the server
 	cd site
-	TEST_HTTPD_MODE=$1 CGI_PARSER_CONFIG=`pwd`/config.p $PARSER -p $PORT 2>/dev/null & # threads print the libxml warnings to stderr
+	TEST_HTTPD_MODE=$1 CGI_PARSER_CONFIG=`pwd`/config.p $PARSER -p $PORT &
 	server=$!
 	cd ..
 	# wait for the server listens
