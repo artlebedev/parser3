@@ -28,7 +28,7 @@ extern "C" {
 #include "ltdl.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.223 2026/10/27 23:38:52 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
+volatile const char * IDENT_PA_GLOBALS_C="$Id: pa_globals.C,v 1.224 2026/10/30 00:58:04 moko Exp $" IDENT_PA_GLOBALS_H IDENT_PA_SAPI_H;
 
 // defines
 
@@ -298,8 +298,9 @@ void pa_globals_init() {
 	// regretfully this not only replaces entities on parse, but also on generate	xmlSubstituteEntitiesDefault(1);
 	// never switched this on xmlIndentTreeOutput=1;
 
-	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
-	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);
+	xmlSetGenericErrorFunc(0, xmlParserGenericErrorFunc);       // for the main thread
+	xmlThrDefSetGenericErrorFunc(0, xmlParserGenericErrorFunc); // for the future threads
+	xsltSetGenericErrorFunc(0, xmlParserGenericErrorFunc);      // global in libxslt, for all threads
 
 //	FILE *f=fopen("xslt.log", "wt");
 //	xsltSetGenericDebugFunc(f/*stderr*/, 0);
