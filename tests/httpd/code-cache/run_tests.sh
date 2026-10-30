@@ -18,8 +18,11 @@ run() { # httpd mode, code cache: on or off
 	class_file site/changing.p Changing version before
 	no_cache=; [ $2 = off ] && no_cache=1
 
-	(cd site && TEST_HTTPD_MODE=$1 TEST_NO_CODE_CACHE=$no_cache CGI_PARSER_CONFIG=`pwd`/config.p exec $PARSER -p $PORT) &
+	# not in a subshell: on FreeBSD $! is the subshell then, the killed one is not the server
+	cd site
+	TEST_HTTPD_MODE=$1 TEST_NO_CODE_CACHE=$no_cache CGI_PARSER_CONFIG=`pwd`/config.p $PARSER -p $PORT &
 	server=$!
+	cd ..
 	# wait for the server listens
 	for i in 1 2 3 4 5; do nc -z localhost $PORT 2>/dev/null && break; sleep 0.2; done
 
