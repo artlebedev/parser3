@@ -18,7 +18,7 @@
 #include <netinet/tcp.h> // for TCP_NODELAY
 #endif
 
-volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.148 2026/10/29 23:51:57 moko Exp $" IDENT_PA_HTTP_H; 
+volatile const char * IDENT_PA_HTTP_C="$Id: pa_http.C,v 1.149 2026/10/30 17:15:10 moko Exp $" IDENT_PA_HTTP_H; 
 
 // defines
 
@@ -369,7 +369,7 @@ static int http_request(HTTP_response& response, const char* host, short port, c
 			if(!set_addr(&dest, host, port))
 				throw Exception("http.host", 0, "cannot resolve hostname \"%s\"", host); 
 			
-			if((sock=socket(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/)) == INVALID_SOCKET) {
+			if((sock=PA_SOCKET(AF_INET, SOCK_STREAM, IPPROTO_TCP/*0*/)) == INVALID_SOCKET) {
 				int no=pa_socks_errno();
 				throw Exception("http.connect", 0, "cannot make socket: %s (%d)", pa_socks_strerr(no), no); 
 			}

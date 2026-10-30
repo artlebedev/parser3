@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.390 2026/10/28 20:22:22 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.391 2026/10/30 17:15:10 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -468,6 +468,10 @@ static void reject_connection(HTTPD_Connection &connection) {
 
 	SAPI_Info_HTTPD info(connection);
 	SAPI::send_error(info, "too many connections", "503");
+
+	// closing the socket with unread request resets the connection and the response can be lost: non-blocking reading for what has arrived
+	char buf[4096];
+	for(int i=0; i<16 && pa_sock_ready(connection.sock, false, 0)>0 && connection.receive(buf, sizeof(buf)); i++);
 }
 
 static void httpd_mode() {
