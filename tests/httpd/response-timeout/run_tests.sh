@@ -30,10 +30,11 @@ alive() { # the process exists and is not a zombie
 run() { # httpd mode
 	echo "=== $1"
 	rm -f site/parser3.log site/hang.pid site/hang-child.pid site/detach.pid
-	# the port of the previous server may be busy for a while
-	for i in 1 2 3 4 5 6 7 8 9 10; do nc -z localhost $PORT 2>/dev/null || break; sleep 1; done
-	(cd site && TEST_HTTPD_MODE=$1 CGI_PARSER_CONFIG=`pwd`/config.p exec $PARSER -p $PORT) 2>/dev/null & # threads print the libxml warnings to stderr
+	# not in a subshell: on FreeBSD $! is the subshell then, the killed one is not the server
+	cd site
+	TEST_HTTPD_MODE=$1 CGI_PARSER_CONFIG=`pwd`/config.p $PARSER -p $PORT 2>/dev/null & # threads print the libxml warnings to stderr
 	server=$!
+	cd ..
 	# wait for the server listens
 	for i in 1 2 3 4 5; do nc -z localhost $PORT 2>/dev/null && break; sleep 0.2; done
 
