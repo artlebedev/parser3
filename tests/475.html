@@ -2,7 +2,7 @@
 @main[]
 $response:timeout(1)
 ^try{
-	^for[i](1;10000){^for[j](1;10000){nothing}}
+	^for[i](1;10000){^for[j](1;20000){$void}}
 }{
 	$marks[ caught]
 	$exception.handled(true)

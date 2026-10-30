@@ -67,7 +67,7 @@ not reached
 
 @try-loop[]
 ^try{
-	^for[i](1;2000000000){nothing}
+	^for[i](1;200000000){$void}
 }{
 	$marks[ caught]
 	$exception.handled(true)
