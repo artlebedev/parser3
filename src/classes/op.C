@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.290 2026/10/28 22:01:36 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.291 2026/10/31 17:03:23 moko Exp $";
 
 // defines
 
@@ -172,7 +172,16 @@ static void _process(Request& r, MethodParams& params) {
 
 		Temp_class_replace class_replace(r, allow_class_replace);
 
-		r.use_buf(*target_class, source.untaint_cstr(String::L_PARSER_CODE, r.connection(false)), main_alias, processe_file_no, line_no_alias_offset);
+		const char* code=source.untaint_cstr(String::L_PARSER_CODE, r.connection(false));
+		// compiler knows only \n (files are normalized on load)
+		if(strchr(code, '\r')) {
+			size_t length=strlen(code);
+			char* normalized=pa_strdup(code, length);
+			fix_line_breaks(normalized, length);
+			code=normalized;
+		}
+
+		r.use_buf(*target_class, code, main_alias, processe_file_no, line_no_alias_offset);
 
 		// main_method
 		main_method=target_class->get_method(main_method_name);
