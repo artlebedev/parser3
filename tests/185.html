@@ -46,6 +46,22 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 ^pos[$str;чудных]
 ^pos[$str;2005]
 ^pos[$str;zzz]
+^rpos[$str;о]
+^rpos[$str;о;14]
+^rpos[$str;о;13]
+^rpos[$str;о;0]
+^rpos[$str; ]
+^rpos[$str;чудных]
+^rpos[$str;чудных;23]
+^rpos[$str;чудных;22]
+^rpos[$str;.]
+^rpos[$str;.;36]
+^rpos[$str;2005]
+^rpos[$str;2005;100]
+^rpos[$str;2005;37]
+^rpos[$str;zzz]
+^rpos[$str;$empty]
+^rpos[$str;$str]
 
 <br />
 <table border="1">
@@ -120,3 +136,6 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 
 @pos[str;substr;offset]
 ^^str.pos[$substr]^if(def $offset){($offset)}: ^if(def $offset){^str.pos[$substr]($offset)}{^str.pos[$substr]}<br />
+
+@rpos[str;substr;offset]
+^^str.rpos[$substr]^if(def $offset){($offset)}: ^if(def $offset){^str.rpos[$substr]($offset)}{^str.rpos[$substr]}<br />

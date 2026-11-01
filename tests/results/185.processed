@@ -1,5 +1,5 @@
 Content-Type: text/html; charset=UTF-8
-Content-Length: 5306
+Content-Length: 5816
 
 <pre>$str[ab&quot;"cd&amp;&ef] [10]</pre>
 ^str.left[]: error<br />
@@ -34,6 +34,22 @@ $str[о сколько нам открытий чудных...10.11.2005] [42]
 ^str.pos[чудных]: 23<br />
 ^str.pos[2005]: 38<br />
 ^str.pos[zzz]: -1<br />
+^str.rpos[о]: 14<br />
+^str.rpos[о](14): 14<br />
+^str.rpos[о](13): 8<br />
+^str.rpos[о](0): 0<br />
+^str.rpos[ ]: 22<br />
+^str.rpos[чудных]: 23<br />
+^str.rpos[чудных](23): 23<br />
+^str.rpos[чудных](22): -1<br />
+^str.rpos[.]: 37<br />
+^str.rpos[.](36): 34<br />
+^str.rpos[2005]: 38<br />
+^str.rpos[2005](100): 38<br />
+^str.rpos[2005](37): -1<br />
+^str.rpos[zzz]: -1<br />
+^str.rpos[]: -1<br />
+^str.rpos[о сколько нам открытий чудных...10.11.2005]: 0<br />
 <br />
 <table border="1">
 <tr>

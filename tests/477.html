@@ -1,0 +1,41 @@
+# ^string.pos[substr](n) and ^string.rpos[substr](n) in a single-byte charset (the default one is UTF-8):
+# n is the lowest position of the substr start for pos and the highest one for rpos
+@main[]
+^1251[]
+
+$empty[]
+
+1. the results for n=0..length and n=100:
+^scan[a.b.c.d;.]
+^scan[abab;ab]
+^scan[aaaa;aa]
+^scan[abacad;ab]
+^scan[abab;abab]
+^scan[abab;ababa]
+^scan[привет, мир, пока;, ]
+^scan[привет, мир, пока;ир]
+^scan[привет, мир, пока;я]
+^scan[abab;$empty]
+^scan[$empty;a]
+
+2. the string made of pieces, not of one literal:
+$p[ab.]$q[.cd.ef]
+^scan[${p}${q};.]
+
+3. wrong parameters:
+$s[a.b.c.d]
+^show{^^s.rpos[.](-1)}
+^show{^^s.rpos[.](x)}
+^show{^^s.rpos{.}}
+
+@scan[str;substr]
+<b>'$str' '$substr'</b><br />
+^line[$str;$substr;pos]
+^line[$str;$substr;rpos]
+
+@line[str;substr;method][len;n]
+$len(^str.length[])
+${method}: ^str.$method[$substr]; (0..$len) ^for[n](0;$len){^str.$method[$substr]($n)}[ ]; (100) ^str.$method[$substr](100)<br />
+
+@show[code]
+${code}: ^try-catch-comment{^process{$code}}<br />
