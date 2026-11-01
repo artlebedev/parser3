@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.287 2026/10/18 21:05:35 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.288 2026/11/01 14:41:57 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -271,6 +271,22 @@ size_t String::Body::strrpbrk(const char* chars, size_t left, size_t right) cons
 		return STRING_NOT_FOUND;
 }
 
+size_t String::Body::rpos(const Body substr, size_t offset) const {
+	size_t substr_length=substr.length();
+	if(!substr_length || substr_length>length())
+		return STRING_NOT_FOUND; // empty substr is not found, as in pos
+
+	const char* self_str=cstr();
+	const char* substr_str=substr.cstr();
+
+	size_t last=length()-substr_length; // the last position substr fits at
+	for(size_t i=(offset<last ? offset : last)+1; i--; )
+		if(self_str[i]==*substr_str && memcmp(self_str+i, substr_str, substr_length)==0)
+			return i;
+
+	return STRING_NOT_FOUND;
+}
+
 
 // can be called only for IS_FUNCTION(CORD) which is used in String::Body::rskipchars
 static int CORD_iter_fn_rskip(char c, CORD_pos_info* info) {
@@ -463,6 +479,22 @@ size_t String::pos(Charset& charset, const String& substr, size_t this_offset, L
 			? STRING_NOT_FOUND
 			: result;
 	}
+}
+
+size_t String::rpos(Charset& charset, const String& substr, size_t this_offset) const {
+	if(charset.isUTF8()){
+		const XMLByte* srcPtr=(const XMLByte*)cstr();
+		const XMLByte* srcEnd=srcPtr+body.length();
+
+		// convert 'this_offset' from 'characters' to 'bytes'
+		this_offset=getUTF8BytePos(srcPtr, srcEnd, this_offset);
+
+		size_t result=body.rpos(substr.body, this_offset);
+		return (result==STRING_NOT_FOUND)
+			? STRING_NOT_FOUND
+			: getUTF8CharPos(srcPtr, srcEnd, result); // convert 'result' from 'bytes' to 'characters'
+	} else
+		return body.rpos(substr.body, this_offset);
 }
 
 void String::split(ArrayString& result, size_t pos_after, const char* delim, Language lang) const {

@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.267 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.268 2026/11/01 14:41:57 moko Exp $";
 
 // class
 
@@ -201,6 +201,21 @@ static void _pos(Request& r, MethodParams& params) {
 	}
 
 	r.write(*new VInt((int)string.pos(r.charsets.source(), substr.as_string(), offset)));
+}
+
+static void _rpos(Request& r, MethodParams& params) {
+	Value& substr=params.as_no_junction(0, "substr must not be code");
+
+	const String& string=GET_SELF(r, VString).string();
+	size_t offset=string.length(); // from the very end
+	if(params.count()>1){
+		int n=params.as_int(1, "n must be int", r);
+		if(n<0)
+			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", n);
+		offset=n;
+	}
+
+	r.write(*new VInt((int)string.rpos(r.charsets.source(), substr.as_string(), offset)));
 }
 
 struct Split_action_info {
@@ -844,8 +859,13 @@ MString::MString(): Methoded("string") {
 	add_native_method("mid", Method::CT_DYNAMIC, _mid, 1, 2);
 
 	// ^string.pos[substr]
-	// ^string.pos[substr](n)
+	// ^string.pos[substr](n) n is the position from which to search
 	add_native_method("pos", Method::CT_DYNAMIC, _pos, 1, 2);
+	add_native_method("lpos", Method::CT_DYNAMIC, _pos, 1, 2);
+
+	// ^string.rpos[substr]
+	// ^string.rpos[substr](n) n is the maximum position of the substr start, not substr end
+	add_native_method("rpos", Method::CT_DYNAMIC, _rpos, 1, 2);
 
 	// ^string.split[delim]
 	// ^string.split[delim][options]

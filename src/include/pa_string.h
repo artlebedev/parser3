@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.244 2026/10/13 20:02:00 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.245 2026/11/01 14:41:57 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -495,6 +495,9 @@ public:
 			return CORD_rchr(body, right, c);
 		}
 
+		/// position of the last @a substr starting at or before @a offset, -1 means "not found"
+		size_t rpos(const Body substr, size_t offset) const;
+
 		size_t strrpbrk(const char* chars, size_t left, size_t right) const;
 
 		size_t rskipchars(const char* chars, size_t left, size_t right) const;
@@ -667,6 +670,7 @@ public:
 	size_t pos(const Body substr, size_t this_offset, Language lang) const;
 	size_t pos(const String& substr, size_t this_offset, Language lang) const;
 	size_t pos(Charset& charset, const String& substr, size_t this_offset=0, Language lang=L_UNSPECIFIED) const;
+	size_t rpos(Charset& charset, const String& substr, size_t this_offset) const;
 	/// true if the characters from offset to offset+length are of lang or a cleaner one
 	bool check_lang(Language lang, size_t offset, size_t length) const { return langs.check_lang(lang, offset, length); }
 
