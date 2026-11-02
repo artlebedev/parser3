@@ -1,3 +1,147 @@
+2026-11-02  moko
+
+	* tests/: 207.html, results/207.processed: min/max tests added
+	  (related to feature #1316)
+
+	* src/classes/math.C: ^math:min(n1;n2;...) and ^math:max(n1;n2;...)
+	  added (implements feature #1316)
+
+2026-11-01  moko
+
+	* tests/: 185.html, 477.html, results/185.processed,
+	  results/477.processed: rpos UTF-8 and pos/rpos Windows-1251 tests
+	  added (related to feature #1180)
+
+	* src/: classes/string.C, include/pa_string.h, main/pa_string.C:
+	  ^string.rpos[substing] added (implements feature #1180)
+
+2026-10-31  moko
+
+	* src/classes/op.C: fix_line_breaks called for process code if
+	  requied as compiler treats \r as part of the name (implements
+	  feature #850)
+
+2026-10-30  moko
+
+	* tests/: 475.html, httpd/response-timeout/site/config.p: tests
+	  tuned a bit (reduce memory requirements)
+
+	* src/: main/pa_http.C, targets/cgi/parser3.C: non-blocking reading
+	  for the request on 503 error to avoid connection reset (related
+	  to feature #1312)
+
+	* tests/httpd/code-cache/run_tests.sh: FreeBSD tune
+
+	* tests/httpd/code-cache/run_tests.sh: tuned for FreeBSD
+
+	* tests/httpd/max-connections/run_tests.sh: FreeBSD fixes
+
+	* tests/httpd/max-connections/run_tests.sh: adopted for FreeBSD
+
+	* tests/httpd/response-timeout/run_tests.sh: fixed in parser3
+
+	* src/main/pa_globals.C: libxml errors for threads fixed
+
+	* tests/httpd/response-timeout/run_tests.sh: test tune for FreeBSD
+
+	* src/main/pa_http.C: option if no cloexit
+
+	* tests/httpd/response-timeout/: run_tests.sh, site/hang.sh: minor
+	  updates
+
+	* tests/httpd/response-timeout/: ok.log, run_tests.sh,
+	  site/config.p, site/detach.sh, site/hang.sh: $response:timeout
+	  httpd tests (related to feature #1312)
+
+2026-10-29  moko
+
+	* src/main/pa_threads.C: FreeBSD fix
+
+	* src/: include/pa_socks.h, main/pa_http.C, main/pa_socks.C:
+	  connect also can be interrupted - pa_sock_connect added (related
+	  to feature #1312)
+
+	* tests/httpd/max-connections/: ok.log, run_tests.sh,
+	  site/config.p: $HTTPD.max-connections test added (related to
+	  feature #1312)
+
+	* tests/: 475.html, results/475.processed: $response:timeout test
+	  added (related to feature #1312)
+
+	* configure.ac, src/include/pa_config_auto.h.in,
+	  src/include/pa_config_includes.h, src/main/pa_threads.C: more
+	  FreeBSD fixes
+
+	* src/main/pa_os.C: FreeBSD fixes
+
+	* src/: include/pa_config_includes.h, include/pa_os.h,
+	  include/pa_version.h, main/pa_os.C, main/pa_threads.C: FreeBSD
+	  timers support
+
+	* configure.ac: +FreeBSD timers support
+
+	* src/include/pa_version.h: response-timeout added to parser
+	  features list
+
+	* configure.ac: rt required for timer_create on older linux
+
+	* src/: classes/op.C, include/pa_os.h, main/pa_os.C,
+	  main/pa_xml_io.C: interruption tuned (related to feature #1312)
+
+	* buildall: avoid aclocal
+
+2026-10-28  moko
+
+	* configure.ac: gettid check fixed
+
+	* src/: include/pa_exec.h, main/pa_exec.C, main/pa_http.C,
+	  targets/cgi/parser3.C: exec children are now also kill on
+	  response timeout (related to feature #1312)
+
+	* src/: classes/op.C, include/pa_exception.h, main/pa_request.C:
+	  Interrupted exception should be uncatchable, as recoursion
+	  (related to feature #1312)
+
+	* src/: include/pa_request.h, main/execute.C, main/pa_request.C,
+	  targets/cgi/parser3.C, types/pa_vmethod_frame.C: request:
+	  finterrupted added, if fskip was overwritten, the next set_skip()
+	  restores SKIP_INTERRUPTED from it (related to feature #1213)
+
+	* src/: include/pa_globals.h, main/pa_globals.C, main/pa_request.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C:
+	  RequestController optmized out (related to feature #1312)
+
+	* src/: classes/op.C, classes/websocket.C, include/pa_os.h,
+	  include/pa_sapi.h, main/execute.C, main/pa_os.C,
+	  main/pa_sql_driver_manager.C, main/pa_stylesheet_manager.C,
+	  targets/apache/mod_parser3_core.C, targets/cgi/pa_sapi_info.h,
+	  targets/cgi/parser3.C, targets/isapi/parser3isapi.C,
+	  types/pa_vresponse.C, types/pa_vresponse.h: $response:timeout
+	  implemented, Linux only (related to feature #1312)
+
+2026-10-27  moko
+
+	* operators.ru.txt, operators.txt, src/targets/cgi/parser3.C:
+	  sigpipe handler now empty and $MAIN:SIGPIPE(1) ignored: it was
+	  not called in cgi mode anyway, as parser does not write anything
+	  until all code is executed, but it was called in ^exec if called
+	  program ignore stdin. Not SIG_IGN, as the ignored signal is
+	  inherited by the executed programs (related to feature #1312)
+
+	* src/targets/cgi/parser3.C: pa_log now uses open/single
+	  write/close insead of fopen/fwrite/fclose (as they async signal
+	  safe) (related to feature #1312)
+
+2026-10-26  moko
+
+	* src/targets/cgi/parser3.C: logging for 503 errors added (related
+	  to feature #1312)
+
+	* src/: include/pa_http.h, main/pa_http.C, main/pa_request.C,
+	  targets/cgi/pa_sapi_info.h, targets/cgi/parser3.C,
+	  types/pa_vstatus.C: $HTTPD.max-connections added (implements
+	  feature #1312)
+
 2026-10-25  moko
 
 	* tests/: 474.html, results/474.processed: more tests for json
@@ -104,6 +248,9 @@
 	  added to continue if interruped (usually by GC)
 
 2026-10-17  moko
+
+	* tests/httpd/websocket-app/: config.p, index.html, run_server.sh:
+	  websocket demo added (related to feature #1310)
 
 	* tests/httpd/site/config.p: comment tuned
 
