@@ -25,7 +25,7 @@
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.114 2026/10/16 13:55:16 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.115 2026/11/02 00:45:58 moko Exp $";
 
 // defines
 
@@ -120,6 +120,26 @@ static void _eq(Request& r, MethodParams& params) {
 	if(params.count() == 3)
 		max_ulp=params.as_int(2, "max distance must be integer", r);
 	r.write(VBool::get(ulp_eq_double(a, b, max_ulp)));
+}
+
+static void _min(Request& r, MethodParams& params) {
+	double result=params.as_double(0, "parameter must be expression", r);
+	for(size_t i=1; i<params.count(); i++) {
+		double value=params.as_double(i, "parameter must be expression", r);
+		if(value<result)
+			result=value;
+	}
+	r.write(*new VDouble(result));
+}
+
+static void _max(Request& r, MethodParams& params) {
+	double result=params.as_double(0, "parameter must be expression", r);
+	for(size_t i=1; i<params.count(); i++) {
+		double value=params.as_double(i, "parameter must be expression", r);
+		if(value>result)
+			result=value;
+	}
+	r.write(*new VDouble(result));
 }
 
 inline bool is_salt_body_char(unsigned char c) {
@@ -642,6 +662,12 @@ MMath::MMath(): Methoded("math") {
 
 	// ^math:eq(a;b[;precision])
 	add_native_method("eq", Method::CT_STATIC, _eq, 2, 3);
+
+	// ^math:min(a;b[;c...])
+	add_native_method("min", Method::CT_STATIC, _min, 2, 10000);
+
+	// ^math:max(a;b[;c...])
+	add_native_method("max", Method::CT_STATIC, _max, 2, 10000);
 
 	// ^math:crypt[password;salt]
 	ADDN(crypt, 2);
