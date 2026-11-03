@@ -116,6 +116,13 @@ $str[о сколько нам открытий чудных...10.11.2005]
 ^left[$str](50)<br />
 ^right[$str](50)<br />
 
+<hr />
+^rem{ *** not valid utf-8: bytes 80-BF without the leading byte are characters of their own, as length counts them *** }
+^strays[^#80^#81a^#82й^#83^#84€^#85]
+^rem{ *** the last character is cut off by the end of the string: length counts it as a whole *** }
+^strays[a€^#E2^#80]
+^strays[й^#F0^#9F]
+
 @left[str;num][substr]
 ^try{
 	^if(def $num){
@@ -164,3 +171,15 @@ $str[о сколько нам открытий чудных...10.11.2005]
 
 @rpos[str;substr;offset]
 ^^str.rpos[$substr]^if(def $offset){($offset)}: ^if(def $offset){^str.rpos[$substr]($offset)}{^str.rpos[$substr]}<br />
+
+@strays[str]
+$length(^str.length[])
+<pre>^taint[uri][$str] [$length]</pre>
+^for[i](0;$length+2){^stray[$str]($i)}
+
+@stray[str;n]
+$first[^str.left($n)]
+$last[^str.right($n)]
+^rem{ *** right(n) is mid(length-n): counting from the start, as it was before right went from the end *** }
+$by_mid[^str.mid(^math:max(0;$length-$n))]
+${n}: '^taint[uri][$first]' [^first.length[]] '^taint[uri][$last]' [^last.length[]] ^if($last eq $by_mid){same as mid}<br />

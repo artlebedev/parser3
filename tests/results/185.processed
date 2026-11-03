@@ -1,5 +1,5 @@
 Content-Type: text/html; charset=UTF-8
-Content-Length: 6695
+Content-Length: 8307
 
 <pre>$str[ab&quot;"cd&amp;&ef] [10]</pre>
 ^str.left[]: error<br />
@@ -263,3 +263,30 @@ $str[о сколько нам открытий чудных...10.11.2005] [42]
 '' [0]<br />
 'о сколько нам открытий чудных...10.11.2005' [42]<br />
 'о сколько нам открытий чудных...10.11.2005' [42]<br />
+<hr />
+<pre>%80%81a%82%D0%B9%83%84%E2%82%AC%85 [9]</pre>
+0: '' [0] '' [0] same as mid<br />
+1: '%80' [1] '%85' [1] same as mid<br />
+2: '%80%81' [2] '%E2%82%AC%85' [2] same as mid<br />
+3: '%80%81a' [3] '%84%E2%82%AC%85' [3] same as mid<br />
+4: '%80%81a%82' [4] '%83%84%E2%82%AC%85' [4] same as mid<br />
+5: '%80%81a%82%D0%B9' [5] '%D0%B9%83%84%E2%82%AC%85' [5] same as mid<br />
+6: '%80%81a%82%D0%B9%83' [6] '%82%D0%B9%83%84%E2%82%AC%85' [6] same as mid<br />
+7: '%80%81a%82%D0%B9%83%84' [7] 'a%82%D0%B9%83%84%E2%82%AC%85' [7] same as mid<br />
+8: '%80%81a%82%D0%B9%83%84%E2%82%AC' [8] '%81a%82%D0%B9%83%84%E2%82%AC%85' [8] same as mid<br />
+9: '%80%81a%82%D0%B9%83%84%E2%82%AC%85' [9] '%80%81a%82%D0%B9%83%84%E2%82%AC%85' [9] same as mid<br />
+10: '%80%81a%82%D0%B9%83%84%E2%82%AC%85' [9] '%80%81a%82%D0%B9%83%84%E2%82%AC%85' [9] same as mid<br />
+11: '%80%81a%82%D0%B9%83%84%E2%82%AC%85' [9] '%80%81a%82%D0%B9%83%84%E2%82%AC%85' [9] same as mid<br />
+<pre>a%E2%82%AC%E2%80 [3]</pre>
+0: '' [0] '' [0] same as mid<br />
+1: 'a' [1] '%E2%80' [1] same as mid<br />
+2: 'a%E2%82%AC' [2] '%E2%82%AC%E2%80' [2] same as mid<br />
+3: 'a%E2%82%AC%E2%80' [3] 'a%E2%82%AC%E2%80' [3] same as mid<br />
+4: 'a%E2%82%AC%E2%80' [3] 'a%E2%82%AC%E2%80' [3] same as mid<br />
+5: 'a%E2%82%AC%E2%80' [3] 'a%E2%82%AC%E2%80' [3] same as mid<br />
+<pre>%D0%B9%F0%9F [2]</pre>
+0: '' [0] '' [0] same as mid<br />
+1: '%D0%B9' [1] '%F0%9F' [1] same as mid<br />
+2: '%D0%B9%F0%9F' [2] '%D0%B9%F0%9F' [2] same as mid<br />
+3: '%D0%B9%F0%9F' [2] '%D0%B9%F0%9F' [2] same as mid<br />
+4: '%D0%B9%F0%9F' [2] '%D0%B9%F0%9F' [2] same as mid<br />
