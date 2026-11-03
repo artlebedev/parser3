@@ -1,0 +1,15 @@
+# ^string.left(n), ^string.right(n), ^string.mid(p) and ^string.mid(p;n) in a single-byte charset (the default one is UTF-8)
+@main[]
+^1251[]
+
+# the text is in utf-8, but the charset is single-byte
+$str[ёлка №1 «мир» — пока]
+$length(^str.length[])
+Data: ^$str[^taint[uri][$str]] [$length]
+^for[i](0;$length+1){^row[$str]($i)}
+^row[$str](100)
+$e[]
+^row[$e](3)
+
+@row[str;n]
+${n}: '^taint[uri][^str.left($n)]' '^taint[uri][^str.right($n)]' '^taint[uri][^str.mid($n)]' '^taint[uri][^str.mid($n;4)]'^#0A
