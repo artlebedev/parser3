@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.289 2026/11/03 12:25:52 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.290 2026/11/03 14:16:14 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -449,11 +449,20 @@ const String& String::right(Charset& charset, size_t n) const {
 
 	if(charset.isUTF8()){
 		const XMLByte* src_begin=(const XMLByte*)cstr();
-		const XMLByte* ptr=src_begin+self_length;
+		const XMLByte* src_end=src_begin+self_length;
+		const XMLByte* ptr=src_end;
 
-		// step back by n characters, continuation bytes (10xxxxxx) belong to the character before them
-		while(n-- && ptr>src_begin)
-			do ptr--; while(ptr>src_begin && (*ptr & 0xC0)==0x80);
+		// step back by n characters: continuation bytes (80-BF) belong to the leading byte before them,
+		// but only if it expects exactly that many, otherwise the byte is a character of its own (as length() counts it);
+		// the only exception is the last character cut off by the end of the string, length() counts it as a whole
+		while(n-- && ptr>src_begin) {
+			const XMLByte* lead=ptr-1;
+			while(lead>src_begin && (*lead & 0xC0)==0x80 && ptr-lead<6) // 6 bytes is the longest character
+				lead--;
+			size_t expected=lengthUTF8Char(*lead);
+			size_t present=ptr-lead;
+			ptr=(expected==present || (expected>present && ptr==src_end)) ? lead : ptr-1;
+		}
 		from=ptr-src_begin;
 	} else
 		from=self_length>n ? self_length-n : 0;
