@@ -23,3 +23,41 @@ $s[test]
 
 6. ^try-catch{ ^file:delete[name; $.no-such-option[] ] }
 7. ^try-catch{ ^file:move[name;name; $.no-such-option[] ] }
+
+^scenario[8;file;file]
+^scenario[9;dir;empty]
+^scenario[10;dir;dir]
+
+^remove[11;empty]
+^remove[12;dir]
+^remove[13;file]
+^remove[14;none]
+15. ^try{^file:rmdir[$dDir/x]}{$exception.handled(1)$exception.type} ^file:rmdir[$dDir/x; $.exception(false) ]quiet
+16. ^try-catch{ ^file:rmdir[name; $.no-such-option[] ] }
+
+@scenario[n;from;to]
+^make[$from;$sDir/x;new]
+^make[$to;$dDir/x;old]
+${n}. ${from} -> ${to}: ^try{^file:move[$sDir/x;$dDir/x]moved}{$exception.handled(1)failed}, source ^state[$sDir/x], target ^state[$dDir/x]<br />
+^clean[$sDir/x]
+^clean[$dDir/x]
+
+@remove[n;kind]
+^make[$kind;$dDir/x;old]
+${n}. rmdir ${kind}: ^try{^file:rmdir[$dDir/x]removed}{$exception.handled(1)failed}, now ^state[$dDir/x]<br />
+^clean[$dDir/x]
+
+@make[kind;path;text]
+^switch[$kind]{
+	^case[file]{^text.save[$path]}
+	^case[dir]{^text.save[$path/$f]}
+	^case[empty]{^text.save[$path/$f]^file:delete[$path/$f; $.keep-empty-dirs(true) ]}
+}
+
+@state[path][loaded]
+^if(-d $path){dir(^state[$path/$f])}{^if(-f $path){$loaded[^file::load[text;$path]]$loaded.text}{-}}
+
+@clean[path]
+^file:delete[$path; $.exception(false) ]
+^file:delete[$path/$f; $.exception(false) ]
+^file:rmdir[$path; $.exception(false) ]

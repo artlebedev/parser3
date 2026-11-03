@@ -1,5 +1,5 @@
 Content-Type: text/html
-Content-Length: 202
+Content-Length: 636
 
 1. ok
 2. ok
@@ -11,4 +11,15 @@ Source: delete,
 Comment: called with invalid option
 7. Exception type: parser.runtime,
 Source: move,
+Comment: called with invalid option
+8. file -> file: moved, source -, target new<br />
+9. dir -> empty: moved, source -, target dir(new)<br />
+10. dir -> dir: failed, source dir(new), target dir(old)<br />
+11. rmdir empty: removed, now -<br />
+12. rmdir dir: failed, now dir(old)<br />
+13. rmdir file: failed, now old<br />
+14. rmdir none: failed, now -<br />
+15. file.missing quiet
+16. Exception type: parser.runtime,
+Source: rmdir,
 Comment: called with invalid option
