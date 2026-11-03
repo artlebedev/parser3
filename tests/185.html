@@ -91,6 +91,31 @@ $length(^str.length[]) ^rem{ *** length in real chars (not in bytes) == 42 *** }
 }
 </table>
 
+<hr />
+$str[😀a€й😀z😀]
+$length(^str.length[])
+<pre>^$str[$str] [^str.length[]] ^rem{ *** 1-4 bytes per character *** }</pre>
+^for[i](1;$length+1){^left[$str]($i)<br />}
+^for[i](1;$length+1){^right[$str]($i)<br />}
+^for[i](0;$length+1){^mid[$str]($i;2)<br />}
+^mid[$str]($length+1)<br />
+^mid[$str](100;3)<br />
+$e[]
+^left[$e](3)<br />
+^right[$e](3)<br />
+^mid[$e](1)<br />
+^right[😀](2)<br />
+
+<hr />
+$str[о сколько нам открытий чудных...10.11.2005]
+^rem{ *** 42 characters, more bytes: p and n between the length in characters and in bytes *** }
+^mid[$str](42)<br />
+^mid[$str](50)<br />
+^mid[$str](42;5)<br />
+^mid[$str](50;5)<br />
+^left[$str](50)<br />
+^right[$str](50)<br />
+
 @left[str;num][substr]
 ^try{
 	^if(def $num){
