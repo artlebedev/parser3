@@ -7,6 +7,7 @@
 
 #include "pa_file.h"
 #include "pa_dir.h"
+#include "pa_os.h"
 #include "pa_charsets.h"
 #include "pa_http.h"
 #include "pa_convert_utf.h"
@@ -16,7 +17,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.12 2026/10/11 17:06:44 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.13 2026/11/03 15:51:20 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -148,10 +149,20 @@ int pa_rmdir(const char *pathname){
 	return _wrmdir(wpathname);
 }
 
+static bool pa_is_dir(const wchar_t* wpathname){
+	DWORD attributes=GetFileAttributesW(wpathname);
+	return attributes!=INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
+}
+
 int pa_rename(const char *oldpath, const char *newpath){
 	PA_UTF16_VAR(woldpath, oldpath, ENOENT, -1)
 	PA_UTF16_VAR(wnewpath, newpath, ENOENT, -1)
-	return _wrename(woldpath, wnewpath);
+	if(pa_set_errno(MoveFileExW(woldpath, wnewpath, MOVEFILE_REPLACE_EXISTING)))
+		return 0;
+	// like rename on unix, a directory replaces the empty one: windows does not replace directories at all
+	if(errno==EACCES && pa_is_dir(woldpath) && pa_is_dir(wnewpath) && _wrmdir(wnewpath)==0)
+		return pa_set_errno(MoveFileExW(woldpath, wnewpath, MOVEFILE_REPLACE_EXISTING)) ? 0 : -1;
+	return -1;
 }
 
 int pa_unlink(const char *pathname){

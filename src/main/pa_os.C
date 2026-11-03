@@ -8,7 +8,7 @@
 #include "pa_config_includes.h"
 #include "pa_os.h"
 
-volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.32 2026/10/29 11:42:27 moko Exp $" IDENT_PA_OS_H; 
+volatile const char * IDENT_PA_OS_C="$Id: pa_os.C,v 1.33 2026/11/03 15:51:20 moko Exp $" IDENT_PA_OS_H; 
 
 unsigned int pa_lock_attempts=PA_LOCK_ATTEMPTS;
 
@@ -54,6 +54,8 @@ static int pa_errno() {
             return ENOENT;
         case ERROR_DIRECTORY:
             return ENOTDIR;
+        case ERROR_NOT_SAME_DEVICE: // moving to another disk
+            return EXDEV;
     }
     return EACCES;
 }
