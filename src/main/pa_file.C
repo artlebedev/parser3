@@ -17,7 +17,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.13 2026/11/03 15:51:20 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.14 2026/11/03 16:04:19 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -561,7 +561,7 @@ bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC);
 	if(pa_unlink(fname)!=0) {
 		if(fail_on_problem)
-			throw Exception(errno==EACCES?"file.access":errno==ENOENT?"file.missing":0,
+			throw Exception(errno==EACCES ? "file.access" : errno==ENOENT ? "file.missing" : 0,
 				&file_spec, "unlink failed: %s (%d)%s", strerror(errno), errno, actual_filename(file_spec, fname));
 		else
 			return false;
@@ -570,6 +570,18 @@ bool file_delete(const String& file_spec, bool fail_on_problem, bool keep_empty_
 	if(!keep_empty_dirs)
 		rmdir(file_spec, 1);
 
+	return true;
+}
+
+bool dir_delete(const String& dir_spec, bool fail_on_problem) {
+	const char* dname=dir_spec.taint_cstr(String::L_FILE_SPEC);
+	if(pa_rmdir(dname)!=0) {
+		if(fail_on_problem)
+			throw Exception(errno==EACCES ? "file.access" : errno==ENOENT ? "file.missing" : 0,
+				&dir_spec, "rmdir failed: %s (%d)%s", strerror(errno), errno, actual_filename(dir_spec, dname));
+		else
+			return false;
+	}
 	return true;
 }
 

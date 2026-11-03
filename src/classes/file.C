@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.307 2026/10/07 19:37:27 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.308 2026/11/03 16:04:19 moko Exp $";
 
 // defines
 
@@ -180,6 +180,26 @@ static void _delete(Request& r, MethodParams& params) {
 	const String* path=fail_on_problem ? &r.full_disk_path(file_name) : r.real_disk_path(file_name);
 	if(path)
 		file_delete(*path, fail_on_problem, keep_empty_dirs);
+}
+
+static void _rmdir(Request& r, MethodParams& params) {
+	const String& dir_name=params.as_file_name(0);
+	bool fail_on_problem=true;
+
+	if(params.count()>1)
+		if(HashStringValue* options=params.as_hash(1)){
+			int valid_options=0;
+			if(Value* vsuppress_exception=options->get(SUPPRESS_EXCEPTION_NAME)){
+				fail_on_problem=r.process(*vsuppress_exception).as_bool();
+				valid_options++;
+			}
+			if(valid_options != options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	const String* path=fail_on_problem ? &r.full_disk_path(dir_name) : r.real_disk_path(dir_name);
+	if(path)
+		dir_delete(*path, fail_on_problem);
 }
 
 static void _move(Request& r, MethodParams& params) {
@@ -1257,15 +1277,19 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("create", Method::CT_DYNAMIC, _create, 1, 4);
 
 	// ^file.save[mode;file-name]
-	// ^file.save[mode;file-name;$.charset[...]$.append(false)]
+	// ^file.save[mode;file-name; $.charset[...] $.append(false) ]
 	add_native_method("save", Method::CT_DYNAMIC, _save, 2, 3);
 
 	// ^file:delete[file-name]
-	// ^file:delete[file-name;$.keep-empty-dir(true)$.exception(false)]
+	// ^file:delete[file-name; $.keep-empty-dir(true) $.exception(false) ]
 	add_native_method("delete", Method::CT_STATIC, _delete, 1, 2);
 
+	// ^file:rmdir[dir-name]
+	// ^file:rmdir[dir-name; $.exception(false) ]
+	add_native_method("rmdir", Method::CT_STATIC, _rmdir, 1, 2);
+
 	// ^file:move[from-file-name;to-file-name]
-	// ^file:move[from-file-name;to-file-name;$.keep-empty-dir(true)]
+	// ^file:move[from-file-name;to-file-name; $.keep-empty-dir(true) ]
 	add_native_method("move", Method::CT_STATIC, _move, 2, 3);
 
 	// ^file::load[mode;disk-name]
@@ -1326,7 +1350,7 @@ MFile::MFile(): Methoded("file") {
 	// decode:
 	//   ^file::base64[encoded] // backward
 	//   ^file::base64[mode;user-file-name;encoded]
-	//   ^file::base64[mode;user-file-name;encoded;$.content-type[...]]
+	//   ^file::base64[mode;user-file-name;encoded; $.content-type[...] ]
 	add_native_method("base64", Method::CT_ANY, _base64, 0, 4);
 
 	// ^file.crc32[]
@@ -1338,6 +1362,6 @@ MFile::MFile(): Methoded("file") {
 	add_native_method("md5", Method::CT_ANY, _md5, 0, 1);
 
 	// ^file:copy[from-file-name;to-file-name]
-	// ^file:copy[from-file-name;to-file-name;$.append(false)]
+	// ^file:copy[from-file-name;to-file-name; $.append(false) ]
 	add_native_method("copy", Method::CT_STATIC, _copy, 2, 3);
 }

@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.7 2026/10/03 14:30:03 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.8 2026/11/03 16:04:19 moko Exp $"
 
 #include "pa_common.h"
 
@@ -151,6 +151,9 @@ void file_write(
 
 // delete specified file; throws an exception in case of problems
 bool file_delete(const String& file_spec, bool fail_on_problem=true, bool keep_empty_dirs=false);
+
+// delete specified empty directory; throws an exception in case of problems
+bool dir_delete(const String& dir_spec, bool fail_on_problem=true);
 
 // move specified file; throw an exception in case of problems
 void file_move(const String& old_spec, const String& new_spec, bool keep_empty_dirs=false);
