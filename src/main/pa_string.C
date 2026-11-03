@@ -12,7 +12,7 @@
 #include "pa_charset.h"
 #include "pa_vregex.h"
 
-volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.288 2026/11/01 14:41:57 moko Exp $" IDENT_PA_STRING_H;
+volatile const char * IDENT_PA_STRING_C="$Id: pa_string.C,v 1.289 2026/11/03 12:25:52 moko Exp $" IDENT_PA_STRING_H;
 
 const String String::Empty;
 
@@ -404,11 +404,12 @@ String& String::mid(size_t substr_begin, size_t substr_end) const {
 	return result;
 }
 
-// from, to and helper_length in characters, not in bytes (it's important for utf-8)
-String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_length) const {
+// from and to in characters, not in bytes (it's important for utf-8)
+String& String::mid(Charset& charset, size_t from, size_t to) const {
 	String& result=*new String;
 
-	size_t self_length=helper_length ? helper_length : length(charset);
+	// utf-8 length is not needed: converting to bytes stops at the end of the string by itself
+	size_t self_length=charset.isUTF8() ? to : length();
 
 	if(!self_length)
 		return result;
@@ -439,6 +440,25 @@ String& String::mid(Charset& charset, size_t from, size_t to, size_t helper_leng
 
 	ASSERT_STRING_INVARIANT(result);
 	return result;
+}
+
+// n in characters, not in bytes (it's important for utf-8)
+const String& String::right(Charset& charset, size_t n) const {
+	size_t self_length=body.length();
+	size_t from;
+
+	if(charset.isUTF8()){
+		const XMLByte* src_begin=(const XMLByte*)cstr();
+		const XMLByte* ptr=src_begin+self_length;
+
+		// step back by n characters, continuation bytes (10xxxxxx) belong to the character before them
+		while(n-- && ptr>src_begin)
+			do ptr--; while(ptr>src_begin && (*ptr & 0xC0)==0x80);
+		from=ptr-src_begin;
+	} else
+		from=self_length>n ? self_length-n : 0;
+
+	return from ? mid(from, self_length) : *this;
 }
 
 size_t String::pos(const String::Body substr, size_t this_offset, Language lang) const {

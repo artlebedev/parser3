@@ -22,7 +22,7 @@
 #include "pa_vregex.h"
 #include "pa_charsets.h"
 
-volatile const char * IDENT_STRING_C="$Id: string.C,v 1.268 2026/11/01 14:41:57 moko Exp $";
+volatile const char * IDENT_STRING_C="$Id: string.C,v 1.269 2026/11/03 12:25:52 moko Exp $";
 
 // class
 
@@ -158,12 +158,8 @@ static void _left(Request& r, MethodParams& params) {
 
 static void _right(Request& r, MethodParams& params) {
 	int sn=params.as_int(0, "n must be int", r);
-	if(sn>0){
-		size_t n=sn;
-		const String& string=GET_SELF(r, VString).string();
-		size_t length=string.length(r.charsets.source());
-		r.write(n<length ? string.mid(r.charsets.source(), length-n, length, length) : string);
-	}
+	if(sn>0)
+		r.write(GET_SELF(r, VString).string().right(r.charsets.source(), sn));
 }
 
 static void _mid(Request& r, MethodParams& params) {
@@ -173,20 +169,16 @@ static void _mid(Request& r, MethodParams& params) {
 	if(begin<0)
 		throw Exception(PARSER_RUNTIME, 0,  "p(%d) must be >=0", begin);
 
-	size_t end;
-	size_t length=0;
+	size_t end=string.length(); // to the end of the string (the length in bytes is not less than in characters)
 
 	if(params.count()>1) {
 		int n=params.as_int(1, "n must be int", r);
 		if(n<0)
 			throw Exception(PARSER_RUNTIME, 0, "n(%d) must be >=0", n);
 		end=begin+n;
-	} else {
-		length=string.length(r.charsets.source());
-		end=length;
 	}
 
-	r.write(string.mid(r.charsets.source(), begin, end, length));
+	r.write(string.mid(r.charsets.source(), begin, end));
 }
 
 static void _pos(Request& r, MethodParams& params) {

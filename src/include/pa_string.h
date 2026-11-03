@@ -8,7 +8,7 @@
 #ifndef PA_STRING_H
 #define PA_STRING_H
 
-#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.245 2026/11/01 14:41:57 moko Exp $"
+#define IDENT_PA_STRING_H "$Id: pa_string.h,v 1.246 2026/11/03 12:25:52 moko Exp $"
 
 // includes
 #include "pa_types.h"
@@ -659,7 +659,9 @@ public:
 
 	/// extracts [start, finish) piece of string
 	String& mid(size_t substr_begin, size_t substr_end) const;
-	String& mid(Charset& charset, size_t from, size_t to, size_t helper_length=0) const;
+	String& mid(Charset& charset, size_t from, size_t to) const;
+	/// extracts the last n characters
+	const String& right(Charset& charset, size_t n) const;
 
 	/// return position of substr in string, -1 means "not found" [const char* version]
 	size_t pos(const char* substr, size_t this_offset=0) const { return body.pos(substr, this_offset); }
