@@ -111,7 +111,7 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libmd5_la_LIBADD =
-am_libmd5_la_OBJECTS = pa_md5c.lo pa_sha1.lo pa_sha2.lo
+am_libmd5_la_OBJECTS = pa_md5c.lo pa_sha1.lo pa_sha2.lo pa_xxhash.lo
 libmd5_la_OBJECTS = $(am_libmd5_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -133,7 +133,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/src/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/pa_md5c.Plo ./$(DEPDIR)/pa_sha1.Plo \
-	./$(DEPDIR)/pa_sha2.Plo
+	./$(DEPDIR)/pa_sha2.Plo ./$(DEPDIR)/pa_xxhash.Plo
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
@@ -360,9 +360,9 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-noinst_HEADERS = pa_md5.h pa_sha1.h pa_sha2.h
+noinst_HEADERS = pa_md5.h pa_sha1.h pa_sha2.h pa_xxhash.h
 noinst_LTLIBRARIES = libmd5.la
-libmd5_la_SOURCES = pa_md5c.c pa_sha1.C pa_sha2.c
+libmd5_la_SOURCES = pa_md5c.c pa_sha1.C pa_sha2.c pa_xxhash.c
 EXTRA_DIST = md5.vcproj
 all: all-am
 
@@ -419,6 +419,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_md5c.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sha1.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_sha2.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pa_xxhash.Plo@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -601,6 +602,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/pa_md5c.Plo
 	-rm -f ./$(DEPDIR)/pa_sha1.Plo
 	-rm -f ./$(DEPDIR)/pa_sha2.Plo
+	-rm -f ./$(DEPDIR)/pa_xxhash.Plo
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -649,6 +651,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/pa_md5c.Plo
 	-rm -f ./$(DEPDIR)/pa_sha1.Plo
 	-rm -f ./$(DEPDIR)/pa_sha2.Plo
+	-rm -f ./$(DEPDIR)/pa_xxhash.Plo
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
