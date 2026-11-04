@@ -19,13 +19,14 @@
 #include "pa_md5.h"
 #include "pa_sha1.h"
 #include "pa_sha2.h"
+#include "pa_xxhash.h"
 #include "pa_random.h"
 
 #ifdef HAVE_CRYPT
 extern "C" char *crypt(const char* , const char* );
 #endif
 
-volatile const char * IDENT_MATH_C="$Id: math.C,v 1.115 2026/11/02 00:45:58 moko Exp $";
+volatile const char * IDENT_MATH_C="$Id: math.C,v 1.116 2026/11/04 13:40:42 moko Exp $";
 
 // defines
 
@@ -274,6 +275,30 @@ void memxor(char *dest, const char *src, size_t n){
 	update(&c, (const unsigned char*)tempdigest, digestlen);		\
 }
 
+enum Format { F_HEX, F_BASE64, F_FILE };
+
+static Format as_format(const String& sformat) {
+	if (sformat == "hex") return F_HEX;
+	if (sformat == "base64" ) return F_BASE64;
+	if (sformat == "file" ) return F_FILE;
+	throw Exception(PARSER_RUNTIME, &sformat, "must be 'hex' or 'base64'");
+}
+
+static void write_digest(Request& r, const String::C& digest, Format format) {
+	if(format == F_HEX){
+		r.write(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
+	}
+	if(format == F_BASE64){
+		r.write(*new String(pa_base64_encode(digest.str, digest.length, Base64Options(false /*no wrap*/))));
+	}
+	if(format == F_FILE){
+		VFile& result=*new VFile;
+		// the file keeps the pointer, and the digest is in the caller's stack
+		result.set_binary(true, pa_strdup(digest.str, digest.length), digest.length);
+		r.write(result);
+	}
+}
+
 static void _digest(Request& r, MethodParams& params) {
 	const String &smethod = params.as_string(0, PARAMETER_MUST_BE_STRING);
 
@@ -290,7 +315,7 @@ static void _digest(Request& r, MethodParams& params) {
 	const char *hmac=0;
 	size_t hmac_len=0;
 
-	enum Format { F_HEX, F_BASE64, F_FILE } format = F_HEX;
+	Format format = F_HEX;
 
 	if(params.count() == 3)
 		if(HashStringValue* options=params.as_hash(2)) {
@@ -306,17 +331,14 @@ static void _digest(Request& r, MethodParams& params) {
 				valid_options++;
 			}
 			if(Value* value=options->get("format")) {
-				const String& sformat=value->as_string();
-				if (sformat == "hex") format = F_HEX;
-				else if (sformat == "base64" ) format = F_BASE64;
-				else if (sformat == "file" ) format = F_FILE;
-				else throw Exception(PARSER_RUNTIME, &sformat, "must be 'hex' or 'base64'");
+				format = as_format(value->as_string());
 				valid_options++;
 			}
 			if(valid_options!=options->count())
 				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
 		}
 
+	char str[SHA512_DIGEST_LENGTH]; // the longest digest
 	String::C digest;
 
 	if(method == M_MD5){
@@ -327,7 +349,6 @@ static void _digest(Request& r, MethodParams& params) {
 			pa_MD5Init(&c);
 			pa_MD5Update(&c, (const unsigned char*)data.str, data.length);
 		}
-		char *str=(char *)pa_malloc(16);
 		pa_MD5Final((unsigned char *)str, &c);
 		digest = String::C(str, 16);
 	}
@@ -340,7 +361,6 @@ static void _digest(Request& r, MethodParams& params) {
 			pa_SHA1Reset(&c);
 			pa_SHA1Input(&c, (const unsigned char*)data.str, data.length);
 		}
-		char *str=(char *)pa_malloc(20);
 		pa_SHA1ReadDigest(str, &c);
 		digest = String::C(str, 20);
 	}
@@ -353,7 +373,6 @@ static void _digest(Request& r, MethodParams& params) {
 			pa_SHA256_Init(&c);
 			pa_SHA256_Update(&c, (const unsigned char*)data.str, data.length);
 		}
-		char *str=(char *)pa_malloc(SHA256_DIGEST_LENGTH);
 		pa_SHA256_Final((unsigned char *)str, &c);
 		digest = String::C(str, SHA256_DIGEST_LENGTH);
 	}
@@ -366,22 +385,46 @@ static void _digest(Request& r, MethodParams& params) {
 			pa_SHA512_Init(&c);
 			pa_SHA512_Update(&c, (const unsigned char*)data.str, data.length);
 		}
-		char *str=(char *)pa_malloc(SHA512_DIGEST_LENGTH);
 		pa_SHA512_Final((unsigned char *)str, &c);
 		digest = String::C(str, SHA512_DIGEST_LENGTH);
 	}
 
-	if(format == F_HEX){
-		r.write(*new String(hex_string((unsigned char *)digest.str, digest.length, false)));
-	}
-	if(format == F_BASE64){
-		r.write(*new String(pa_base64_encode(digest.str, digest.length, Base64Options(false /*no wrap*/))));
-	}
-	if(format == F_FILE){
-		VFile& result=*new VFile;
-		result.set_binary(true, digest.str, digest.length);
-		r.write(result);
-	}
+	write_digest(r, digest, format);
+}
+
+static void _xxhash(Request& r, MethodParams& params) {
+	const String &salgo = params.as_string(0, PARAMETER_MUST_BE_STRING);
+
+	String::C data=getData(params.as_no_junction(1, "parameter must be string or file"), r);
+
+	bool is_xxh64;
+
+	if (salgo == "xxh32" || salgo == "32") is_xxh64 = false;
+	else if (salgo == "xxh64" || salgo == "64") is_xxh64 = true;
+	else throw Exception(PARSER_RUNTIME, &salgo, "must be 'xxh32' or 'xxh64'");
+
+	Format format = F_HEX;
+
+	if(params.count() == 3)
+		if(HashStringValue* options=params.as_hash(2)) {
+			int valid_options=0;
+			if(Value* value=options->get("format")) {
+				format = as_format(value->as_string());
+				valid_options++;
+			}
+			if(valid_options!=options->count())
+				throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+		}
+
+	size_t size=is_xxh64 ? 8 : 4;
+	uint64_t hash=is_xxh64 ? pa_xxh64(data.str, data.length, 0) : pa_xxh32(data.str, data.length, 0);
+
+	// canonical form, as xxhsum prints it: the most significant byte first
+	char str[8];
+	for(size_t i=0; i<size; i++)
+		str[i]=(char)(hash >> (8*(size-1-i)));
+
+	write_digest(r, String::C(str, size), format);
 }
 
 static void _uuid(Request& r, MethodParams& params) {
@@ -680,6 +723,9 @@ MMath::MMath(): Methoded("math") {
 	
 	// ^math:digest[method;string|file;options]
 	add_native_method("digest", Method::CT_STATIC, _digest, 2, 3);
+
+	// ^math:xxhash[method;string|file;options]
+	add_native_method("xxhash", Method::CT_STATIC, _xxhash, 2, 3);
 	
 	// ^math:crc32[string]
 	ADD1(crc32);
