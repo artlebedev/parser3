@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: buildall,v 1.51 2026/10/28 21:27:06 moko Exp $
+# $Id: buildall,v 1.52 2026/11/05 14:38:41 moko Exp $
 
 install_directory=$HOME/parser3install
 sendmail_command="/usr/sbin/sendmail -i -t -f postmaster"
@@ -268,6 +268,10 @@ fi
 if test ! -f "$project_dir/gmime/lib/libglib-2.0.a"; then
     lib="glib-2.28.8"
     prepare_xz $lib.tar.xz ftp://ftp.gnome.org/pub/GNOME/sources/glib/2.28/
+    if test "$(uname)" = "Linux"; then
+	# new glibc keeps major() and minor() in sys/sysmacros.h only
+	sed -i 's|#include <sys/stat.h>|&\n#ifdef __linux__\n#include <sys/sysmacros.h>\n#endif|' gio/gdbusmessage.c
+    fi
     echo "Configuring $lib..."
     ./configure --prefix=$project_dir/gmime \
 	--enable-dtrace=no \
