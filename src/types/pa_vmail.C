@@ -21,7 +21,7 @@
 #include "pa_uue.h"
 #include "pa_threads.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.151 2026/11/05 11:40:32 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.152 2026/11/05 15:05:23 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -386,13 +386,15 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 	}
 }
 
+/// must be called before any gmime object is created
+static void gmime_init() {
+	SYNCHRONIZED; // the first initialization is not thread safe, the next ones do nothing. Never shut down: the next message needs it
+	g_mime_init();
+}
+
 /// the message of the stream into the hash, the same for the incoming one and the one in memory. The reference to the @a source stays with the caller
 static void parse_stream(Request& r, GMimeStream *source, HashStringValue& received) {
 	source_charset=&r.charsets.source();
-	{
-		SYNCHRONIZED; // the first initialization is not thread safe, the next ones do nothing. Never shut down: the next message needs it
-		g_mime_init();
-	}
 	// create stream with CRLF filter
 	GMimeStream *stream = g_mime_stream_filter_new(source);
 	Temp_gobject_ref stream_ref(stream);
@@ -413,6 +415,7 @@ static void parse_stream(Request& r, GMimeStream *source, HashStringValue& recei
 
 void VMail::fill_received(Request& r) {
 	if(r.request_info.mail_received) {
+		gmime_init();
 #if GMIME_MAJOR_VERSION > 2
 		GMimeStream *source = g_mime_stream_pipe_new(STDIN_FILENO);
 #else
@@ -425,6 +428,7 @@ void VMail::fill_received(Request& r) {
 
 VHash& VMail::parse_message(Request& r, const char* message, size_t length) {
 	VHash& result=*new VHash;
+	gmime_init();
 	GMimeStream *source = g_mime_stream_mem_new_with_buffer(message, length);
 	Temp_gobject_ref source_ref(source);
 	parse_stream(r, source, result.hash());
