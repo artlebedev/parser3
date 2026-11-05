@@ -166,6 +166,11 @@ odbc	parser3odbc.dll
         in the catch code, $exception.handled[cache]  ^rem{flag that exception is handled}
     ^cache[file][expires date]{code}[{catch code}]
         absolute time assignment
+    ^cache[file][ $.expires(seconds)|[expires date] $.stale(seconds) ]{code}[{catch code}]
+        the same, with the options
+        when the cache has expired, one request renews it, the others wait for the result and the code does not run twice
+        $.stale(seconds) the others do not wait, but get the expired copy, if it expired no more than 'seconds' ago
+        on Windows they wait anyway: the file being renewed is locked for reading
     ^cache[file]
         deletes the file [no error if it doesn't exist]
     ^cache(seconds)
@@ -938,6 +943,9 @@ mail
         ]
         $.message#[MESSAGE] (message, message2, ...)
 
+    ^mail:parse[string|file]
+        parses the letter and returns MESSAGE, the same as $mail.received for the incoming one
+
     ^mail:send[
         $.options[-odd]
             unix: a string that will be added to the sendmail startup command
@@ -1510,4 +1518,4 @@ system error types:
 if the method description explicitly contains the local variable result (there is also an implicit variable),
     then the code for outputting whitespace literals does not get into the final bytecode
 
-$Id: operators.txt,v 1.276 2026/11/04 13:41:23 moko Exp $
+$Id: operators.txt,v 1.277 2026/11/05 15:14:31 moko Exp $
