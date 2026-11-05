@@ -19,8 +19,9 @@
 #include "pa_vfile.h"
 #include "pa_varray.h"
 #include "pa_uue.h"
+#include "pa_threads.h"
 
-volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.150 2026/10/18 21:05:35 moko Exp $" IDENT_PA_VMAIL_H;
+volatile const char * IDENT_PA_VMAIL_C="$Id: pa_vmail.C,v 1.151 2026/11/05 11:40:32 moko Exp $" IDENT_PA_VMAIL_H;
 
 #ifdef WITH_MAILRECEIVE
 extern "C" {
@@ -83,7 +84,23 @@ VMail::VMail(): VStateless_class(mail_class) {}
 
 #define EXCEPTION_VALUE "x-exception"
 
-static Charset* source_charset;
+static THREAD_LOCAL Charset* source_charset;
+
+/// releases the reference to the object [stream, filter, parser, message] when the scope is left
+class Temp_gobject_ref {
+	gpointer fobject;
+public:
+	Temp_gobject_ref(gpointer aobject): fobject(aobject) {}
+	~Temp_gobject_ref() { g_object_unref(fobject); }
+};
+
+/// the stream keeps the filter, so the reference of the caller is released
+static void add_filter(GMimeStream *stream, GMimeFilter *filter) {
+	if(filter) {
+		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), filter);
+		g_object_unref(filter);
+	}
+}
 
 static const char *transcode(const char *value) {
 	if(value && !source_charset->isUTF8()){
@@ -285,9 +302,9 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 			// $.value[string|file]
 			if(GMimeDataWrapper* gcontent=g_mime_part_get_content_object(gpart)){
 				GMimeStream* gstream=g_mime_stream_filter_new(g_mime_data_wrapper_get_stream(gcontent));
+				Temp_gobject_ref gstream_ref(gstream);
 				
-				if(GMimeFilter* filter=g_mime_filter_basic_new(g_mime_part_get_content_encoding(gpart), false))
-					g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+				add_filter(gstream, g_mime_filter_basic_new(g_mime_part_get_content_encoding(gpart), false));
 				
 				size_t length;
 				
@@ -300,8 +317,7 @@ static void MimePart2body(GMimeObject *parent, GMimeObject *part, gpointer data)
 				} else {
 					// P_TEXT, P_HTML
 					if(Value *charset=vcontent_type->hash().get("Charset"))
-						if(GMimeFilter* filter=g_mime_filter_charset_new(charset->get_string()->cstr(), source_charset->NAME_CSTR()))
-							g_mime_stream_filter_add(GMIME_STREAM_FILTER(gstream), filter);
+						add_filter(gstream, g_mime_filter_charset_new(charset->get_string()->cstr(), source_charset->NAME_CSTR()));
 					
 					char *content=readStream(gstream, length);
 					putReceived(partHash, VALUE_NAME,new VString(*new String(content)));
@@ -347,6 +363,14 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 		putReceived(received, "reply-to", transcode(msg_reply_to));
 		putReceived(received, "subject", transcode(g_mime_message_get_subject(message)));
 
+		// allocated for the caller, putReceived has made the copies
+#if GMIME_MAJOR_VERSION > 2
+		g_free((void *)msg_from);
+		g_free((void *)msg_reply_to);
+#endif
+		g_free((void *)msg_to);
+		g_free((void *)msg_cc);
+
 		// .date(time_t in UTC)
 		putReceived(received, "date", date);
 
@@ -362,37 +386,49 @@ static void parse(Request& r, GMimeMessage *message, HashStringValue& received) 
 	}
 }
 
+/// the message of the stream into the hash, the same for the incoming one and the one in memory. The reference to the @a source stays with the caller
+static void parse_stream(Request& r, GMimeStream *source, HashStringValue& received) {
+	source_charset=&r.charsets.source();
+	{
+		SYNCHRONIZED; // the first initialization is not thread safe, the next ones do nothing. Never shut down: the next message needs it
+		g_mime_init();
+	}
+	// create stream with CRLF filter
+	GMimeStream *stream = g_mime_stream_filter_new(source);
+	Temp_gobject_ref stream_ref(stream);
+	add_filter(stream, g_mime_filter_crlf_new(false, false));
+	GMimeParser *parser = g_mime_parser_new_with_stream(stream);
+	Temp_gobject_ref parser_ref(parser);
+	try {
+		// parse the message
+		if(GMimeMessage *message=g_mime_parser_construct_message(parser, NULL)){
+			Temp_gobject_ref message_ref(message);
+			parse(r, message, received);
+		}
+	} catch(const Exception& e) {
+		putReceived(received, VALUE_NAME, "<exception occurred while parsing message>");
+		putReceived(received, EXCEPTION_VALUE, e.comment());
+	}
+}
+
 void VMail::fill_received(Request& r) {
 	if(r.request_info.mail_received) {
-		source_charset=&r.charsets.source();
-		g_mime_init();
-		// create stream with CRLF filter
 #if GMIME_MAJOR_VERSION > 2
-		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_pipe_new(STDIN_FILENO));
+		GMimeStream *source = g_mime_stream_pipe_new(STDIN_FILENO);
 #else
-		GMimeStream *stream = g_mime_stream_filter_new(g_mime_stream_fs_new(STDIN_FILENO));
+		GMimeStream *source = g_mime_stream_fs_new(STDIN_FILENO);
 #endif
-		g_mime_stream_filter_add(GMIME_STREAM_FILTER(stream), g_mime_filter_crlf_new(false, false));
-		try {
-			// parse incoming message
-			GMimeMessage *message=g_mime_parser_construct_message(g_mime_parser_new_with_stream(stream), NULL);
-			if(message){
-				parse(r, message, vreceived.hash());
-				g_object_unref(GMIME_OBJECT(message));
-			}
-		} catch(const Exception& e) {
-			HashStringValue& received=vreceived.hash();
-			putReceived(received, VALUE_NAME, "<exception occurred while parsing message>");
-			putReceived(received, EXCEPTION_VALUE, e.comment());
-		} catch(...) {
-			// abnormal stream free
-			g_object_unref(stream);
-			rethrow;
-		}
-		g_object_unref(stream);
-		
-		g_mime_shutdown();
+		// not released: it would close stdin
+		parse_stream(r, source, vreceived.hash());
 	}
+}
+
+VHash& VMail::parse_message(Request& r, const char* message, size_t length) {
+	VHash& result=*new VHash;
+	GMimeStream *source = g_mime_stream_mem_new_with_buffer(message, length);
+	Temp_gobject_ref source_ref(source);
+	parse_stream(r, source, result.hash());
+	return result;
 }
 
 #else // WITH_MAILRECEIVE

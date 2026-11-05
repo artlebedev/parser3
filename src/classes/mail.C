@@ -19,7 +19,7 @@
 
 #include "smtp.h"
 
-volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.139 2026/04/25 13:38:46 moko Exp $";
+volatile const char * IDENT_MAIL_C="$Id: mail.C,v 1.140 2026/11/05 11:40:32 moko Exp $";
 
 // defines
 
@@ -213,9 +213,22 @@ static void _send(Request& r, MethodParams& params) {
 		sendmail(vmail_conf, smtp_server_port, message, from, to, soptions);
 }
 
+static void _parse(Request& r, MethodParams& params) {
+#ifdef WITH_MAILRECEIVE
+	VFile* message=params.as_no_junction(0, "message must be string or file").as_vfile(String::L_AS_IS, &r.charsets);
+	r.write(GET_SELF(r, VMail).parse_message(r, message->value_ptr(), message->value_size()));
+#else
+	(void)r; (void)params;
+	throw Exception("mail", 0, "compiled without mailreceive support");
+#endif
+}
+
 // constructor & configurator
 
 MMail::MMail(): Methoded(MAIL_CLASS_NAME) {
 	// ^mail:send{hash}
 	add_native_method("send", Method::CT_STATIC, _send, 1, 1);
+
+	// ^mail:parse[string|file]
+	add_native_method("parse", Method::CT_STATIC, _parse, 1, 1);
 }
