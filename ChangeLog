@@ -1,3 +1,54 @@
+2026-11-05  moko
+
+	* operators.ru.txt, operators.txt: ^mail:parse[string|file] added
+	  (related to feature #1318)
+
+	* src/types/pa_vmail.C: fix for libgmime
+
+	* buildall: fix shipped glib build under modern Linux
+
+	* src/: classes/mail.C, types/pa_vmail.C, types/pa_vmail.h:
+	  ^mail:parse[string|file] added (implements feature #1318)
+
+2026-11-04  moko
+
+	* operators.ru.txt, operators.txt: actualized
+
+	* src/: classes/math.C, lib/md5/Makefile.am, lib/md5/md5.vcproj,
+	  lib/md5/pa_xxhash.c, lib/md5/pa_xxhash.h:
+	  ^math:xxhash[method;string|file;options] added (implements
+	  feature #1314)
+
+2026-11-03  moko
+
+	* tests/: 345.html, results/345.processed: file:move / file:rmdir
+	  tests added (related to feature #1317)
+
+	* operators.ru.txt, operators.txt: actualized
+
+	* src/: classes/file.C, include/pa_file.h, main/pa_file.C:
+	  ^file:rmdir[dir-name; $.exception(false) ] added (related to
+	  feature #1317)
+
+	* src/main/: pa_file.C, pa_os.C: the existing file is replaced
+	  under Windows (contributed by G_Z, implements feature #1317)
+
+	* tests/: 478.html, results/478.processed: single-bytes charset
+	  string functions test added (related to feature #7)
+
+	* tests/: 185.html, results/185.processed: more ^string.right()
+	  tests (related to feature #7)
+
+	* src/main/pa_string.C: fix right behavour on truncated UTF-8 -
+	  make it similar to mid (related to feature #7)
+
+	* tests/: 185.html, results/185.processed: long UTF-8 tests
+	  (related to feature #7)
+
+	* src/: classes/string.C, include/pa_string.h, main/pa_string.C:
+	  ^string.right(n) optimized, length calculation removed from left
+	  and min (implements feature #7)
+
 2026-11-02  moko
 
 	* tests/: 207.html, results/207.processed: min/max tests added
