@@ -37,7 +37,7 @@
 #include "pa_varray.h"
 #include "pa_code_cache.h"
 
-volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.474 2026/10/28 01:37:15 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
+volatile const char * IDENT_PA_REQUEST_C="$Id: pa_request.C,v 1.475 2026/11/21 23:38:25 moko Exp $" IDENT_PA_REQUEST_H IDENT_PA_REQUEST_CHARSETS_H IDENT_PA_REQUEST_INFO_H IDENT_PA_VCONSOLE_H;
 
 // consts
 
@@ -408,7 +408,7 @@ void Request::configure_admin(VStateless_class& conf_class) {
 		double limit=option->as_double();
 		if(limit >= 3600*24)
 			throw Exception(PARSER_RUNTIME, 0, "$MAIN:LIMITS.%s must be less than %d", lock_wait_timeout_name.cstr(), 3600*24);
-		lock_attempts=(unsigned int)(limit*2)+1;
+		lock_attempts=PA_LOCK_TIME_TO_ATTEMPTS(limit);
 	}, "LIMITS.%s must be number");
 	pa_lock_attempts=lock_attempts;
 

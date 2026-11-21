@@ -8,11 +8,14 @@
 #ifndef PA_OS_H
 #define PA_OS_H
 
-#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.20 2026/10/29 10:30:36 moko Exp $"
+#define IDENT_PA_OS_H "$Id: pa_os.h,v 1.21 2026/11/21 23:38:25 moko Exp $"
 
 #define PA_LOCK_ATTEMPTS 20
 #define PA_LOCK_WAIT_TIMEOUT_SECS 0
 #define PA_LOCK_WAIT_TIMEOUT_USECS 500000
+
+#define PA_LOCK_TIME_TO_ATTEMPTS(seconds) ((unsigned int)((seconds)*2)+1)
+#define PA_LOCK_ATTEMPTS_TO_TIME(attempts) ((attempts)/2)
 
 extern unsigned int pa_lock_attempts; // not thread local: never changes
 
