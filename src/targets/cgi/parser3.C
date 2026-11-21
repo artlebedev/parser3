@@ -5,7 +5,7 @@
 	Authors: Konstantin Morshnev <moko@design.ru>, Alexandr Petrosian <paf@design.ru>
 */
 
-volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.391 2026/10/30 17:15:10 moko Exp $";
+volatile const char * IDENT_PARSER3_C="$Id: parser3.C,v 1.392 2026/11/21 01:27:01 moko Exp $";
 
 #include "pa_config_includes.h"
 
@@ -117,7 +117,7 @@ static void pa_log(const char* stamp, const char* fmt, va_list args) {
 		size+=pa_snprintf(line+size, sizeof(line)-size, " [no request info]\n");
 
 	const char* slog=parser3_log_filespec();
-	int fd=strcmp(slog,"-") ? pa_open(slog, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, 0666) : -1;
+	int fd=strcmp(slog,"-") ? open(slog, O_WRONLY | O_APPEND | O_CREAT | O_CLOEXEC, 0666) : -1; // not pa_open, it allocates under Windows
 	if(fd<0)
 		fd=STDERR_FILENO; // fallback to stderr
 	PA_UNUSED int ignore_result=write(fd, line, (unsigned int)size);
