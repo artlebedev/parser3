@@ -17,7 +17,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.14 2026/11/03 16:04:19 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.15 2026/11/21 23:15:58 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -29,16 +29,6 @@ volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.14 2026/11/03 16:04:19
 #endif
 #ifndef _O_BINARY
 #	define _O_BINARY 0
-#endif
-
-#ifdef HAVE_FTRUNCATE
-#	define PA_O_TRUNC 0
-#else
-#	ifdef _O_TRUNC
-#		define PA_O_TRUNC _O_TRUNC
-#	else
-#		error you must have either ftruncate function or _O_TRUNC bit declared
-#	endif
 #endif
 
 #ifdef WIN32
@@ -170,12 +160,17 @@ int pa_unlink(const char *pathname){
 	return _wunlink(wpathname);
 }
 
+static int pa_ftruncate(int fd, uint64_t size){
+	return _chsize_s(fd, size);
+}
+
 #else
 
 #define pa_mkdir mkdir
 #define pa_rmdir rmdir
 #define pa_rename rename
 #define pa_unlink unlink
+#define pa_ftruncate ftruncate
 
 #endif
 
@@ -391,7 +386,7 @@ bool file_write_action_under_lock(const String& file_spec, const char* action_na
 	if(access(fname, W_OK)!=0) // no
 		create_dir_for_file(file_spec);
 
-	if((f=pa_open(fname, O_CREAT | O_RDWR | (as_text ? _O_TEXT : _O_BINARY) | (do_append ? O_APPEND : PA_O_TRUNC), 0664))>=0) {
+	if((f=pa_open(fname, O_CREAT | O_RDWR | (as_text ? _O_TEXT : _O_BINARY) | (do_append ? O_APPEND : 0), 0664))>=0) { // not O_TRUNC: the file is cut after the action, see below
 		int pa_errno=do_block ? pa_lock_exclusive_blocking(f) : pa_lock_exclusive_nonblocking(f);
 		if(pa_errno!=0) {
 			Exception e("file.lock", &file_spec, "exclusive lock failed: %s (%d)%s", strerror(pa_errno), pa_errno, actual_filename(file_spec, fname));
@@ -409,18 +404,14 @@ bool file_write_action_under_lock(const String& file_spec, const char* action_na
 #endif
 			action(f, context);
 		} catch(...) {
-#ifdef HAVE_FTRUNCATE
 			if(!do_append)
-				PA_UNUSED int ignore_result=ftruncate(f, lseek(f, 0, SEEK_CUR)); // one cannot use O_TRUNC, read lower
-#endif
+				PA_UNUSED int ignore_result=pa_ftruncate(f, pa_lseek(f, 0, SEEK_CUR)); // one cannot use O_TRUNC, read lower
 			pa_unlock(f);close(f);
 			rethrow;
 		}
 		
-#ifdef HAVE_FTRUNCATE
 		if(!do_append)
-			PA_UNUSED int ignore_result=ftruncate(f, lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
-#endif
+			PA_UNUSED int ignore_result=pa_ftruncate(f, pa_lseek(f, 0, SEEK_CUR)); // O_TRUNC truncates even exclusevely write-locked file [thanks to Igor Milyakov <virtan@rotabanner.com> for discovering]
 		pa_unlock(f);close(f);
 		return true;
 	} else
