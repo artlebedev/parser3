@@ -1,3 +1,17 @@
+2026-11-22  moko
+
+	* src/: include/pa_os.h, main/pa_request.C: more accurate to keep
+	  PA_LOCK calculations in one place
+
+	* src/main/pa_file.C: under Windows the file being written is cut
+	  after writing as on Linux, no longer truncated on open (even
+	  before the lock)
+
+2026-11-21  moko
+
+	* src/targets/cgi/parser3.C: bugfix: open should be used as pa_open
+	  allocates under Windows (related to feature #1312)
+
 2026-11-05  moko
 
 	* operators.ru.txt, operators.txt: ^mail:parse[string|file] added
