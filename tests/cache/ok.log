@@ -1,0 +1,46 @@
+=== no cache yet, 20 requests at once, 3 times: the code runs once each time, the others wait for it
+20 first
+20 first
+20 first
+the code ran: 3
+=== the cache has expired, 20 requests at once, 3 times: one renews it, the others get the old copy meanwhile
+1 new
+19 old
+1 new
+19 old
+1 new
+19 old
+the code ran: 3
+=== the same with $.extend(0): the others wait for the new copy
+10 new
+10 new
+10 new
+the code ran: 3
+=== the cache has expired more than $.extend seconds ago [the page is requested seldom]: the others wait for the new copy
+10 new
+10 new
+10 new
+the code ran: 3
+=== the code fails when the cache is renewed: the old copy is given for $.extend seconds, then the cache is renewed
+generation failed
+old
+new
+the code ran: 2
+=== the code runs longer than $.extend: the next request renews the cache too, the one who ends later writes the copy
+old
+renewed
+long
+long
+the code ran: 2
+=== the copy has expired, the other process renews it under the lock: the request waits for it, then renews the cache itself [the holder did not]
+new
+waited
+the code ran: 1
+=== the file is cut: not given
+renewed
+the code ran: 1
+=== the new copy is written in place of the longer one: the file is cut to it
+short
+short
+the file is cut
+the code ran: 1

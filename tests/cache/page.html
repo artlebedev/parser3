@@ -1,0 +1,22 @@
+# ^cache under parallel requests, called by run_tests.sh, the parameters are in the query string:
+#   expires, extend - the lifespan and $.extend in seconds
+#   sleep           - how long the code runs
+#   fail            - the code throws
+#   text            - what the code returns
+#   cache           - the cache file name, cache.bin by default
+
+@main[]
+$file[^if(def $form:cache){$form:cache}{cache.bin}]
+^if(def $form:extend){
+	^cache[$file][ $.expires($form:expires) $.extend($form:extend) ]{^body[]}
+}{
+	^cache[$file]($form:expires){^body[]}
+}
+
+# every run is logged, to count them
+@body[]
+$run[run^#0A]
+^run.save[append;runs.txt]
+^sleep($form:sleep)
+^if(def $form:fail){^throw[test;;generation failed]}
+$result[$form:text]
