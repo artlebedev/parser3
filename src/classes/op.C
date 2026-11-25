@@ -23,7 +23,7 @@
 #include "syslog.h"
 #endif
 
-volatile const char * IDENT_OP_C="$Id: op.C,v 1.291 2026/10/31 17:03:23 moko Exp $";
+volatile const char * IDENT_OP_C="$Id: op.C,v 1.292 2026/11/25 22:11:08 moko Exp $";
 
 // defines
 
@@ -588,7 +588,7 @@ struct Data_string_serialized_prolog {
 #endif
 
 void cache_delete(const String& file_spec) {
-	file_delete(file_spec, false/*fail_on_problem*/);
+	file_delete(file_spec, false /*fail_on_problem*/ );
 }
 
 #ifndef DOXYGEN
@@ -596,35 +596,34 @@ struct Cache_scope {
 public:
 	time_t expires;
 	const String* body_from_disk;
+	time_t extend; // seconds the expired copy is returned during renewal
 };
-struct Locked_process_and_cache_put_action_info {
+enum Cache_file_state {
+	CACHE_NOT_LOCKED, // the lock is busy: the cache is not renewed
+	CACHE_UNDER_LOCK, // the cache is renewed under the lock, the others wait: there is no copy, it expired more than $.extend seconds ago, or $.extend(0)
+	CACHE_EXTENDED,   // the expired copy is extended for $.extend seconds: the code runs with the cache file not locked
+	CACHE_RENEWED     // [or extended] by the one who has had the lock before: the copy is read under the lock
+};
+struct Cache_action_info {
 	Request *r;
 	Cache_scope *scope;
 	Value* body_code;
 	Value* catch_code; 
 	const String* processed_code;
+	Cache_file_state state;
 };
 #endif
-
 
 
 static Value& process_cache_body_code(Request& r, Value* body_code) {
 	return r.process(*body_code);
 }
 
-/* @todo maybe network order worth spending some effort?
-	don't bothering myself with network byte order,
-	am not planning to be able to move resulting file across platforms
-*/
-static void locked_process_and_cache_put_action(int f, void *context) {
-	Locked_process_and_cache_put_action_info& info=
-		*static_cast<Locked_process_and_cache_put_action_info *>(context);
-
+/// body->process, with the cache file locked, or not locked if the expired copy is extended
+static void cache_process(Cache_action_info& info) {
 	const String* body_from_disk=info.scope->body_from_disk;
-	// body->process 
-	Try_catch_result result=try_catch(*info.r, 
-		process_cache_body_code, info.body_code,
-		info.catch_code, body_from_disk!=0 /*we have something old=we can handle=recover later*/);
+	// body->process
+	Try_catch_result result=try_catch(*info.r, process_cache_body_code, info.body_code, info.catch_code, body_from_disk!=0 /* we have something old=we can handle=recover later */);
 
 	if(result.exception_should_be_handled) {
 		if(*result.exception_should_be_handled==CACHE_EXCEPTION_HANDLED_CACHE_NAME) {
@@ -637,82 +636,139 @@ static void locked_process_and_cache_put_action(int f, void *context) {
 				"either boolean or string '" CACHE_EXCEPTION_HANDLED_CACHE_NAME "'");
 	} else
 		info.processed_code=&((Value &)result.processed_code).as_string();
+}
+
+/* @todo maybe network order worth spending some effort?
+	don't bothering myself with network byte order,
+	am not planning to be able to move resulting file across platforms
+*/
+static void locked_cache_put_action(int f, void *context) {
+	Cache_action_info& info=*static_cast<Cache_action_info *>(context);
 
 	// expiration time not spoiled by ^cache(0) or something?
 	if(info.scope->expires > time(0)) {
 		// string -serialize> buffer
-		String::Cm serialized=info.processed_code->serialize(
-			sizeof(Data_string_serialized_prolog));
-		Data_string_serialized_prolog& prolog=
-			*reinterpret_cast<Data_string_serialized_prolog *>(serialized.str);
+		String::Cm serialized=info.processed_code->serialize(sizeof(Data_string_serialized_prolog));
+		Data_string_serialized_prolog& prolog=*reinterpret_cast<Data_string_serialized_prolog *>(serialized.str);
 		prolog.version=DATA_STRING_SERIALIZED_VERSION;
 		prolog.expires=info.scope->expires;
 		
 		// buffer -write> file
 		if(write(f, serialized.str, serialized.length)<0)
 			throw Exception("file.write", 0, "write failed: %s (%d)",  strerror(errno), errno);
-	} else // expired!
-		info.scope->expires=0; // flag it so that could be easily checked by caller
+	}
 }
-const String* locked_process_and_cache_put(Request& r, 
-					   Value& body_code,
-					   Value* catch_code,
-					   Cache_scope& scope,
-					   const String& file_spec) 
-{
-	Locked_process_and_cache_put_action_info info={&r, &scope, &body_code, catch_code, 0};
 
-	const String* result=file_write_action_under_lock(
-		file_spec, 
-		"cache_put",
-		locked_process_and_cache_put_action,
-		&info,
-		false/*as_text*/,
-		false/*do_append*/,
-		false/*block == don't wait till other thread release lock*/,
-		false/*dun throw exception if lock failed*/) ? info.processed_code: 0;
+/// the copy from the cache file content, 0 if it is broken or of the other version
+static const String* cache_deserialize(char* str, size_t length, time_t& expires) {
+	Data_string_serialized_prolog& prolog = *reinterpret_cast<Data_string_serialized_prolog *>(str);
+	
+	if(length>=sizeof(Data_string_serialized_prolog) && prolog.version==DATA_STRING_SERIALIZED_VERSION) {
+		String* body=new String;
+		if(body->deserialize(sizeof(Data_string_serialized_prolog), str, length)) {
+			expires=prolog.expires;
+			return body;
+		}
+	}
+	return 0;
+}
+
+/// the copy from the file opened by the caller under the lock, the file position is left at its end
+static const String* cache_read(int f, time_t& expires) {
+	size_t length=check_file_size(pa_lseek(f, 0, SEEK_END), 0);
+	char* buf=(char*)pa_malloc_atomic(length+1);
+	pa_lseek(f, 0, SEEK_SET);
+	return (size_t)read(f, buf, length)==length ? cache_deserialize(buf, length, expires) : 0;
+}
+
+/// the cache is renewed under the lock, the others wait. If cache was allready renewed, read it here, under the same lock
+static void locked_process_and_cache_put_action(int f, void *context) {
+	Cache_action_info& info=*static_cast<Cache_action_info *>(context);
+
+	time_t expires;
+	const String* body=cache_read(f, expires);
+	if(body && expires > time(0)) {
+		info.processed_code=body;
+		info.state=CACHE_RENEWED;
+		return;
+	}
+	info.state=CACHE_UNDER_LOCK;
+	pa_lseek(f, 0, SEEK_SET);
+	cache_process(info);
+	locked_cache_put_action(f, context);
+}
+
+/// the expired copy is extended for scope->extend seconds [its expiration time is moved forward]
+static void locked_cache_extend_action(int f, void *context) {
+	Cache_action_info& info=*static_cast<Cache_action_info *>(context);
+
+	Data_string_serialized_prolog prolog;
+	time_t now=time(0);
+	if((size_t)read(f, &prolog, sizeof(prolog))==sizeof(prolog) && prolog.version==DATA_STRING_SERIALIZED_VERSION && prolog.expires <= now) {
+		prolog.expires=now+info.scope->extend;
+		pa_lseek(f, 0, SEEK_SET);
+		if((size_t)write(f, &prolog, sizeof(prolog))==sizeof(prolog)) {
+			info.state=CACHE_EXTENDED;
+			pa_lseek(f, 0, SEEK_END); // the file is cut at the current position after the action
+			return;
+		}
+	}
+	// renewed by the other one meanwhile, or the copy has changed [cut, deleted]: as without the copy
+	pa_lseek(f, 0, SEEK_SET);
+	locked_process_and_cache_put_action(f, context);
+}
+
+const String* process_and_cache_put(Request& r, Value& body_code, Value* catch_code, Cache_scope& scope, const String& file_spec) {
+	Cache_action_info info={&r, &scope, &body_code, catch_code, 0, CACHE_NOT_LOCKED};
+
+	if(scope.body_from_disk && scope.extend > 0) {
+		// the copy expired no more than scope.extend seconds ago, try to extend it without waiting for a lock
+		file_write_action_under_lock(file_spec, "cache_extend", locked_cache_extend_action, &info, false /* as_text */, false /* do_append */, false /* block */, false /* fail_on_lock_problem */);
+		if(info.state==CACHE_NOT_LOCKED)
+			return scope.body_from_disk;
+		if(info.state==CACHE_EXTENDED) {
+			// the code runs with the cache file not locked: the others get the old copy meanwhile, as not expired yet;
+			// if the code throws or runs longer, the copy expires again, and the next request renews the cache
+			cache_process(info);
+			// in place, under the lock: the readers wait for it for a moment; if the lock failed, the copy stays extended
+			file_write_action_under_lock(file_spec, "cache_put", locked_cache_put_action, &info, false /* as_text */, false /* do_append */, true /* block */, false /* fail_on_lock_problem */);
+		}
+	} else {
+		// without the copy to give, the cache is renewed under the lock, the others wait for it:
+		// block == wait till the other one releases the lock, it may renew the cache under it
+		file_write_action_under_lock(file_spec, "cache_put", locked_process_and_cache_put_action, &info, false /* as_text */, false /* do_append */, true /* block */, false /* fail_on_lock_problem */);
+		if(info.state==CACHE_NOT_LOCKED) // the lock wait timeout: the code is run without the cache
+			return 0;
+	}
+
+	if(info.state==CACHE_RENEWED) // by the one who has had the lock before: the copy is not ours to delete
+		return info.processed_code;
 
 	time_t now=time(0);
 	if(scope.expires<=now)
 		cache_delete(file_spec);
-	return result;
+	return info.processed_code;
 }
 
-#ifndef DOXYGEN
-struct Cache_get_result {
-	const String* body;
-	bool expired;
-};
-#endif
+static const String* cache_get(const String& file_spec, time_t& expires) {
+	File_read_result file=file_read_binary(file_spec, false /* fail_on_read_problem */);
+	if(file.success && file.length /* ignore reads which are empty due to non-unary open+lockEX conflict with lockSH */)
+		return cache_deserialize(file.str, file.length, expires);
+	return 0;
+}
 
-static Cache_get_result cache_get(const String& file_spec, time_t now) {
-	Cache_get_result result={0, false};
-
-	File_read_result file=file_read_binary(file_spec, false /*fail_on_read_problem*/);
-	if(file.success && file.length /*ignore reads which are empty due to non-unary open+lockEX conflict with lockSH*/) {
-		
-		Data_string_serialized_prolog& prolog = *reinterpret_cast<Data_string_serialized_prolog *>(file.str);
-		
-		String* body=new String;
-		if(file.length>=sizeof(Data_string_serialized_prolog) && prolog.version==DATA_STRING_SERIALIZED_VERSION) {
-			if(body->deserialize(sizeof(Data_string_serialized_prolog),  file.str, file.length)) {
-				result.body=body;
-				result.expired=prolog.expires <= now;
-			}
-		}
-	}
-
-	return result;
+static time_t as_expires(Value& value, time_t now) {
+	if(VDate* vdate=dynamic_cast<VDate*>(&value))
+		return (time_t)vdate->get_time();
+	if(!value.is_evaluated_expr())
+		throw Exception(PARSER_RUNTIME, 0, "lifespan must be date or number");
+	return now+(time_t)value.as_double();
 }
 
 static time_t as_expires(Request& r, MethodParams& params, int index, time_t now) {
-	time_t result;
 	if(VDate* vdate=dynamic_cast<VDate*>(&params[index]))
-		result=(time_t)vdate->get_time();
-	else
-		result=now+(time_t)params.as_double(index, "lifespan must be date or number", r);
-	
-	return result;
+		return (time_t)vdate->get_time();
+	return now+(time_t)params.as_double(index, "lifespan must be date or number", r);
 }
 
 static const String& as_file_spec(Request& r, MethodParams& params, int index) {
@@ -741,9 +797,7 @@ static void _cache(Request& r, MethodParams& params) {
 		// secods|expires date
 		Cache_scope* scope=static_cast<Cache_scope*>(r.classes_conf.get(cache_data_name));
 		if(!scope)
-			throw Exception(PARSER_RUNTIME,
-				0,
-				"expire-time reducing instruction without cache");
+			throw Exception(PARSER_RUNTIME, 0, "expire-time change without cache");
 		
 		time_t expires=as_expires(r, params, 0, now);
 		if(expires < scope->expires)
@@ -751,14 +805,28 @@ static void _cache(Request& r, MethodParams& params) {
 
 		return;
 	} else if(params.count()<3)
-		throw Exception(PARSER_RUNTIME,
-			0,
-			"invalid number of parameters"); 
-	
+		throw Exception(PARSER_RUNTIME, 0, "invalid number of parameters");
+
 	// file_spec, expires, body code
 	const String& file_spec=as_file_spec(r, params, 0);
 
-	Cache_scope scope={as_expires(r, params, 1, now), 0};
+	// by default the expired copy is returned for the time the others would wait for the lock
+	Cache_scope scope={0, 0, (time_t)PA_LOCK_ATTEMPTS_TO_TIME(pa_lock_attempts)};
+	if(HashStringValue* options=params[1].get_hash()) {
+		int valid_options=0;
+		Value* vexpires=options->get("expires");
+		if(!vexpires)
+			throw Exception(PARSER_RUNTIME, 0, "expires option must be specified");
+		scope.expires=as_expires(*vexpires, now);
+		valid_options++;
+		if(Value* vextend=options->get("extend")) {
+			scope.extend=(time_t)vextend->as_double();
+			valid_options++;
+		}
+		if(valid_options!=options->count())
+			throw Exception(PARSER_RUNTIME, 0, CALLED_WITH_INVALID_OPTION);
+	} else
+		scope.expires=as_expires(r, params, 1, now);
 
 	Temp_hash_value<HashString<void*>, void*> cache_scope_setter(&r.classes_conf, cache_data_name, &scope);
 	Value& body_code=params.as_junction(2, "body_code must be code");
@@ -767,32 +835,35 @@ static void _cache(Request& r, MethodParams& params) {
 		catch_code=&params.as_junction(3, "catch_code must be code");
 
 	if(scope.expires>now) {
-		Cache_get_result cached=cache_get(file_spec, now);
+		time_t cached_expires;
+		const String* cached=cache_get(file_spec, cached_expires);
 
-		if(cached.body) { // have cached copy
-			if(cached.expired) {
-				scope.body_from_disk=cached.body; // storing for user to retrive it with ^cache[]
+		if(cached) { // have cached copy
+			if(cached_expires <= now) {
+				scope.body_from_disk=cached;          // to return with $exception.handled[cache] and while the cache is renewed
+				if(cached_expires+scope.extend < now) // expired long ago [the page is requested seldom]: the copy is too old to return
+					scope.extend=0;
 			} else {
-				// and it's not expired yet write it out 
-   				r.write(*cached.body);
-   				// happy with it
-   				return;
-   			}
+				// and it's not expired yet write it out
+				r.write(*cached);
+				// happy with it
+				return;
+			}
 		}
 
 		// no cached info or it's already expired
 
-		// trying to process it under lock and store result in file
-		const String* processed_body=locked_process_and_cache_put(r, body_code, catch_code, scope, file_spec);
+		// trying to process code and store result in file
+		const String* processed_body=process_and_cache_put(r, body_code, catch_code, scope, file_spec);
 		if(processed_body){
-			// write it out 
+			// write it out
 			r.write(*processed_body);
 			// happy with it
 			return;
 		} else {
-			// we fail while get exclusive lock. nvm, we just execute body_code a bit later
+			// we fail while get exclusive lock. we'll execute body_code a bit later
 		}
-	} else { 
+	} else {
 		// instructed not to cache; forget cached copy
 		cache_delete(file_spec);
 	}
