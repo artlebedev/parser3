@@ -94,9 +94,6 @@
 /* Define to 1 if you have the 'flock' function. */
 #undef HAVE_FLOCK
 
-/* Define to 1 if you have the 'ftruncate' function. */
-#undef HAVE_FTRUNCATE
-
 /* Define to 1 if you have the 'getrusage' function. */
 #undef HAVE_GETRUSAGE
 

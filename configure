@@ -22611,12 +22611,6 @@ then :
   printf "%s\n" "#define HAVE_LOCKF 1" >>confdefs.h
 
 fi
-ac_fn_c_check_func "$LINENO" "ftruncate" "ac_cv_func_ftruncate"
-if test "x$ac_cv_func_ftruncate" = xyes
-then :
-  printf "%s\n" "#define HAVE_FTRUNCATE 1" >>confdefs.h
-
-fi
 ac_fn_c_check_func "$LINENO" "fchmod" "ac_cv_func_fchmod"
 if test "x$ac_cv_func_fchmod" = xyes
 then :
