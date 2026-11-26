@@ -1,0 +1,8 @@
+Content-Type: text/html
+Content-Length: 300
+
+accept: Exception: websocket is available in httpd mode only
+receive: Exception: websocket is available in httpd mode only
+send: Exception: websocket is available in httpd mode only
+ping: Exception: websocket is available in httpd mode only
+close: Exception: websocket is available in httpd mode only

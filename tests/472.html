@@ -1,0 +1,7 @@
+# WebSocket is available in httpd mode only, see httpd/websocket
+@main[]
+accept: ^try-catch-comment{^websocket:accept[]}
+receive: ^try-catch-comment{^websocket:receive(1)}
+send: ^try-catch-comment{^websocket:send[text]}
+ping: ^try-catch-comment{^websocket:ping[]}
+close: ^try-catch-comment{^websocket:close[]}
