@@ -1,0 +1,55 @@
+@main[]
+$data[0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ]
+$long[^for[i](1;20){$data}]
+
+1. lengths around the block boundaries of xxh32 (16) and xxh64 (32)<br />
+$lengths[^table::create{length
+0
+1
+2
+3
+4
+5
+7
+8
+9
+15
+16
+17
+31
+32
+33
+63
+64
+65
+100
+1000}]
+^lengths.menu{^row[$lengths.length]}
+
+2. strings and files<br />
+2.1 abc: ^math:xxhash[xxh32;abc] ^math:xxhash[xxh64;abc]<br />
+2.2 Nobody inspects the spammish repetition: ^math:xxhash[xxh32;Nobody inspects the spammish repetition] ^math:xxhash[xxh64;Nobody inspects the spammish repetition]<br />
+2.3 empty: ^math:xxhash[32;] ^math:xxhash[64;]<br />
+2.4 utf-8: ^math:xxhash[32;й€] ^math:xxhash[64;й€]<br />
+$bin[^file::create[binary;bin.dat;^#01^#7F^#FE^#FF^#80]]
+2.5 binary file: ^math:xxhash[32;$bin] ^math:xxhash[64;$bin]<br />
+$abc[^file::create[binary;abc.txt;abc]]
+2.6 file with the same bytes as the string abc: ^math:xxhash[32;$abc] ^math:xxhash[64;$abc]<br />
+2.7 short names of the algorithms, the same as 2.1: ^math:xxhash[32;abc] ^math:xxhash[64;abc]<br />
+
+3. format<br />
+3.1 ^math:xxhash[32;abc; $.format[hex] ] ^math:xxhash[64;abc; $.format[hex] ]<br />
+3.2 ^math:xxhash[32;abc; $.format[base64] ] ^math:xxhash[64;abc; $.format[base64] ]<br />
+$r[^math:xxhash[32;abc; $.format[file] ]]
+3.3 $r.size ^r.base64[]
+$r[^math:xxhash[64;abc; $.format[file] ]]
+3.4 $r.size ^r.base64[]<br />
+
+4. errors<br />
+4.1 ^try-catch{ ^math:xxhash[xxh16;abc] }<br />
+4.2 ^try-catch{ ^math:xxhash[32;abc; $.format[hex2] ] }<br />
+4.3 ^try-catch{ ^math:xxhash[32;abc; $.hmac[key] ] }<br />
+4.4 ^try-catch{ ^math:xxhash[32] }<br />
+
+@row[n]
+${n}: ^math:xxhash[32;^long.left($n)] ^math:xxhash[64;^long.left($n)]<br />

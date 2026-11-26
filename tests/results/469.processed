@@ -1,0 +1,35 @@
+Content-Type: text/html
+Content-Length: 1768
+
+1. lengths around the block boundaries of xxh32 (16) and xxh64 (32)<br />
+0: 02cc5d05 ef46db3751d8e999<br />1: 48454cb2 633457081244afec<br />2: 034d0471 6ed10a79b52ef0f5<br />3: 48009497 1c2dcb4b9024d73d<br />4: 0a0b4c93 4c33072b45647dcb<br />5: 8aa3b71c 34cb4c2ee6166f65<br />7: 1907ad24 97ee4fe4a0ff4dfa<br />8: 189bbfbf e4ba22a49ad89d3f<br />9: 0493d634 43ecc9248bc07d20<br />15: 1dbdfa0f 4bb51a30968e6a4d<br />16: c2c45b69 5c5b90c34e376d0b<br />17: cc79b217 8036ee70cd0a1505<br />31: a3944879 80adfc1d42020f39<br />32: efb1272d bf7c9dbe16b5c6e2<br />33: 93234478 e97423e605e2f3b4<br />63: 10ba0472 82caa9ab0d6c3044<br />64: 83a6aa65 763e844e9e2f30a9<br />65: 2d98ca00 16add03ef51afec7<br />100: 55966854 477e4b027ef957b3<br />1000: 9b0faf4a 436044ce7733d6b1<br />
+2. strings and files<br />
+2.1 abc: 32d153ff 44bc2cf5ad770999<br />
+2.2 Nobody inspects the spammish repetition: e2293b2f fbcea83c8a378bf1<br />
+2.3 empty: 02cc5d05 ef46db3751d8e999<br />
+2.4 utf-8: 86aa2944 51267812bc03594e<br />
+2.5 binary file: bff2af35 e1d33fca11a9542a<br />
+2.6 file with the same bytes as the string abc: 32d153ff 44bc2cf5ad770999<br />
+2.7 short names of the algorithms, the same as 2.1: 32d153ff 44bc2cf5ad770999<br />
+3. format<br />
+3.1 32d153ff 44bc2cf5ad770999<br />
+3.2 MtFT/w== RLws9a13CZk=<br />
+3.3 4 MtFT/w==
+3.4 8 RLws9a13CZk=<br />
+4. errors<br />
+4.1 Exception type: parser.runtime,
+Source: xxh16,
+Comment: must be 'xxh32' or 'xxh64'
+<br />
+4.2 Exception type: parser.runtime,
+Source: hex2,
+Comment: must be 'hex' or 'base64'
+<br />
+4.3 Exception type: parser.runtime,
+Source: xxhash,
+Comment: called with invalid option
+<br />
+4.4 Exception type: parser.runtime,
+Source: xxhash,
+Comment: native method of 'math' accepts minimum 2 parameter(s) (1 present)
+<br />
