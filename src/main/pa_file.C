@@ -17,7 +17,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.16 2026/11/26 01:37:12 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.17 2026/11/26 21:25:03 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -245,7 +245,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 			Charset* asked_charset = 0;
 			if(options)
 				if(Value* vcharset_name = options->get(PA_CHARSET_NAME))
-					asked_charset = &pa_charsets.get(vcharset_name->as_string());
+					asked_charset = &pa_charsets.get_file_charset(vcharset_name->as_string());
 
 			asked_charset = pa_charsets.checkBOM(result.str, result.length, asked_charset);
 
@@ -464,7 +464,11 @@ void file_write(
 
 	if(as_text && asked_charset){
 		String::C body=String::C(data, size);
-		body=Charset::transcode(body, charsets.source(), *asked_charset);
+		if(asked_charset==&pa_UTF16_charset){
+			body=Charsets::encodeUTF16(Charset::transcode(body, charsets.source(), pa_UTF8_charset), !do_append /* the signature at the beginning only */);
+			as_text=false; // under Windows text mode would add \r
+		} else
+			body=Charset::transcode(body, charsets.source(), *asked_charset);
 		data=body.str;
 		size=body.length;
 	};

@@ -12,7 +12,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.120 2026/11/26 20:30:15 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.121 2026/11/26 21:25:03 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/xmlmemory.h"
@@ -119,6 +119,9 @@ Charset::Charset(Request_charsets* acharsets, const String::Body ANAME, const St
 #ifdef XML
 		addEncoding(FNAME_CSTR);
 #endif
+	} else if(ANAME==CHARSET_LATIN1_NAME) {
+		fisUTF8=false;
+		load_latin1(); // no addEncoding: libxml has its own ISO-8859-1
 	} else {
 		fisUTF8=true;
 		// grab default onces [for UTF-8 so to be able to make a-z =>A-Z
@@ -197,6 +200,26 @@ void Charset::load_definition(Request_charsets& acharsets, const String& afile_s
 
 	// sort by the Unicode code point
 	sort_ToTable();
+}
+
+// built-in ISO-8859-1: the byte is the Unicode code point
+void Charset::load_latin1() {
+	memcpy(pcre_tables, pa_pcre_default_tables, sizeof(pcre_tables)); // ASCII
+	element2ctypes(0xA0, true, pcre_tables, ctype_space, cbit_space); // no-break space
+	for(uint c=0xC0; c<0x100; c++)
+		if(c!=0xD7 && c!=0xF7) { // letters, but multiplication and division signs
+			element2ctypes(c, true, pcre_tables, ctype_letter);
+			element2ctypes(c, true, pcre_tables, ctype_word, cbit_word);
+			if(c<0xDF) // capital ones
+				element2case(c, c+0x20, pcre_tables);
+		}
+
+	for(uint c=0; c<0x100; c++) { // sorted by the Unicode code point already
+		tables.fromTable[c]=c;
+		tables.toTable[c].intCh=c;
+		tables.toTable[c].extCh=(XMLByte)c;
+	}
+	tables.toTableSize=0x100;
 }
 
 static int sort_cmp_Trans_rec_intCh(const void *a, const void *b) {

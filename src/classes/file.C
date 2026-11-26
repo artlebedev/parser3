@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.308 2026/11/03 16:04:19 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.309 2026/11/26 21:25:03 moko Exp $";
 
 // defines
 
@@ -141,7 +141,7 @@ static void _save(Request& r, MethodParams& params) {
 		if(HashStringValue* options=params.as_hash(2)){
 			int valid_options=0;
 			if(Value* vcharset_name=options->get(PA_CHARSET_NAME)){
-				asked_charset=&pa_charsets.get(vcharset_name->as_string());
+				asked_charset=&pa_charsets.get_file_charset(vcharset_name->as_string());
 				valid_options++;
 			}
 			if(Value* vappend=options->get(MODE_APPEND)){

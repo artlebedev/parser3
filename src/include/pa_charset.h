@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.64 2026/11/26 20:30:15 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.65 2026/11/26 21:25:03 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -34,6 +34,8 @@
 #define MAX_CHARSETS 10
 
 #define MAX_CHARSET_UNI_CODES 500
+
+#define CHARSET_LATIN1_NAME "ISO-8859-1"
 
 #ifndef XMLCh 
 	typedef unsigned int XMLCh;
@@ -83,6 +85,7 @@ public:
 private:
 
 	void load_definition(Request_charsets& charsets, const String& afile_spec);
+	void load_latin1();
 	void sort_ToTable();
 
 	const String::C transcodeToUTF8(const String::C src) const;
