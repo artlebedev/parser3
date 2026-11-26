@@ -8,7 +8,7 @@
 #ifndef PA_CHARSET_H
 #define PA_CHARSET_H
 
-#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.63 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_CHARSET_H "$Id: pa_charset.h,v 1.64 2026/11/26 20:30:15 moko Exp $"
 
 
 #include "pa_exception.h"
@@ -151,11 +151,6 @@ public:
 	xmlChar* transcode(const String& s);
 	/// converts parser String::Body to xmlChar*
 	xmlChar* transcode(const String::Body s);
-
-private:
-
-	xmlCharEncodingInputFunc ftranscoder_input;
-	xmlCharEncodingOutputFunc ftranscoder_output;
 
 #endif
 

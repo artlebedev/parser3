@@ -12,7 +12,7 @@
 // we are using some pcre_internal.h stuff as well
 #include "../lib/pcre/pa_pcre_internal.h"
 
-volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.119 2026/09/27 17:13:40 moko Exp $" IDENT_PA_CHARSET_H;
+volatile const char * IDENT_PA_CHARSET_C="$Id: pa_charset.C,v 1.120 2026/11/26 20:30:15 moko Exp $" IDENT_PA_CHARSET_H;
 
 #ifdef XML
 #include "libxml/xmlmemory.h"
@@ -1033,13 +1033,10 @@ void Charset::addEncoding(char *name_cstr) {
 	if(handlers_count==MAX_CHARSETS)
 		throw Exception(0, 0, "already allocated %d handlers, no space for new encoding '%s'", MAX_CHARSETS, name_cstr);
 
-	ftranscoder_input=inputFuncs[handlers_count];
-	ftranscoder_output=outputFuncs[handlers_count];
-	::tables[handlers_count++]=&tables;
-
-	xmlCharEncodingHandler* handler=xmlNewCharEncodingHandler(name_cstr, ftranscoder_input, ftranscoder_output);
+	xmlCharEncodingHandler* handler=xmlNewCharEncodingHandler(name_cstr, inputFuncs[handlers_count], outputFuncs[handlers_count]);
 	if(!handler)
 		throw Exception(0, new String(name_cstr, String::L_TAINTED), "unable to register XML encoding handler");
+	::tables[handlers_count++]=&tables;
 	xmlRegisterCharEncodingHandler(handler);
 }
 
@@ -1056,7 +1053,7 @@ String::C Charset::transcode_cstr(const xmlChar* s) {
 	
 	int error;
 	if(!fisUTF8) {
-		error=ftranscoder_output((unsigned char*)out, &outlen, (const unsigned char*)s, &inlen);
+		error=::transcodeFromUTF8(s, inlen, (XMLByte*)out, outlen, tables);
 	} else {
 		memcpy(out, s, outlen=inlen);
 		error=0;
@@ -1086,7 +1083,8 @@ xmlChar* Charset::transcode_buf2xchar(const char* buf, size_t buf_size) {
 		saved_outlen=outlen;
 #endif
 		out=(xmlChar*)xmlMalloc(outlen+1);
-		error=ftranscoder_input(out, &outlen, (const unsigned char*)buf, (int*)&buf_size);
+		int inlen=buf_size;
+		error=::transcodeToUTF8((const XMLByte*)buf, inlen, out, outlen, tables);
 	} else {
 		outlen=buf_size;
 #ifndef NDEBUG
