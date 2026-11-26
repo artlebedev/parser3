@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.8 2026/11/03 16:04:19 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.9 2026/11/26 01:37:12 moko Exp $"
 
 #include "pa_common.h"
 
@@ -96,7 +96,6 @@ typedef void (*File_read_action)(struct stat& finfo, int f, const String& file_s
 */
 bool file_read_action_under_lock(const String& file_spec,
 				const char* action_name, File_read_action action, void *context,
-				bool as_text=false,
 				bool fail_on_read_problem=true);
 
 /**

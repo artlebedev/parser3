@@ -17,7 +17,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.15 2026/11/21 23:15:58 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.16 2026/11/26 01:37:12 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -221,7 +221,7 @@ File_read_result file_read_binary(const String& file_spec, bool fail_on_read_pro
 	File_read_result result = {false, 0, 0, 0};
 	File_read_action_info info = {&result.str, &result.length, buf, offset, limit};
 
-	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, 0, fail_on_read_problem);
+	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, fail_on_read_problem);
 	return result;
 }
 
@@ -238,7 +238,7 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 
 	File_read_action_info info = {&result.str, &result.length, 0, offset, limit};
 
-	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, as_text, fail_on_read_problem);
+	result.success = file_read_action_under_lock(file_spec, "read", file_read_action, &info, fail_on_read_problem);
 
 	if(as_text){
 		if(result.success){
@@ -257,6 +257,8 @@ File_read_result file_read(Request_charsets& charsets, const String& file_spec,
 				result.length = body.length;
 			}
 		}
+		if(result.length && result.str[result.length-1]==0x1A) // Ctrl-Z ending DOS text files
+			result.str[--result.length]=0;
 		if(result.length)
 			fix_line_breaks(result.str, result.length);
 	}
@@ -322,7 +324,7 @@ void check_safe_mode(struct stat, const String&, const char*) {
 
 
 bool file_read_action_under_lock(const String& file_spec, const char* action_name, File_read_action action, void *context,
-				bool as_text, bool fail_on_read_problem) {
+				bool fail_on_read_problem) {
 
 	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC);
 	int f;
@@ -336,7 +338,7 @@ bool file_read_action_under_lock(const String& file_spec, const char* action_nam
 	//   they delay update till open, so we would receive "!^test[" string
 	//   if would do stat, next open.
 	// later: it seems, even this does not help sometimes
-	if((f=pa_open(fname, O_RDONLY | (as_text ? _O_TEXT : _O_BINARY) ))>=0) {
+	if((f=pa_open(fname, O_RDONLY | _O_BINARY /* not _O_TEXT even in text mode as UTF-16 is binary and we fix line breaks anyway */))>=0) {
 		try {
 			int pa_errno=pa_lock_shared_blocking(f);
 			if(pa_errno!=0)
