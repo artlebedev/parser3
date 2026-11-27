@@ -12,7 +12,7 @@
 #include "pa_request.h"
 #include "pa_convert_utf.h"
 
-volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.42 2026/10/18 21:05:35 moko Exp $" IDENT_PA_DIR_H;
+volatile const char * IDENT_PA_DIR_C="$Id: pa_dir.C,v 1.43 2026/11/27 21:35:11 moko Exp $" IDENT_PA_DIR_H;
 
 #ifdef _MSC_VER
 
@@ -59,6 +59,11 @@ const char *ffblk::name() {
 
 bool ffblk::is_dir(bool) {
 	return (stat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+}
+
+bool ffblk::is_symlink() {
+	return (stat.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT)
+		&& (stat.dwReserved0 == IO_REPARSE_TAG_SYMLINK || stat.dwReserved0 == IO_REPARSE_TAG_MOUNT_POINT); // junctions as well, but not the other reparse points [OneDrive, dedup]
 }
 
 double ffblk::size() {
@@ -121,11 +126,23 @@ void ffblk::stat_file() {
 
 bool ffblk::is_dir(bool stat) {
 #ifdef HAVE_STRUCT_DIRENT_D_TYPE
-	if(!stat && _d_type != DT_UNKNOWN)
+	if(!stat && _d_type != DT_UNKNOWN && _d_type != DT_LNK)
 		return _d_type == DT_DIR;
 #endif
 	stat_file();
 	return S_ISDIR(_st.st_mode) != 0;
+}
+
+bool ffblk::is_symlink() {
+#ifdef HAVE_STRUCT_DIRENT_D_TYPE
+	if(_d_type != DT_UNKNOWN)
+		return _d_type == DT_LNK;
+#endif
+	char fileSpec[MAXPATH];
+	pa_snprintf(fileSpec, MAXPATH, "%s/%s", filePath, ff_name);
+
+	struct stat st;
+	return lstat(fileSpec, &st) == 0 && S_ISLNK(st.st_mode) != 0;
 }
 
 double ffblk::size() {

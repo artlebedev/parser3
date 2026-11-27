@@ -8,7 +8,7 @@
 #ifndef PA_DIR_H
 #define PA_DIR_H
 
-#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.37 2026/10/02 19:58:41 moko Exp $"
+#define IDENT_PA_DIR_H "$Id: pa_dir.h,v 1.38 2026/11/27 21:35:11 moko Exp $"
 
 #include "pa_config_includes.h"
 
@@ -29,6 +29,7 @@ struct ffblk {
 
 	const char *name();
 	bool is_dir(bool);
+	bool is_symlink();
 	double size();
 	time_t c_timestamp();
 	time_t m_timestamp();
@@ -53,6 +54,7 @@ struct ffblk {
 
 	const char *name(){ return ff_name; }
 	bool is_dir(bool);
+	bool is_symlink();
 	void stat_file();
 	double size();
 	time_t c_timestamp();

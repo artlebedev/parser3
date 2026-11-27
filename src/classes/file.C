@@ -25,7 +25,7 @@
 #include "pa_vregex.h"
 #include "pa_version.h"
 
-volatile const char * IDENT_FILE_C="$Id: file.C,v 1.309 2026/11/26 21:25:03 moko Exp $";
+volatile const char * IDENT_FILE_C="$Id: file.C,v 1.310 2026/11/27 21:35:11 moko Exp $";
 
 // defines
 
@@ -49,6 +49,7 @@ public:
 	File_list_table_template_columns() {
 		*this+=new String("name");
 		*this+=new String("dir");
+		*this+=new String("symlink");
 		*this+=new String("size");
 		*this+=new String("cdate");
 		*this+=new String("mdate");
@@ -790,6 +791,7 @@ static void _list(Request& r, MethodParams& params) {
 			Table::element_type row(new ArrayString);
 			*row+=new String(pa_strdup(file_name_cstr, file_name_size), String::L_TAINTED);
 			*row+=new String(ffblk.is_dir(stat) ? "1" : "0", String::L_CLEAN);
+			*row+=new String(ffblk.is_symlink() ? "1" : "0", String::L_CLEAN);
 			if(stat) {
 				*row+=VDouble(ffblk.size()).get_string();
 				*row+=new String(pa_uitoa(ffblk.c_timestamp()), String::L_CLEAN);
