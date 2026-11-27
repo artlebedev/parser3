@@ -8,7 +8,7 @@
 	
 */
 
-volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.307 2026/10/05 17:50:18 moko Exp $";
+volatile const char * IDENT_COMPILE_Y = "$Id: compile.y,v 1.308 2026/11/27 23:56:54 moko Exp $";
 
 /**
 	@todo parser4: 
@@ -120,6 +120,7 @@ static const VString vempty;
 %token IN "in"
 %token FEXISTS "-f"
 %token DEXISTS "-d"
+%token LEXISTS "-l"
 %token IS "is"
 
 %token LITERAL_TRUE "true"
@@ -131,7 +132,7 @@ static const VString vempty;
 %left "&&"
 %left '<' '>' "<=" ">="   "lt" "gt" "le" "ge"
 %left "==" "!="  "eq" "ne"
-%left "is" "def" "in" "-f" "-d"
+%left "is" "def" "in" "-f" "-d" "-l"
 
 /* bitwise */
 %left "!|"
@@ -760,6 +761,7 @@ expr:
 |	"in" expr { $$=$2;  O(*$$, OP::OP_IN); }
 |	"-f" expr { $$=$2;  O(*$$, OP::OP_FEXISTS); }
 |	"-d" expr { $$=$2;  O(*$$, OP::OP_DEXISTS); }
+|	"-l" expr { $$=$2;  O(*$$, OP::OP_LEXISTS); }
 /* stack: a,b // stack: a@b */
 |	expr '-' expr {	$$=$1;  P(*$$, *$3);  O(*$$, OP::OP_SUB); }
 |	expr '+' expr { $$=$1;  P(*$$, *$3);  O(*$$, OP::OP_ADD); }
@@ -1163,6 +1165,10 @@ default:
 				case 'd': // -d
 					skip_analized=1;
 					result=DEXISTS;
+					goto break2;
+				case 'l': // -l
+					skip_analized=1;
+					result=LEXISTS;
 					goto break2;
 				default: // minus
 					result=c;

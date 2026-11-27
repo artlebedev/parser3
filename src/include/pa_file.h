@@ -8,7 +8,7 @@
 #ifndef PA_FILE_H
 #define PA_FILE_H
 
-#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.9 2026/11/26 01:37:12 moko Exp $"
+#define IDENT_PA_FILE_H "$Id: pa_file.h,v 1.10 2026/11/27 23:56:54 moko Exp $"
 
 #include "pa_common.h"
 
@@ -161,6 +161,7 @@ bool entry_exists(const char* fname, struct stat *afinfo=0);
 bool entry_exists(const String& file_spec);
 bool file_exist(const String& file_spec);
 bool dir_exists(const String& file_spec);
+bool symlink_exists(const String& file_spec);
 const String* file_exist(const String& path, const String& name);
 bool file_executable(const String& file_spec);
 

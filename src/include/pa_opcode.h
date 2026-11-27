@@ -11,7 +11,7 @@
 
 namespace OP {
 
-#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.60 2026/04/25 13:38:46 moko Exp $"
+#define IDENT_PA_OPCODE_H "$Id: pa_opcode.h,v 1.61 2026/11/27 23:56:54 moko Exp $"
 
 #define OPTIMIZE_BYTECODE_GET_ELEMENT                // $a ^a
 #define OPTIMIZE_BYTECODE_GET_OBJECT_ELEMENT         // $a.b ^a.b
@@ -100,7 +100,7 @@ enum OPCODE {
 #endif
 	//@{
 	/// @name expression ops: unary
-	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS, OP_DEXISTS,
+	OP_NEG, OP_INV, OP_NOT, OP_DEF, OP_IN, OP_FEXISTS, OP_DEXISTS, OP_LEXISTS,
 	//@}
 
 	//@{

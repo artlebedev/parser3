@@ -22,7 +22,7 @@
 #include "pa_varray.h"
 #include "pa_wwrapper.h"
 
-volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.435 2026/10/28 01:17:38 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
+volatile const char * IDENT_EXECUTE_C="$Id: execute.C,v 1.436 2026/11/27 23:56:54 moko Exp $" IDENT_PA_OPCODE_H IDENT_PA_OPERATION_H IDENT_PA_VCODE_FRAME_H IDENT_PA_WWRAPPER_H;
 
 //#define DEBUG_EXECUTE
 
@@ -92,7 +92,7 @@ const char *opcode_name[]={
 	"GET_ELEMENT__SPECIAL__WRITE",
 #endif
 	// expression ops: unary
-	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS",
+	"NEG", "INV", "NOT", "DEF", "IN", "FEXISTS", "DEXISTS", "LEXISTS",
 	// expression ops: binary
 	"SUB", "ADD", "MUL", "DIV", "MOD", "INTDIV",
 	"BIN_SL", "BIN_SR",
@@ -953,6 +953,14 @@ void Request::execute(ArrayOperation& ops) {
 				Value& a=stack.pop().value();
 				const String* path=real_disk_path(a.as_string());
 				Value& value=VBool::get(path && dir_exists(*path));
+				stack.push(value);
+				break;
+			}
+		case OP::OP_LEXISTS:
+			{
+				Value& a=stack.pop().value();
+				const String* path=real_disk_path(a.as_string());
+				Value& value=VBool::get(path && symlink_exists(*path));
 				stack.push(value);
 				break;
 			}

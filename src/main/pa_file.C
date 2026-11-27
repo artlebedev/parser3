@@ -17,7 +17,7 @@
 #include <direct.h>
 #endif
 
-volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.17 2026/11/26 21:25:03 moko Exp $" IDENT_PA_FILE_H;
+volatile const char * IDENT_PA_FILE_C="$Id: pa_file.C,v 1.18 2026/11/27 23:56:54 moko Exp $" IDENT_PA_FILE_H;
 
 // a tainted path scheme (file://, http:// or parser://) would be accepted
 //#define IGNORE_FILE_PREFIX_LANGUAGES
@@ -603,6 +603,22 @@ bool file_exist(const String& file_spec) {
 
 bool dir_exists(const String& file_spec) {
 	return entry_ifdir(file_spec, true);
+}
+
+// the link itself, not followed, broken link is true
+bool symlink_exists(const String& file_spec) {
+	const char* fname=file_spec.taint_cstr(String::L_FILE_SPEC);
+#ifdef _MSC_VER
+	PA_UTF16_VAR(wfname, fname, ENOENT, false)
+	ffblk ffblk;
+	if((ffblk.handle=FindFirstFileW(wfname, &ffblk.stat))==INVALID_HANDLE_VALUE) // masks are expanded, but only clean ones: tainted *?<> are escaped
+		return false;
+	findclose(&ffblk);
+	return ffblk.is_symlink();
+#else
+	struct stat finfo;
+	return lstat(fname, &finfo)==0 && S_ISLNK(finfo.st_mode);
+#endif
 }
 
 const String* file_exist(const String& path, const String& name) {
