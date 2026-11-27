@@ -1,0 +1,11 @@
+Content-Type: text/html
+Content-Length: 412
+
+upper: CAFÉ À LA CRÈME: 2×3÷4, STRAßE, ÿ<br />
+lower: café à la crème: 2×3÷4, straße, ÿ<br />
+words [× and ÷ are not letters]: [Café] [À] [la] [crème]: [2]×[3]÷[4], [Straße], [ÿ]<br />
+no-break space is a space: a_b_c<br />
+xdoc text [U+041A is not in ISO-8859-1]: naïve &amp;#1050;<br />
+xdoc attribute: café<br />
+<?xml version="1.0" encoding="UTF-8"?>
+<a b="café">naïve &#1050;</a>

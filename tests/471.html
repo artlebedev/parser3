@@ -1,0 +1,16 @@
+@main[]
+# ISO-8859-1 as the source charset: letters, case, spaces, xdoc
+$request:charset[ISO-8859-1]
+$response:charset[UTF-8]
+
+$s[Café À la crème: 2×3÷4, Straße, ÿ]
+upper: ^s.upper[]<br />
+lower: ^s.lower[]<br />
+words [× and ÷ are not letters]: ^s.match[(\w+)][g]{[$match.1]}<br />
+$s[a b c]
+no-break space is a space: ^s.match[\s][g]{_}<br />
+
+$x[^xdoc::create{<?xml version="1.0" encoding="ISO-8859-1"?><a b="café">naïve &#1050^;</a>}]
+xdoc text [U+041A is not in ISO-8859-1]: $x.documentElement.firstChild.nodeValue<br />
+xdoc attribute: ^x.documentElement.getAttribute[b]<br />
+^x.string[]

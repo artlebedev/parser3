@@ -1,0 +1,12 @@
+Content-Type: text/html
+Content-Length: 475
+
+ISO-8859-1: café, naïve, Größe<br />
+US-ASCII: café, naïve, Größe<br />
+from binary with charset=iso-8859-1 in content-type: café, naïve, Größe<br />
+Apache 404 page: 404 404 Not Found [text/html; charset=iso-8859-1]<br />
+saved in ISO-8859-1 [Кот can not be]: 41 bytes<br />
+and loaded back: café, naïve, Größe, &amp;#1050;&amp;#1086;&amp;#1090;<br />
+UTF-16 is for the files only: Exception type: parser.runtime,
+Source: UTF-16,
+Comment: unknown charset

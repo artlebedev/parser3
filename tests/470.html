@@ -1,0 +1,23 @@
+@main[]
+$f[^file::load[text;470_latin1.txt;$.charset[ISO-8859-1]]]
+ISO-8859-1: $f.text<br />
+
+$f[^file::load[text;470_latin1.txt;$.charset[us-ascii]]]
+US-ASCII: $f.text<br />
+
+$f[^file::load[binary;470_latin1.txt]]
+$f[^file::create[$f; $.mode[text] $.content-type[text/html^; charset=iso-8859-1] ]]
+from binary with charset=iso-8859-1 in content-type: $f.text<br />
+
+$f[^file::load[text;http://www.parser.ru/f/404/not-found;$.any-status(true)]]
+$t[^f.text.match[<title>(.+)</title>]]
+Apache 404 page: $f.status $t.1 [$f.CONTENT-TYPE]<br />
+
+$s[café, naïve, Größe, Кот]
+^s.save[470_target.txt; $.charset[ISO-8859-1] ]
+$f[^file::load[binary;470_target.txt]]
+saved in ISO-8859-1 [Кот can not be]: $f.size bytes<br />
+$f[^file::load[text;470_target.txt;$.charset[ISO-8859-1]]]
+and loaded back: $f.text<br />
+
+UTF-16 is for the files only: ^try-catch{ $request:charset[UTF-16] }

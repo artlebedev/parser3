@@ -1,8 +1,10 @@
 Content-Type: text/html
-Content-Length: 427
+Content-Length: 615
 
 UTF-8=ПрОвЕрКа<br />
 windows-1251=ПрОвЕрКаПрОвЕрКа<br />
+UTF-16=ПрОвЕрКаПрОвЕрКа<br />
+230_target.txt: 34 bytes [signature once]<br />
 Exception type: parser.runtime,
 Source: save,
 Comment: called with invalid option
@@ -12,6 +14,8 @@ UTF-8=ПрОвЕрКа<br />
 UTF-8=ПрОвЕрКаПрОвЕрКа<br />
 windows-1251=ПрОвЕрКа<br />
 windows-1251=ПрОвЕрКаПрОвЕрКа<br />
+UTF-16=ПрОвЕрКаПрОвЕрКа<br />
+230_target.txt: 34 bytes [signature once]<br />
 Exception type: parser.runtime,
 Source: save,
 Comment: called with invalid option

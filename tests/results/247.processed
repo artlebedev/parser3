@@ -1,5 +1,5 @@
 Content-Type: text/html; charset=WINDOWS-1251
-Content-Length: 393
+Content-Length: 1038
 
 <h3>file in UTF-8 with BOM. charset isn't specified</h3>
 проверка<br />
@@ -11,3 +11,18 @@ Content-Length: 393
 проверка<br />
 <h3>file in WINDOWS-1251. WINDOWS-1251 charset is specified</h3>
 проверка<br />
+<h3>file in UTF-16LE with BOM. charset isn't specified</h3>
+проверка<br />
+<h3>file in UTF-16LE with BOM. UTF-8 charset is specified</h3>
+проверка<br />
+<h3>file in UTF-16LE with BOM. WINDOWS-1251 charset is specified</h3>
+яю?@&gt;25@:0<br />
+<h3>file in UTF-16BE with BOM, ends with 04 1A (not Ctrl-Z). charset isn't specified</h3>
+проверка ОК<br />
+<h3>file in UTF-16BE with BOM. UTF-16 charset is specified (BOM decides)</h3>
+проверка ОК<br />
+<h3>file in UTF-16LE w/o BOM. UTF-16 charset is specified</h3>
+проверка<br />
+<h3>file in WINDOWS-1251 with DOS ending (CR LF Ctrl-Z). WINDOWS-1251 charset is specified</h3>
+проверка
+<br />

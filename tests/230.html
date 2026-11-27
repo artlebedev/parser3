@@ -4,6 +4,7 @@ $sTargetFile[230_target.txt]
 
 $s1251[windows-1251]
 $sUTF[UTF-8]
+$sUTF16[UTF-16]
 
 $f[^file::load[text;$sSourceFile]]
 
@@ -19,6 +20,16 @@ $f[^file::load[text;$sSourceFile]]
 	$.append(true)
 ]
 ^load[$sTargetFile;$s1251]
+
+^f.save[text;$sTargetFile;
+	$.charset[$sUTF16]
+]
+^f.save[text;$sTargetFile;
+	$.charset[$sUTF16]
+	$.append(true)
+]
+^load[$sTargetFile;$sUTF16]
+^size[$sTargetFile]
 
 ^do{
 	^f.save[text;$sTargetFile;
@@ -48,6 +59,16 @@ $f[^file::load[text;$sSourceFile]]
 ]
 ^load[$sTargetFile;$s1251]
 
+^f.text.save[$sTargetFile;
+	$.charset[$sUTF16]
+]
+^f.text.save[$sTargetFile;
+	$.charset[$sUTF16]
+	$.append(true)
+]
+^load[$sTargetFile;$sUTF16]
+^size[$sTargetFile]
+
 ^do{
 ^f.text.save[$sTargetFile;
 	$.charset[$s1251]
@@ -61,6 +82,10 @@ $f[^file::load[text;$sFileName;
 	$.charset[$sCharset]
 ]]
 $sCharset=$f.text<br />
+
+@size[sFileName][f]
+$f[^file::stat[$sFileName]]
+${sFileName}: $f.size bytes [signature once]<br />
 
 @do[jCode]
 ^try-catch{
